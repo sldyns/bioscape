@@ -1,0 +1,148 @@
+{
+  "group": "chromatin",
+  "issues": [
+    {
+      "issueId": "chromatin-01",
+      "status": "fixed",
+      "changes": "Changed nucleosome winding to x increasing / y=R sin(a) / z=R cos(a), giving negative superhelical winding about +x. Both DNA strands now use a deterministically rebuilt rotation-minimizing local frame with binormal=tangent cross normal and positive helical phase. Sliding retains the same material site coordinate.",
+      "files": [
+        "src/processes/modules/chromatin/chromatinAccessProcess.js",
+        "src/processes/modules/chromatin/geometry.js",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "Actual strand vertex-ring means have positive local twist and transverse separation in six root/control combinations at stage and intermediate states.",
+        "Actual nucleosome centerline has negative superhelical winding; gold site remains on that centerline at arclength 3.38 +/- .035 through active and disabled sliding."
+      ],
+      "limitations": [
+        "Molecular positions remain schematic, not fitted atom coordinates. Differential tangent checks exclude the small piecewise linker/wrap join neighborhoods; both adjoining pieces are checked."
+      ]
+    },
+    {
+      "issueId": "chromatin-02",
+      "status": "fixed",
+      "changes": "Replaced fixed world-yz DNA offsets with the same rotation-minimizing local frame on both arms and the loop.",
+      "files": [
+        "src/processes/modules/chromatin/tadProcess.js",
+        "src/processes/modules/chromatin/geometry.js",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "Actual A/B tube buffers give positive twist on both arms and curved loop in normal, boundary-deleted and cohesin-depleted branches.",
+        "Transverse offsets are checked away from the two localized schematic cohesin contact bends."
+      ],
+      "limitations": [
+        "Does not specify a disputed atomic cohesin mechanochemical cycle."
+      ]
+    },
+    {
+      "issueId": "chromatin-03",
+      "status": "fixed",
+      "changes": "Assigned 12 scene units of contour to the fixed material interval 0..1. The circular major arc has fixed mouth spacing and a solved radius for 12*(right-left); both arms shorten by the exact contour admitted into the loop. CTCF and loci keep genomic coordinates.",
+      "files": [
+        "src/processes/modules/chromatin/tadProcess.js",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "Sweeps 41 intermediate times in each of three conditions: actual rendered centerline polyline stays within .045 units (0.375%) of 12.",
+        "Actual CTCF positions remain on genomic fractions .23 and .77 while the deleted right boundary permits further reach."
+      ],
+      "limitations": [
+        "Small measured contour loss is chord discretization across the localized contact bends, not additional DNA synthesis/stretching; underlying analytic segment lengths sum to 12. Scene coordinates are not experimental scales."
+      ]
+    },
+    {
+      "issueId": "chromatin-04",
+      "status": "fixed",
+      "changes": "Applied the local-frame right-handed duplex to nuclear, plastid and mitochondrial DNA while preserving their existing compartments and mitochondrial branched annotation.",
+      "files": [
+        "src/processes/modules/chromatin/plantGenomeProcess.js",
+        "src/processes/modules/chromatin/geometry.js",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "Positive signed twist and transverse strand separation measured from all three rendered duplex buffers at every tested stage and both targeting controls."
+      ],
+      "limitations": [
+        "Genome/nucleoid shapes remain schematic and do not infer physical single-circle topology."
+      ]
+    },
+    {
+      "issueId": "chromatin-05",
+      "status": "fixed",
+      "changes": "Each RNA contour point now follows a corridor centered on its assigned NPC through both nuclear-envelope boundaries, followed by a lateral cytosolic route and engagement of the cytosolic ribosome channel. Enlarged the drawn pore lumen consistently with RNA tube and nucleotide motif size.",
+      "files": [
+        "src/processes/modules/chromatin/plantGenomeProcess.js",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "101 export times in each targeting branch: every actual RNA segment crossing either envelope boundary fits its assigned NPC lumen including .072 scene units of tube/base-motif clearance.",
+        "Tests require observed crossings for both transcripts and both conditions; no metadata substitutes for geometry."
+      ],
+      "limitations": [
+        "NPC transport factors and molecular-scale deformation remain omitted in this three-genome overview. Nuclear shell is an open-front cutaway; the checked envelope boundaries follow its paired ellipsoid dimensions."
+      ]
+    },
+    {
+      "issueId": "chromatin-06",
+      "status": "fixed",
+      "changes": "Local mRNA follows the actual ribosome groove; nascent peptide C termini meet the drawn exit rings during elongation and release only after p=.89. The shared ribosome helper now draws paired structural channel edges, not a duplicate RNA-like rail. Cytosolic precursor C termini also remain at their exit ports until the release interval. Bilingual local-expression stage explains attachment and termination.",
+      "files": [
+        "src/processes/modules/chromatin/plantGenomeProcess.js",
+        "src/processes/modules/chromatin/structure.js",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "Actual local RNA vertices remain within .018 scene units of the channel midline reconstructed from two drawn channel-edge meshes.",
+        "Actual nascent peptide terminal rings coincide with exit-ring centers before termination (<1e-6), then detach after release (> .4).",
+        "Both RNA and local peptide centerlines remain inside the corresponding stroma/matrix compartment across both controls and intermediate elongation/release states."
+      ],
+      "limitations": [
+        "Ribosomes and products remain structural schematics, not species-specific atomic coordinates. Release/folding timing is illustrative."
+      ]
+    },
+    {
+      "issueId": "chromatin-07",
+      "status": "fixed",
+      "changes": "Replaced one original target A-strand base instance with one cytosine ring pivoted at that same nucleotide sugar. Its backbone and sugar persist during flipping. Removed unattached duplicate base and seven backbone methyl markers. One methyl bond now begins at the hexagonal ring C5 vertex and is parented to that same cytosine. The flipped base meets the DRM2 recognition pocket before writing; bilingual text describes this geometry.",
+      "files": [
+        "src/processes/modules/chromatin/plantRdDMProcess.js",
+        "src/processes/modules/chromatin/structure.js",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "Original base instance 36 has zero rendered scale while exactly one target cytosine ring exists; its glycosidic pivot equals sugar instance 72 position.",
+        "Both backbone buffers remain unchanged; methyl-group parent is the original cytosine pivot; bond start meets the C5 ring vertex through flipping and return.",
+        "At p=.9 the actual flipped ring center meets the drawn DRM2 pocket. New methyl geometry is visible only after p>.89 with active DRM2; inactive branch remains unmarked."
+      ],
+      "limitations": [
+        "One representative cytosine event illustrates targeting; it is not a sequence-specific CG/CHG/CHH substrate reconstruction. Ring and bond geometry is schematic, not atom-fitted."
+      ]
+    },
+    {
+      "issueId": "chromatin-08",
+      "status": "fixed",
+      "changes": "Source and target DNA now share right-handed local-frame duplex construction. Target cytosine sugar/base attachment is derived from the corrected rendered-strand sampler.",
+      "files": [
+        "src/processes/modules/chromatin/plantRdDMProcess.js",
+        "src/processes/modules/chromatin/geometry.js",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "Actual source and target strand buffers give positive local twist and transverse separation in active/inactive branches.",
+        "Base-identity and C5-attachment regressions remain valid after the chirality correction."
+      ],
+      "limitations": [
+        "Source/target separation is retained as a pathway layout, not a spatial measurement."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "PASS node src/processes/modules/chromatin/science.test.mjs — 8 issue invariants; 13 root/control combinations; 161 stage/reverse-seek/condition-switch states; additional NPC and TAD intermediate sweeps.",
+    "PASS node_modules/.bin/esbuild src/processes/modules/chromatin/chromatinAccessProcess.js src/processes/modules/chromatin/tadProcess.js src/processes/modules/chromatin/plantGenomeProcess.js src/processes/modules/chromatin/plantRdDMProcess.js --bundle --format=esm --outdir=/tmp/chromatin-phase-b --log-level=warning",
+    "PASS node_modules/.bin/prettier --write (the seven changed owned JavaScript/test files only).",
+    "Unavailable: git diff --check — the local workspace was not a Git repository at review time. No Git validation claimed."
+  ],
+  "sourcesAdded": []
+}

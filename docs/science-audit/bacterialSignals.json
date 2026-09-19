@@ -1,0 +1,236 @@
+{
+  "group": "bacterialSignals",
+  "reviewer": "p_bacterial_core (independent reviewer; Phase A read-only)",
+  "models": [
+    {
+      "id": "chemotaxis",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "E. coli, polar membrane chemoreceptors/CheW/CheA, cytoplasmic CheY/CheZ, peritrichous rotary flagella. Increasing-attractant versus uniform environment.",
+      "checks": [
+        "Read every zh/en stage, intro, label, control, entries metadata and all point/update formulas; no extra root contexts exist.",
+        "Stages 0/.18/.38/.56/.75/.9: correct narrative sign of attractant→lower CheA→lower CheY-P→less CW switching; adaptation is explicitly omitted, not denied.",
+        "Evaluated both control choices at every stage plus .54/.625/.8/1. Uniform branch adds tumble intervals .26–.34 and .52–.60; gradient branch preserves only .75–.83.",
+        "Inspected /tmp/atlas-refinement/chemotaxis.png at p=.55; hooks connect to modeled filaments; all motor-to-trailing-filament formulas examined.",
+        "Fixed path is labeled illustrative. Neither quantitative stochasticity nor precise motor torque is promised. Numeric tail derivative calculation gave positive handedness triple product 2295515.918."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1855780/",
+          "title": "Darnton et al., On Torque and Tumbling in Swimming Escherichia coli",
+          "supports": "Opened full primary paper; Introduction and results show left-handed normal run filaments, CCW runs viewed from behind, and reversal-associated polymorphic tumble changes."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4129482/",
+          "title": "Single-Cell E. coli Response to an Instantaneously Applied Chemotactic Signal",
+          "supports": "Opened primary experiment describing individual chemotactic responses; no measured trajectory is claimed by this model."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "bacterialSignals-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+          "location": "point(), lines 303–321; update(), lines 328–356",
+          "evidence": "All filaments use sin(t*36+p*32+f), cos(t*36+p*32+f) regardless of tumble. Tumble only widens spread and rotates the cell. For the linear trailing section, x decreases while y=sin(theta), z=cos(theta), producing right-handed geometry even in run frames; userData nevertheless says CCW-bundle or one-or-more-CW.",
+          "whyWrong": "The rendered reversal never occurs, and ordinary E. coli run filaments have the wrong handedness. Changing spread cannot substitute for the depicted rotary switch.",
+          "fix": "Build a left-handed normal run filament and give selected motor(s) continuous phase with sign reversal during tumble. Depict a selected reversed filament leaving the bundle, with an appropriate schematic polymorphic change, then returning; define the viewing convention.",
+          "verification": "Signed torsion must be left-handed during normal runs. Compare successive positions around each local filament axis to show at least one signed angular velocity reversal during tumble and restoration afterward; preserve root-hook continuity and absolute seeking.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC1855780/"
+          ]
+        }
+      ],
+      "limitations": [
+        "The source paper notes rare reversals without chirality change; do not enforce a claim that every reversal must change chirality.",
+        "Molecular identities and pathway sign passed qualitative review; exact receptor fold, motor stoichiometry and kinetics remain schematic."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "twoComponent",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Anaerobic E. coli NarX–NarL branch: nitrate in periplasm, inner-membrane sensor, cytoplasmic ATP/His→Asp, narGHJI transcription; active FNR assumed.",
+      "checks": [
+        "Reviewed all six bilingual stages 0/.16/.34/.51/.7/.9, controls, labels, sources and shared bilayer/transcription helpers.",
+        "Both nitrate states evaluated at stage boundaries, intermediate transfer .54/.625, transcription .8 and endpoint 1. Nitrate-absent hides enhanced transfer/RNA without claiming all basal activity is absent.",
+        "Periplasm above y=.925, kinase and NarL below; two TM segments per NarX protomer and a shared nitrate pocket are consistent schematic scope.",
+        "ATP has three markers before .35 and two after; His/Asp order is correct in text, but spatial transfer and conservation fail as below.",
+        "RNA helper creates one wavy strand with its polymerase-proximal endpoint retained as length grows; DNA labels are antiparallel, but handedness is inverted.",
+        "Viewed existing p=.55 screenshot, where phosphate is visibly isolated between the proteins."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3749045/",
+          "title": "Cheung and Hendrickson, Structural Analysis of Ligand Stimulation of NarX",
+          "supports": "Opened full primary structural paper: periplasmic dimer nitrate site, two TM regions, ATP-dependent His phosphorylation, NarL Asp transfer, anaerobic narGHJI control."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC94037/",
+          "title": "Signal-Dependent Phosphorylation of Membrane-Bound NarX",
+          "supports": "Primary biochemical article opened successfully on first request; relevant scope is nitrate-regulated NarX phosphotransfer, not a soluble free-phosphate messenger."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/mesh/68059371",
+          "title": "NLM MeSH: DNA, B-Form",
+          "supports": "Opened official definition: ordinary B-DNA is right-handed."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1JE8",
+          "title": "NarL/DNA complex, PDB 1JE8",
+          "supports": "Opened primary structure record; NarL output domains contact DNA and can bend/deform its B/A geometry, not reverse the whole duplex handedness."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "bacterialSignals-02",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/bacterialSignals/twoComponentProcess.js",
+          "location": "update(), lines 229–251; phosphate, NarL and boundPhosphate objects",
+          "evidence": "During p=.46–.62, phosphate moves from (-2.12,-.4,.35) to (.4,-.6,.35), while NarL remains at (.4,-.6,.24) until p=.65. At p=.54, the marker is at (-.86,-.5,.35), far from either protein. No NarX–NarL encounter is shown. phosphate remains visible until .63 but boundPhosphate turns on at .62, producing two markers for one transferred group.",
+          "whyWrong": "Phosphotransfer is a direct protein encounter and group transfer. The scene instead communicates a diffusible phosphate courier and briefly duplicates the group.",
+          "fix": "Move NarL into contact with the NarX donor His before transfer; move the single phosphate marker only across contacting active sites; attach it to NarL after transfer and move the phosphorylated regulator toward DNA. Make visibility handoff mutually exclusive.",
+          "verification": "Throughout transfer, donor and acceptor sites must be within a declared contact tolerance. Account for one ATP terminal phosphate: exactly one associated transfer marker before/after handoff, including .619/.62/.625/.63.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC3749045/",
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC94037/"
+          ]
+        },
+        {
+          "issueId": "bacterialSignals-03",
+          "severity": "P1",
+          "kind": "fact_error",
+          "file": "src/processes/modules/bacterialSignals/structuralDetails.js",
+          "location": "transcriptionDetail.point(), lines 170–177; called by twoComponentProcess.js lines 203–208",
+          "evidence": "At zero opening, point=(x, y+r*sin(10*(x-x0)+phase), r*cos(10*(x-x0)+phase)); x increases while transverse angle decreases around +x. The signed scalar triple product of first/second/third derivatives is negative, hence the backbone helix is left-handed. Both strands have the same chirality. This persists away from the bubble at all progress values and in the inactive control.",
+          "whyWrong": "The ordinary regulatory duplex is mirrored relative to B-DNA, without any Z-DNA scope.",
+          "fix": "Change one transverse sign (or reverse the phase progression) consistently for both backbones, phosphates and bases, preserving antiparallel endpoint labels and bubble continuity. Do not change RNA into a duplex.",
+          "verification": "For unopened backbone spans, a finite-difference signed-torsion test must agree with a known right-handed reference helix. Verify both strands, both conditions, and frames before/during/after activation; RNA must remain single-stranded.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/mesh/68059371",
+            "https://www.rcsb.org/structure/1JE8"
+          ]
+        }
+      ],
+      "limitations": [
+        "NarL oligomerization, exact DNA-contact geometry, phosphatase reset and cross-regulation are not reconstructed at structural precision; this review does not approve atomistic fidelity.",
+        "Shared DNA handedness root cause is also reported for quorumSensing as bacterialSignals-04; fix the helper once."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "quorumSensing",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Aliivibrio/Vibrio fischeri LuxI–3-oxo-C6-HSL–LuxR–luxICDABEG branch, permissive other regulators/oxygen/substrates; same population under retention versus dilution.",
+      "checks": [
+        "Reviewed all six bilingual stages 0/.16/.34/.51/.7/.88 and both exchange states, including every AHL path, LuxR/bound ligand state, RNA helper, extra LuxI and glow.",
+        "LuxI is cytoplasmic, LuxR is not placed in a membrane; short-chain AHL can cross the cutaway boundary. Bound markers appear only in retained activation, followed by RNA and additional LuxI.",
+        "Both branches evaluated at every stage plus .54/.625/.8/1. Dilution preserves cell count and suppresses the illustrated enhanced transcription/light.",
+        "Text explicitly qualifies oxygen, substrates and other regulatory inputs, avoiding the false claim that AHL alone guarantees light; glow is not quantified.",
+        "Viewed existing p=.55 screenshot. RNA is a single undulating chain, not a DNA-like ladder; the actual DNA ladder has the shared chirality defect."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/14729687/",
+          "title": "Urbanowski et al., Reversible AHL Binding to Purified V. fischeri LuxR",
+          "supports": "Opened primary abstract and figure descriptions. 3OC6-HSL-dependent LuxR binding to lux box enables transcription; dilution can reverse activation."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10569067/",
+          "title": "Microbial Primer: LuxR-LuxI Quorum Sensing",
+          "supports": "Opened scholarly primer. LuxI produces signal; AHL diffusion, feedback and other permissive conditions constrain activation."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/mesh/68059371",
+          "title": "NLM MeSH: DNA, B-Form",
+          "supports": "Opened official B-DNA handedness definition."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "bacterialSignals-04",
+          "severity": "P1",
+          "kind": "fact_error",
+          "file": "src/processes/modules/bacterialSignals/structuralDetails.js",
+          "location": "transcriptionDetail.point(), lines 170–177; quorumSensingProcess.js transcriptionDetail call",
+          "evidence": "At zero opening, point=(x, y+r*sin(10*(x-x0)+phase), r*cos(10*(x-x0)+phase)); x increases while transverse angle decreases around +x. The signed scalar triple product of first/second/third derivatives is negative, hence the backbone helix is left-handed. Both strands have the same chirality. This persists away from the bubble at all progress values and in the inactive control. Same helper root cause as bacterialSignals-03.",
+          "whyWrong": "The lux regulatory DNA is an unsupported left-handed duplex.",
+          "fix": "Change one transverse sign (or reverse the phase progression) consistently for both backbones, phosphates and bases, preserving antiparallel endpoint labels and bubble continuity. Do not change RNA into a duplex.",
+          "verification": "For unopened backbone spans, a finite-difference signed-torsion test must agree with a known right-handed reference helix. Verify both strands, both conditions, and frames before/during/after activation; RNA must remain single-stranded.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/mesh/68059371"
+          ]
+        }
+      ],
+      "limitations": [
+        "Representative AHL counts and fixed paths are not a concentration/transport simulation. Positive feedback is illustrated with added LuxI rather than explicit translation or enzyme kinetics.",
+        "Exact LuxR DNA docking, lux box sequence, heterogeneous activation times and protein atomic folds remain abstractions; no additional universal-switch claim was found."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "biofilm",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Nonmucoid P. aeruginosa PAO1 surface-associated aggregates, Psl/eDNA/protein matrix, optional low-level NO-associated local dispersal.",
+      "checks": [
+        "Reviewed all six bilingual stages 0/.17/.34/.51/.7/.88, NO/none conditions and all cell/fiber/degradation/inset formulas.",
+        "Observed supplied p=.55 screenshot: matrix is an open fiber network, not a enclosing membrane. Species and non-universal morphology are explicit.",
+        "Evaluated both branches at all stages plus .54/.625/.8/1. Only cell indices 12/15/18/20 leave under NO; 20 of 24 representative cells remain. None branch retains cells/matrix.",
+        "Traced nearest-neighbor fiber graph: all edges incident to the four leavers are in the degradable set (12→9,15→12,18→15,20→15), so static strands do not remain falsely tethered to escaping cells.",
+        "NO arrives before local release; conceptual intracellular c-di-GMP inset shrinks. No cell killing animation occurs, consistent with the low-level cue scope; this does not prove all natural biofilm cells survive.",
+        "eDNA is distinct from polysaccharide and protein but its strand formula has reversed chirality."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/19325879/",
+          "title": "Ma et al., Assembly and development of the P. aeruginosa biofilm matrix",
+          "supports": "Opened primary abstract/figures: Psl scaffolding and spatially heterogeneous matrix, eDNA and mobile versus retained populations."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/19801410/",
+          "title": "Barraud et al., NO signaling, phosphodiesterase activity and dispersal",
+          "supports": "Opened primary abstract/figures: low non-toxic NO promotes PDE activity, lower c-di-GMP and dispersal."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/mesh/68059371",
+          "title": "NLM MeSH: DNA, B-Form",
+          "supports": "Opened official right-handed B-DNA definition."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "bacterialSignals-05",
+          "severity": "P1",
+          "kind": "fact_error",
+          "file": "src/processes/modules/bacterialSignals/biofilmProcess.js",
+          "location": "eDNA strand construction, lines 280–304",
+          "evidence": "For each eDNA fiber, x increases with j, while y=y0+.045*sin(.7*j+phase) and z=.68+.045*cos(.7*j+phase). This produces left-handed double helices in all six eDNA objects whenever visible, in both conditions.",
+          "whyWrong": "Ordinary chromosomal eDNA is depicted with the opposite handedness without a special DNA-form scope.",
+          "fix": "Reverse one transverse sign or angular progression for both eDNA strands, preserving base-pair links and the external matrix compartment.",
+          "verification": "Evaluate signed torsion of every visible eDNA backbone against a right-handed reference at mature and dispersal frames in both conditions; strand links must remain paired and extracellular.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/mesh/68059371"
+          ]
+        }
+      ],
+      "limitations": [
+        "Metabolic/oxygen gradients, dormancy, cell lysis and eDNA production are omitted. The explicit representative-cell and selected-route language avoids claiming uniform biology.",
+        "Matrix molecular repeats are schematic motifs, not exact Psl chemistry. Low-level NO response is a selected case, not a guarantee for every biofilm."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

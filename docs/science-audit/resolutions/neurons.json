@@ -1,0 +1,88 @@
+{
+  "group": "neurons",
+  "issues": [
+    {
+      "issueId": "neurons-01",
+      "status": "fixed",
+      "changes": "Introduced a dedicated AMPA constructor, separate from voltage-gated pores: four subunits with M1/M3/M4 complete spans, cytoplasmic M2 re-entrant loops, connecting segments, extracellular ligand clefts and one central gate. The bilingual introduction explicitly identifies an enlarged topology schematic, not atomic coordinates.",
+      "files": [
+        "src/processes/modules/neurons/structural.js",
+        "src/processes/modules/neurons/synapseProcess.js",
+        "src/processes/modules/neurons/science.test.mjs"
+      ],
+      "verification": [
+        "Actual subunit mesh inspection finds exactly three membrane spans per subunit, four subunits per receptor and two receptors. Each span crosses both membrane faces; M2 endpoint rings are cytoplasmic and M2 does not cross the extracellular face. Binding lobe bounds are extracellular.",
+        "Existing voltage-gated pore implementation and actionPotentialProcess.js were retained; action potential both controls pass the general resource/finite/seek tests."
+      ],
+      "limitations": [
+        "This is a connected topology schematic, not an experimentally fitted atomic model. Extracellular domain arrangement, subtype composition and auxiliary subunits remain abbreviated."
+      ]
+    },
+    {
+      "issueId": "neurons-02",
+      "status": "fixed",
+      "changes": "First four glutamate markers target actual extracellular cleft anchors. Each AMPA gate is allowed to open only when its two designated ligands are within 0.035 scene units; they arrive by p=0.556 before p=0.56 opening. Sodium follows the central ion-pore axis and is visible only while the gate is open. Clearance removes occupancy and closes the gate.",
+      "files": [
+        "src/processes/modules/neurons/synapseProcess.js",
+        "src/processes/modules/neurons/science.test.mjs"
+      ],
+      "verification": [
+        "402 branch/time samples inspect actual gate visibility and actual world-space ligand/cleft distances. Every open receptor has both modeled ligands in contact; every visible postsynaptic sodium marker requires an open receptor.",
+        "The previously failing p=0.56 explicitly passes. Blocked presynaptic calcium has no open AMPA gates or visible postsynaptic sodium throughout."
+      ],
+      "limitations": [
+        "Two represented occupancies are a teaching convention, not a fitted AMPA occupancy/conductance model. Dimensions, ligand diffusion and ion sizes are schematic."
+      ]
+    },
+    {
+      "issueId": "neurons-03",
+      "status": "fixed",
+      "changes": "Separate visible ATP, ADP and Pi state markers and bilingual dynamic state text replace the single ambiguous gold marker. Active sequence is ADP+Pi, ADP, nucleotide-free, ATP-bound detached, then ADP+Pi primed; ATP binding/detachment begins at 0.65 and hydrolysis/repriming at 0.72. The ATP stage boundary was aligned to 0.65. Low calcium retains primed ADP+Pi without release, reloading or head motion.",
+      "files": [
+        "src/processes/modules/neurons/muscleProcess.js",
+        "src/processes/modules/neurons/science.test.mjs"
+      ],
+      "verification": [
+        "Actual ATP/ADP/Pi mesh visibility and head reach are checked at 0.35, 0.50, 0.60, 0.68 and 0.76.",
+        "Low-calcium full rendered-state fingerprints are identical at eleven samples including all active-branch chemical transitions."
+      ],
+      "limitations": [
+        "One synchronized illustrative cycle is retained. Markers indicate chemical state rather than atomistic geometry or molecular abundance; basal ATP turnover is omitted."
+      ]
+    },
+    {
+      "issueId": "neurons-04",
+      "status": "fixed",
+      "changes": "Replaced shared centerline-row deformation with independently arc-length-parameterized tracks for each A/B microtubule and central singlet. Fixed basal material points and near-constant material length/repeat spacing coexist with curvature-dependent axial registration. Dynein contacts the neighboring B-tubule at a separately tracked material coordinate, with a basal-directed stroke followed by detached reset. The cutaway membrane encloses staggered distal material endpoints.",
+      "files": [
+        "src/processes/modules/neurons/axonemeKinematics.js",
+        "src/processes/modules/neurons/ciliaryMotionProcess.js",
+        "src/processes/modules/neurons/science.test.mjs"
+      ],
+      "verification": [
+        "202 branch/time samples recover 20 actual material centerlines from paired outer/inner position buffers, including incomplete B-tubule sections. Maximum length deviation is 0.000442 from 4.4 (about 0.0101%); each material repeat segment remains within 0.0003 of 0.1 scene units.",
+        "Every basal material point remains fixed within 1e-6. A measured longitudinal register difference reaches 0.7428 scene units, establishing material sliding rather than a constant-length central-axis metadata claim.",
+        "ATP absent has zero axial register shift and identical arrested rendered-state fingerprints across time."
+      ],
+      "limitations": [
+        "Beat shape is prescribed; force balance, nexin elasticity, hydrodynamics, motor kinetics and physical beat frequency are not solved. Finite polygon resampling has the small documented length tolerance. Individual material endpoints stagger in the schematic bend."
+      ]
+    }
+  ],
+  "unchangedModels": [
+    "actionPotential: qualified pass; no model or existing voltage-gated helper behavior changes"
+  ],
+  "commands": [
+    "node src/processes/modules/neurons/science.test.mjs — PASS: all four issue regressions, both conditions of all four models, finite attributes, stable resource identities and deterministic seeks",
+    "prettier --write/check (six owned JS/MJS files plus resolution JSON/MD) — PASS",
+    "esbuild four neurons process entrypoints --bundle --platform=browser --format=esm --outdir=/tmp/cell-atlas-neurons-phase-b — PASS"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.nature.com/articles/s41467-026-71063-1",
+      "title": "Auxiliary subunits reshape structural asymmetry and functional plasticity in heterotetrameric GluA1/A2 AMPA receptor core",
+      "note": "Added to synapse product source list; full primary paper was opened for immutable Phase A evidence. During Phase B the PDF URL returned the 15-page article, while follow-up HTML/PDF delivery intermittently returned publisher redirects."
+    }
+  ],
+  "acceptanceBoundary": "Local scientific regressions and compilation passed. Root still performs rendered visual acceptance; no browser session or global suite was used."
+}

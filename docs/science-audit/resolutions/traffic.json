@@ -1,0 +1,98 @@
+{
+  "group": "traffic",
+  "issues": [
+    {
+      "issueId": "traffic-01",
+      "status": "fixed",
+      "changes": "Three LDL receptor anchors retain separate positions as the carrier joins the endosome; each anchor moves along the fused membrane profile and retains a luminal ectodomain. Cargo positions interpolate from their own pre-fusion positions.",
+      "files": [
+        "src/processes/modules/traffic/endocytosisProcess.js",
+        "src/processes/modules/traffic/science.test.mjs"
+      ],
+      "verification": [
+        "Sampled .67–1 in .005 increments: all receptor pair distances exceed .11 and every anchor lies on the actual fused radial profile. Regression detects the original identical-transform collapse."
+      ],
+      "limitations": [
+        "Molecular diffusion and endosome shape are teaching trajectories; no measured receptor kinetics are claimed."
+      ]
+    },
+    {
+      "issueId": "traffic-02",
+      "status": "fixed",
+      "changes": "Inner membrane opens geometrically and retreats from .71 to .80, independently of cargo. Proteases wait until barrier removal, approach during .80–.90, and cargo hydrolysis begins after .90. Updated bilingual stages and label visibility distinguish these events. Peer review found whole hydrolase meshes could leave the rounding envelope; envelope rounding now follows enzyme departure, and enzyme centers converge toward the neck axis during passage then disperse around cargo.",
+      "files": [
+        "src/processes/modules/traffic/autophagyProcess.js",
+        "src/processes/modules/traffic/science.test.mjs"
+      ],
+      "verification": [
+        "Read actual paired leaflet boundary vertices: closed at .70, a real polar opening at .715/.74/.78/.799, and inner membrane absent from .80.",
+        "Cargo scale and fragment visibility remain unchanged until enzyme access; enzyme positions are fixed while the barrier remains; cargo shrinks and fragments appear at .95.",
+        "Dense .65–1 sampling at .01 intervals tests every hydrolase mesh vertex against the actual paired-leaflet outer-envelope ring profile, with .025 scene-unit inward clearance; all pass."
+      ],
+      "limitations": [
+        "The retreating opening illustrates barrier removal; it is not a measured lipid-hydrolysis pattern. Lipase chemistry and metabolite export remain omitted."
+      ]
+    },
+    {
+      "issueId": "traffic-03",
+      "status": "fixed",
+      "changes": "All 39 ER ribosomes place the large subunit on the membrane-facing side and the small subunit toward cytosol. A contact marker extends from the large subunit toward the ER.",
+      "files": [
+        "src/processes/secretionProcess.js",
+        "src/processes/modules/traffic/science.test.mjs"
+      ],
+      "verification": [
+        "Checks every actual large/small subunit pair; the small-subunit center must be farther from the ER surface in the local membrane normal direction."
+      ],
+      "limitations": [
+        "Ribosomes and contact sites remain structural schematics; the scene begins with folded luminal cargo and does not animate cotranslational translocation."
+      ]
+    },
+    {
+      "issueId": "traffic-04",
+      "status": "fixed",
+      "changes": "Replaced independent cylindrical necks with continuous donor-to-carrier surfaces. Endpoint rings follow the actual flattened cisterna and spherical carrier polygon edges. A common 288-segment boundary retains both 96-segment donor and 36-segment carrier edges, avoiding gaps between ideal analytic curves and rendered polygons.",
+      "files": [
+        "src/processes/secretionProcess.js",
+        "src/processes/secretoryDetails.js",
+        "src/processes/modules/traffic/science.test.mjs"
+      ],
+      "verification": [
+        "At ER .125/.15/.195, incoming Golgi .345/.375/.395/.415, and outgoing Golgi .675/.71/.765, every neck donor point outside the declared front cut matches the cisterna polygon edge; every carrier endpoint matches the actual sphere polygon edge within 2e-6.",
+        "Tests operate on transformed BufferGeometry vertices and interpolated rendered edges, not metadata or ideal-radius equality."
+      ],
+      "limitations": [
+        "The front cisterna viewing cut remains intentional and declared. The connected envelope is schematic; fusion proteins, leaflet mixing kinetics, and exact membrane area mechanics remain omitted."
+      ]
+    },
+    {
+      "issueId": "traffic-05",
+      "status": "fixed",
+      "changes": "The same carrier lipid instances persist through docking, pore opening, omega-profile flattening, and incorporation into a marked plasma-membrane patch. The closure material retains the carrier-derived color after fusion. Independent peer review identified intermediate lipid/shell separation; the shell now uses the same omega-to-disk profile, and lipid midplanes use barycentric positions on its actual rendered triangles.",
+      "files": [
+        "src/processes/secretionProcess.js",
+        "src/processes/secretoryDetails.js",
+        "src/processes/modules/traffic/science.test.mjs"
+      ],
+      "verification": [
+        "At .85/.90/.95/.98/1, the carrier lipid group remains visible with unchanged object identities and instance counts. At completion every retained lipid lies at the plasma membrane x=2.98 within .02.",
+        "At .90/.95/.965/.975/.98/.987/.991, every paired lipid-head midpoint is within 2e-6 of the closest actual fusion-shell triangle (THREE.Triangle.closestPointToPoint), including the peer-reported .975/.98 failure interval."
+      ],
+      "limitations": [
+        "Persistent lipid identity makes transfer traceable; membrane remodeling is an illustrative morph and does not assert exact surface-area or molecular-scale conservation."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/traffic/science.test.mjs",
+      "result": "PASS: three models finite, deterministic, stable resources and esbuild; all five scientific regressions pass."
+    },
+    {
+      "command": "npx prettier --write src/processes/modules/traffic/endocytosisProcess.js src/processes/modules/traffic/autophagyProcess.js src/processes/modules/traffic/science.test.mjs src/processes/secretionProcess.js src/processes/secretoryDetails.js",
+      "result": "PASS: formatted owned files only."
+    }
+  ],
+  "sourcesAdded": []
+}

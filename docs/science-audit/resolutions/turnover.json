@@ -1,0 +1,171 @@
+{
+  "group": "turnover",
+  "issues": [
+    {
+      "issueId": "turnover-01",
+      "status": "fixed",
+      "changes": [
+        "Rebuilt guide and target from a common antiparallel nucleotide register. Target indices 3-24 map to the 22 guide positions; guide numbering runs right to left.",
+        "Seed mode retains g2-g8 and g13-g16 contacts with an explicitly displaced central target loop. The slicing example pairs g2-g16, leaving the anchored first nucleotide and distal guide tail unpaired.",
+        "The scissile bond is derived from the target partner of guide nucleotide 11 and its neighbor opposite guide 10. Backbone cylinders, base glyphs, phosphates and pairing endpoints share the same coordinates."
+      ],
+      "files": [
+        "src/processes/modules/turnover/rnaSilencingProcess.js",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "101 frames in each of seed, slice and mismatch; every visible pairing cylinder joins the actual corresponding guide and target base endpoints.",
+        "The slicing precursor has 15 g2-g16 contacts; the g10/g11 target bond is connected before cleavage and absent afterward."
+      ],
+      "limitations": [
+        "The molecular layout is a magnified reaction schematic, not a fitted AGO2 atomic conformation or a model of sequence-dependent slicing kinetics."
+      ]
+    },
+    {
+      "issueId": "turnover-02",
+      "status": "fixed",
+      "changes": [
+        "Pair endpoints are computed from current target geometry and guide position. Pairing requires a present target base and complete docking, and disappears as sliced fragments disengage or target bases decay."
+      ],
+      "files": [
+        "src/processes/modules/turnover/rnaSilencingProcess.js",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "Actual endpoint checks across 101 frames and all conditions.",
+        "Slice at p=.7, .9 and 1 has no ghost pair bars; mismatch never forms stable pairs."
+      ],
+      "limitations": [
+        "The fragment-release schedule is illustrative rather than an experimentally fitted rate."
+      ]
+    },
+    {
+      "issueId": "turnover-03",
+      "status": "fixed",
+      "changes": [
+        "Removed global interpolation from folded substrate to a remote straight rod. An accessible initiation segment docks in the ATPase pore before a continuous chain is pulled along the illustrated unfolding path.",
+        "Moved the selected ubiquitin attachment to a chain residue that reaches the Rpn11 site before release. The attached linkage remains covalent through p=.48, when its midpoint is within .05 scene units of Rpn11; release begins afterward.",
+        "Pore-loop tubes reach the chain, and the alpha gate opens during engagement. The untagged comparator remains intact."
+      ],
+      "files": [
+        "src/processes/modules/turnover/proteasomeProcess.js",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "101 frames for each condition and all cell/plant/yeast roots. Whenever folded substrate remains during pulling, an actual covalent chain segment crosses the motor pore and contacts a rendered pore-loop tube.",
+        "At p=.48 the actual linkage cylinder joins the tagged residue to ubiquitin at Rpn11; at p=.481 it is severed."
+      ],
+      "limitations": [
+        "Residue beads sample a teaching chain rather than a specific protein sequence. Pore-loop contact and ordered pulling do not simulate nucleotide-state mechanics or atomic unfolding."
+      ]
+    },
+    {
+      "issueId": "turnover-04",
+      "status": "fixed",
+      "changes": [
+        "Added a solid annular protein volume for each of the four sevenfold core rings. Adjacent sectors and layers meet; only the designated front observation sectors remain cut away. Existing surface detail remains attached to individual subunits, with no added membrane shell.",
+        "Routed short peptides along the central lumen until their complete geometry clears the distal axial opening, then allowed lateral diffusion."
+      ],
+      "files": [
+        "src/processes/modules/turnover/proteasomeProcess.js",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "Raycaster intersections use the actual triangulated core-volume surfaces at many heights and angles, including former interlayer gaps; the non-cutaway lumen is consistently bounded near radius .5.",
+        "Every transformed vertex of every visible product peptide remains inside radius .5 while within the core's axial extent, across 101 frames and all roots."
+      ],
+      "limitations": [
+        "Core volumes are closely packed subunit envelopes, not experimentally resolved molecular surfaces. The selected distal exit is illustrative and does not assert that every physiological product uses the same end."
+      ]
+    },
+    {
+      "issueId": "turnover-05",
+      "status": "fixed",
+      "changes": [
+        "Guide, target, displaced strand and PAM now share one .155-pitch nucleotide map with exactly 20 protospacer positions. Break indices are derived from the adjacent PAM boundary.",
+        "DNA pairing disappears only when that nucleotide locally opens; RNA-DNA contacts appear only after its local hybrid is formed. Pair cylinders terminate at the actual rendered base endpoints, including after small product separation.",
+        "Resolved the former dual-RNA evidence limitation using the successfully opened Jinek 2012 primary full text. Added a continuous crRNA repeat and separate antiparallel tracrRNA anti-repeat stem with explicit contacts; bilingual copy identifies its topology as schematic.",
+        "Peer follow-up bubble-extension-02: replaced Cartesian interpolation of the two DNA rails with a common positive-radius cross section. Integrated residual twist keeps adjacent angular steps within 0..0.44 radians; the opened PAM-side frame and free flanks rotate continuously, preserving strand identities and all prior guide/base mappings."
+      ],
+      "files": [
+        "src/processes/modules/turnover/crisprProcess.js",
+        "src/processes/modules/turnover/science.test.mjs",
+        "src/processes/modules/turnover/bubble.test.mjs"
+      ],
+      "verification": [
+        "101 frames for matched, noPam and multiple-seed-mismatch conditions; actual instanced-base endpoints match every visible RNA-DNA pair.",
+        "Full matched state has 20 contacts, no base has two pairing partners, and PAM-distal DNA remains duplex until reached by the opening front. No-PAM DNA stays paired.",
+        "Both displayed breaks lie three protospacer nucleotides upstream of the PAM in this selected blunt-cut example.",
+        "The integrated science command now scans all 1001 p=0,.001,...,1 frames in matched, mismatch and noPam. Actual rendered cylinder centerlines use independent closest-point parameters for every nearby i,j; nonadjacent self segments and phosphate/sugar envelopes are included. Minimum cross-strand tube distance .507467 versus radius sum .096; no overlap candidates."
+      ],
+      "limitations": [
+        "The native dual-RNA stem now has explicit topology; exact stem lengths, bulges and atomic Cas9/scaffold contacts remain coarse. The chosen blunt-cut example is not a claim that RuvC always cuts at one position."
+      ]
+    },
+    {
+      "issueId": "turnover-06",
+      "status": "fixed",
+      "changes": [
+        "Replaced the static lower-locus DNA tubes with continuous movable backbone segments and updated nucleotide instances. A local opening window moves with RNAP and DNA reanneals behind it.",
+        "Built a continuous nascent RNA with its growing 3-prime endpoint at RNAP; recent RNA nucleotides pair with exposed template bases in the bubble. Pairing rods join actual RNA and template base endpoints.",
+        "Noncleavable LexA leaves the complete DNA duplex intact and produces no nascent RNA.",
+        "Peer follow-up bubble-extension-03: the moving SOS bubble now unwinds a common positive-radius DNA frame, integrating the remaining local helical twist and rotating the active frame to the RNAP orientation. No opposed position vectors are blended. Template/RNA hybrid coordinates and 3-prime active endpoint remain coupled to this frame."
+      ],
+      "files": [
+        "src/processes/modules/turnover/bacterialRepairProcess.js",
+        "src/processes/modules/turnover/science.test.mjs",
+        "src/processes/modules/turnover/bubble.test.mjs"
+      ],
+      "verification": [
+        "101 frames in wildtype and noncleavable conditions. Whenever transcript segments grow, the actual DNA rails are separated at RNAP and local DNA pairing is absent.",
+        "Adjacent RNA cylinder endpoints coincide and the 3-prime endpoint remains at the moving active center. Every hybrid cylinder joins the rendered RNA base and its mapped template base.",
+        "The original promoter region is reannealed at the final wildtype frame; mutant DNA remains paired at every frame with zero transcript segments.",
+        "All 1001 frames in wildtype and noncleavable pass cross-index, independent-parameter tube separation and nonadjacent self/nucleotide-envelope tests. Minimum cross-strand tube distance .311205 versus radius sum .100. Previous p=.760 same-index and p=.896 different-index collisions are included in the scan."
+      ],
+      "limitations": [
+        "RNAP clamps and RecA/LexA shapes remain schematic; the model does not claim atomic fitting, exact bubble nucleotide count, transcription kinetics or a completed DNA repair outcome."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/turnover/science.test.mjs: PASS, all six scientific regressions",
+    "node src/processes/modules/turnover/smoke.mjs: PASS, four bundles, all roots and controls, finite vertices/transforms/instance matrices, deterministic seeks and stable geometry/material/node inventory",
+    "npx prettier --write [four owned process files] src/processes/modules/turnover/science.test.mjs: PASS",
+    "node src/processes/modules/turnover/bubble.test.mjs: PASS, 5005 sampled states, independent closest parameters, both DNA strand identities, nonadjacent self segments and phosphate/sugar bounding envelopes; imported by science.test.mjs"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6600645/",
+      "supports": "Opened primary full text again: seed/supplementary register, target bridge and g2-g16 complementarity used for slicing-oriented target design."
+    },
+    {
+      "url": "https://www.lander-lab.com/pdfs/30309908.pdf",
+      "supports": "Opened primary author-hosted PDF again: pore-loop mechanical engagement, translocation and delivery of the ubiquitin linkage to Rpn11."
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6286148/",
+      "supports": "Full text now successfully opened: natural crRNA-repeat/tracrRNA pairing and selected PAM-relative cleavage products; resolves the Phase A access limitation."
+    },
+    {
+      "url": "https://www.rcsb.org/structure/6ALF",
+      "supports": "Opened primary RNAP elongation structural entry again; the active elongation scaffold includes template, displaced DNA and nascent RNA."
+    }
+  ],
+  "peerExtensions": [
+    {
+      "issueId": "bubble-extension-02",
+      "model": "crispr",
+      "status": "fixed",
+      "record": "docs/science-audit/acceptance/peer-bubble-extensions.md",
+      "acceptance": "Independent peer recheck requested; implementation and local regression complete."
+    },
+    {
+      "issueId": "bubble-extension-03",
+      "model": "bacterialRepair",
+      "status": "fixed",
+      "record": "docs/science-audit/acceptance/peer-bubble-extensions.md",
+      "acceptance": "Independent peer recheck requested; implementation and local regression complete."
+    }
+  ]
+}

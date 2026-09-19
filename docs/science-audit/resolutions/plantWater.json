@@ -1,0 +1,53 @@
+{
+  "group": "plantWater",
+  "issues": [
+    {
+      "issueId": "plantWater-01",
+      "status": "fixed",
+      "changes": "Replaced translate-then-rotate corner movement with an orientation-aware rounded cortical route. A 0.46-radius turn rotates the complete disk with the tangent while keeping clearance from both cell walls. Both genotype branches share the corrected accumulation route; only wild type reverses it for avoidance. Starting order places inward-destined plastids nearer the corner, avoiding the former common-corner collapse. Geometry size/detail and all 16 plastids are retained. Named the existing cell membrane boundary for geometric verification.",
+      "files": [
+        "src/processes/modules/plantWater/chloroplastMovementProcess.js",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "node src/processes/modules/plantWater/science.test.mjs — PASS: 404 timeline/boundary inputs × 2 genotypes × 16 complete plastids, including .235 and .725 audited frames. Actual shell/rim/connectors and every grana instance are included.",
+        "All transformed geometry vertices remain inside the actual membrane box; smallest cell clearance 0.0678 model units. In normalized vacuole coordinates, the enclosing box of every complete plastid stays outside the unit sphere, with minimum conservative distance 1.0455. Because the box encloses the triangles and volume, this does not use nearest-vertex distance as a surface-distance proxy.",
+        "Geometry/instance buffer hashes are invariant on every sampled frame, validating the cached local geometry. Node/geometry/material identities are checked throughout. Repeated .725 → .235 → .725 seeks are identical, and both low-light/high-light endpoint orientations are checked.",
+        "Negative controls reapply both original bad transforms to the real geometry and must produce wall penetrations greater than 0.1; both are detected.",
+        "Existing plantWater smoke.mjs — all four models and their branches PASS; chloroplastMovement isolated esbuild — PASS."
+      ],
+      "limitations": [
+        "The route remains an illustrative cortical trajectory, not experimentally measured kinetics or a cp-actin simulation.",
+        "Dense full-timeline sampling and conservative separation checks validate this geometry; they are not proof of every biological claim. Root visual review remains pending."
+      ]
+    },
+    {
+      "issueId": "plantWater-02",
+      "status": "fixed",
+      "changes": "Corrected the existing Nature DOI 10.1038/35073622 citation author prefix from Kagawa et al. to Jarillo et al.; retained the correct title and article URL.",
+      "files": [
+        "src/processes/modules/plantWater/chloroplastMovementProcess.js",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "science.test.mjs checks the publisher-verified Jarillo/title/URL combination and fails if the incorrect Kagawa attribution returns.",
+        "Phase A publisher archive evidence remains unchanged in docs/science-audit/plantWater.json/.md."
+      ],
+      "limitations": [
+        "No new scientific source or mechanism was introduced."
+      ]
+    }
+  ],
+  "unchangedModels": [
+    "plasmolysis",
+    "stomata",
+    "plantLongDistanceTransport"
+  ],
+  "commands": [
+    "npx prettier --write src/processes/modules/plantWater/chloroplastMovementProcess.js src/processes/modules/plantWater/science.test.mjs",
+    "node src/processes/modules/plantWater/science.test.mjs",
+    "node src/processes/modules/plantWater/smoke.mjs",
+    "Isolated esbuild of src/processes/modules/plantWater/chloroplastMovementProcess.js, bundle=true, format=esm, write=false, external=[three]"
+  ],
+  "sourcesAdded": []
+}

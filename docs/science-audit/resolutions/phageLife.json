@@ -1,0 +1,64 @@
+{
+  "group": "phageLife",
+  "issues": [
+    {
+      "issueId": "phageLife-01",
+      "status": "fixed",
+      "changes": "Replace origin-scaled incoming DNA and independent shrinking packaged genome with one fixed-length duplex interval on a continuous head-coil → tail-lumen → envelope-channel → cytoplasmic-fold path. Attach visitor at fixed y=2.04 so actual tail outlet y=1.432 reaches the host envelope. Advance both backbone draw ranges and base-pair instances by shared centerline arclength. Keep the transferred molecule as the intracellular template until packaging rather than spawning a second template during entry. Add an explicitly schematic hollow delivery channel; keep the dedicated infection model unchanged. Peer acceptance additionally found three residual solid barriers in the shared T4 particle: capsid floor, axial tube and baseplate. geometry.js now clips lower capsid faces into an actual open neck, uses annular open-neck and tail tubes, and extrudes a hexagonal baseplate around a circular aperture. The DNA coil straightens before the neck inlet.",
+      "files": [
+        "src/processes/modules/phageLife/entryGeometry.js",
+        "src/processes/modules/phageLife/phageLyticProcess.js",
+        "src/processes/modules/phageLife/science.test.mjs",
+        "src/processes/modules/phageLife/geometry.js"
+      ],
+      "verification": [
+        "node src/processes/modules/phageLife/science.test.mjs — PASS. Samples 0/.01/.03/.05/.10/.15/.17 inspect indexed TubeGeometry draw ranges and transformed ring centers, both backbones, and actual visitor outlet.",
+        "Visible duplex rails stay separated by 0.03 within 2e-5; adjacent centerline samples remain <0.012 apart; drawn length varies <0.025 scene units. Transfer interval advances monotonically and initial leading end moves inward. Outlet-to-drawn-centerline distance <0.009 during initial passage. Entire molecule lies inside inner-envelope ellipsoid at .17.",
+        "Generic head genome stays effectively hidden so the continuous molecule is not duplicated. All-stage finite vertex checks, deterministic reverse seeks (including complete instance buffers) and stable scene/geometry/material inventory pass.",
+        "In-memory esbuild mutation restoring incoming.group.scale.y = entry is rejected by science.test.mjs with the DNA-scaling invariant. No source file was mutated on disk.",
+        "node src/processes/modules/phageLife/refinement-smoke.mjs — PASS all five owned/audited processes, including unchanged legacy infection.",
+        "Additional science.test.mjs regression: at 0/.03/.05/.10/.15 both drawn backbone centerlines are checked segment-by-segment against actual world-space capsid/neck/tube/baseplate triangles with backface culling disabled; no intersection. Full rail thickness also fits the polygonal tail lumen. Five-model refinement smoke passes after shared-helper changes.",
+        "Independent p_chromatin peer acceptance rerun: all potentially displayed entry segments, both rails ring 0..845, 462 effective solid mesh/instance records including capsomers/sheath/channel; 510224 actual segment–triangle distance checks. Zero centerline-to-surface distances below DNA rail radius .008; minimum distance .009746991 at open tail tube, net radial clearance .001746991. Peer report owns this independent evidence."
+      ],
+      "limitations": [
+        "This remains an entry overview; the hollow envelope channel is a topology schematic, not an assigned gp27/gp29 atomic complex. Capsid, genome length and timing remain illustrative.",
+        "Discretized draw ranges preserve length within stated scene-unit tolerance, not exact base-pair counts. Coil conformation and translocation forces are not simulated.",
+        "No browser/render acceptance performed; root visual inspection remains pending.",
+        "Open T4 capsid-neck and baseplate apertures are schematic mesoscopic geometry, not a fitted protein structure; only the delivery route is checked by the new collision regression."
+      ]
+    },
+    {
+      "issueId": "phageLife-02",
+      "status": "fixed",
+      "changes": "Gate terminal left-chromosome disappearance on the induce branch. Add stable semantic scene names for direct geometry/ancestor visibility regression of chromosome, inserted prophage, hosts, CI, excised DNA and progeny.",
+      "files": [
+        "src/processes/modules/phageLife/phageLysogenicProcess.js",
+        "src/processes/modules/phageLife/science.test.mjs"
+      ],
+      "verification": [
+        "node src/processes/modules/phageLife/science.test.mjs — PASS both fate options at .65/.8/.96/.975/1. Maintain retains both actual chromosome geometries, integrated inserts, CI and intact envelope headgroups in their own daughters, with excision and progeny effectively hidden.",
+        "Induce permits only the left chromosome to disappear after .97; right chromosome, integrated prophage and CI persist. Tests use ancestor-chain effective visibility and transforms, not userData.",
+        "In-memory esbuild mutation restoring unconditional p < .97 visibility is rejected with the chromosome-loss invariant; no source file was mutated on disk.",
+        "Both branches and every declared stage pass finite geometry, deterministic seek and stable resource checks; five-process refinement smoke passes."
+      ],
+      "limitations": [
+        "Original lambda overview simplifications remain as documented in Phase A; no new molecular reaction claims.",
+        "No browser/render acceptance performed; root visual inspection remains pending."
+      ]
+    }
+  ],
+  "unchangedModels": ["phageAssembly", "phagePackaging", "infection"],
+  "commands": [
+    "node src/processes/modules/phageLife/science.test.mjs",
+    "node src/processes/modules/phageLife/refinement-smoke.mjs",
+    "node --input-type=module (in-memory esbuild source mutations; child Node runs reject restored DNA scaling and unconditional left-chromosome disappearance)",
+    "npx prettier --check src/processes/modules/phageLife/entryGeometry.js src/processes/modules/phageLife/geometry.js src/processes/modules/phageLife/phageLyticProcess.js src/processes/modules/phageLife/phageLysogenicProcess.js src/processes/modules/phageLife/science.test.mjs docs/science-audit/resolutions/phageLife.json docs/science-audit/resolutions/phageLife.md"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/26283379/",
+      "title": "Hu et al. (2015), Structural remodeling of bacteriophage T4 and host membranes during infection initiation",
+      "usage": "Already checked in immutable Phase A; added to phageLytic displayed source list for connected tail/envelope delivery. No newly inferred molecular channel identity."
+    }
+  ]
+}

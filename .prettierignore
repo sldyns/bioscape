@@ -1,0 +1,5 @@
+node_modules/
+dist/
+coverage/
+# Deposited coordinates remain compact and reproducible.
+src/scene/data/

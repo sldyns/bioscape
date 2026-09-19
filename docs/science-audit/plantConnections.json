@@ -1,0 +1,198 @@
+{
+  "group": "plantConnections",
+  "reviewer": "p_plant_growth (independent reviewer; read-only Phase A)",
+  "models": [
+    {
+      "id": "plantTransport",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis leaf-vein companion-cell plasma membrane; ATP-driven outward H+ pumping followed by inward H+/sucrose symport.",
+      "checks": [
+        "Read all six bilingual stages, intro, labels, energy control, entry metadata, anatomy.js protein/helix helpers and every update formula. No alternative root context is declared.",
+        "Direction is correct: protons move y=-1.45 to +1.2 at the pump; sucrose/proton move from positive to negative y at SUC2. ATP domains are cytosolic. SUC2 has no ATP hydrolysis event.",
+        "Both available and depleted conditions were evaluated at every stage boundary and final state. Initially unenergized depleted control prevents net uptake; ligand approach alone remains possible.",
+        "The p=0.55 local screenshot agrees with code: one ADP/Pi depiction, nine outward protons, cylindrical helices with same-side top connectors."
+      ],
+      "sources": [
+        {
+          "url": "https://www.esalq.usp.br/lepse/imgs/conteudo_thumb/Crystal-structure-of-the-plasma-membrane-proton-pump-1.pdf",
+          "title": "Pedersen et al. 2007, Crystal structure of the plasma membrane proton pump",
+          "supports": "Opened primary-paper PDF: ten transmembrane helices and three cytoplasmic N/P/A domains; connected polypeptide topology; ATP-coupled H+ export. The primary paper reports one proton per ATP."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41477-023-01421-0",
+          "title": "Bavnhøj et al. 2023, Structure and sucrose binding mechanism of the plant SUC1 sucrose transporter",
+          "supports": "Opened publisher full text, especially Fig. 1e and Results: twelve helices in two six-helix domains connected by a cytoplasmic linker, proton-dependent uptake and alternating access. This is SUC-family structural support, not an experimentally resolved SUC2 model."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "plantConnections-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/plantConnections/plantTransportProcess.js",
+          "location": "create: pump connectors lines 83-93; SUC2 connectors lines 158-176",
+          "evidence": "Every connector joins the positive-y end of one TM helix to the positive-y end of the next. SUC2 creates all five links per six-helix bundle at y=0.57..0.65; pump likewise uses y=0.55..0.65. Internal helix tops therefore receive two neighboring links while lower ends dangle. This is visibly rendered at all progress values, not just metadata.",
+          "whyWrong": "A single transmembrane polypeptide must traverse the membrane and connect successive ends according to its topology. The rendered top-end necklace gives a branched/incorrect backbone, not merely a stylized fold. Both cited structures provide experimentally supported membrane topology.",
+          "fix": "Rebuild loop attachments from a verified topology map, including cytoplasmic domain/linker insertions. Alternatively omit unsupported interhelix connectors and explicitly keep only a helix-domain schematic.",
+          "verification": "For any connectors presented as one peptide backbone, the connectivity graph must have two terminal ends and no branch degree above two; successive TM helix endpoints and intervening loops must match the verified topology and membrane side.",
+          "sourceUrls": [
+            "https://www.esalq.usp.br/lepse/imgs/conteudo_thumb/Crystal-structure-of-the-plasma-membrane-proton-pump-1.pdf",
+            "https://www.nature.com/articles/s41477-023-01421-0"
+          ]
+        },
+        {
+          "issueId": "plantConnections-02",
+          "severity": "P2",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/plantConnections/plantTransportProcess.js",
+          "location": "lines 205-221 and update lines 244-258",
+          "evidence": "Nine individual H+ spheres all cross the pump from cytosol to apoplast. There is one ATP glyph with three phosphate spheres, and only phosphate[2] detaches once. The same complete clip therefore visually couples a single ATP hydrolysis to nine H+ exports.",
+          "whyWrong": "The isolated PM H+-ATPase pump cycle is conventionally one H+ per ATP. The numerical molecular glyphs invite an incorrect 9:1 reading even though the intended scene compresses multiple cycles. Shape/time simplification does not explain this multiplicity.",
+          "fix": "Animate matching ATP cycles for the exported protons, or track one ATP and one translocated H+ while representing the background gradient as a clearly distinct continuous field/pool.",
+          "verification": "Tracked hydrolyzed ATP and tracked exported H+ should have a 1:1 cycle correspondence, or background concentration symbols must be explicitly non-stoichiometric and not all pass through one tracked hydrolysis event.",
+          "sourceUrls": [
+            "https://www.esalq.usp.br/lepse/imgs/conteudo_thumb/Crystal-structure-of-the-plasma-membrane-proton-pump-1.pdf"
+          ]
+        }
+      ],
+      "limitations": [
+        "No atomistic fit is claimed. The source structure is SUC1 whereas the transport process is SUC2; use family-level topology only.",
+        "Sucrose is represented as a generic two-ring glyph, with stereochemistry omitted; no atom-resolved validation was performed.",
+        "Only the existing representative screenshot was inspected; no browser operation."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "plasmodesmata",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "One enlarged plasmodesma between Arabidopsis root cells, with a compressed ER desmotubule and a callose-regulated cytoplasmic sleeve.",
+      "checks": [
+        "Read all six zh/en stages, intro, labels, open/callose controls and all geometry/update code including dynamic leaflet/ring/instance updates.",
+        "Outer sleeve radius is 0.84 and restricted neck radius 0.49; small solute centers at radial distance about 0.57 and sphere radius 0.095 fit the open sleeve and remain outside the appressed ER. Late restricted molecules stop on the donor side.",
+        "Compressed ER connects to cortical ER branches on both sides. Transport follows the sleeve, not the ER lumen, and never requires crossing the continuous PM.",
+        "At p=1 the open condition delivers four tracked small solutes; callose condition delivers the earlier solute and blocks the later three. The bulky untargeted probe remains excluded in both.",
+        "The text explicitly permits bidirectionality and regulated protein/RNA transfer instead of imposing a universal mass cutoff. The p=0.55 screenshot is consistent with the open-front wall/channel cutaway."
+      ],
+      "sources": [
+        {
+          "url": "https://cris.fau.de/publications/107137404/",
+          "title": "Vatén et al. 2011, Callose Biosynthesis Regulates Symplastic Trafficking during Root Development",
+          "supports": "Opened author-institution primary-paper abstract: Arabidopsis CALS3 gain-of-function increases callose, reduces PD aperture and intercellular trafficking."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2288846/fullTextXML",
+          "title": "The structure of plasmodesmata as revealed by plasmolysis, detergent extraction, and protease digestion (1991)",
+          "supports": "Retrieved and parsed official Europe PMC fullTextXML. Primary ultrastructure describes the central desmotubule continuous with adjacent ER and the limiting plasma membrane. Specimen is fern gametophyte, so used for conserved topology, not Arabidopsis-specific dimensions."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Dimensions, spokes, cargo identity and timing are schematic, not a quantitative diffusion or gating model.",
+        "Only one PD morphology is represented; primary/secondary PD and tissue-dependent nanoscale diversity are not covered.",
+        "Blocking all later tracked small solutes is an illustrative condition, not a universal statement that any callose increase stops every solute. The controls and stage descriptions appropriately constrain that claim."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "photorespiration",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Major Arabidopsis C2 salvage route, tracking only four carbons from two 2-phosphoglycolates; accompanying Rubisco 3-PGA products excluded explicitly.",
+      "checks": [
+        "Read all seven bilingual stages, intro, labels, glyk active/absent controls and actual four-carbon/bond/oxygen/phosphate positions at every keyframe.",
+        "Two separate 2C skeletons start in chloroplast; their keyframe route is chloroplast → peroxisome → mitochondrion → peroxisome → chloroplast.",
+        "In the mitochondrion one tracked carbon separates as CO2 with two oxygen glyphs; the other three form a continuous chain. One ammonia marker is released. Four tracked carbon objects persist rather than duplicating/disappearing.",
+        "The active GLYK condition transfers a phosphate to the returning glycerate region; absent GLYK freezes the final substrate frame at p=0.83 and prevents phosphate transfer. Bilingual terminal labels follow the condition.",
+        "Stoichiometric text correctly distinguishes 4C tracked = 3C recovered + 1C released, identifies ATP consumption and NH3 reassimilation, and does not call this ATP production or additional carbon fixation. Representative screenshot checked."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3581909/",
+          "title": "Pick et al. 2013, PLGG1 is required for photorespiration and chloroplast glycolate/glycerate transport",
+          "supports": "Opened full text, introduction and results: compartment order, two glycine to serine/CO2/ammonia, glycerate import and GLYK phosphorylation; three of four entering carbons return."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1182498/",
+          "title": "Boldt et al. 2005, D-GLYCERATE 3-KINASE completes the photorespiratory cycle",
+          "supports": "Opened article on the initial source pass and verified indexed primary abstract: Arabidopsis GLYK catalyzes the final glycerate-to-3-PGA step. Later native opens hit a recaptcha; no additional result is inferred from those failed opens."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Carbon-only skeletons intentionally omit most atoms, amino donors, NAD(H), tetrahydrofolate chemistry, detailed nitrogen recycling and cytosolic bypasses. The intro/stages disclose these omissions.",
+        "Organelle transfer trajectories are coarse schematic paths; individual transporters and two-envelope crossing kinetics are not resolved.",
+        "Uniformly synthetic enzyme surface folds are schematic and must not be presented as resolved atomistic structures.",
+        "No quantitative flux, kinetic rate or phenotype severity is inferred from a finite timeline."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "c4cam",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Main maize NADP-ME C4 branch and mature Kalanchoe fedtschenkoi NAD-ME CAM, selected as separate control scenarios.",
+      "checks": [
+        "Read all six bilingual stages, both full scene constructions, C4/CAM keyframes, strategy controls, labels and anatomy helpers; all declared roots are plant and no root override exists.",
+        "C4: cytosolic PEPC adds one inorganic carbon to a 3C acceptor; four-carbon intermediate visits mesophyll chloroplast then bundle-sheath chloroplast; one carbon remains at the Rubisco site while three return to mesophyll and PPDK ATP→AMP+PPi is labeled.",
+        "CAM: nighttime capture precedes vacuolar acid storage; day switch closes the separate epidermal inset stoma; malate moves to a mitochondrion, one carbon moves to chloroplast while the retained 3C follows regeneration space. Native labels specify NAD-ME and the specimen.",
+        "Both scenarios keep four tracked carbon objects and appropriately limit the represented subtype/phases in zh/en text. No quantitative flux is claimed.",
+        "Read-only Node evaluation sampled all stage boundaries and both terminal conditions. A 10001-point C4 sweep found a real trajectory/portal mismatch during return through the shared wall. Existing p=0.55 screenshot was inspected, but it does not show the later failing frame."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3875822/",
+          "title": "Bellasio and Griffiths 2014, The Operation of Two Decarboxylases...",
+          "supports": "Primary-paper indexed full text was retrieved and read; it explicitly treats maize mesophyll/bundle-sheath partitioning, malate/alternative branches and PEP-regeneration energy. Direct native opens encountered recaptcha, so detailed compartment claims are bounded by that access limitation."
+        },
+        {
+          "url": "https://eprints.gla.ac.uk/190108/",
+          "title": "Cook et al. 1995, Decarboxylation of malate in Bryophyllum (Kalanchoe) fedtschenkoi",
+          "supports": "Opened author repository abstract: intact and solubilized mitochondria from mature leaves support NAD-ME-mediated malate decarboxylation to pyruvate, stronger in daytime preparations."
+        },
+        {
+          "url": "https://cris.fau.de/publications/107137404/",
+          "title": "Vatén et al. 2011, Callose Biosynthesis Regulates Symplastic Trafficking during Root Development",
+          "supports": "Opened primary author abstract establishes membrane-lined symplastic channels as constrained passages, rather than transfer through solid shared wall."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7145507/",
+          "title": "Boxall et al. 2020, Kalanchoe PPC1 Is Essential for CAM...",
+          "supports": "Indexed primary full text supports nighttime malate accumulation and daytime stomatal closure. Study species is K. laxiflora, so it supports genus-level CAM context rather than species-specific K. fedtschenkoi kinetics."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "plantConnections-03",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/plantConnections/c4camProcess.js",
+          "location": "shared-wall pores lines 141-195; c4Keys lines 397-408; interpolation lines 476-487",
+          "evidence": "Lower symplastic pore is centered at y=-0.83,z=0 with radius 0.2; shared wall occupies |x|<=0.14. At p=0.7443 the returning tracked carbon 0 is at (0.13812484,-0.63204468,0.14283926): centerline radial distance 0.24410932 already exceeds the pore radius; including its radius 0.085 yields 0.32910932. Continuous keyframe interpolation therefore carries pyruvate through the pore boundary/shared-wall region instead of the illustrated sleeve.",
+          "whyWrong": "The scene explicitly depicts these portals as the symplastic connection. The molecule must remain in the channel cytoplasmic space while traversing the shared wall; moving through the wall or delimiting PM contradicts that topology even when the carbon skeleton is schematic.",
+          "fix": "Introduce approach/entry/exit waypoints with a constant valid channel-crossing y/z segment, or redesign the pore and carrier scaling to preserve a genuine sleeve. Account for the radius of each tracked atom and the desmotubule, not just the molecule midpoint.",
+          "verification": "For a dense progress sweep in both outbound and return transfers, every atom overlapping |x|<=wallHalfWidth must satisfy radialCenterDistance+atomRadius <= poreInnerRadius and remain outside the desmotubule. Reject any shared-wall or pore-membrane intersection.",
+          "sourceUrls": [
+            "https://cris.fau.de/publications/107137404/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Main biochemical branch and CAM time separation are supported; the confirmed defect is the actual rendered transport topology.",
+        "The full four CAM phases, alternative maize decarboxylation routes, complete ATP/reductant bookkeeping, RuBP fixation products and reserve turnover are intentionally omitted.",
+        "CAM tonoplast carriers are illustrative landmarks; transporter chemistry and molecular-level translocation are not modeled.",
+        "Several native PMC/PubMed source opens were blocked; successful publisher/author resources and retrieved primary text were used, with species mismatch noted explicitly."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

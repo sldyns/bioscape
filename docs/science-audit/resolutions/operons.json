@@ -1,0 +1,155 @@
+{
+  "group": "operons",
+  "issues": [
+    {
+      "issueId": "operons-01",
+      "status": "fixed",
+      "changes": "Every visible lac RNAP now contributes its own local duplex opening. Overlapping openings use maximum displacement; terminated bubbles close without suppressing other active complexes.",
+      "files": [
+        "src/processes/modules/operons/lacOperonProcess.js",
+        "src/processes/modules/operons/structuralDetails.js",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "science.test.mjs checks actual paired backbone and base instance coordinates beneath each active RNAP at 12 progress values in all four lactose/glucose combinations, including .80, .88 and .92.",
+        "In-memory restoration of the old RNAP-0-only bubble fails at p=.605."
+      ],
+      "limitations": [
+        "DNA and RNAP remain a magnified molecular schematic; three versus one transcripts are qualitative output."
+      ]
+    },
+    {
+      "issueId": "operons-02",
+      "status": "fixed",
+      "changes": "The low-Trp scenario is explicitly severe depletion that limits charged tRNA in both languages and scenario metadata. The intro distinguishes milder free-Trp reduction from tRNA starvation; high-Trp/limited-charging remains independently stalled.",
+      "files": [
+        "src/processes/modules/operons/trpOperonProcess.js",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "Bilingual scenario scope is asserted, together with actual charged-amino-acid visibility, mutually exclusive leader RNA branches and structural-gene RNA extension in all four conditions.",
+        "Changing the English option back to unqualified Low fails regression."
+      ],
+      "limitations": [
+        "The discrete model does not simulate intermediate starvation thresholds or tRNA aminoacylation chemistry. The persisted low value is retained for compatibility."
+      ]
+    },
+    {
+      "issueId": "operons-03",
+      "status": "fixed",
+      "changes": "Pbs2 activation precedes Hog1 phosphorylation; import now starts only after Hog1-P appears. Nuclear RNA follows nuclear arrival. Hog1 dephosphorylates before export through the same pore.",
+      "files": [
+        "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "All four conditions sampled at 201 progress values; actual cargo position, Pbs2-P and Hog1-P visibility establish import ordering. No nuclear cargo at or before .51; exactly one import and one export in high-osmolarity/normal-Hog1.",
+        "Restoring the old early import interval fails at p=.435. Deterministic reverse seeks pass."
+      ],
+      "limitations": [
+        "Progress is normalized teaching order, not measured biochemical time; Nmd5/Ran/export machinery is omitted."
+      ]
+    },
+    {
+      "issueId": "operons-04",
+      "status": "fixed",
+      "changes": "The intervention is explicitly nonphosphorylatable Hog1 activation sites in both languages, rather than generic inhibition. Text distinguishes this intervention from catalytic inhibition, which need not prevent phosphorylation or import.",
+      "files": [
+        "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "Tests assert both language labels and verify absent Hog1-P/import under the nonphosphorylatable condition while upstream stress signaling persists.",
+        "Restoring the ambiguous Inhibited label fails regression."
+      ],
+      "limitations": [
+        "The legacy inhibited parameter value is retained for compatibility; it now labels a nonphosphorylatable scenario. Catalytic-inhibitor behavior is not modeled."
+      ]
+    },
+    {
+      "issueId": "operons-05",
+      "status": "fixed",
+      "changes": "A selected nuclear pore has a real annular and rim opening. Hog1 approaches outside, traverses radially through its channel, and moves within the nucleus only after clearing it; export reverses this route. Cargo is scaled to fit the drawn aperture.",
+      "files": [
+        "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+        "src/processes/modules/operons/structuralDetails.js",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "The regression derives the real gap from indexed envelope geometry and the aperture radius from actual torus geometry. It checks all visible molecular vertices against the envelope crossing band and pore clearance across 201 frames in all four conditions.",
+        "Restoring the old straight movement fails aperture clearance at p=.55. Resource identity and finite geometry remain stable."
+      ],
+      "limitations": [
+        "The nuclear envelope is a cutaway schematic, not an atomic collision mesh. Vertex and aperture invariants test the depicted route; root visual acceptance remains pending."
+      ]
+    }
+  ],
+  "unchangedModels": [
+    {
+      "id": "yeastGal",
+      "reason": "Qualified pass; no GAL-specific source edits. Shared helper default behavior is included in all-condition resource/determinism and esbuild regression."
+    }
+  ],
+  "commands": [
+    {
+      "command": "node src/processes/modules/operons/smoke.mjs",
+      "result": "PASS: lac/trp condition, bounds, resources and seek checks."
+    },
+    {
+      "command": "node src/processes/modules/operons/yeastSmoke.mjs",
+      "result": "PASS: GAL/HOG condition, bounds, resources and seek checks."
+    },
+    {
+      "command": "node src/processes/modules/operons/science.test.mjs",
+      "result": "PASS: all five invariants, 16 control combinations, actual geometry, finite buffers, stable resources, deterministic seek and four in-memory esbuild bundles."
+    },
+    {
+      "command": "node src/processes/modules/operons/science.mutations.test.mjs",
+      "result": "PASS: current science/duplex suites and six independent in-memory old-defect mutations rejected, including peer-operons-01 at .7385 (different segments 96/97)."
+    },
+    {
+      "command": "node src/processes/modules/operons/duplexGeometry.test.mjs",
+      "result": "PASS: 1002 times x 16 conditions; independent segment parameters, actual cylinder radial bounds and chain continuity."
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/6233264/",
+      "title": "Yanofsky et al. (1984), Repression is relieved before attenuation",
+      "supports": "Repression and attenuation respond to different degrees of starvation; embedded in trp model. Primary abstract read via NCBI EFetch during Phase A."
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/9755161/",
+      "title": "Ferrigno et al. (1998), Regulated Hog1 nuclear exchange",
+      "supports": "Hog1 phosphorylation governs import; catalytically inactive phosphorylated Hog1 can still import. Embedded in HOG model. Primary abstract opened during Phase A."
+    }
+  ],
+  "peerExtensions": [
+    {
+      "issueId": "peer-operons-01",
+      "status": "fixed",
+      "changes": "Replaced the bubble-shoulder Cartesian blend with two opposite material strands in one common x-axis centerline and orthogonal y/z frame. Both radii remain positive. Integrating a nonnegative local twist density unwinds each bubble without a phase jump or high-frequency shoulder reversal, and closing restores the original helix.",
+      "files": [
+        "src/processes/modules/operons/structuralDetails.js",
+        "src/processes/modules/operons/duplexGeometry.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "New regression samples 1002 progress values including the exact .7385 witness in every one of 16 conditions across all four shared-helper models.",
+        "Reconstructs actual cylinder endpoints and radial extents from instance/world matrices. Computes exact finite-segment distance with independent parameters and checks conservative swept-surface separation for every potentially contacting cross-strand segment pair. Also asserts chain segment continuity.",
+        "An in-memory mutation restores the old shoulder blend at p=.7385 and must fail the new geometry invariant.",
+        "Independent reviewer /root/p_rna requested to rerun the original probe and cross-parameter segment review; final peer verdict pending."
+      ],
+      "limitations": [
+        "Temporal sweeps are sampled geometry checks, not a proof of all continuous times.",
+        "Positive-frame unwinding permits downstream schematic torsional relaxation; this is not a clamped-end or torque simulation. All base-pair/strand identities remain attached to their original chain.",
+        "Conservative capsule separation bounds the real cylinder surface; it does not certify atomic DNA stereochemistry."
+      ]
+    }
+  ]
+}

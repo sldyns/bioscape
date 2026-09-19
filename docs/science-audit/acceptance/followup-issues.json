@@ -1,0 +1,93 @@
+[
+  {
+    "id": "peer-phageLife-01",
+    "model": "phageLytic",
+    "status": "fixed",
+    "finding": "Continuous injected DNA still intersects closed tail, baseplate and capsid surfaces.",
+    "report": "peer-phageLife.md"
+  },
+  {
+    "id": "peer-plantConnections-01",
+    "model": "c4cam",
+    "status": "fixed",
+    "finding": "C4 metabolite clears the cylindrical pore but intersects the finite torus at its mouth.",
+    "report": "peer-plantConnections.md"
+  },
+  {
+    "id": "peer-traffic-01",
+    "model": "secretion",
+    "status": "fixed",
+    "finding": "Preserved vesicle lipid identities detach from the fusion membrane during flattening.",
+    "report": "peer-traffic.md"
+  },
+  {
+    "id": "peer-energy-01",
+    "model": "respiration",
+    "status": "fixed",
+    "finding": "c-subunit hairpin connecting loop faces away from F1 in several root contexts.",
+    "report": "peer-energy.md"
+  },
+  {
+    "id": "peer-traffic-02",
+    "model": "autophagy",
+    "status": "fixed",
+    "finding": "Waiting lysosomal enzymes protrude beyond the outer membrane while the membrane rounds up.",
+    "report": "peer-traffic.md"
+  },
+  {
+    "id": "peer-membrane-01",
+    "model": "activeTransport",
+    "status": "fixed",
+    "finding": "Pi release begins while extracellular gate is still open; conservatively align illustrated state transitions.",
+    "report": "peer-membrane.md"
+  },
+  {
+    "id": "peer-regulation-01",
+    "model": "transcription",
+    "status": "fixed",
+    "finding": "Downstream RNA 3prime end lost catalytic attachment while Pol II departed before remnant processing.",
+    "report": "peer-regulation.md"
+  },
+  {
+    "id": "peer-operons-01",
+    "model": "lacOperon",
+    "status": "fixed",
+    "finding": "Interpolating DNA strands onto fixed opposite sides makes them cross at the transcription-bubble boundary.",
+    "report": "peer-operons.md"
+  },
+  {
+    "id": "peer-regulation-02",
+    "model": "promoterRegulation,enhancerRegulation,transcription",
+    "status": "fixed",
+    "finding": "DNA strand tubes intersect in promoter, enhancer and original transcription; requires a shared continuous duplex frame.",
+    "report": "peer-operons.md"
+  },
+  {
+    "id": "peer-signals-01",
+    "model": "differentiation",
+    "status": "fixed",
+    "finding": "Chromatin remains undeformed while the enucleating nuclear envelope constricts, causing DNA to cross the nuclear membrane.",
+    "report": "peer-signals.md"
+  },
+  {
+    "id": "peer-genome-bubbles-01",
+    "model": "replication,dnaRepair",
+    "status": "fixed",
+    "finding": "Opening and rejoining DNA strands intersect at fork/bubble edges in replication and repair.",
+    "report": "peer-genome-bubbles.md"
+  },
+  {
+    "id": "peer-bubble-extensions-01",
+    "model": "bacterialExpression",
+    "status": "fixed",
+    "finding": "Bacterial transcription bubble interpolates DNA strands through each other.",
+    "report": "peer-bubble-extensions.md"
+  },
+  {
+    "id": "peer-bubble-extensions-02",
+    "model": "crispr,bacterialRepair",
+    "status": "fixed",
+    "finding": "CRISPR/SOS DNA opening gives confirmed tube intersections including unequal-parameter segments.",
+    "report": "peer-bubble-extensions.md"
+  }
+]

@@ -1,0 +1,842 @@
+[
+  {
+    "id": "rnaProcessing",
+    "root": "cell",
+    "frame": 0.68,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=rnaProcessing&frame=0.68&root=cell",
+    "screenshot": "/tmp/atlas-science/rnaProcessing.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "nuclearTransport",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=nuclearTransport&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/nuclearTransport.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "motorTransport",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=motorTransport&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/motorTransport.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "chloroplastMovement",
+    "root": "plant",
+    "frame": 0.235,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=chloroplastMovement&frame=0.235&root=plant",
+    "screenshot": "/tmp/atlas-science/chloroplastMovement.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "transduction",
+    "root": "bacterium",
+    "frame": 0.4,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=transduction&frame=0.4&root=bacterium",
+    "screenshot": "/tmp/atlas-science/transduction.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "bacterialSporulation",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=bacterialSporulation&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/bacterialSporulation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "chromatinAccess",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=chromatinAccess&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/chromatinAccess.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "tad",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=tad&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/tad.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "plantGenome",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=plantGenome&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/plantGenome.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "plantRdDM",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=plantRdDM&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/plantRdDM.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "proteinFolding",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=proteinFolding&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/proteinFolding.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "nitrogenFixation",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=nitrogenFixation&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/nitrogenFixation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "rnaSilencing",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=rnaSilencing&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/rnaSilencing.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "proteasome",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=proteasome&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/proteasome.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "respiration",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=respiration&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/respiration.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "glycolysis",
+    "root": "cell",
+    "frame": 0.66,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=glycolysis&frame=0.66&root=cell",
+    "screenshot": "/tmp/atlas-science/glycolysis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "bacterialEnergetics",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=bacterialEnergetics&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/bacterialEnergetics.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "bacterialPhotosynthesis",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=bacterialPhotosynthesis&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/bacterialPhotosynthesis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "diffusion",
+    "root": "cell",
+    "frame": 0.72,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=diffusion&frame=0.72&root=cell",
+    "screenshot": "/tmp/atlas-science/diffusion.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "activeTransport",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=activeTransport&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/activeTransport.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "osmoticBalance",
+    "root": "cell",
+    "frame": 0.8,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=osmoticBalance&frame=0.8&root=cell",
+    "screenshot": "/tmp/atlas-science/osmoticBalance.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "bacterialCellWall",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=bacterialCellWall&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/bacterialCellWall.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "endocytosis",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=endocytosis&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/endocytosis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "autophagy",
+    "root": "cell",
+    "frame": 0.82,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=autophagy&frame=0.82&root=cell",
+    "screenshot": "/tmp/atlas-science/autophagy.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "mitosis",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=mitosis&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/mitosis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "meiosis",
+    "root": "cell",
+    "frame": 0.72,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=meiosis&frame=0.72&root=cell",
+    "screenshot": "/tmp/atlas-science/meiosis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "signalTransduction",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=signalTransduction&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/signalTransduction.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "apoptosis",
+    "root": "cell",
+    "frame": 0.94,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=apoptosis&frame=0.94&root=cell",
+    "screenshot": "/tmp/atlas-science/apoptosis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "immuneResponse",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=immuneResponse&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/immuneResponse.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "actionPotential",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=actionPotential&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/actionPotential.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "synapse",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=synapse&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/synapse.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "muscle",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=muscle&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/muscle.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "ciliaryMotion",
+    "root": "paramecium",
+    "frame": 0.7,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=ciliaryMotion&frame=0.7&root=paramecium",
+    "screenshot": "/tmp/atlas-science/ciliaryMotion.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "plasmolysis",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=plasmolysis&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/plasmolysis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "stomata",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=stomata&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/stomata.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "plantLongDistanceTransport",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=plantLongDistanceTransport&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/plantLongDistanceTransport.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "cellWallGrowth",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=cellWallGrowth&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/cellWallGrowth.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "doubleFertilization",
+    "root": "plant",
+    "frame": 0.91,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=doubleFertilization&frame=0.91&root=plant",
+    "screenshot": "/tmp/atlas-science/doubleFertilization.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "fungalHyphae",
+    "root": "yeast",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=fungalHyphae&frame=0.55&root=yeast",
+    "screenshot": "/tmp/atlas-science/fungalHyphae.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "auxin",
+    "root": "plant",
+    "frame": 0.4,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=auxin&frame=0.4&root=plant",
+    "screenshot": "/tmp/atlas-science/auxin.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "plantDefense",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=plantDefense&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/plantDefense.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "plantTransport",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=plantTransport&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/plantTransport.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "plasmodesmata",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=plasmodesmata&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/plasmodesmata.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "photorespiration",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=photorespiration&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/photorespiration.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "trpOperon",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=trpOperon&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/trpOperon.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "yeastGal",
+    "root": "yeast",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=yeastGal&frame=0.55&root=yeast",
+    "screenshot": "/tmp/atlas-science/yeastGal.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "yeastOsmoregulation",
+    "root": "yeast",
+    "frame": 0.62,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=yeastOsmoregulation&frame=0.62&root=yeast",
+    "screenshot": "/tmp/atlas-science/yeastOsmoregulation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "bacterialDivision",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=bacterialDivision&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/bacterialDivision.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "conjugation",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=conjugation&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/conjugation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "transformation",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=transformation&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/transformation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "chemotaxis",
+    "root": "bacterium",
+    "frame": 0.79,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=chemotaxis&frame=0.79&root=bacterium",
+    "screenshot": "/tmp/atlas-science/chemotaxis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "twoComponent",
+    "root": "bacterium",
+    "frame": 0.625,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=twoComponent&frame=0.625&root=bacterium",
+    "screenshot": "/tmp/atlas-science/twoComponent.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "quorumSensing",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=quorumSensing&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/quorumSensing.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "biofilm",
+    "root": "bacterium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=biofilm&frame=0.55&root=bacterium",
+    "screenshot": "/tmp/atlas-science/biofilm.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "yeastBudding",
+    "root": "yeast",
+    "frame": 0.8,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=yeastBudding&frame=0.8&root=yeast",
+    "screenshot": "/tmp/atlas-science/yeastBudding.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "yeastFermentation",
+    "root": "yeast",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=yeastFermentation&frame=0.55&root=yeast",
+    "screenshot": "/tmp/atlas-science/yeastFermentation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "yeastMating",
+    "root": "yeast",
+    "frame": 0.83,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=yeastMating&frame=0.83&root=yeast",
+    "screenshot": "/tmp/atlas-science/yeastMating.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "yeastSporulation",
+    "root": "yeast",
+    "frame": 0.88,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=yeastSporulation&frame=0.88&root=yeast",
+    "screenshot": "/tmp/atlas-science/yeastSporulation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "parameciumFeeding",
+    "root": "paramecium",
+    "frame": 0.7,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=parameciumFeeding&frame=0.7&root=paramecium",
+    "screenshot": "/tmp/atlas-science/parameciumFeeding.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "contractileVacuole",
+    "root": "paramecium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=contractileVacuole&frame=0.55&root=paramecium",
+    "screenshot": "/tmp/atlas-science/contractileVacuole.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "parameciumDivision",
+    "root": "paramecium",
+    "frame": 0.7,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=parameciumDivision&frame=0.7&root=paramecium",
+    "screenshot": "/tmp/atlas-science/parameciumDivision.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "parameciumConjugation",
+    "root": "paramecium",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=parameciumConjugation&frame=0.55&root=paramecium",
+    "screenshot": "/tmp/atlas-science/parameciumConjugation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "phageAssembly",
+    "root": "phage",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=phageAssembly&frame=0.55&root=phage",
+    "screenshot": "/tmp/atlas-science/phageAssembly.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "phagePackaging",
+    "root": "phage",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=phagePackaging&frame=0.55&root=phage",
+    "screenshot": "/tmp/atlas-science/phagePackaging.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "secretion",
+    "root": "cell",
+    "frame": 0.28,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=secretion&frame=0.28&root=cell",
+    "screenshot": "/tmp/atlas-science/secretion.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "photosynthesis",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=photosynthesis&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/photosynthesis.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "infection",
+    "root": "phage",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=infection&frame=0.55&root=phage",
+    "screenshot": "/tmp/atlas-science/infection.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "organelleImport",
+    "root": "plant",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=organelleImport&frame=0.55&root=plant",
+    "screenshot": "/tmp/atlas-science/organelleImport.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "alternativeSplicing",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=alternativeSplicing&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/alternativeSplicing.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "phageLytic",
+    "root": "phage",
+    "frame": 0.2,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=phageLytic&frame=0.2&root=phage",
+    "screenshot": "/tmp/atlas-science/phageLytic.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "phageLysogenic",
+    "root": "phage",
+    "frame": 0.98,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=phageLysogenic&frame=0.98&root=phage&fate=maintain",
+    "screenshot": "/tmp/atlas-science/phageLysogenic.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "transcription",
+    "root": "cell",
+    "frame": 0.57,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=transcription&frame=0.57&root=cell",
+    "screenshot": "/tmp/atlas-science/transcription.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "promoterRegulation",
+    "root": "cell",
+    "frame": 0.66,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=promoterRegulation&frame=0.66&root=cell",
+    "screenshot": "/tmp/atlas-science/promoterRegulation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "enhancerRegulation",
+    "root": "cell",
+    "frame": 0.855,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=enhancerRegulation&frame=0.855&root=cell",
+    "screenshot": "/tmp/atlas-science/enhancerRegulation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "c4cam",
+    "root": "plant",
+    "frame": 0.745,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=c4cam&frame=0.745&root=plant",
+    "screenshot": "/tmp/atlas-science/c4cam.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "replication",
+    "root": "cell",
+    "frame": 0.55,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=replication&frame=0.55&root=cell",
+    "screenshot": "/tmp/atlas-science/replication.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "dnaRepair",
+    "root": "cell",
+    "frame": 0.58,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=dnaRepair&frame=0.58&root=cell",
+    "screenshot": "/tmp/atlas-science/dnaRepair.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "translation",
+    "root": "cell",
+    "frame": 0.43,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=translation&frame=0.43&root=cell",
+    "screenshot": "/tmp/atlas-science/translation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "crispr",
+    "root": "bacterium",
+    "frame": 0.53,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=crispr&frame=0.53&root=bacterium",
+    "screenshot": "/tmp/atlas-science/crispr.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "bacterialRepair",
+    "root": "bacterium",
+    "frame": 0.52,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=bacterialRepair&frame=0.52&root=bacterium",
+    "screenshot": "/tmp/atlas-science/bacterialRepair.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "differentiation",
+    "root": "cell",
+    "frame": 0.835,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=differentiation&frame=0.835&root=cell",
+    "screenshot": "/tmp/atlas-science/differentiation.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "plantDivision",
+    "root": "plant",
+    "frame": 0.67,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=plantDivision&frame=0.67&root=plant",
+    "screenshot": "/tmp/atlas-science/plantDivision.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "lacOperon",
+    "root": "bacterium",
+    "frame": 0.7385,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=lacOperon&frame=0.7385&root=bacterium",
+    "screenshot": "/tmp/atlas-science/lacOperon.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  },
+  {
+    "id": "bacterialExpression",
+    "root": "bacterium",
+    "frame": 0.521,
+    "status": "reviewed",
+    "route": "/process-preview.html?process=bacterialExpression&frame=0.521&root=bacterium",
+    "screenshot": "/tmp/atlas-science/bacterialExpression.png",
+    "scope": "Representative frame inspected in browser capture; detailed mechanism, timing and branch acceptance are recorded in the scientific regressions and peer reviews.",
+    "note": "Central geometry rendered and visually inspected; no empty scene or viewport clipping in this representative pose."
+  }
+]

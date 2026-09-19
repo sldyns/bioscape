@@ -1,0 +1,151 @@
+{
+  "group": "turnover",
+  "reviewer": "p_energy, independent of turnover implementation",
+  "models": [
+    {
+      "id": "rnaSilencing",
+      "roots": ["cell"],
+      "verdict": "confirmed_issue",
+      "scope": "Animal cytosol; mature miRNA-Argonaute; seed-mediated repression, active AGO2 slicing, and seed-mismatch conditions.",
+      "checks": [
+        "Read both languages of intro, five stages, all controls and labels, sources and molecularDetail helper. Executed every stage boundary plus .54, .7, .9 and 1 for all three conditions; no root overrides exist.",
+        "The right-hand guide 5-prime/MID and left-hand 3-prime/PAZ orientation is antiparallel to left-to-right mRNA. Seed indices 14-20 correspond approximately to guide positions 8-2. The text distinguishes typical repression from slicing and correctly qualifies the mismatch example.",
+        "Inspected the existing .55 screenshot. No membrane, nucleus or DNA-like double helix is introduced. Generic protein fold tiles are schematic, not validated atomic structures."
+      ],
+      "sources": [
+        {"url":"https://www.rcsb.org/structure/4W5O","title":"Schirle et al. 2014 / PDB 4W5O: Ago2-guide-target complex","supports":"Opened structural entry and primary abstract: target recognition involves complementary guide/target bases, initially guide 2-5, extending through seed 2-8 and supplementary positions."},
+        {"url":"https://pmc.ncbi.nlm.nih.gov/articles/PMC6600645/","title":"Sheu-Gruttadauria et al. 2019: Beyond the seed","supports":"Opened primary full text: seed and supplementary duplexes occupy adjacent Ago2 chambers; a target loop can connect them. Complementary nucleotide correspondence and actual target geometry matter."}
+      ],
+      "findings": [
+        {
+          "issueId":"turnover-01","severity":"P1","kind":"misleading_representation",
+          "file":"src/processes/modules/turnover/rnaSilencingProcess.js",
+          "location":"159-194 guide/target construction; 356-375 pairing and cleavage",
+          "evidence":"Guide nucleotide pitch is .138; target nucleotide/base pitch is .25. Pair bars use guide x coordinates and end at y=-.03, independently of target bases. The 22-guide-nucleotide span overlays roughly 12 target intervals. Slicing is hard-coded between target segments 15 and 16 without a guide-index map.",
+          "whyWrong":"The explicit bases depict a duplex without corresponding nucleotide partners. The central cleavage site cannot be biologically indexed from these independently spaced rails.",
+          "fix":"Construct guide and target from one antiparallel nucleotide mapping, allowing explicit central bulges in the seed branch. Derive pairing endpoints and the scissile target bond from that mapping.",
+          "verification":"Every visible pair has two existing mapped base endpoints; a base has at most one partner. The AGO2 slice bond must be the target bond opposite guide positions 10/11 under an explicit numbering convention.",
+          "sourceUrls":["https://www.rcsb.org/structure/4W5O","https://pmc.ncbi.nlm.nih.gov/articles/PMC6600645/"]
+        },
+        {
+          "issueId":"turnover-02","severity":"P1","kind":"misleading_representation",
+          "file":"src/processes/modules/turnover/rnaSilencingProcess.js",
+          "location":"356-381 pairing visibility versus fragment movement and turnover",
+          "evidence":"Pair visibility depends on match and p>.24, not target presence or displacement. Read-only execution of slice at p=.7 found 22 pair bars while target fragments had moved +/- .58 and down .28. At p=1 all 28 target backbone segments were invisible but all 22 pair bars remained visible.",
+          "whyWrong":"A pairing interaction cannot remain attached to a moved or absent target. The scene leaves a ghost duplex after target degradation.",
+          "fix":"Recompute interactions from current target coordinates and presence. Remove pairing as fragments disengage or decay.",
+          "verification":"visiblePair implies two visible nucleotide endpoints coincident with its ends. At slice p=1, zero target segments implies zero target-guide pair bars.",
+          "sourceUrls":["https://www.rcsb.org/structure/4W5O","https://pmc.ncbi.nlm.nih.gov/articles/PMC6600645/"]
+        }
+      ],
+      "limitations": [
+        "N/PAZ/MID/PIWI tiles and TNRC6 folded decorations are not fitted structures and must not be described as resolved protein folds.",
+        "The target-site mapping error blocks a definitive numbered cleavage-site assessment until that mapping is rebuilt.",
+        "Biogenesis, ribosomes, decapping enzymes and detailed decay routes are omitted by the stated scope. No translation-rate claim was inferred."
+      ],
+      "confidence":"high"
+    },
+    {
+      "id":"proteasome","roots":["cell","plant","yeast"],"verdict":"confirmed_issue",
+      "scope":"Selected cytosolic singly capped 26S proteasome; K48-tagged initiation-competent substrate versus an explicitly qualified untagged comparator.",
+      "checks":[
+        "Read bilingual intro, six stages, both controls, labels, sources, fold helper and update formulas. Executed every stage plus .54, .7, .9 and 1 for all three roots and both conditions; rootId changes metadata only.",
+        "Four sevenfold alpha-beta-beta-alpha rings, six ATPases, six beta active-site markers, Rpn11 and ubiquitin recycling are distinguished. Text correctly limits tag universality and distinguishes peptides from complete amino-acid recovery.",
+        "The existing .55 screenshot shows separated core tiles and a fully extended chain above the motor. No membrane shell is added, but the intended protein barrel is not contiguous."
+      ],
+      "sources":[
+        {"url":"https://www.lander-lab.com/pdfs/30309908.pdf","title":"de la Pena et al. 2018: substrate-engaged 26S proteasome structures","supports":"Opened author-hosted primary PDF, pp. 1-2. Pore loops mechanically engage/unfold substrate; pulling brings its ubiquitin linkage to Rpn11. The chain passes through the motor into a sequestered proteolytic barrel."},
+        {"url":"https://pmc.ncbi.nlm.nih.gov/articles/PMC8106498/","title":"Sahu and Glickman 2021: Proteasome in action","supports":"Opened full article and Figure 1 description: eukaryotic alpha7-beta7-beta7-alpha7 core, three catalytic subunits per beta ring, and controlled axial entry. K48 selection and untagged exceptions are qualified."}
+      ],
+      "findings":[
+        {
+          "issueId":"turnover-03","severity":"P1","kind":"misleading_causality",
+          "file":"src/processes/modules/turnover/proteasomeProcess.js",
+          "location":"344-385 unfold/feed/release schedules",
+          "evidence":"unfold and release both reach 1 at p=.54, while feed starts at .48. At p=.54 the fully straight substrate occupies y=1.482-3.482; the motor pore is around y=.68 and Rpn11 at y=1.35. Ubiquitylated residue 30 is at y=2.946. Thus unfolding and tag removal complete before pore engagement or Rpn11 contact.",
+          "whyWrong":"The illustrated ATPase does not mechanically engage the chain during unfolding, and Rpn11 catalysis occurs remotely. This breaks the physical cause of the depicted steps.",
+          "fix":"Capture an initiation segment in the pore first, maintain pore-loop contact while unfolding/translocating, and bring the ubiquitin-linked residue to Rpn11 before severing its linkage.",
+          "verification":"Unfolding requires a continuous engaged segment in the motor pore. The scissile isopeptide endpoint must enter the Rpn11 catalytic region at tag release. Untagged comparator stays intact.",
+          "sourceUrls":["https://www.lander-lab.com/pdfs/30309908.pdf"]
+        },
+        {
+          "issueId":"turnover-04","severity":"P1","kind":"misleading_topology",
+          "file":"src/processes/modules/turnover/proteasomeProcess.js",
+          "location":"103-126 core packing; molecularDetail.js:40-77; 401-408 peptide paths",
+          "evidence":"Core centers are .62 apart axially, but the scaled generic fold spans about .50 axially, leaving repeated gaps outside the stated front cutaway. The screenshot also shows circumferential separation. Peptides move diagonally immediately; j=6 at q=.633 is approximately (-.760,-1.810,.380), radius .85 at the distal alpha-ring plane rather than in its axial pore.",
+          "whyWrong":"Separated fold tiles do not form the sequestered catalytic chamber. Peptide paths also pass through a lateral/subunit region; a view cutaway must not be treated as a biological exit.",
+          "fix":"Make closely apposed protein subunit volumes form an annular barrel, with one explicitly designated cutaway. Route peptide products inside the lumen through a chosen axial opening before lateral diffusion. Do not add an unrelated membrane-like shell.",
+          "verification":"Outside the cutaway, circumferential and axial protein boundaries are contiguous. Product trajectories remain in the central lumen until the chosen axial exit and never cross core-subunit volumes.",
+          "sourceUrls":["https://www.lander-lab.com/pdfs/30309908.pdf","https://pmc.ncbi.nlm.nih.gov/articles/PMC8106498/"]
+        }
+      ],
+      "limitations":[
+        "Helix/sheet decals do not validate real alpha/beta/AAA folds. Broad stoichiometry is correct; packing is not.",
+        "ATP counts, detailed nucleotide-state sequencing and the full regulatory-particle inventory are omitted.",
+        "The proposed chosen exit is an illustrative route, not a claim that all physiological egress always uses one fixed proteasome end."
+      ],"confidence":"high"
+    },
+    {
+      "id":"crispr","roots":["bacterium"],"verdict":"confirmed_issue",
+      "scope":"S. pyogenes type II-A Cas9 interference only; natural crRNA/tracrRNA; matched NGG, incompatible PAM and multiple PAM-proximal mismatches.",
+      "checks":[
+        "Read both languages of intro, five stages, three controls, nine labels, source list, RNA curves, all DNA/guide/base/pair updates. Executed every stage and .54, .7, .9 and 1 for each control. Inspected the existing .55 screenshot.",
+        "Non-target is left-to-right 5-prime to 3-prime; target is antiparallel; guide is antiparallel to target. PAM is on the appropriate end. HNH and RuvC target the stated different strands; cuts are upstream of PAM.",
+        "No-PAM prevents stable opening and cleavage. Multiple seed mismatches transiently open and reseal without cleavage. Text avoids claiming that any single mismatch prevents cleavage.",
+        "REC/NUC lobes are an open schematic, not a membrane shell. Distinct RNA colors alone do not validate a natural dual-RNA scaffold."
+      ],
+      "sources":[
+        {"url":"https://www.nature.com/articles/s41586-022-05114-0","title":"Pacesa et al. 2022: R-loop formation and conformational activation mechanisms of Cas9","supports":"Opened primary full text. NGG recognition initiates directional hybridization to a 20-nt crRNA segment; PAM-distal DNA stays duplex during partial extension. HNH and RuvC cleave target and non-target strands respectively."},
+        {"url":"https://www.rcsb.org/structure/4OO8","title":"Nishimasu et al. 2014 / PDB 4OO8: Cas9-guide-DNA structure","supports":"Opened structural entry and primary abstract. The heteroduplex lies between recognition and nuclease lobes. This entry uses sgRNA and cannot independently validate the exact natural dual-RNA scaffold drawn here."}
+      ],
+      "findings":[
+        {
+          "issueId":"turnover-05","severity":"P1","kind":"misleading_representation",
+          "file":"src/processes/modules/turnover/crisprProcess.js",
+          "location":"237-254 guide/hybrid construction; 390-436 opening and pair visibility",
+          "evidence":"Twenty guide nucleotides have pitch .155, DNA bases/phosphates pitch .125. The fully opened -1.9<x<1.42 window contains 27 DNA positions with no compensating target-bulge geometry. Hybrid bars use fixed guide-spaced coordinates, not mapped target bases. Nearly all window DNA pair bars disappear when global open>.28 even where local opening has not yet separated the strands.",
+          "whyWrong":"The explicit bases do not form the claimed matched 20-base RNA-DNA heteroduplex. Distal DNA pairing is removed independently of the directional opening front.",
+          "fix":"Use one 20-nt protospacer index map for guide, target, displaced strand and adjacent PAM. Represent any extra unpaired flanks explicitly. Derive live hybrid endpoints, local DNA-pair visibility and break indices from that map.",
+          "verification":"Exactly 20 guide bases have their designated target partners at a full matched R-loop. Unreached distal DNA remains paired during propagation. No base pairs simultaneously with guide and opposite DNA. Breaks have explicit numbered PAM-relative offsets.",
+          "sourceUrls":["https://www.nature.com/articles/s41586-022-05114-0","https://www.rcsb.org/structure/4OO8"]
+        }
+      ],
+      "limitations":[
+        "The crRNA repeat and tracrRNA curves (192-221) do not resolve a repeat/anti-repeat duplex. That exact structural subquestion remains unverified rather than an additional confirmed finding.",
+        "Jinek 2012 was searched and its PMC, publisher and university repository were opened, but access challenges blocked full-text retrieval. Source-title existence was not treated as validation.",
+        "Generic fold tiles, precise secondary structure, magnesium chemistry and displaced-strand flexibility remain schematic."
+      ],"confidence":"high"
+    },
+    {
+      "id":"bacterialRepair","roots":["bacterium"],"verdict":"confirmed_issue",
+      "scope":"E. coli RecA-LexA SOS induction after a damage-associated ssDNA gap; a separate SOS promoter; self-cleavable versus noncleavable LexA.",
+      "checks":[
+        "Read bilingual intro, five stages, two controls, nine labels, sources, helper geometry and every update. Executed all stage boundaries and .54, .7, .9 and 1 for both conditions; inspected existing .55 screenshot.",
+        "Parental ssDNA is continuous across a complementary-strand gap. RecA assembles there with ATP dependence stated. RecA promotes LexA self-cleavage rather than acting as the protease.",
+        "LexA binding and catalytic domains separate in the cleavable condition. The noncleavable comparator returns and does not produce RNA. The two loci are explicitly separate; induction is not claimed to complete repair.",
+        "RNA grows toward the displayed 3-prime end near the moving polymerase, but the lower DNA remains a complete duplex throughout the active site."
+      ],
+      "sources":[
+        {"url":"https://www.nature.com/articles/s41594-024-01317-3?error=cookies_not_supported","title":"Cory et al. 2024: LexA-RecA* SOS signal complex","supports":"Opened publisher abstract and figure/data links after PMC access failed. RecA* forms on ssDNA and promotes LexA autoproteolysis; the full-length LexA interface spans three RecA subunits. Structural accession 8TRG is supplied."},
+        {"url":"https://www.rcsb.org/structure/6ALF","title":"Kang et al. 2017 / PDB 6ALF: E. coli RNAP elongation complex","supports":"Opened primary structural entry, abstract and nucleic-acid inventory. The elongation scaffold contains two DNA strands and nascent RNA within the RNAP complex."},
+        {"url":"https://pdb101.rcsb.org/global-health/antimicrobial-resistance/drugs/antibiotics/rna-synthesis/rna-polymerase/rna-polymerase","title":"RCSB PDB-101: bacterial RNA polymerase","supports":"Opened official structural explanation. RNAP active-center cleft accommodates an RNA-DNA hybrid and downstream duplex; RNA exits separately and grows by addition to its 3-prime terminus."}
+      ],
+      "findings":[
+        {
+          "issueId":"turnover-06","severity":"P1","kind":"misleading_topology",
+          "file":"src/processes/modules/turnover/bacterialRepairProcess.js",
+          "location":"174-191 and 343-376 static duplex; 429-447 RNAP and RNA elongation",
+          "evidence":"Both DNA tubes, 40 pairing bars and all lower-locus base instances are static and never unpaired. In wildtype after p>.65, RNAP moves along that intact duplex while a third RNA strand lengthens at the same x coordinate. No exposed template, local RNA-DNA hybrid or reannealing window exists.",
+          "whyWrong":"A detailed elongation scene shows copying an intact duplex instead of a locally opened template. The bubble and template-RNA hybrid are necessary topology, not optional surface decoration.",
+          "fix":"Retain SOS causality but add a moving local bubble: separate coding/template strands, replace local DNA pairs with a short RNA-template hybrid, retain the RNA 3-prime active end and reanneal DNA behind RNAP. Alternatively represent expression as an explicitly abstract output rather than a contradictory detailed elongation complex.",
+          "verification":"Whenever RNA length increases, a local opening window surrounds RNAP and the RNA 3-prime end contacts the exposed template. DNA pairing is removed only in that window. Noncleavable mode retains the intact duplex and no nascent RNA.",
+          "sourceUrls":["https://www.rcsb.org/structure/6ALF","https://pdb101.rcsb.org/global-health/antimicrobial-resistance/drugs/antibiotics/rna-synthesis/rna-polymerase/rna-polymerase"]
+        }
+      ],
+      "limitations":[
+        "The LexA publisher abstract and data links were accessible, but PMC full text and Europe PMC mirror failed. Exact atomic contact of the arbitrary LexA/RecA folds is not certified.",
+        "RecA packing and ssDNA extension are schematic, not fitted to 8TRG. SSB displacement, mediator proteins, LexA pool dynamics, promoter thresholds and later repair outcomes are outside the stated scope."
+      ],"confidence":"high"
+    }
+  ]
+}

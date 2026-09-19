@@ -1,0 +1,74 @@
+{
+  "group": "plantConnections",
+  "issues": [
+    {
+      "issueId": "plantConnections-01",
+      "status": "fixed",
+      "changes": "SUC2 helix loops now alternate extracellular/cytoplasmic sides. A 24-segment cytoplasmic interdomain linker is recomputed from the actual transformed terminal helix endpoints, so both conformational bundles stay connected. Removed the unsupported same-side pump necklace and additional speculative pump peptide traces; retained ten TM helices and detailed N/P/A domains as an explicitly bilingual domain schematic.",
+      "files": [
+        "src/processes/modules/plantConnections/plantTransportProcess.js",
+        "src/processes/modules/plantConnections/science.test.mjs"
+      ],
+      "verification": [
+        "Actual TubeGeometry loop endpoints were matched to 24 rendered TM endpoints at 201 progress samples in both energy conditions. The peptide graph has exactly two terminal ends and no branch degree above two.",
+        "Every rendered interdomain linker segment abuts the next and terminal segments meet cytoplasmic helix endpoints throughout the conformational motion.",
+        "Pump geometry assertion rejects reintroduction of direct interhelix connector meshes while requiring ten rendered TM-helix groups."
+      ],
+      "limitations": [
+        "The corrected SUC-family topology is a reaction schematic informed by SUC1, not an atomic SUC2 structure.",
+        "Pump peptide insertions are omitted rather than assigned invented topology; this is identified in both languages."
+      ]
+    },
+    {
+      "issueId": "plantConnections-02",
+      "status": "fixed",
+      "changes": "Replaced nine separately pumped proton particles plus a second symport proton with one actual H+ mesh: it is pumped outward with one ATP hydrolysis, approaches SUC2 and returns with sucrose. An uncounted translucent field conveys the background gradient. Added bilingual single-cycle counting; depleted energy leaves the hidden phosphate geometry unhydrolyzed and prevents proton movement.",
+      "files": [
+        "src/processes/modules/plantConnections/plantTransportProcess.js",
+        "src/processes/modules/plantConnections/science.test.mjs"
+      ],
+      "verification": [
+        "Regression counts actual root sphere geometry with the proton material and radius: exactly one tracked H+ versus three phosphates on one ATP glyph.",
+        "Checks ATP visibility, gamma-phosphate separation, cytosolic-to-apoplastic export and final cytosolic position for both available/depleted energy branches.",
+        "Local smoke verifies deterministic seek and stable geometry/material/node inventories after the changed condition logic."
+      ],
+      "limitations": [
+        "One tracked cycle illustrates energy coupling; the continuous background gradient is qualitative and is not a pH/voltage calculation."
+      ]
+    },
+    {
+      "issueId": "plantConnections-03",
+      "status": "fixed",
+      "changes": "Added C4 outbound and return approach/exit keyframes that place all carbons in the annular cytoplasmic sleeve before any sphere overlaps the shared-wall pore. The channel segment retains the same y/z coordinate until the full molecular skeleton clears the pore; molecule spacing is retained. Independent peer review found that the original lip rings narrowed the otherwise clear sleeve. Inner/outer torus center radii are now 0.212/0.242 with tube radius 0.012, giving the inner rim the same 0.2 aqueous clearance as the channel. Full carbon sphere sizes and skeleton spacing remain unchanged; bilingual introduction identifies enlarged teaching scales.",
+      "files": [
+        "src/processes/modules/plantConnections/c4camProcess.js",
+        "src/processes/modules/plantConnections/science.test.mjs"
+      ],
+      "verification": [
+        "Dense 10001-frame regression reads actual carbon sphere radii, actual pore-cylinder dimensions and actual desmotubule geometry.",
+        "All 984 outbound and 839 return overlapping-pore atom samples satisfy radialDistance+sphereRadius <= poreRadius and radialDistance-sphereRadius >= desmotubuleRadius.",
+        "Both C4/CAM strategy scenes remain mutually exclusive and local smoke validates their final conditions, finite geometry, stable resources and deterministic seeks.",
+        "Follow-up to peer R1: 10001 frames sweep all four carbon spheres against all eight actual torus meshes using analytic solid-torus distance and indexed Triangle.closestPointToPoint. 4000 axial-near cases pass; minimum triangle-surface clearance is 0.002231372731273301.",
+        "1700 rendered C-C bond/rim checks use the full cylindrical bond enclosed by an axial capsule, not just endpoints. Their axial alignment is asserted; capsule distance clears the torus and the desmotubule/pore sleeve.",
+        "Negative controls retain original R=0.19: analytic sweep detects 594 intersections (318 outbound, 276 return from peer sweep); original indexed TorusGeometry at p=0.3638 also overlaps the actual atom by more than 0.019."
+      ],
+      "limitations": [
+        "This proves clearance for the rendered schematic dimensions, not physiological metabolite sizes or a quantitative transport law.",
+        "CAM and qualified-pass photorespiration/plasmodesmata scientific scope were not expanded."
+      ]
+    }
+  ],
+  "unchangedModels": ["plasmodesmata", "photorespiration"],
+  "commands": [
+    "npx prettier --write src/processes/modules/plantConnections/plantTransportProcess.js src/processes/modules/plantConnections/c4camProcess.js src/processes/modules/plantConnections/science.test.mjs",
+    "node src/processes/modules/plantConnections/science.test.mjs",
+    "node src/processes/modules/plantConnections/smoke.mjs"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.esalq.usp.br/lepse/imgs/conteudo_thumb/Crystal-structure-of-the-plasma-membrane-proton-pump-1.pdf",
+      "title": "Pedersen et al. 2007, Crystal structure of the plasma membrane proton pump",
+      "basis": "Primary-paper PDF opened during Phase A; supports domain architecture and ATP/H+ coupling. Existing SUC1 primary source retained."
+    }
+  ]
+}

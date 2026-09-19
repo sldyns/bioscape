@@ -1,0 +1,182 @@
+{
+  "group": "genome",
+  "issues": [
+    {
+      "issueId": "genome-01",
+      "status": "fixed",
+      "changes": "CMG 位于前导模板路径；马达内的连续前导模板被拉直，后随模板从外侧通过。前导合成端退到 CMG 后方，避免新生双链贯穿马达。",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js",
+        "src/processes/modules/genome/replicationProcess.js",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "3 roots × 2 ligase branches × 6 intermediate progresses；从实际 instanceMatrix 重建 DNA 线段，检查前导链过孔和后随链排除。",
+        "将实际 DNA 线段变换到每个 CMG 蛋白椭球的局部坐标，计算整段到椭球中心的最小二次型，确认无实体穿越。"
+      ],
+      "limitations": [
+        "仍为结构原理示意；没有模拟完整 N/C-tier 的原子接触或 ATP 步进。"
+      ]
+    },
+    {
+      "issueId": "genome-02",
+      "status": "fixed",
+      "changes": "删除头内和受体内两个独立、相反索引的 DNA 显隐数组，改为同一条 96 段有序 DNA 轮廓。每段保留固定宿主/噬菌体身份，沿连续轨迹从头部穿过尾管进入受体。",
+      "files": [
+        "src/processes/modules/genome/transductionProcess.js",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "2 roots × 2 routes，注入前、中、后 12 个进度：逐段重建实际网格端点，检查相邻段共端点、96 段唯一存在。",
+        "λ 始终保持 32 宿主身份段和 64 噬菌体身份段；P1 全为宿主身份。最终所有 DNA 端点进入受体内侧膜以内。"
+      ],
+      "limitations": [
+        "这些分段数用于保持同一条绘图轮廓的身份，不对应核苷酸数或真实基因组比例；包装/递送速度仍为示意。"
+      ]
+    },
+    {
+      "issueId": "genome-03",
+      "status": "fixed",
+      "changes": "包装时将完整噬菌体沿供体长轴置于胞内剖面；DNA 的展开到凝聚路径也留在胞内。供体裂解后，颗粒才移出、转向受体并开始注入。",
+      "files": [
+        "src/processes/modules/genome/transductionProcess.js",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "在 p=0.34,0.40,0.48 的两路线/两 roots，直接检查 DNA 线段端点与非实例化噬菌体网格顶点位于供体胶囊边界内。",
+        "lysis=0.54 后才进入从 p=0.55 开始的胞外传播。"
+      ],
+      "limitations": [
+        "放大了单个转导颗粒；未模拟包装 ATP 马达、普通后代数目和全套噬菌体装配反应。"
+      ]
+    },
+    {
+      "issueId": "genome-04",
+      "status": "fixed",
+      "changes": "用外缘固定在母膜侧壁、中央孔逐渐缩小的环形曲面替代从中心向外长大的圆盘；为持续 DNA 分配保留带蛋白环的转运孔。",
+      "files": [
+        "src/processes/modules/genome/sporulationTopology.js",
+        "src/processes/modules/genome/bacterialSporulationProcess.js",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "实际曲面顶点在 p=0.14,0.15,0.18,0.20 始终具有固定连壁外缘，中央孔单调缩小。",
+        "转运 DNA 的实际线段与隔膜相交时，交点位于画出的转运蛋白孔内；曲面索引在对应位置挖孔。"
+      ],
+      "limitations": [
+        "这是隔膜及转运孔的粗粒化形态，不声称孔径、膜厚或蛋白原子构象真实。"
+      ]
+    },
+    {
+      "issueId": "genome-05",
+      "status": "fixed",
+      "changes": "新增连续母膜包裹曲面：从隔膜形成杯状面，推进边缘通过同一曲面接回母膜；末端膜颈缩至零后分离为闭合外膜。内膜从原极性区室的边界连续变形；保留原有皮层、孢子衣细节。",
+      "files": [
+        "src/processes/modules/genome/sporulationTopology.js",
+        "src/processes/modules/genome/bacterialSporulationProcess.js",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "normal/blocked 全中间状态检查实际包裹网格的末边与母膜胶囊曲面共享位置；索引构造为连续曲面。",
+        "blocked 的有效进度最多 0.43，保留连到母膜的包裹中间态；原 smoke 同时覆盖无成熟/释放状态。",
+        "动态曲面的顶点、法线、索引及变换在随机顺序回跳后完全一致。"
+      ],
+      "limitations": [
+        "末端膜颈收缩/裂断为形态插值，未模拟 FisB 动力学或真实膜面积守恒；待 root 检查剖面辨读与视角。"
+      ]
+    },
+    {
+      "issueId": "genome-06",
+      "status": "fixed",
+      "changes": "从两份已复制的连续闭合双链 DNA 开始；保留母细胞一份，另一份连续形变进入前孢子。删除独立 transportDNA 桥段及提前出现的额外完整前孢子环，转运与隔膜孔使用同一条 DNA 轨迹。",
+      "files": [
+        "src/processes/modules/genome/sporulationTopology.js",
+        "src/processes/modules/genome/bacterialSporulationProcess.js",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "每份染色体每条骨架在全时域保持 192 个连续线段，首尾闭合，无新增第三条 DNA。",
+        "跨隔膜的实际线段交点位于转运孔内；p=0.31 运输结束时整条第二染色体已处在前孢子侧。",
+        "2 controls × 18 时间点检查，包括 blocked 和成熟释放；身份通过固定对象保留。"
+      ],
+      "limitations": [
+        "DNA 轮廓的压缩展示分配与凝聚，不代表测得的核质折叠或定量轮廓长度；未声称孢子形成新增个体。"
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/genome/science.test.mjs",
+      "result": "PASS: original 120 geometry/state cases; all 8 model conditions deterministic finite/stable geometry; added 2412 bubble/fork/reclosure states, 9062661 nearby cross-strand pairs (7759980 unequal indices), minimum conservative tube clearance 0.2035725966."
+    },
+    {
+      "command": "node src/processes/modules/genome/smoke.mjs",
+      "result": "PASS: all 8 control branches across 4 models; local bundling, finite buffers, stable resources and deterministic seeks."
+    },
+    {
+      "command": "npx prettier --write [only the six owned changed JS/MJS files]",
+      "result": "Owned files formatted; no global workspace build or browser automation."
+    },
+    {
+      "command": "node /tmp/peer-genome-offdiagonal.mjs",
+      "result": "Re-ran independent reviewer probe after correction: all three original different-index witnesses have 0 actual triangle intersections."
+    },
+    {
+      "command": "Independent reviewer: node /tmp/peer-genome-bubbles.mjs plus fixed-index triangle probes",
+      "result": "PASS: 2418 model states; five exact original witness pairs have zero actual triangle intersections. Independent reviewer also reran the complete updated science.test.mjs successfully."
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.rcsb.org/structure/5U8T",
+      "supports": "CMG leading-template threading; actually read in Phase A"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3576517/",
+      "supports": "Terminal membrane fission after engulfment; primary abstract actually read in Phase A via NCBI XML"
+    }
+  ],
+  "peerExtensions": [
+    {
+      "issueId": "genome-peer-bubble-01",
+      "status": "fixed",
+      "changes": "NER 开泡不再把反相螺旋向量与固定上下向量混合，而是连续展开未取模相位并保持非零的链间半径。切除区在完全开启时为分离的直链；切除、补链及闭泡共用同一参数化，因此补链闭合不再穿过完整模板。",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "全3 roots、active/blocked、201个进度，检查受损链/完整模板及新补链/完整模板任意邻近线段独立参数距离。",
+        "独立原见证 p=.225 不同索引开泡与 p=.785 不同索引补链闭泡实际三角面交点均由54/52降为0。",
+        "含修复新增检查的合计2412状态、9062661组跨链近邻、7759980不同索引组合全部具有正管面保守间隔，最小0.2035725966。",
+        "原独立审计者 p_bacterial_core 复跑完整2418状态PASS；repair最小保守管面净距0.27272208，replication为0.20357260。",
+        "固定原五组失败索引（139/139、99/100、100/100、100/99、64/63）全部0实际三角面交点；独立复验报告 acceptance/peer-genome-bubbles.md 已关闭两个peer问题。"
+      ],
+      "limitations": [
+        "展开相位和分离半径是连续几何示意，不声称复现原子运动轨迹。",
+        "同一修复骨架的合法补链共端点不作为相交；被保留完整的互补模板始终参加跨链检测。"
+      ]
+    },
+    {
+      "issueId": "genome-peer-bubble-02",
+      "status": "fixed",
+      "changes": "复制叉使用随叉输运的螺旋相位，让进入开叉过渡带的亲本链分离方向与外侧分支一致，消除原先扫过任意相位时的向量抵消；保留前导模板的 CMG 穿孔路径及后随模板排除。",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "全3 roots、active/absent ligase、201个进度，检查两亲本、各新生链及 RNA 引物与不同共价链的全部邻近管段，不局限同索引。",
+        "独立 p=.265 parent64/63 原见证的实际三角面交点由80降为0。",
+        "原CMG实体不穿模、前导模板穿孔、后随模板排除测试仍通过。",
+        "原独立审计者 p_bacterial_core 复跑完整2418状态PASS；repair最小保守管面净距0.27272208，replication为0.20357260。",
+        "固定原五组失败索引（139/139、99/100、100/100、100/99、64/63）全部0实际三角面交点；独立复验报告 acceptance/peer-genome-bubbles.md 已关闭两个peer问题。"
+      ],
+      "limitations": [
+        "叉带动的相位调整为整体示意，不模拟扭转应力、拓扑异构酶或真实旋转速度。",
+        "同一后随骨架上的 RNA–DNA 共价连接不计作跨链碰撞。"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "group": "regulation",
+  "reviewer": "p_genome (independent of regulation and original transcription authors)",
+  "models": [
+    {
+      "id": "promoterRegulation",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian nuclear TATA-containing protein-coding promoter; DNA and general transcription factors assemble one Pol II initiation attempt. Intact and altered-site examples are explicitly bounded, not universal mutation outcomes.",
+      "checks": [
+        "Read both languages, all six stages (0/.17/.34/.52/.66/.81), intro, legend, labels, entries.js roots and both bindingSite values; no plant or microbial context is registered.",
+        "Actual point() geometry has two DNA backbones, local separation and removal of central pairing in the bubble, an upstream TATA region and downstream start marker. Coding/template end labels are antiparallel and Pol II advances toward template 5′.",
+        "Intact branch bends promoter, recruits general factors, then opens DNA and produces RNA; altered branch loses stable recognition and never opens DNA or produces RNA. Factor assembly order is presented as separated cooperative events rather than a universal mandatory sequence.",
+        "TFIID contains a TBP saddle and TAF lobes; TFIIH contains bilobal XPB geometry rather than a ring helicase. RNA is one backbone with exposed bases, not a DNA duplex. These are schematic shapes, not verified atomic folds.",
+        "Read-only runtime measurement of actual tube vertices and catalytic mesh world transform at p=.90: RNA 3′=(1.14833748,-.14,.32000000); catalytic center=(1.17833750,-.15,-.105); separation=.42617485. This separation persists across elongation because both use the same travel offset."
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/s41586-021-03554-8",
+          "title": "Aibara et al. (2021), Structures of mammalian RNA polymerase II pre-initiation complexes",
+          "supports": "Opened article: mammalian PIC assembles on DNA; XPB translocation promotes local opening downstream of TATA. This supports the depicted order, not the invented protein folds."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30442764/",
+          "title": "Patel et al. (2018), Structure of human TFIID and mechanism of TBP loading onto promoter DNA",
+          "supports": "Opened abstract and figure descriptions: TFIID promoter recognition and conformational changes load TBP onto promoter DNA."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/5C44",
+          "title": "Barnes et al. (2015), transcribing Pol II with a complete transcription bubble, PDB 5C44",
+          "supports": "Opened structural record: a transcribing complex contains Pol II, template/non-template DNA and RNA; the bubble forks coordinate DNA opening/reannealing with the nascent transcript. This is conserved topology evidence, not a fitted shape for these models."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "regulation-01",
+          "severity": "P1",
+          "kind": "misleading molecular topology",
+          "file": "src/processes/modules/regulation/promoterRegulationProcess.js",
+          "location": "update(), lines 263 and 278-290; geometry.js polymerase(), lines 155-161",
+          "evidence": "The RNA path begins at [.2+travel,-.14,.32], but the explicit catalytic-center sphere is at Pol II local [.03,-.18,.015] and Pol II world [.2+travel,.03,-.12]. The measured endpoint gap is .4262 scene units versus catalytic radius .055 and RNA tube radius .035. There is no continuation of RNA from this free endpoint into that active center or a template-paired RNA segment.",
+          "whyWrong": "The displayed growing 3′ terminus must participate in synthesis in the template-containing catalytic cleft. Here a specifically marked active center and a visibly free RNA end disagree, even though the final-stage text teaches addition at RNA 3′. This is connectivity, not a demand for atomic-scale dimensions.",
+          "fix": "Derive the RNA 3′ anchor and the local template path from the same catalytic-center transform; route a short template-associated RNA segment through the cleft, then peel the older 5′ segment into the exit path. Keep direction and altered-site behavior.",
+          "verification": "At several intact initiation/escape times and after reverse seeks, the RNA 3′ centerline must lie within the visible catalytic region; its short template-associated segment must connect continuously to the exiting RNA. Altered-site RNA must remain absent.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/5C44"
+          ]
+        }
+      ],
+      "limitations": [
+        "No browser operated; inspected existing p=.55 screenshot plus complete update formulas and read-only geometry measurements. Screenshot alone does not validate elongation.",
+        "Not an atomic structure validation. Sequence-specific affinity, NTP/ATP consumption, CTD phosphorylation and chromatin remodeling are outside the displayed scope; their omission alone is not reported as an error."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "enhancerRegulation",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian nuclear enhancer/promoter regulatory schematic on one nucleosomal fiber; coactivator-competent versus recruitment-impaired illustrative observation windows.",
+      "checks": [
+        "Read both languages, all six stages (0/.17/.35/.53/.66/.8), intro, labels, legend, metadata and both coactivator settings. Same chromatin trajectory is used in both conditions.",
+        "Inspected octamer construction, duplex nucleosomal wraps, linker endpoint transforms and chromatin updates. The coarse topology is eight histones with left-handed DNA wrapping, connected by duplex linkers; enhancer and promoter are positions on the same fiber.",
+        "Activator binding is allowed in both conditions. Mediator recruitment differs; Pol II arrives in both. Competent RNA windows are [.59,.74) and [.87,.99), impaired has none. No claim that all basal transcription is zero is made.",
+        "Burst times are prescribed independently of the geometric distance. Lack of obligatory enhancer-promoter contact is not itself classified as a defect: available locus-specific live-cell evidence does not justify demanding universal instantaneous contact.",
+        "Actual RNA is single-stranded. However every linker remains paired during both bursts: chromatinGeometry.js line 175 calls dna.update(link.point), using molecularDNA default paired=()=>1. Pol II stays at a fixed offset to the promoter while RNA length increases.",
+        "Read-only world-coordinate measurement at p=.68 gives RNA 3′=(3.23734608,.26805465,-.05601349) and catalytic center=(3.26624611,.34465466,-.46656349), separation .41863358 versus catalytic radius .03465."
+      ],
+      "sources": [
+        {
+          "url": "https://elifesciences.org/articles/41769",
+          "title": "Alexander et al. (2019), Live-cell imaging reveals enhancer-dependent Sox2 transcription in the absence of enhancer proximity",
+          "supports": "Opened article during review: mouse ESC Sox2 observations separate enhancer dependence from contemporaneous proximity; they do not establish a universal distance-to-expression rule."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AOI",
+          "title": "Luger et al. (1997), nucleosome core particle, PDB 1AOI",
+          "supports": "Opened structural record: eight histone subunits organize duplex DNA into a surrounding superhelix. The model reproduces that coarse topology; its individual folds and chromatin trajectory are not structure fits."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41586-021-03554-8",
+          "title": "Aibara et al. (2021), Structures of mammalian RNA polymerase II pre-initiation complexes",
+          "supports": "Opened article: mammalian PIC assembles on DNA; XPB translocation promotes local opening downstream of TATA. This supports the depicted order, not the invented protein folds."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/5C44",
+          "title": "Barnes et al. (2015), transcribing Pol II with a complete transcription bubble, PDB 5C44",
+          "supports": "Opened structural record: a transcribing complex contains Pol II, template/non-template DNA and RNA; the bubble forks coordinate DNA opening/reannealing with the nascent transcript. This is conserved topology evidence, not a fitted shape for these models."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "regulation-02",
+          "severity": "P1",
+          "kind": "misleading molecular topology and missing causal engagement",
+          "file": "src/processes/modules/regulation/enhancerRegulationProcess.js",
+          "location": "update(), lines 178-228; chromatinGeometry.js line 175; geometry.js molecularDNA default pairing at line 316",
+          "evidence": "The burst path is explicitly labeled nascent RNA and lengthens, but its 3′ end is .4186 units away from the displayed catalytic center. The promoter linker continues to render all base-pair bonds because no pairing/opening callback is provided. Neither template movement through Pol II nor polymerase movement along that linker accompanies the increase in RNA length.",
+          "whyWrong": "A literal molecular RNA elongation scene cannot show synthesis from an entirely paired, unengaged DNA duplex with its growing end outside the catalytic site. Independent burst timing is an acceptable regulatory abstraction; it does not correct the local molecular topology.",
+          "fix": "Either implement a local promoter transcription bubble and continuously anchored template/RNA path, with relative template/Pol II progression during a burst, or replace the literal chain with an explicitly abstract output indicator and remove the claim that this view depicts RNA molecular elongation. Preserve the two control conditions and do not invent a universal proximity trigger.",
+          "verification": "During each RNA growth window, assert a connected RNA 3′/catalytic anchor, exposed template in an actual local DNA bubble, and advancement relative to template bases. Outside windows, output identity/fate must be explicit. Compare both controls at identical p to retain equal chromatin geometry.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/5C44",
+            "https://www.nature.com/articles/s41586-021-03554-8"
+          ]
+        }
+      ],
+      "limitations": [
+        "No browser operated; representative p=.55 screenshot is before RNA production, so finding comes from complete branch formulas and actual mesh sampling during a burst.",
+        "Coactivator/activator folds and whole-fiber motion are illustrative, not a fitted locus or measured stochastic process. Direct enhancer contact, every initiation factor and chromatin opening history need not all be depicted in a regulatory overview.",
+        "Released RNA is not retained between bursts. Recorded as a representation limit rather than a separate confirmed degradation claim, because output fate is not the lesson."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "transcription",
+      "roots": [
+        "cell",
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Generic eukaryotic nuclear Pol II transcription of a protein-coding gene, shared animal and plant routes; no exposed controls or organism-specific factor identities.",
+      "checks": [
+        "Read catalog roots and both language versions of intro, six stages (0/.13/.27/.43/.68/.86), labels, legend and sources. All registered root contexts use the same generic nuclear mechanism.",
+        "DNA has two antiparallel backbones; local bubble tracks Pol II and reanneals behind it. Each exposed base remains on its own strand, rather than leaving an intact rung spanning the opened bubble.",
+        "RNA is one continuous backbone and nucleotide series. Before cleavage its 3′ end coincides with the active-site marker and its older 5′ end exits behind Pol II; RNA growth and template-reading directions agree with text.",
+        "Termination starts after RNA release begins; Pol II continues downstream and eventually departs while DNA recloses. Transcript release is not labeled mature mRNA; capping, splicing and polyadenylation are explicitly omitted.",
+        "At p=.86, actual instance transforms show visible main RNA and newly visible downstream remnant have coincident 3′ endpoints to 7.7e-8 scene units. Both paths use rnaPoint(distance), so their first .4 path-parameter units coincide while the full main RNA remains length 3.57. The new remnant appears before any cleavage interpolation displacement.",
+        "At p=.91 the full-length main RNA has moved away while a separate .4 remnant remains at Pol II; no existing RNA segment was removed from the released chain. At p=1 only the released chain remains."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/5C44",
+          "title": "Barnes et al. (2015), transcribing Pol II with a complete transcription bubble, PDB 5C44",
+          "supports": "Opened structural record: a transcribing complex contains Pol II, template/non-template DNA and RNA; the bubble forks coordinate DNA opening/reannealing with the nascent transcript. This is conserved topology evidence, not a fitted shape for these models."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41586-021-03554-8",
+          "title": "Aibara et al. (2021), Structures of mammalian RNA polymerase II pre-initiation complexes",
+          "supports": "Opened article: mammalian PIC assembles on DNA; XPB translocation promotes local opening downstream of TATA. This supports the depicted order, not the invented protein folds."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5830926/",
+          "title": "Eaton et al. (2018), Xrn2 accelerates termination by RNA polymerase II, underpinned by CPSF73 activity",
+          "supports": "Opened article during review (later requests intermittently blocked): CPSF73-dependent cleavage precedes degradation of polymerase-associated downstream RNA and efficient termination on most tested protein-coding genes. Cleavage partitions one existing RNA rather than copying its terminal segment."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41467-018-06546-x",
+          "title": "Larochelle et al. (2018), Common mechanism of transcription termination at coding and noncoding RNA genes in fission yeast",
+          "supports": "Opened full article: cleavage yields a released upstream RNA and a new uncapped downstream 5′ end. Used only for cleavage topology, not to import yeast-specific factor identities into animal/plant scenes."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "regulation-03",
+          "severity": "P1",
+          "kind": "molecular duplication at cleavage",
+          "file": "src/processes/transcriptionProcess.js",
+          "location": "update(), lines 249-275; rnaPoint(), lines 200-212",
+          "evidence": "The main RNA is always rendered over length=.12+growth*3.45; after growth completes that is 3.57. At p>=.86 a second mesh of length .39*(1-termination)+.01 becomes visible, also starting from rnaPoint(0,...). At the .86 boundary cleavage is still zero, so this new .4 segment exactly overlays the existing RNA segment. Subsequently the complete original RNA moves away without being shortened or split at a cleavage coordinate.",
+          "whyWrong": "Endonucleolytic cleavage partitions one existing transcript into upstream released RNA and downstream polymerase-associated RNA, making a new downstream 5′ end. The scene instead duplicates the original near-active-site segment and then pulls the copies apart. Later downstream synthesis cannot justify the instantaneous pre-existing .4 segment at the cleavage boundary.",
+          "fix": "Define a cleavage coordinate on the pre-existing RNA path. Partition its backbone and nucleotides into non-overlapping upstream/downstream spans at that coordinate; preserve the downstream 3′ active-site anchor and reveal additional downstream length only as Pol II progresses. Move the released upstream product from the actual cut end.",
+          "verification": "Immediately before/after cleavage, each pre-existing RNA segment must belong to exactly one product, with both cut ends coincident initially. No visible RNA length/nucleotide count may jump at cleavage absent synthesis; the downstream 3′ end remains anchored while its newly created 5′ end is the cut end. Check forward and reverse seeks around .86 and .91.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC5830926/",
+            "https://www.nature.com/articles/s41467-018-06546-x"
+          ]
+        }
+      ],
+      "limitations": [
+        "No browser operated; existing p=.55 image and code-derived instanced geometry were reviewed. This is not visual acceptance of every camera angle.",
+        "Animal and plant protein-coding transcription share the coarse depicted sequence, but mammalian and yeast structural/termination evidence does not verify species-specific plant termination factors. None are named or mechanistically expanded in the model.",
+        "The review does not demand exact nucleotide counts, catalytic chemistry or omitted RNA processing; the issue is the topological duplication explicitly introduced at the cut."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

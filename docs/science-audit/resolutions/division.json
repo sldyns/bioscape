@@ -1,0 +1,140 @@
+{
+  "group": "division",
+  "issues": [
+    {
+      "issueId": "division-01",
+      "status": "fixed",
+      "changes": "Replaced each continuous pole-to-pole interpolar bundle with two oppositely oriented half-bundles. Each population has its own midzone plus-end termination; overlap decreases while poles separate.",
+      "files": [
+        "src/processes/modules/division/mitosisProcess.js",
+        "src/processes/modules/division/science.test.mjs"
+      ],
+      "verification": [
+        "Actual first/last instance endpoints at p=.43,.64,.73: 16 half-bundles, distinct pole-proximal origins, opposing ends within .75 of the midzone, no individual strand spans both poles, decreasing overlap."
+      ],
+      "limitations": [
+        "This is a schematic antiparallel array, not a quantitative motor or microtubule-dynamics simulation."
+      ]
+    },
+    {
+      "issueId": "division-02",
+      "status": "fixed",
+      "changes": "The attachment endpoint is a ray intersection with an actual outer-kinetochore triangle surface, transformed back into scene coordinates after the chromosome transform. The capture fraction and shortened unattached branch are preserved.",
+      "files": [
+        "src/processes/modules/division/divisionShapes.js",
+        "src/processes/modules/division/mitosisProcess.js",
+        "src/processes/modules/division/science.test.mjs"
+      ],
+      "verification": [
+        "Closest-point-on-triangle tests at p=.37,.43,.55,.72,.80 find all eight fibre endpoints within 1e-5 of their own kinetochore surfaces.",
+        "Unattached branch has exactly seven surface contacts; sister centre spacing remains below .25, no contractile belt or daughter-cell reveal, and requested p=1 matches arrested p=.43 geometry."
+      ],
+      "limitations": [
+        "Kinetochores and bundles remain enlarged teaching meshes. Contact is measured against triangles rather than nearest vertices; it does not validate molecular-scale binding geometry."
+      ]
+    },
+    {
+      "issueId": "division-03",
+      "status": "fixed",
+      "changes": "Added a mouse-specific telocentric chromatid option. The terminal arm extends .025L from the centromere instead of .76L; the long arm, homolog identity, sisters and exchange segment remain present. Both intros now identify the drawn autosomes as telocentric.",
+      "files": [
+        "src/processes/modules/division/divisionShapes.js",
+        "src/processes/modules/division/meiosisProcess.js",
+        "src/processes/modules/division/science.test.mjs"
+      ],
+      "verification": [
+        "Actual arm-mesh y extents place the terminal arm below 3% of total length for all eight mouse chromatids.",
+        "Eight actual chromatid groups remain present throughout both divisions; final four spatial product regions each contain two chromosomes."
+      ],
+      "limitations": [
+        "A schematic near-terminal centromere represents standard mouse autosomes; no claim of an exact chromosome-specific size or Robertsonian strain."
+      ]
+    },
+    {
+      "issueId": "division-04",
+      "status": "fixed",
+      "changes": "Replaced detached gold X connectors with a marker at the actual shared exchange junction. The two reciprocal nonsister chromatid paths deform continuously through the common .69L locus and cross onto opposing distal paths. Ancestry changes at this same seam; synapsis rungs use the actual paired axes. Paths relax as homologs separate.",
+      "files": [
+        "src/processes/modules/division/divisionShapes.js",
+        "src/processes/modules/division/meiosisProcess.js",
+        "src/processes/modules/division/science.test.mjs"
+      ],
+      "verification": [
+        "At p=.23,.28,.34, independently extracted proximal top-cap and distal bottom-cap centres coincide for each recombinant, both nonsisters share that world coordinate, and the chiasma marker sits there.",
+        "Proximal/distal materials differ at that physical junction; chromosome inventory and I/II distribution remain unchanged.",
+        "Existing smoke covers out-of-order seeks through crossover and recombination with stable meshes/materials."
+      ],
+      "limitations": [
+        "The visibly enlarged crossover illustrates connected reciprocal ancestry, not the molecular break/repair intermediates or a simulated chromosome trajectory."
+      ]
+    },
+    {
+      "issueId": "division-05",
+      "status": "fixed",
+      "changes": "Replaced separate fading capped daughter ellipsoids and solid connector cylinders with one connected implicit membrane surface. Two isosurfaces form the membrane leaflets around four evolving cell lobes and three retained membrane-lined channels. The old I channel follows the upper lineage; the two II channels retain sister-cell connections. Only the declared positive-z viewing half is cut away.",
+      "files": [
+        "src/processes/modules/division/germCellMembrane.js",
+        "src/processes/modules/division/meiosisProcess.js",
+        "src/processes/modules/division/science.test.mjs"
+      ],
+      "verification": [
+        "At p=.50,.54,.56,.60,.82,.88,.93,.96,1, rays between cell interiors through each active channel encounter no membrane cap.",
+        "Independent transverse rays at final channels encounter both enclosing leaflets, preventing an empty/hidden scene from satisfying the no-cap check.",
+        "Triangle edge counting at the final state finds a manifold membrane whose only boundary edges lie on the intentional front cut; there are no bridge-mouth cracks.",
+        "Membrane mesh, material and buffer resources are retained; cached stable shapes avoid rebuilding between division intervals."
+      ],
+      "limitations": [
+        "Surface sampling is a finite-resolution teaching geometry. No browser visual acceptance has been performed.",
+        "A local headless sample averaged about 33 ms per changing-membrane update and 6 ms with a stable membrane; rendering performance still needs root visual review."
+      ]
+    },
+    {
+      "issueId": "division-06",
+      "status": "fixed",
+      "changes": "Both meiotic spindle phases now obtain attachment targets from the transformed actual outer-kinetochore triangle surface, including chromosome rotation and late scaling. Co-orientation in I and biorientation in II are preserved.",
+      "files": [
+        "src/processes/modules/division/divisionShapes.js",
+        "src/processes/modules/division/meiosisProcess.js",
+        "src/processes/modules/division/science.test.mjs"
+      ],
+      "verification": [
+        "Actual endpoint-to-triangle distances are below 1e-5 for all eight attached bundles at p=.28,.32,.48,.62,.68,.76,.88.",
+        "Extracted fibre origins show sister pairs connecting to the same pole in I and opposite poles in II."
+      ],
+      "limitations": [
+        "As in mitosis, this verifies depicted contact and pole orientation, not atomic attachment chemistry."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/division/science.test.mjs",
+      "result": "passed: real triangle contact, arrest geometry, antiparallel ends/overlap, telocentric arm ratio, reciprocal seam coincidence, product allocation, channel continuity/walls/manifold boundary"
+    },
+    {
+      "command": "node src/processes/modules/division/division.smoke.mjs",
+      "result": "passed: mitosis 254 nodes; meiosis 325 nodes; bilingual stages, finite positions/normals/bounds, stable resources, deterministic seeks, control state, local esbuild bundles"
+    },
+    {
+      "command": "npx prettier --check src/processes/modules/division/divisionShapes.js src/processes/modules/division/mitosisProcess.js src/processes/modules/division/meiosisProcess.js src/processes/modules/division/germCellMembrane.js src/processes/modules/division/science.test.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check -- src/processes/modules/division",
+      "result": "unavailable: workspace is not a Git repository; no diff-based verification claimed"
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2290872/",
+      "title": "Mastronarde et al. (1993), Interpolar spindle microtubules in PTK cells",
+      "use": "Added to mitosis source list; original-paper XML abstract accessed during Phase A supports antiparallel interdigitation."
+    },
+    {
+      "url": "https://www.informatics.jax.org/silver/chapters/5-2.shtml",
+      "title": "Mouse Genetics: The mouse karyotype",
+      "use": "Added to meiosis source list; authoritative chapter opened during Phase A supports ordinary mouse telocentric autosomes."
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "group": "plantWater",
+  "reviewer": "p_neurons (independent author from neurons group)",
+  "models": [
+    {
+      "id": "plasmolysis",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Onion epidermal-cell cutaway; short exposure to a plasma-membrane-impermeant bath solute; bath recover/hold branches.",
+      "checks": [
+        "Reviewed entries, bilingual intro/stages/controls/labels, geometry construction and every update branch; no contexts overrides are declared.",
+        "All six stage starts, five intervening midpoints and p=1 evaluated for both control options with rootId=plant (24 samples/model); source inspection was used in addition to userData.",
+        "Inspected the representative p=0.55 screenshot in /tmp/atlas-refinement; no browser or product edits.",
+        "Initial dilute bath -> high bath concentration -> net outward water during .18-.49 -> retracted protoplast within a fixed porous wall; recovery is gated by bath=recover at .68-.93.",
+        "The wall is outside protoplast and remains fixed. Plasma membrane and tonoplast are separate contours, both retained; vacuole, nucleus and cytoplasm remain in the protoplast group. No external impermeant-solute trajectory enters the protoplast.",
+        "Hypertonic-hold ends contracted; replacement-dilute ends at original scale. Text conditions reversibility on viability and membrane integrity. Osmotic flow is passive; no invented pump or calibrated pressure is presented.",
+        "Paired headgroup rails and hydrophobic-interior rods are a bilayer shorthand, not atomistic lipid stoichiometry. Volume/protoplast scaling is qualitative."
+      ],
+      "sources": [
+        {
+          "url": "https://openstax.org/books/biology/pages/5-2-passive-transport",
+          "title": "OpenStax Biology 5.2 — Passive Transport",
+          "supports": "Opened official text, osmosis/tonicity and plant-cell plasmolysis sections: hypertonic exposure drives water loss and withdrawal of the membrane from the wall; dilute conditions restore turgor when cells remain functional."
+        },
+        {
+          "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1365-3040.1994.tb00279.x",
+          "title": "Oparka, Prior and Crawford (1994) — Behaviour of plasma membrane, cortical ER and plasmodesmata during plasmolysis of onion epidermal cells",
+          "supports": "Opened primary abstract: onion protoplast contraction preserves membrane continuity, including wall-connected Hechtian strands and retained cortical ER. This supports the membrane-continuity condition and limits the simplified smooth retraction."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Hechtian attachments, membrane-area accommodation and cortical ER are omitted; the model should not be used to infer complete detachment at every wall site.",
+        "Water markers are projected in front of the section rather than resolving an aquaporin pathway. Vacuole/cytoplasm/nucleus are proportionally scaled, not independent osmomechanical simulations.",
+        "No quantitative concentration, membrane area or flux conservation was validated; current text appropriately calls it schematic."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "stomata",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Arabidopsis kidney-shaped paired guard cells; initial blue-light opening followed by ABA or sustained light.",
+      "checks": [
+        "Reviewed entries, bilingual intro/stages/controls/labels, geometry construction and every update branch; no contexts overrides are declared.",
+        "All six stage starts, five intervening midpoints and p=1 evaluated for both control options with rootId=plant (24 samples/model); source inspection was used in addition to userData.",
+        "Inspected the representative p=0.55 screenshot in /tmp/atlas-refinement; no browser or product edits.",
+        "Plasma-membrane H+-ATPase activation is described before ion accumulation; H+ markers move outward (.12-.29), ion markers inward (.21-.48), water inward (.28-.5), and actual kidney geometry opens.",
+        "ABA is gated by the signal control. ABA marker appears at .61, efflux begins at .66, narrowing starts at .69 and water efflux at .73. Sustained-light geometry stays open and does not show ABA/closing water flux.",
+        "The pore is actual space between two kidney surfaces. Inner-wall geometry is thicker, wall bundles constrain shape, and vacuoles remain within the two guard-cell silhouettes; no plasmolysis is depicted.",
+        "ZH/EN describe anion-dependent depolarization then K+ efflux, active proton pumping and osmotic water flow. No ATP stoichiometry, voltage or exact physiological kinetics are claimed. Generic plant-root registration is scoped by the explicit Arabidopsis specimen."
+      ],
+      "sources": [
+        {
+          "url": "https://www.esalq.usp.br/lepse/imgs/conteudo_thumb/phot1-and-phot2-mediate-blue-light-regulation-of-stomatal-opening.pdf",
+          "title": "Kinoshita et al. (2001) — phot1 and phot2 mediate blue light regulation of stomatal opening",
+          "supports": "Opened primary article PDF hosted by USP. Page 1 states that blue light activates plasma-membrane H+-ATPase, creates an inside-negative potential and drives guard-cell K+ uptake; the phot1 phot2 double mutant lacks the blue-light stomatal response."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18305484/",
+          "title": "Vahisalu et al. (2008) — SLAC1 is required for plant guard cell S-type anion channel function in stomatal signalling",
+          "supports": "Opened primary abstract and figure descriptions. SLAC1 is a plasma-membrane protein needed for ABA-responsive closure; slac1 mutants impair ABA/Ca-activated S-type anion currents."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Colored ion/water/proton particles are projected flux indicators above the cutaway (z=.48/.7/.8), not resolved molecular paths through explicit channels. The biology is supported by the accompanying text; a future molecular inset should not treat these as literal 3D trajectories.",
+        "Anion and K+ efflux share one animation window; the text, rather than separate visual tracks, carries their causal order. Wall mechanics and vacuole inflation are qualitative.",
+        "Sustained-light protonPump userData becomes false after .6 although the light branch remains open; this is an internal illustrative-state limitation, not a user-visible claim of physiological pump shutdown."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "plantLongDistanceTransport",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Compressed angiosperm root-stem-leaf tissue section; xylem cohesion-tension transport and stomatal narrowing/open controls.",
+      "checks": [
+        "Reviewed entries, bilingual intro/stages/controls/labels, geometry construction and every update branch; no contexts overrides are declared.",
+        "All six stage starts, five intervening midpoints and p=1 evaluated for both control options with rootId=plant (24 samples/model); source inspection was used in addition to userData.",
+        "Inspected the representative p=0.55 screenshot in /tmp/atlas-refinement; no browser or product edits.",
+        "Explicit multicellular/organ scope avoids implying that one generic plant cell contains the whole root-to-leaf mechanism. Tracers move radially from root tissues into xylem, then upward as liquid; separate vapor markers move through the leaf air space and stoma.",
+        "The liquid water column stays visible at all stages, including narrowed stomata; the vessel lumen lacks a protoplast. Lateral pits retain primary-wall pit membranes while terminal perforations are open.",
+        "Evaporation is introduced before the tension/uptake explanatory stages, and text identifies wet mesophyll walls rather than boiling xylem water. Liquid supply and vapor are separate geometry classes.",
+        "The closure branch narrows rather than completely seals the geometrical pore, reduces positive tracer speed and vapor-marker count, but does not reverse flow or empty xylem. Continued opening retains flow. No xylem ATP pump is present.",
+        "Cellular/tissue dimensions are intentionally mixed and labeled compressed; root barriers/parallel routes, root pressure and embolism are explicitly omitted rather than presented as universal anatomy."
+      ],
+      "sources": [
+        {
+          "url": "https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants",
+          "title": "OpenStax Biology 2e 30.5 — Transport of Water and Solutes in Plants",
+          "supports": "Opened official section: leaf evaporation creates tension, cohesion transmits it through xylem, and roots supply water along water-potential gradients; stomatal regulation affects transpiration."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10594106/",
+          "title": "Wei, Tyree and Steudle (1999) — Direct measurement of xylem pressure in leaves of intact maize plants",
+          "supports": "Opened primary abstract: direct pressure-probe and pressure-bomb measurements under manipulated light/root pressure were consistent with cohesion-tension. This supports the qualitative driver, not the schematic geometry or numerical speed."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Root endodermis/Casparian-strip and membrane transport routes are condensed into a single illustrated path; this is explicitly stated and is not a cellular root-transport lesson.",
+        "The mesophyll liquid-vapor interface is schematic: vapor tracers originate in the air-space region rather than being paired molecule-by-molecule with liquid markers. No microscopic meniscus or evaporation kinetics is resolved.",
+        "The internal poreOpening field reaches zero although actual narrow-pore geometry still has a gap; visible labels call this narrowing and residual flow is retained. Do not expose this field as a physical aperture measurement."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "chloroplastMovement",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis mesophyll cell, downward blue-light beam, periclinal accumulation/anticlinal avoidance, wild-type versus phot2-loss.",
+      "checks": [
+        "Reviewed entries, bilingual intro/stages/controls/labels, geometry construction and every update branch; no contexts overrides are declared.",
+        "All six stage starts, five intervening midpoints and p=1 evaluated for both control options with rootId=plant (24 samples/model); source inspection was used in addition to userData.",
+        "Inspected the representative p=0.55 screenshot in /tmp/atlas-refinement; no browser or product edits.",
+        "Beam points downward. At stable low-light endpoint, chloroplast disks are flat on the lower periclinal surface; wild-type high-light endpoint rotates them toward anticlinal walls. phot2-loss retains accumulation, consistent with the intended gene phenotype.",
+        "Initial accumulation and avoidance formulas were traced separately, including rotation. A 201-point sweep for each genotype transformed actual non-instanced chloroplast shell/rim/connector vertices to world coordinates and compared them with the declared cell box.",
+        "No product geometry was changed during the audit. The sweep confirms that center-only cortical paths are insufficient: entire organelles penetrate the bottom and side membrane planes during corner transitions.",
+        "The movement helper depicts a cutaway double envelope and grana. It does not claim an atomic reconstruction or calibrated numbers of grana. Short cp-actin involvement is described without inventing a visible myosin rail."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/19620714/",
+          "title": "Kadota et al. (2009) — Short actin-based mechanism for light-directed chloroplast movement in Arabidopsis",
+          "supports": "Opened primary abstract and figure descriptions: short cp-actin filaments are at the chloroplast periphery on the plasma-membrane side; their redistribution accompanies intracellular photorelocation and membrane anchoring."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/11371609/",
+          "title": "Sakai et al. (2001) — Arabidopsis nph1 and npl1: blue light receptors that mediate both phototropism and chloroplast relocation",
+          "supports": "Opened primary abstract and figures: phototropin-family receptors mediate chloroplast relocation and NPL1/phot2 supports high-light avoidance; low- and high-light conditions are distinct."
+        },
+        {
+          "url": "https://www.nature.com/nature/articles?page=633&searchType=journalSearch&sort=PubDate&type=letter",
+          "title": "Nature issue archive — Phototropin-related NPL1 controls chloroplast relocation induced by blue light",
+          "supports": "Opened publisher archive explicitly credits Jose A. Jarillo and coauthors to this title. The model instead prefixes it with Kagawa. The PubMed indexed record PMID 11309623 also lists Jarillo and DOI 10.1038/35073622; opening that article record encountered a challenge, so it was not treated as full-text verification."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "plantWater-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/plantWater/chloroplastMovementProcess.js",
+          "location": "lines 100-109 (cell bounds), 176-192 (corner path/orientation), structuralDetail.js chloroplastFactory envelope radius",
+          "evidence": "Declared cell membrane is BoxGeometry(5,5.3,3): x=±2.5, y=±2.65. Descent sends vertical disks to y=-2.39 before flattening, and avoidance sends flat disks to x=±2.32 before rotating. Actual vertex sweep: p=.235 reaches y=-2.807803 (chloroplast 1); p=.725 wild-type reaches x=-2.737817 (chloroplast 0). These exceed even the wall center planes by .158/.238 model units. Both genotypes share the first violation.",
+          "whyWrong": "The model promises relocation within the peripheral cytoplasm. During the animated transition the chloroplast envelope visibly crosses the cell membrane/wall, rather than remaining on the cytoplasmic side. Keeping its center on a cortical path does not preserve organelle compartment topology.",
+          "fix": "Use an orientation-aware rounded-corner path with clearance for the complete envelope; rotate before approaching a wall or increase the inward center offset during turning. Keep the entire plastid within the cell and outside the vacuole for both genotype branches. Preserve the stable periclinal/anticlinal endpoints and avoid shrinking only the colliding frames.",
+          "verification": "Sweep dense progress samples for both genotypes and transform shell/rim plus instanced internal geometry into world coordinates. Assert all physical envelope vertices remain inside the declared plasma-membrane box with clearance and do not enter the vacuole; explicitly regress p=.235 and .725, and inspect intermediate corner frames.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/19620714/"
+          ]
+        },
+        {
+          "issueId": "plantWater-02",
+          "severity": "P2",
+          "kind": "fact_error",
+          "file": "src/processes/modules/plantWater/chloroplastMovementProcess.js",
+          "location": "lines 79-82, sources[1]",
+          "evidence": "The source title is prefixed Kagawa et al. but URL /articles/35073622 is the Nature paper Phototropin-related NPL1 controls chloroplast relocation induced by blue light by Jarillo et al. Kagawa led a separate Science paper (PMID 11251116, DOI 10.1126/science.291.5511.2138).",
+          "whyWrong": "The title/author/URL combination misattributes the primary evidence and mixes two distinct phot2/NPL1 studies.",
+          "fix": "Change the displayed author to Jarillo et al. for the existing Nature title/URL, or replace all title/author/URL fields consistently with the separate Kagawa Science paper.",
+          "verification": "Verify author/title/DOI agree with the publisher record; a bibliographic check must treat a functioning URL alone as insufficient.",
+          "sourceUrls": [
+            "https://www.nature.com/nature/articles?page=633&searchType=journalSearch&sort=PubDate&type=letter",
+            "https://pubmed.ncbi.nlm.nih.gov/11309623/",
+            "https://pubmed.ncbi.nlm.nih.gov/11251116/"
+          ]
+        }
+      ],
+      "limitations": [
+        "The strong-light avoidance and photoprotection claims have primary-paper support, but the current corner topology prevents scientific visual acceptance.",
+        "Only the explicitly described lower periclinal surface is shown. Exact cell dimensions, migration kinetics, cp-actin dynamics and plastid architecture are schematic.",
+        "Some Nature/PubMed endpoints returned redirects/challenges; reachable primary abstracts/figures and the publisher archive were used, and inaccessible endpoints were not claimed as full-text reads."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

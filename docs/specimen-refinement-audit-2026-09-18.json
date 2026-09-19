@@ -1,0 +1,2447 @@
+{
+  "date": "2026-09-18",
+  "scope": "Plant and Gram-negative bacterium refinement; browser simulation, no physical mobile device",
+  "automated": {
+    "nodes": 120,
+    "routes": 198,
+    "detailTransfers": 117,
+    "meshes": 1364,
+    "errors": 0,
+    "format": "pass",
+    "build": "pass",
+    "pdbRegeneration": "Four extracted JSON files byte-identical after extractor refactoring"
+  },
+  "views": [
+    {
+      "id": "plasmaPump",
+      "path": "#/plant/plantMembrane/plasmaPump",
+      "zh": "质膜H⁺泵",
+      "en": "Plasma-membrane H+ pump",
+      "desktopVisual": "reviewed",
+      "screenshot": "plasmaPump.png"
+    },
+    {
+      "id": "vacuolarPump",
+      "path": "#/plant/vacuole/tonoplast/vacuolarPump",
+      "zh": "液泡V-ATPase",
+      "en": "Vacuolar V-ATPase",
+      "desktopVisual": "reviewed",
+      "screenshot": "vacuolarPump.png"
+    },
+    {
+      "id": "plantAquaporin",
+      "path": "#/plant/plantMembrane/plantAquaporin",
+      "zh": "水通道蛋白",
+      "en": "Aquaporin",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantAquaporin.png"
+    },
+    {
+      "id": "wallMatrix",
+      "path": "#/plant/cellWall/wallMatrix",
+      "zh": "壁内多糖基质",
+      "en": "Wall polysaccharide matrix",
+      "desktopVisual": "reviewed",
+      "screenshot": "wallMatrix.png"
+    },
+    {
+      "id": "glucanChain",
+      "path": "#/plant/cellWall/cellulose/glucanChain",
+      "zh": "β-葡聚糖链",
+      "en": "Beta-glucan chain",
+      "desktopVisual": "reviewed",
+      "screenshot": "glucanChain.png"
+    },
+    {
+      "id": "pdMembrane",
+      "path": "#/plant/cellWall/plasmodesmata/pdMembrane",
+      "zh": "通道膜衬层",
+      "en": "Channel membrane lining",
+      "desktopVisual": "reviewed",
+      "screenshot": "pdMembrane.png"
+    },
+    {
+      "id": "pdDesmotubule",
+      "path": "#/plant/cellWall/plasmodesmata/pdDesmotubule",
+      "zh": "连丝微管",
+      "en": "Desmotubule",
+      "desktopVisual": "reviewed",
+      "screenshot": "pdDesmotubule.png"
+    },
+    {
+      "id": "plant",
+      "path": "#/plant",
+      "zh": "植物细胞",
+      "en": "Plant cell",
+      "desktopVisual": "reviewed",
+      "screenshot": "plant.png"
+    },
+    {
+      "id": "cellWall",
+      "path": "#/plant/cellWall",
+      "zh": "细胞壁",
+      "en": "Cell wall",
+      "desktopVisual": "reviewed",
+      "screenshot": "cellWall.png"
+    },
+    {
+      "id": "cellulose",
+      "path": "#/plant/cellWall/cellulose",
+      "zh": "纤维素微纤丝",
+      "en": "Cellulose microfibrils",
+      "desktopVisual": "reviewed",
+      "screenshot": "cellulose.png"
+    },
+    {
+      "id": "plasmodesmata",
+      "path": "#/plant/cellWall/plasmodesmata",
+      "zh": "胞间连丝",
+      "en": "Plasmodesmata",
+      "desktopVisual": "reviewed",
+      "screenshot": "plasmodesmata.png"
+    },
+    {
+      "id": "plantMembrane",
+      "path": "#/plant/plantMembrane",
+      "zh": "细胞膜",
+      "en": "Plasma membrane",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantMembrane.png"
+    },
+    {
+      "id": "vacuole",
+      "path": "#/plant/vacuole",
+      "zh": "中央液泡",
+      "en": "Central vacuole",
+      "desktopVisual": "reviewed",
+      "screenshot": "vacuole.png"
+    },
+    {
+      "id": "tonoplast",
+      "path": "#/plant/vacuole/tonoplast",
+      "zh": "液泡膜",
+      "en": "Tonoplast",
+      "desktopVisual": "reviewed",
+      "screenshot": "tonoplast.png"
+    },
+    {
+      "id": "cellSap",
+      "path": "#/plant/vacuole/cellSap",
+      "zh": "细胞液",
+      "en": "Cell sap",
+      "desktopVisual": "reviewed",
+      "screenshot": "cellSap.png"
+    },
+    {
+      "id": "chloroplast",
+      "path": "#/plant/chloroplast",
+      "zh": "叶绿体",
+      "en": "Chloroplast",
+      "desktopVisual": "reviewed",
+      "screenshot": "chloroplast.png"
+    },
+    {
+      "id": "chloroplastEnvelope",
+      "path": "#/plant/chloroplast/chloroplastEnvelope",
+      "zh": "叶绿体被膜",
+      "en": "Chloroplast envelope",
+      "desktopVisual": "reviewed",
+      "screenshot": "chloroplastEnvelope.png"
+    },
+    {
+      "id": "thylakoids",
+      "path": "#/plant/chloroplast/thylakoids",
+      "zh": "类囊体系统",
+      "en": "Thylakoid system",
+      "desktopVisual": "reviewed",
+      "screenshot": "thylakoids.png"
+    },
+    {
+      "id": "granum",
+      "path": "#/plant/chloroplast/thylakoids/granum",
+      "zh": "基粒",
+      "en": "Granum",
+      "desktopVisual": "reviewed",
+      "screenshot": "granum.png"
+    },
+    {
+      "id": "stromaLamella",
+      "path": "#/plant/chloroplast/thylakoids/stromaLamella",
+      "zh": "基质片层",
+      "en": "Stroma lamellae",
+      "desktopVisual": "reviewed",
+      "screenshot": "stromaLamella.png"
+    },
+    {
+      "id": "stroma",
+      "path": "#/plant/chloroplast/stroma",
+      "zh": "叶绿体基质",
+      "en": "Stroma",
+      "desktopVisual": "reviewed",
+      "screenshot": "stroma.png"
+    },
+    {
+      "id": "rubisco",
+      "path": "#/plant/chloroplast/stroma/rubisco",
+      "zh": "Rubisco",
+      "en": "Rubisco",
+      "desktopVisual": "reviewed",
+      "screenshot": "rubisco.png"
+    },
+    {
+      "id": "plastidDNA",
+      "path": "#/plant/chloroplast/stroma/plastidDNA",
+      "zh": "叶绿体DNA",
+      "en": "Chloroplast DNA",
+      "desktopVisual": "reviewed",
+      "screenshot": "plastidDNA.png"
+    },
+    {
+      "id": "plantNucleus",
+      "path": "#/plant/plantNucleus",
+      "zh": "细胞核",
+      "en": "Nucleus",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantNucleus.png"
+    },
+    {
+      "id": "plantMitochondria",
+      "path": "#/plant/plantMitochondria",
+      "zh": "线粒体",
+      "en": "Mitochondrion",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantMitochondria.png"
+    },
+    {
+      "id": "plantMatrix",
+      "path": "#/plant/plantMitochondria/plantMatrix",
+      "zh": "线粒体基质",
+      "en": "Mitochondrial matrix",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantMatrix.png"
+    },
+    {
+      "id": "plantER",
+      "path": "#/plant/plantER",
+      "zh": "内质网",
+      "en": "Endoplasmic reticulum",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantER.png"
+    },
+    {
+      "id": "plantCisternae",
+      "path": "#/plant/plantER/plantCisternae",
+      "zh": "膜囊与腔",
+      "en": "Cisternae and lumen",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantCisternae.png"
+    },
+    {
+      "id": "plantGolgi",
+      "path": "#/plant/plantGolgi",
+      "zh": "高尔基体",
+      "en": "Golgi apparatus",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantGolgi.png"
+    },
+    {
+      "id": "plantRibosome",
+      "path": "#/plant/plantER/plantRibosome",
+      "zh": "细胞质核糖体",
+      "en": "Cytosolic ribosome",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantRibosome.png"
+    },
+    {
+      "id": "plant60S",
+      "path": "#/plant/plantER/plantRibosome/plant60S",
+      "zh": "60S大亚基",
+      "en": "60S large subunit",
+      "desktopVisual": "reviewed",
+      "screenshot": "plant60S.png"
+    },
+    {
+      "id": "plant40S",
+      "path": "#/plant/plantER/plantRibosome/plant40S",
+      "zh": "40S小亚基",
+      "en": "40S small subunit",
+      "desktopVisual": "reviewed",
+      "screenshot": "plant40S.png"
+    },
+    {
+      "id": "plantCytoplasm",
+      "path": "#/plant/plantCytoplasm",
+      "zh": "细胞质基质",
+      "en": "Cytosol",
+      "desktopVisual": "reviewed",
+      "screenshot": "plantCytoplasm.png"
+    },
+    {
+      "id": "bacterium",
+      "path": "#/bacterium",
+      "zh": "细菌",
+      "en": "Bacterium",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterium.png"
+    },
+    {
+      "id": "bacterialEnvelope",
+      "path": "#/bacterium/bacterialEnvelope",
+      "zh": "细胞包被",
+      "en": "Cell envelope",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterialEnvelope.png"
+    },
+    {
+      "id": "bacterialOuter",
+      "path": "#/bacterium/bacterialEnvelope/bacterialOuter",
+      "zh": "外膜",
+      "en": "Outer membrane",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterialOuter.png"
+    },
+    {
+      "id": "peptidoglycan",
+      "path": "#/bacterium/bacterialEnvelope/peptidoglycan",
+      "zh": "肽聚糖",
+      "en": "Peptidoglycan",
+      "desktopVisual": "reviewed",
+      "screenshot": "peptidoglycan.png"
+    },
+    {
+      "id": "bacterialMembrane",
+      "path": "#/bacterium/bacterialEnvelope/bacterialMembrane",
+      "zh": "细胞膜",
+      "en": "Cytoplasmic membrane",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterialMembrane.png"
+    },
+    {
+      "id": "nucleoid",
+      "path": "#/bacterium/nucleoid",
+      "zh": "拟核",
+      "en": "Nucleoid",
+      "desktopVisual": "reviewed",
+      "screenshot": "nucleoid.png"
+    },
+    {
+      "id": "nucleoidProteins",
+      "path": "#/bacterium/nucleoid/nucleoidProteins",
+      "zh": "拟核相关蛋白",
+      "en": "Nucleoid-associated proteins",
+      "desktopVisual": "reviewed",
+      "screenshot": "nucleoidProteins.png"
+    },
+    {
+      "id": "bacterialDNA",
+      "path": "#/bacterium/nucleoid/bacterialDNA",
+      "zh": "DNA片段",
+      "en": "DNA segment",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterialDNA.png"
+    },
+    {
+      "id": "plasmids",
+      "path": "#/bacterium/plasmids",
+      "zh": "质粒",
+      "en": "Plasmids",
+      "desktopVisual": "reviewed",
+      "screenshot": "plasmids.png"
+    },
+    {
+      "id": "bacterialRibosome",
+      "path": "#/bacterium/bacterialRibosome",
+      "zh": "70S核糖体",
+      "en": "70S ribosome",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterialRibosome.png"
+    },
+    {
+      "id": "bacterial50S",
+      "path": "#/bacterium/bacterialRibosome/bacterial50S",
+      "zh": "50S大亚基",
+      "en": "50S large subunit",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterial50S.png"
+    },
+    {
+      "id": "bacterial30S",
+      "path": "#/bacterium/bacterialRibosome/bacterial30S",
+      "zh": "30S小亚基",
+      "en": "30S small subunit",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterial30S.png"
+    },
+    {
+      "id": "lps",
+      "path": "#/bacterium/bacterialEnvelope/bacterialOuter/lps",
+      "zh": "脂多糖",
+      "en": "Lipopolysaccharide",
+      "desktopVisual": "reviewed",
+      "screenshot": "lps.png"
+    },
+    {
+      "id": "porin",
+      "path": "#/bacterium/bacterialEnvelope/bacterialOuter/porin",
+      "zh": "孔蛋白",
+      "en": "Porin",
+      "desktopVisual": "reviewed",
+      "screenshot": "porin.png"
+    },
+    {
+      "id": "bacterialATPase",
+      "path": "#/bacterium/bacterialEnvelope/bacterialMembrane/bacterialATPase",
+      "zh": "F型ATP合酶",
+      "en": "F-type ATP synthase",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterialATPase.png"
+    },
+    {
+      "id": "bacterialCytoplasm",
+      "path": "#/bacterium/bacterialCytoplasm",
+      "zh": "细胞质",
+      "en": "Cytoplasm",
+      "desktopVisual": "reviewed",
+      "screenshot": "bacterialCytoplasm.png"
+    },
+    {
+      "id": "pili",
+      "path": "#/bacterium/pili",
+      "zh": "菌毛",
+      "en": "Pili",
+      "desktopVisual": "reviewed",
+      "screenshot": "pili.png"
+    },
+    {
+      "id": "flagellum",
+      "path": "#/bacterium/flagellum",
+      "zh": "鞭毛",
+      "en": "Flagellum",
+      "desktopVisual": "reviewed",
+      "screenshot": "flagellum.png"
+    },
+    {
+      "id": "flagellarFilament",
+      "path": "#/bacterium/flagellum/flagellarFilament",
+      "zh": "鞭毛丝",
+      "en": "Flagellar filament",
+      "desktopVisual": "reviewed",
+      "screenshot": "flagellarFilament.png"
+    },
+    {
+      "id": "flagellarHook",
+      "path": "#/bacterium/flagellum/flagellarHook",
+      "zh": "弯钩",
+      "en": "Hook",
+      "desktopVisual": "reviewed",
+      "screenshot": "flagellarHook.png"
+    },
+    {
+      "id": "pilusRod",
+      "path": "#/bacterium/pili/pilusRod",
+      "zh": "菌毛杆",
+      "en": "Pilus rod",
+      "desktopVisual": "reviewed",
+      "screenshot": "pilusRod.png"
+    },
+    {
+      "id": "pilusTip",
+      "path": "#/bacterium/pili/pilusTip",
+      "zh": "黏附尖端",
+      "en": "Adhesive tip",
+      "desktopVisual": "reviewed",
+      "screenshot": "pilusTip.png"
+    },
+    {
+      "id": "motorRotor",
+      "path": "#/bacterium/flagellum/flagellarMotor/motorRotor",
+      "zh": "转子与C环",
+      "en": "Rotor and C ring",
+      "desktopVisual": "reviewed",
+      "screenshot": "motorRotor.png"
+    },
+    {
+      "id": "motorBushing",
+      "path": "#/bacterium/flagellum/flagellarMotor/motorBushing",
+      "zh": "杆与LP支承环",
+      "en": "Rod and LP bushing",
+      "desktopVisual": "reviewed",
+      "screenshot": "motorBushing.png"
+    },
+    {
+      "id": "motorStator",
+      "path": "#/bacterium/flagellum/flagellarMotor/motorStator",
+      "zh": "定子复合体",
+      "en": "Stator complexes",
+      "desktopVisual": "reviewed",
+      "screenshot": "motorStator.png"
+    },
+    {
+      "id": "flagellarMotor",
+      "path": "#/bacterium/flagellum/flagellarMotor",
+      "zh": "基部马达",
+      "en": "Basal motor",
+      "desktopVisual": "reviewed",
+      "screenshot": "flagellarMotor.png"
+    }
+  ],
+  "hierarchy": [
+    {
+      "id": "tonoplast",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/vacuole/tonoplast/vacuolarPump",
+      "returned": "http://localhost:5173/#/plant/vacuole/tonoplast",
+      "pass": true
+    },
+    {
+      "id": "chloroplast",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/chloroplast/chloroplastEnvelope",
+      "returned": "http://localhost:5173/#/plant/chloroplast",
+      "pass": true
+    },
+    {
+      "id": "thylakoids",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/chloroplast/thylakoids/granum",
+      "returned": "http://localhost:5173/#/plant/chloroplast/thylakoids",
+      "pass": true
+    },
+    {
+      "id": "stroma",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/chloroplast/stroma/plastidDNA",
+      "returned": "http://localhost:5173/#/plant/chloroplast/stroma",
+      "pass": true
+    },
+    {
+      "id": "plantNucleus",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/plantNucleus/envelope",
+      "returned": "http://localhost:5173/#/plant/plantNucleus",
+      "pass": true
+    },
+    {
+      "id": "plantMitochondria",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/plantMitochondria/mitoOuter",
+      "returned": "http://localhost:5173/#/plant/plantMitochondria",
+      "pass": true
+    },
+    {
+      "id": "plantER",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/plantER/plantCisternae",
+      "returned": "http://localhost:5173/#/plant/plantER",
+      "pass": true
+    },
+    {
+      "id": "plantGolgi",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/plantGolgi/golgiCisternae",
+      "returned": "http://localhost:5173/#/plant/plantGolgi",
+      "pass": true
+    },
+    {
+      "id": "plantRibosome",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/plantER/plantRibosome/plant60S",
+      "returned": "http://localhost:5173/#/plant/plantER/plantRibosome",
+      "pass": true
+    },
+    {
+      "id": "bacterium",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/bacterialEnvelope",
+      "returned": "http://localhost:5173/#/bacterium",
+      "pass": true
+    },
+    {
+      "id": "bacterialEnvelope",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/bacterialEnvelope/bacterialOuter",
+      "returned": "http://localhost:5173/#/bacterium/bacterialEnvelope",
+      "pass": true
+    },
+    {
+      "id": "bacterialOuter",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/bacterialEnvelope/bacterialOuter/lps",
+      "returned": "http://localhost:5173/#/bacterium/bacterialEnvelope/bacterialOuter",
+      "pass": true
+    },
+    {
+      "id": "bacterialMembrane",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/bacterialEnvelope/bacterialMembrane/bacterialATPase",
+      "returned": "http://localhost:5173/#/bacterium/bacterialEnvelope/bacterialMembrane",
+      "pass": true
+    },
+    {
+      "id": "nucleoid",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/nucleoid/bacterialDNA",
+      "returned": "http://localhost:5173/#/bacterium/nucleoid",
+      "pass": true
+    },
+    {
+      "id": "plasmids",
+      "modes": [],
+      "childPath": "http://localhost:5173/#/bacterium/plasmids/bacterialDNA",
+      "returned": "http://localhost:5173/#/bacterium/plasmids",
+      "pass": true
+    },
+    {
+      "id": "bacterialRibosome",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/bacterialRibosome/bacterial50S",
+      "returned": "http://localhost:5173/#/bacterium/bacterialRibosome",
+      "pass": true
+    },
+    {
+      "id": "pili",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/pili/pilusRod",
+      "returned": "http://localhost:5173/#/bacterium/pili",
+      "pass": true
+    },
+    {
+      "id": "flagellum",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/flagellum/flagellarFilament",
+      "returned": "http://localhost:5173/#/bacterium/flagellum",
+      "pass": true
+    },
+    {
+      "id": "flagellarMotor",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/bacterium/flagellum/flagellarMotor/motorRotor",
+      "returned": "http://localhost:5173/#/bacterium/flagellum/flagellarMotor",
+      "pass": true
+    },
+    {
+      "id": "plant",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/cellWall",
+      "returned": "http://localhost:5173/#/plant",
+      "pass": true
+    },
+    {
+      "id": "cellWall",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/cellWall/cellulose",
+      "returned": "http://localhost:5173/#/plant/cellWall",
+      "pass": true
+    },
+    {
+      "id": "cellulose",
+      "modes": [],
+      "childPath": "http://localhost:5173/#/plant/cellWall/cellulose/glucanChain",
+      "returned": "http://localhost:5173/#/plant/cellWall/cellulose",
+      "pass": true
+    },
+    {
+      "id": "plasmodesmata",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/cellWall/plasmodesmata/pdMembrane",
+      "returned": "http://localhost:5173/#/plant/cellWall/plasmodesmata",
+      "pass": true
+    },
+    {
+      "id": "plantMembrane",
+      "modes": [
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/plantMembrane/plasmaPump",
+      "returned": "http://localhost:5173/#/plant/plantMembrane",
+      "pass": true
+    },
+    {
+      "id": "vacuole",
+      "modes": [
+        "whole",
+        "explode"
+      ],
+      "childPath": "http://localhost:5173/#/plant/vacuole/tonoplast",
+      "returned": "http://localhost:5173/#/plant/vacuole",
+      "pass": true
+    }
+  ],
+  "modes": [
+    {
+      "id": "plant",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "plant",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "plant",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "cellWall",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "cellWall",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "cellWall",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "plasmodesmata",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "plasmodesmata",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "plasmodesmata",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "plantMembrane",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "plantMembrane",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "vacuole",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "vacuole",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "vacuole",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "tonoplast",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "tonoplast",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "chloroplast",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "chloroplast",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "chloroplast",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "thylakoids",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "thylakoids",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "thylakoids",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "stroma",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "stroma",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "plantNucleus",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "plantNucleus",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "plantNucleus",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "plantMitochondria",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "plantMitochondria",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "plantMitochondria",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "plantER",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "plantER",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "plantER",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "plantGolgi",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "plantGolgi",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "plantGolgi",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "plantRibosome",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "plantRibosome",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "bacterium",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "bacterium",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "bacterium",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "bacterialEnvelope",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "bacterialEnvelope",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "bacterialOuter",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "bacterialOuter",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "bacterialMembrane",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "bacterialMembrane",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "nucleoid",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "nucleoid",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "bacterialRibosome",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "bacterialRibosome",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "pili",
+      "mode": "whole",
+      "pressed": "Assembled",
+      "pass": true
+    },
+    {
+      "id": "pili",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "flagellum",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "flagellum",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "flagellum",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    },
+    {
+      "id": "flagellarMotor",
+      "mode": "whole",
+      "pressed": "Whole",
+      "pass": true
+    },
+    {
+      "id": "flagellarMotor",
+      "mode": "section",
+      "pressed": "Cutaway",
+      "pass": true
+    },
+    {
+      "id": "flagellarMotor",
+      "mode": "explode",
+      "pressed": "Exploded",
+      "pass": true
+    }
+  ],
+  "narrowEnglish320": [
+    {
+      "canvasWidth": 305,
+      "heading": "Plasma-membrane H+ pump",
+      "language": "en",
+      "node": "plasmaPump",
+      "overflow": false,
+      "width": 320,
+      "id": "plasmaPump",
+      "path": "plant/plantMembrane/plasmaPump",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Vacuolar V-ATPase",
+      "language": "en",
+      "node": "vacuolarPump",
+      "overflow": false,
+      "width": 320,
+      "id": "vacuolarPump",
+      "path": "plant/vacuole/tonoplast/vacuolarPump",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Aquaporin",
+      "language": "en",
+      "node": "plantAquaporin",
+      "overflow": false,
+      "width": 320,
+      "id": "plantAquaporin",
+      "path": "plant/plantMembrane/plantAquaporin",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Wall polysaccharide matrix",
+      "language": "en",
+      "node": "wallMatrix",
+      "overflow": false,
+      "width": 320,
+      "id": "wallMatrix",
+      "path": "plant/cellWall/wallMatrix",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Beta-glucan chain",
+      "language": "en",
+      "node": "glucanChain",
+      "overflow": false,
+      "width": 320,
+      "id": "glucanChain",
+      "path": "plant/cellWall/cellulose/glucanChain",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Channel membrane lining",
+      "language": "en",
+      "node": "pdMembrane",
+      "overflow": false,
+      "width": 320,
+      "id": "pdMembrane",
+      "path": "plant/cellWall/plasmodesmata/pdMembrane",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Desmotubule",
+      "language": "en",
+      "node": "pdDesmotubule",
+      "overflow": false,
+      "width": 320,
+      "id": "pdDesmotubule",
+      "path": "plant/cellWall/plasmodesmata/pdDesmotubule",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Plant cell",
+      "language": "en",
+      "node": "plant",
+      "overflow": false,
+      "width": 320,
+      "id": "plant",
+      "path": "plant",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cell wall",
+      "language": "en",
+      "node": "cellWall",
+      "overflow": false,
+      "width": 320,
+      "id": "cellWall",
+      "path": "plant/cellWall",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cellulose microfibrils",
+      "language": "en",
+      "node": "cellulose",
+      "overflow": false,
+      "width": 320,
+      "id": "cellulose",
+      "path": "plant/cellWall/cellulose",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Plasmodesmata",
+      "language": "en",
+      "node": "plasmodesmata",
+      "overflow": false,
+      "width": 320,
+      "id": "plasmodesmata",
+      "path": "plant/cellWall/plasmodesmata",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Plasma membrane",
+      "language": "en",
+      "node": "plantMembrane",
+      "overflow": false,
+      "width": 320,
+      "id": "plantMembrane",
+      "path": "plant/plantMembrane",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Central vacuole",
+      "language": "en",
+      "node": "vacuole",
+      "overflow": false,
+      "width": 320,
+      "id": "vacuole",
+      "path": "plant/vacuole",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Tonoplast",
+      "language": "en",
+      "node": "tonoplast",
+      "overflow": false,
+      "width": 320,
+      "id": "tonoplast",
+      "path": "plant/vacuole/tonoplast",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cell sap",
+      "language": "en",
+      "node": "cellSap",
+      "overflow": false,
+      "width": 320,
+      "id": "cellSap",
+      "path": "plant/vacuole/cellSap",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Chloroplast",
+      "language": "en",
+      "node": "chloroplast",
+      "overflow": false,
+      "width": 320,
+      "id": "chloroplast",
+      "path": "plant/chloroplast",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Chloroplast envelope",
+      "language": "en",
+      "node": "chloroplastEnvelope",
+      "overflow": false,
+      "width": 320,
+      "id": "chloroplastEnvelope",
+      "path": "plant/chloroplast/chloroplastEnvelope",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Thylakoid system",
+      "language": "en",
+      "node": "thylakoids",
+      "overflow": false,
+      "width": 320,
+      "id": "thylakoids",
+      "path": "plant/chloroplast/thylakoids",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Granum",
+      "language": "en",
+      "node": "granum",
+      "overflow": false,
+      "width": 320,
+      "id": "granum",
+      "path": "plant/chloroplast/thylakoids/granum",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Stroma lamellae",
+      "language": "en",
+      "node": "stromaLamella",
+      "overflow": false,
+      "width": 320,
+      "id": "stromaLamella",
+      "path": "plant/chloroplast/thylakoids/stromaLamella",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Stroma",
+      "language": "en",
+      "node": "stroma",
+      "overflow": false,
+      "width": 320,
+      "id": "stroma",
+      "path": "plant/chloroplast/stroma",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Rubisco",
+      "language": "en",
+      "node": "rubisco",
+      "overflow": false,
+      "width": 320,
+      "id": "rubisco",
+      "path": "plant/chloroplast/stroma/rubisco",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Chloroplast DNA",
+      "language": "en",
+      "node": "plastidDNA",
+      "overflow": false,
+      "width": 320,
+      "id": "plastidDNA",
+      "path": "plant/chloroplast/stroma/plastidDNA",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Nucleus",
+      "language": "en",
+      "node": "plantNucleus",
+      "overflow": false,
+      "width": 320,
+      "id": "plantNucleus",
+      "path": "plant/plantNucleus",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Mitochondrion",
+      "language": "en",
+      "node": "plantMitochondria",
+      "overflow": false,
+      "width": 320,
+      "id": "plantMitochondria",
+      "path": "plant/plantMitochondria",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Mitochondrial matrix",
+      "language": "en",
+      "node": "plantMatrix",
+      "overflow": false,
+      "width": 320,
+      "id": "plantMatrix",
+      "path": "plant/plantMitochondria/plantMatrix",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Endoplasmic reticulum",
+      "language": "en",
+      "node": "plantER",
+      "overflow": false,
+      "width": 320,
+      "id": "plantER",
+      "path": "plant/plantER",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cisternae and lumen",
+      "language": "en",
+      "node": "plantCisternae",
+      "overflow": false,
+      "width": 320,
+      "id": "plantCisternae",
+      "path": "plant/plantER/plantCisternae",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Golgi apparatus",
+      "language": "en",
+      "node": "plantGolgi",
+      "overflow": false,
+      "width": 320,
+      "id": "plantGolgi",
+      "path": "plant/plantGolgi",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cytosolic ribosome",
+      "language": "en",
+      "node": "plantRibosome",
+      "overflow": false,
+      "width": 320,
+      "id": "plantRibosome",
+      "path": "plant/plantER/plantRibosome",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "60S large subunit",
+      "language": "en",
+      "node": "plant60S",
+      "overflow": false,
+      "width": 320,
+      "id": "plant60S",
+      "path": "plant/plantER/plantRibosome/plant60S",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "40S small subunit",
+      "language": "en",
+      "node": "plant40S",
+      "overflow": false,
+      "width": 320,
+      "id": "plant40S",
+      "path": "plant/plantER/plantRibosome/plant40S",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cytosol",
+      "language": "en",
+      "node": "plantCytoplasm",
+      "overflow": false,
+      "width": 320,
+      "id": "plantCytoplasm",
+      "path": "plant/plantCytoplasm",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Bacterium",
+      "language": "en",
+      "node": "bacterium",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterium",
+      "path": "bacterium",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cell envelope",
+      "language": "en",
+      "node": "bacterialEnvelope",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterialEnvelope",
+      "path": "bacterium/bacterialEnvelope",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Outer membrane",
+      "language": "en",
+      "node": "bacterialOuter",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterialOuter",
+      "path": "bacterium/bacterialEnvelope/bacterialOuter",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Peptidoglycan",
+      "language": "en",
+      "node": "peptidoglycan",
+      "overflow": false,
+      "width": 320,
+      "id": "peptidoglycan",
+      "path": "bacterium/bacterialEnvelope/peptidoglycan",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cytoplasmic membrane",
+      "language": "en",
+      "node": "bacterialMembrane",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterialMembrane",
+      "path": "bacterium/bacterialEnvelope/bacterialMembrane",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Nucleoid",
+      "language": "en",
+      "node": "nucleoid",
+      "overflow": false,
+      "width": 320,
+      "id": "nucleoid",
+      "path": "bacterium/nucleoid",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Nucleoid-associated proteins",
+      "language": "en",
+      "node": "nucleoidProteins",
+      "overflow": false,
+      "width": 320,
+      "id": "nucleoidProteins",
+      "path": "bacterium/nucleoid/nucleoidProteins",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "DNA segment",
+      "language": "en",
+      "node": "bacterialDNA",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterialDNA",
+      "path": "bacterium/nucleoid/bacterialDNA",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Plasmids",
+      "language": "en",
+      "node": "plasmids",
+      "overflow": false,
+      "width": 320,
+      "id": "plasmids",
+      "path": "bacterium/plasmids",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "70S ribosome",
+      "language": "en",
+      "node": "bacterialRibosome",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterialRibosome",
+      "path": "bacterium/bacterialRibosome",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "50S large subunit",
+      "language": "en",
+      "node": "bacterial50S",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterial50S",
+      "path": "bacterium/bacterialRibosome/bacterial50S",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "30S small subunit",
+      "language": "en",
+      "node": "bacterial30S",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterial30S",
+      "path": "bacterium/bacterialRibosome/bacterial30S",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Lipopolysaccharide",
+      "language": "en",
+      "node": "lps",
+      "overflow": false,
+      "width": 320,
+      "id": "lps",
+      "path": "bacterium/bacterialEnvelope/bacterialOuter/lps",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Porin",
+      "language": "en",
+      "node": "porin",
+      "overflow": false,
+      "width": 320,
+      "id": "porin",
+      "path": "bacterium/bacterialEnvelope/bacterialOuter/porin",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "F-type ATP synthase",
+      "language": "en",
+      "node": "bacterialATPase",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterialATPase",
+      "path": "bacterium/bacterialEnvelope/bacterialMembrane/bacterialATPase",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Cytoplasm",
+      "language": "en",
+      "node": "bacterialCytoplasm",
+      "overflow": false,
+      "width": 320,
+      "id": "bacterialCytoplasm",
+      "path": "bacterium/bacterialCytoplasm",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Pili",
+      "language": "en",
+      "node": "pili",
+      "overflow": false,
+      "width": 320,
+      "id": "pili",
+      "path": "bacterium/pili",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Flagellum",
+      "language": "en",
+      "node": "flagellum",
+      "overflow": false,
+      "width": 320,
+      "id": "flagellum",
+      "path": "bacterium/flagellum",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Flagellar filament",
+      "language": "en",
+      "node": "flagellarFilament",
+      "overflow": false,
+      "width": 320,
+      "id": "flagellarFilament",
+      "path": "bacterium/flagellum/flagellarFilament",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Hook",
+      "language": "en",
+      "node": "flagellarHook",
+      "overflow": false,
+      "width": 320,
+      "id": "flagellarHook",
+      "path": "bacterium/flagellum/flagellarHook",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Pilus rod",
+      "language": "en",
+      "node": "pilusRod",
+      "overflow": false,
+      "width": 320,
+      "id": "pilusRod",
+      "path": "bacterium/pili/pilusRod",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Adhesive tip",
+      "language": "en",
+      "node": "pilusTip",
+      "overflow": false,
+      "width": 320,
+      "id": "pilusTip",
+      "path": "bacterium/pili/pilusTip",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Rotor and C ring",
+      "language": "en",
+      "node": "motorRotor",
+      "overflow": false,
+      "width": 320,
+      "id": "motorRotor",
+      "path": "bacterium/flagellum/flagellarMotor/motorRotor",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Rod and LP bushing",
+      "language": "en",
+      "node": "motorBushing",
+      "overflow": false,
+      "width": 320,
+      "id": "motorBushing",
+      "path": "bacterium/flagellum/flagellarMotor/motorBushing",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Stator complexes",
+      "language": "en",
+      "node": "motorStator",
+      "overflow": false,
+      "width": 320,
+      "id": "motorStator",
+      "path": "bacterium/flagellum/flagellarMotor/motorStator",
+      "pass": true
+    },
+    {
+      "canvasWidth": 305,
+      "heading": "Basal motor",
+      "language": "en",
+      "node": "flagellarMotor",
+      "overflow": false,
+      "width": 320,
+      "id": "flagellarMotor",
+      "path": "bacterium/flagellum/flagellarMotor",
+      "pass": true
+    }
+  ],
+  "narrowControlBounds320": [
+    {
+      "id": "bacterialEnvelope",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 75.640625,
+          "name": "Assembled",
+          "right": 156.65625,
+          "width": 81.015625
+        },
+        {
+          "height": 40,
+          "left": 156.65625,
+          "name": "Exploded",
+          "right": 229.34375,
+          "width": 72.6875
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "bacterialRibosome",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 75.640625,
+          "name": "Assembled",
+          "right": 156.65625,
+          "width": 81.015625
+        },
+        {
+          "height": 40,
+          "left": 156.65625,
+          "name": "Exploded",
+          "right": 229.34375,
+          "width": 72.6875
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "flagellarMotor",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 52.453125,
+          "name": "Whole",
+          "right": 110.765625,
+          "width": 58.3125
+        },
+        {
+          "height": 40,
+          "left": 110.765625,
+          "name": "Cutaway",
+          "right": 179.84375,
+          "width": 69.078125
+        },
+        {
+          "height": 40,
+          "left": 179.84375,
+          "name": "Exploded",
+          "right": 252.53125,
+          "width": 72.6875
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "plantMembrane",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 75.640625,
+          "name": "Assembled",
+          "right": 156.65625,
+          "width": 81.015625
+        },
+        {
+          "height": 40,
+          "left": 156.65625,
+          "name": "Exploded",
+          "right": 229.34375,
+          "width": 72.6875
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "plant40S",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "plant",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 52.453125,
+          "name": "Whole",
+          "right": 110.765625,
+          "width": 58.3125
+        },
+        {
+          "height": 40,
+          "left": 110.765625,
+          "name": "Cutaway",
+          "right": 179.84375,
+          "width": 69.078125
+        },
+        {
+          "height": 40,
+          "left": 179.84375,
+          "name": "Exploded",
+          "right": 252.53125,
+          "width": 72.6875
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "cellWall",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 52.453125,
+          "name": "Whole",
+          "right": 110.765625,
+          "width": 58.3125
+        },
+        {
+          "height": 40,
+          "left": 110.765625,
+          "name": "Cutaway",
+          "right": 179.84375,
+          "width": 69.078125
+        },
+        {
+          "height": 40,
+          "left": 179.84375,
+          "name": "Exploded",
+          "right": 252.53125,
+          "width": 72.6875
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "chloroplast",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 52.453125,
+          "name": "Whole",
+          "right": 110.765625,
+          "width": 58.3125
+        },
+        {
+          "height": 40,
+          "left": 110.765625,
+          "name": "Cutaway",
+          "right": 179.84375,
+          "width": 69.078125
+        },
+        {
+          "height": 40,
+          "left": 179.84375,
+          "name": "Exploded",
+          "right": 252.53125,
+          "width": 72.6875
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "bacterium",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 52.453125,
+          "name": "Whole",
+          "right": 110.765625,
+          "width": 58.3125
+        },
+        {
+          "height": 40,
+          "left": 110.765625,
+          "name": "Cutaway",
+          "right": 179.84375,
+          "width": 69.078125
+        },
+        {
+          "height": 40,
+          "left": 179.84375,
+          "name": "Exploded",
+          "right": 252.53125,
+          "width": 72.6875
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    },
+    {
+      "id": "pilusTip",
+      "controls": [
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom in",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 252,
+          "name": "Zoom out",
+          "right": 292,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 88.5,
+          "name": "Reset view",
+          "right": 128.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 132.5,
+          "name": "Show labels",
+          "right": 172.5,
+          "width": 40
+        },
+        {
+          "height": 40,
+          "left": 176.5,
+          "name": "Auto rotate",
+          "right": 216.5,
+          "width": 40
+        }
+      ],
+      "overflow": false,
+      "width": 305,
+      "pass": true
+    }
+  ],
+  "directInteractions": [
+    {
+      "action": "Plant overview mesh → chloroplast",
+      "pass": true
+    },
+    {
+      "action": "Chloroplast mesh → thylakoids",
+      "pass": true
+    },
+    {
+      "action": "Thylakoid mesh → granum",
+      "pass": true
+    },
+    {
+      "action": "Drag rotates model without opening another node",
+      "pass": true,
+      "before": "0.500,0.650,9.800",
+      "after": "-6.587,5.052,5.273"
+    },
+    {
+      "action": "Zoom in",
+      "pass": true
+    },
+    {
+      "action": "Reset camera",
+      "pass": true,
+      "actual": "0.500,0.650,9.800"
+    },
+    {
+      "action": "Automatic rotation advances camera",
+      "pass": true
+    },
+    {
+      "action": "Back returns to parent structure",
+      "pass": true
+    },
+    {
+      "action": "70S mesh → 50S experimental subunit",
+      "pass": true
+    },
+    {
+      "action": "Exploded motor mesh → rotor",
+      "pass": true
+    },
+    {
+      "action": "320px English chloroplast label rail → thylakoids",
+      "pass": true
+    }
+  ],
+  "productionPreview4173": [
+    {
+      "id": "plant",
+      "busy": "false",
+      "drawCalls": 86,
+      "node": "plant",
+      "title": "Plant cell",
+      "pass": true
+    },
+    {
+      "id": "chloroplast",
+      "busy": "false",
+      "drawCalls": 14,
+      "node": "chloroplast",
+      "title": "Chloroplast",
+      "pass": true
+    },
+    {
+      "id": "plant40S",
+      "busy": "false",
+      "drawCalls": 3,
+      "node": "plant40S",
+      "title": "40S small subunit",
+      "pass": true
+    },
+    {
+      "id": "bacterium",
+      "busy": "false",
+      "drawCalls": 36,
+      "node": "bacterium",
+      "title": "Bacterium",
+      "pass": true
+    },
+    {
+      "id": "bacterialRibosome",
+      "busy": "false",
+      "drawCalls": 5,
+      "node": "bacterialRibosome",
+      "title": "70S ribosome",
+      "pass": true
+    },
+    {
+      "id": "bacterial50S",
+      "busy": "false",
+      "drawCalls": 3,
+      "node": "bacterial50S",
+      "title": "50S large subunit",
+      "pass": true
+    },
+    {
+      "id": "flagellarMotor",
+      "busy": "false",
+      "drawCalls": 16,
+      "node": "flagellarMotor",
+      "title": "Basal motor",
+      "pass": true
+    }
+  ],
+  "landscape": {
+    "viewport": [
+      667,
+      375
+    ],
+    "coarsePointer": true,
+    "route": "#/bacterium/flagellum/flagellarMotor",
+    "viewerBounds": {
+      "x": 150,
+      "y": 96,
+      "width": 502,
+      "height": 279
+    },
+    "controlsBounds": {
+      "x": 150,
+      "y": 317,
+      "width": 502,
+      "height": 48
+    },
+    "pass": true
+  },
+  "limitations": [
+    "Real iOS/Android hardware and multi-touch gestures deferred by user.",
+    "Full 198-route count is an automated structure check; this pass visually reviews 59 unique specimen-specific views.",
+    "25 parent-level round trips cover one child per parent, not every path permutation.",
+    "Model geometry is educational unless explicitly identified as a deposited molecular backbone.",
+    "This is a local production preview, not a public deployment."
+  ],
+  "temporaryScreenshots": "/tmp/cell-atlas-refinement/screens",
+  "retainedEvidence": "docs/specimen-refinement/"
+}

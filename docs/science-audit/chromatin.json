@@ -1,0 +1,301 @@
+{
+  "group": "chromatin",
+  "reviewer": "/root/p_rna",
+  "models": [
+    {
+      "id": "chromatinAccess",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "ISWI-family nucleosome sliding in eukaryotic nuclei; Arabidopsis CHR11/17 and yeast Isw1 contexts; ATP-active versus hydrolysis-disabled.",
+      "checks": [
+        "Read all five bilingual stages, intro, two root overrides, labels, control and actual centerline/strand/update helpers. Executed every stage start, interval midpoint and endpoint for all six root-condition combinations.",
+        "The site is tied to constant arclength siteDistance; linker/wrapped centerline pieces meet continuously. Core retention, ATP-dependent displacement and blocked-factor approach are consistent with sliding.",
+        "ISWI/Isw1 and CHR11 scope is supported; no claim that accessibility guarantees transcription. A representative frame at p=.55 was inspected."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/1BNA",
+          "title": "Drew et al., B-DNA dodecamer (1BNA)",
+          "supports": "Opened RCSB entry and primary abstract: ordinary B-DNA is a right-handed double helix. Used only for duplex geometry, not organism-specific function."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AOI",
+          "title": "Luger et al., nucleosome core particle 1AOI",
+          "supports": "Opened structural entry: histone octamer and wrapped 146-bp DNA superhelix; the depicted eight-histone core is a schematic rather than fitted coordinates."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41467-018-06547-w",
+          "title": "Segura et al., nucleosomal linking number",
+          "supports": "Opened primary article, introduction: core DNA forms about 1.65 left-handed superhelical turns around the histone octamer."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41594-019-0199-9",
+          "title": "Yan et al., ISWI–nucleosome structures",
+          "supports": "Opened primary abstract: yeast ISW1 induces local DNA distortion/translocation while the histone core remains largely intact."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/gene/819814",
+          "title": "NCBI CHR11 gene record",
+          "supports": "Opened authoritative gene record: Arabidopsis CHR11 is an ISWI-family chromatin remodeler localized to the nucleus."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "chromatin-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/chromatin/chromatinAccessProcess.js",
+          "location": "160-187: centerline and strand",
+          "evidence": "The wrapped axis is x=center-.34+.68*t, y=-R*sin(a), z=R*cos(a), a increasing: a right-handed superhelix. On the straight linker the duplex offset is (0,+.068*sin(theta),+.068*cos(theta)), giving tangent dot (offset cross offsetDerivative)<0: a left-handed duplex. These signs persist in active/disabled and all roots.",
+          "whyWrong": "The model reverses both levels of chirality: nucleosome wrapping should be left-handed while ordinary B-DNA should be right-handed. Fixed world-yz offsets also cease to be normal to the wrapped centerline.",
+          "fix": "Reverse the superhelical winding, and construct the molecular duplex in a transported local normal/binormal frame with right-handed twist. Preserve the sequence-site coordinate and continuous linkers; do not mirror the entire protein/DNA scene.",
+          "verification": "At several linker and wrapped positions assert positive local DNA twist; assert negative superhelical winding around the histone axis. Verify endpoint continuity and unchanged site identity through all seeks and controls.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1BNA",
+            "https://www.nature.com/articles/s41467-018-06547-w"
+          ]
+        }
+      ],
+      "limitations": [
+        "No atomic-fit claim is justified; generic histone folds are schematic. Representative screenshot is only one frame. PMID 24606212 opened without text; CHR11 scope was corroborated using NCBI Gene."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "tad",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian interphase cohesin extrusion with convergent CTCF, right-boundary deletion or cohesin depletion; not a universal plant/yeast TAD mechanism.",
+      "checks": [
+        "Read all six bilingual stages, intro, labels and three conditions. Executed every stage start/midpoint/end in each condition. Inspected p=.55 image.",
+        "Actual boundaries expand from .48/.52 to .23/.77; right deletion permits .92, left remains .23; depletion keeps initial geometry and hides cohesin. CTCF positions follow fixed genomic coordinates and face opposite sequence directions.",
+        "Text correctly says no membrane, no fixed-loop equivalence for every TAD, no guarantee of expression change, and no disappearance of all compartments after cohesin loss."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/1BNA",
+          "title": "Drew et al., B-DNA dodecamer (1BNA)",
+          "supports": "Opened RCSB entry and primary abstract: ordinary B-DNA is a right-handed double helix. Used only for duplex geometry, not organism-specific function."
+        },
+        {
+          "url": "https://dspace.mit.edu/entities/publication/de044b1e-c42c-46c8-961b-7a59f0c77afd",
+          "title": "Rao et al., Cohesin loss eliminates all loop domains, author manuscript record",
+          "supports": "Opened primary-paper repository abstract: loop domains and compartment domains differ; cohesin loss removes loop domains without removing compartment domains and has limited transcriptional consequences."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/31753851/",
+          "title": "Davidson et al., DNA loop extrusion by human cohesin",
+          "supports": "Primary abstract available in search result; direct open returned no text. Supports ATP/NIPBL-dependent symmetric extrusion with cohesin at the loop base, but not used as sole support for a confirmed defect."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "chromatin-02",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/chromatin/tadProcess.js",
+          "location": "138-147: sampleA/sampleB",
+          "evidence": "Both strands add opposite offsets in the fixed yz plane: (.06*sin(220s), .06*cos(220s)). On rightward arms this is left-handed. In the folded loop the tangent reverses x, so local handedness changes sign and the offsets are not consistently perpendicular to the fiber.",
+          "whyWrong": "A continuous ordinary DNA duplex cannot alternate B-DNA handedness merely because its centerline bends into a loop. This is not a CTCF effect or a legitimate abstraction of strand topology.",
+          "fix": "Use a parallel-transport frame along a continuous centerline to generate a uniformly right-handed duplex, or render a single chromatin fiber if base-pair resolution is out of scope.",
+          "verification": "Sample signed local twist across both arms and loop, excluding zero-curvature frame singularities; it must stay right-handed and strand separation must remain transverse and bounded in all conditions.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1BNA"
+          ]
+        },
+        {
+          "issueId": "chromatin-03",
+          "severity": "P2",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/chromatin/tadProcess.js",
+          "location": "112-136 and 184-195: sample and extrusion",
+          "evidence": "Both unlooped arms always span 4.35 scene units, while the added loop radius grows as 3.2*(right-left). Numeric integration of the actual centerline gives total length 10.3289 at (.48,.52), 19.6922 at normal endpoint (.23,.77), and 22.6877 after deletion (.23,.92). Genomic-coordinate fraction is fixed at 0..1.",
+          "whyWrong": "The literal continuous molecular representation grows almost twice as much DNA while claiming to reel existing DNA from both sides. Although positions are labeled schematic, the nucleotides and persistent arms make contour-length inflation a misleading visual mechanism.",
+          "fix": "Preserve contour length while reallocating it from arms/slack into the loop, or explicitly switch this to a coarse contact-domain diagram without nucleotide-scale DNA.",
+          "verification": "For fixed genomic extent, total centerline contour length should be constant within chosen rendering tolerance as loop span increases; material locus order must remain fixed.",
+          "sourceUrls": [
+            "https://dspace.mit.edu/entities/publication/de044b1e-c42c-46c8-961b-7a59f0c77afd"
+          ]
+        }
+      ],
+      "limitations": [
+        "The exact cohesin mechanochemical cycle is deliberately omitted; this audit does not demand one contested mechanism. CTCF primary article and PDF direct opens failed; its indexed primary abstract corroborates tension-dependent rather than absolute barriers but was not treated as fully opened evidence."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "plantGenome",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis mesophyll: nuclear, plastid and mitochondrial genetic compartments; two nuclear-encoded precursors with intact/removed targeting sequences, plus local organelle expression.",
+      "checks": [
+        "Read six bilingual stages, labels, targeting control and entire shell/DNA/ribosome/mRNA/chain geometry. Executed all stage starts/midpoints/end for both conditions. Inspected p=.55 image.",
+        "Nuclear translation is spatially cytosolic; import moves protein, not mRNA, through x=1.05/1.24 channel markers; deleted signals keep these precursors outside. Local organelle DNA and ribosomes occupy the intended stroma/matrix cutaways.",
+        "DNA is shown as non-circular folded nucleoids; the text appropriately avoids the false universal single-circle claim. Nuclear RBCS and plastid rbcL division is supported."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/1BNA",
+          "title": "Drew et al., B-DNA dodecamer (1BNA)",
+          "supports": "Opened RCSB entry and primary abstract: ordinary B-DNA is a right-handed double helix. Used only for duplex geometry, not organism-specific function."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26932/",
+          "title": "Molecular Biology of the Cell: nucleus–cytosol transport",
+          "supports": "Opened NCBI textbook chapter: nuclear RNA export uses nuclear pore complexes across the envelope."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26829/",
+          "title": "Molecular Biology of the Cell: From RNA to Protein",
+          "supports": "Opened chapter: mRNA is decoded by ribosomes and growing polypeptide is synthesized on the ribosome before release."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/7K00",
+          "title": "Bacterial ribosome with mRNA and tRNAs, 7K00",
+          "supports": "Opened structural primary record: mRNA engages the small subunit. Used for conserved substrate continuity only, not as an Arabidopsis ribosome architecture."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3295403/fullTextXML",
+          "title": "RBCS1A and RBCS3B support Arabidopsis Rubisco content",
+          "supports": "Fetched and parsed primary full text: nuclear RBCS and chloroplast RbcL expression cooperate in Arabidopsis Rubisco production."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8573378/fullTextXML",
+          "title": "Chloroplast import via Toc75 and Tic236",
+          "supports": "Fetched and parsed primary article: chloroplast targeting/import uses translocons and compartment-specific routes; supports the scene’s limited precursor scope."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3193812/",
+          "title": "Davila et al., Arabidopsis mitochondrial genome recombination",
+          "supports": "Opened primary article; mitochondrial genome recombination supports caution against equating genome maps with a unique physical circle."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "chromatin-04",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/chromatin/plantGenomeProcess.js",
+          "location": "73-94 and 115-138: nuclearA/B and organelle da/db",
+          "evidence": "Nuclear and both organelle duplexes add opposite y=+sin(theta), z=+cos(theta) offsets as x increases monotonically. This is left-handed twist; offsets also use world axes rather than a local frame around each bent DNA curve.",
+          "whyWrong": "The three ordinary genome representations should not all be left-handed double helices. No Z-DNA state or sequence is specified.",
+          "fix": "Apply the shared right-handed local-frame duplex correction to all three DNA objects; preserve each compartment and branched mitochondrial annotation.",
+          "verification": "Verify positive local twist and transverse strand separation along all nuclear/plastid/mitochondrial DNA curves.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1BNA"
+          ]
+        },
+        {
+          "issueId": "chromatin-05",
+          "severity": "P1",
+          "kind": "topology",
+          "file": "src/processes/modules/chromatin/plantGenomeProcess.js",
+          "location": "240-254 and 343-362: nuclear pore versus RNA export trajectory",
+          "evidence": "The pore centers are (-1.9,+/- .68,.02), torus major radius .105 and tube .036 (open radius about .069). Upper mRNA translates diagonally at x=-3.1+2.65*exportP+(s-.5)*.63 and y=1.65*exportP+.055*sin(20s), z=.12. At the pore plane, s=0,.5,1 lie .2817,.1067,.1273 from the pore axis, before adding the .034 RNA radius. Thus the RNA does not thread the indicated lumen. Lower cargo has the same construction.",
+          "whyWrong": "Stage text explicitly says mRNA passes through nuclear pores, but actual residues cross away from/through the pore rim. The cutaway does not turn a route through the membrane into passage through the NPC.",
+          "fix": "Route the RNA along a curve containing the relevant pore axis and thread individual RNA contour points through its opening before lateral movement to ribosomes. Adjust pore size consistently with the schematic cargo radius.",
+          "verification": "During each envelope crossing, every crossing RNA centerline point plus its radius must fit the assigned pore lumen; no point may cross the envelope away from the pore. Test both transcripts and both targeting conditions.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK26932/"
+          ]
+        },
+        {
+          "issueId": "chromatin-06",
+          "severity": "P1",
+          "kind": "topology",
+          "file": "src/processes/modules/chromatin/plantGenomeProcess.js",
+          "location": "202-208 and 375-385; structure.js ribosomeDetails",
+          "evidence": "Local ribosomes sit at (3.44,y+.12,.12), with the helper mRNA channel around y+.146..+.153 and z=.20.. .25. localRNA instead runs at y+.35 plus .06*sin(14s), z=.12. The local growing protein is an independent coil centered at x=3.12,y-.18; no endpoint is tied to a ribosomal exit, and its x never exceeds 3.34 while the helper exit is near x=3.5895. All this happens while the stage claims local protein synthesis.",
+          "whyWrong": "The RNA and growing peptide are separate nearby objects rather than substrates continuously engaged by the translating ribosome. This makes the local expression branch look like spontaneous protein appearance and breaks the mechanism the scene is teaching.",
+          "fix": "Put local RNA through each internal ribosome’s mRNA channel; keep one nascent peptide end at its peptidyl-transfer/exit path during elongation, then release and fold it. Maintain stroma/matrix location.",
+          "verification": "At all local-translation samples, verify mRNA intersects its assigned channel and nascent C terminus remains attached to the ribosome until explicit termination; only released products may detach.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK26829/",
+            "https://www.rcsb.org/structure/7K00"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only a representative screenshot was available; geometric route checks used actual formulas. Some original PMC/Nature sources were blocked; accessible primary full text was retrieved through Europe PMC for Rubisco and TOC/TIC support. Complete import energetics and organism-specific ribosome structures remain deliberate omissions."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "plantRdDM",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Canonical Arabidopsis Pol IV/RDR2–DCL3–AGO4/Pol V–DRM2 pathway in a schematic nuclear layout; active or catalytically inactive DRM2 only.",
+      "checks": [
+        "Read all seven bilingual stages, labels and two conditions; traced fragmentSample, draw ranges, strand growth, DCL separation, AGO movement, scaffold pairing and methyl/base-flip geometry. Executed every stage start/midpoint/end in both conditions and inspected p=.55 image.",
+        "Primary RNA grows in increasing parameter order; complementary RNA is drawn in reverse order. After guide rotation, guide 5prime-to-3prime runs right-to-left, while scaffold runs left-to-right: the final pairing is correctly antiparallel.",
+        "DCL separates continuous initial fragments; passenger strand is removed from tracked guide, AGO carries the remaining guide to scaffold RNA. Inactive DRM2 preserves upstream pairing and removes only new marks. Text properly limits canonical scope and does not erase preexisting genome-wide methylation."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/1BNA",
+          "title": "Drew et al., B-DNA dodecamer (1BNA)",
+          "supports": "Opened RCSB entry and primary abstract: ordinary B-DNA is a right-handed double helix. Used only for duplex geometry, not organism-specific function."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6698059/",
+          "title": "Singh et al., reaction mechanisms of Pol IV, RDR2 and DCL3",
+          "supports": "Opened primary full text: RNA channeling, complementary RDR2 synthesis, DCL3 processing and 24-nt guide versus variable passenger ends."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4716838/",
+          "title": "Pol IV/RDR2-dependent precursors of 24-nt siRNAs",
+          "supports": "Initial direct open returned full primary article; supports precursor and 24-nt siRNA relationships. Later fetch encountered captcha."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/34078593/",
+          "title": "Fang et al., substrate deformation regulates DRM2-mediated DNA methylation",
+          "supports": "Opened primary abstract and figure legends: DRM2 acts on target cytosines, with DNA deformation and target-base engagement in the catalytic site."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "chromatin-07",
+          "severity": "P1",
+          "kind": "chemical_identity",
+          "file": "src/processes/modules/chromatin/plantRdDMProcess.js",
+          "location": "144-156, 174-181 and 315-323: target cytosine, methylMarks/methylStems",
+          "evidence": "Each of seven methyl stems starts at [x,-1.65+.13*sin((x-.2)*5),.13*cos((x-.2)*5)], exactly the sampleA sugar-phosphate rail, and projects outward. It is not attached to one of the paired base objects. The flipping cytosine is a separate extra group at (2.35,-1.65,.14); duplexDetails leaves the original paired base in place and unchanged.",
+          "whyWrong": "This depicts methylation of the backbone and an extra free base instead of modification and flipping of a DNA cytosine. The text’s base-specific claim cannot be rescued by the magnification disclaimer without an explicit inset/identity link.",
+          "fix": "Select specific cytosine base instances within the actual target duplex. Move that same base around its glycosidic attachment into the DRM2 cleft and place the methyl group at its base carbon; remove/replace its original paired representation. Alternatively use a clearly separated labeled inset with a leader to the exact target nucleotide.",
+          "verification": "Before/after methylation, each marked nucleotide has one base instance, unchanged backbone connectivity and a methyl group parented to that cytosine; inactive DRM2 shows the same upstream route without a new methyl group.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/34078593/"
+          ]
+        },
+        {
+          "issueId": "chromatin-08",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/chromatin/plantRdDMProcess.js",
+          "location": "19-47: dna sample functions and backbone tubes",
+          "evidence": "Both source and target DNA use x increasing with y=+.13*sin(5*length*s), z=+.13*cos(5*length*s), with the second strand shifted by pi. The winding is left-handed in the right-handed world coordinate system.",
+          "whyWrong": "These are ordinary genomic DNA targets, not a specified left-handed Z-DNA state. Source and methylated target therefore have the wrong duplex geometry.",
+          "fix": "Reverse one phase component for a right-handed B-DNA duplex and derive base and methylation attachment coordinates from the corrected strands.",
+          "verification": "Assert positive local helical twist for both DNA objects, and verify methylated base identity stays attached after this geometry correction.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1BNA"
+          ]
+        }
+      ],
+      "limitations": [
+        "No real nucleotide sequence is provided; exact siRNA complementarity cannot be sequence-verified, only orientation and pairing continuity. Source-to-RNA spatial layout is pathway-style and omits detailed polymerase exit channels. Schematic alpha helices are not treated as atomic reconstructions."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

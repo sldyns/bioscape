@@ -1,0 +1,16 @@
+# RNA group refinement
+
+Reference inspection: `transcriptionProcess.js`, `scene/nuclearBodies.js`, `scene/membraneDetails.js`, and `scene/tubulinReference.js`. These changes retain the original mechanisms, conditions, stages and citations. Molecular surfaces and secondary-structure motifs are teaching schematics, not atomic reconstructions.
+
+| Model | Before → after |
+| --- | --- |
+| `rnaProcessing` | Thick exon tubes with short sticks → thin continuous backbone with shared pentagonal sugar / planar base geometry and phosphate landmarks; cap now has base, sugar and three linked phosphates. Five enclosing protein beads → asymmetric snRNP domain scaffold, open catalytic cleft, snRNA hairpins with paired stems and protein helix motifs. Dynamic intron has attached base plates. Poly(A) gets nucleotides and its first segment now meets the exon at the same 3D coordinate. |
+| `nuclearTransport` | Eight plain posts and transparent membrane sheets → three eightfold scaffold layers with curved circumferential rails, Y-shaped spokes, axial braces, asymmetric cytoplasmic filaments, nuclear basket and curved FG chains. Each envelope membrane now has two leaflets, lipid heads/tails and front cut edges; paired curved surfaces join both membranes at the pore. Importins have repeat-like helical architecture; cargo/Ran expose folded domains and surface traces. |
+| `motorTransport` | Uniform tubulin beads, smooth motor rod and toroidal dynein → shared cleft-shaped tubulin monomers around 13 protofilaments with an explicit open lumen, kinesin coiled-coil stalk, separate moving motor domains with binding surfaces and nucleotide pockets, six-domain AAA rings and a domain-organized dynactin/adaptor assembly. Cargo has an opaque membrane cutaway with an inner leaflet and lumen. Alternating planted / swinging feet and opposite motor directions remain intact. |
+| `organelleImport` | Two ghost sheets and plain barrel rings → separately paired outer/inner membrane leaflets with lipid cut edges, TOC wall ribbons, TIC helical wall motifs and off-axis accessory support. Receptor and stromal chaperone have visible substrate clefts, processing peptidase has two jaws, and the threaded/folding peptide carries attached side chains. Motif counts are illustrative and do not claim resolved TIC stoichiometry. |
+
+All four return a complete material inventory. Repeated membranes use instanced lipid heads and tails; microtubule repeats remain instanced. Animation creates no geometries, materials or scene nodes. New helpers are confined to this folder.
+
+Validation: `node src/processes/modules/rna/refinement.test.mjs` passes all four modules, every registered root and every control condition. Checks cover finite geometry/instance buffers, transforms and bounds (largest dimension 2–20), stable node/geometry/material identities, repeated seeking, material inventory, scientific completion/block conditions and esbuild. Owned JS/MJS files were formatted.
+
+Visual acceptance remains pending root screenshot review. No browser or thumbnail changes were performed. These tests establish mechanical validity, not that the requested visual baseline has been met; no model is claimed visually accepted yet.

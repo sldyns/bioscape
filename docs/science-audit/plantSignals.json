@@ -1,0 +1,152 @@
+{
+  "group": "plantSignals",
+  "reviewer": "p_operons (independent module author; Phase A read-only product audit)",
+  "models": [
+    {
+      "id": "auxin",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis thaliana shoot-cell nuclear TIR1/AFB–SCF–Aux/IAA–activating-ARF response; separate later differential-elongation inset.",
+      "checks": [
+        "Read both languages for intro, all six stages, single auxin present/low control, all labels, entries and metadata; no extra root contexts exist.",
+        "Traced SCF receptor/ASK1/cullin/RBX/E2 geometry, repressor/PB1/degron path, ARF retention, proteasome 4x7 core and 6-fold ATPase cap, ubiquitin objects, dynamic DNA/RNA, and tissue inset.",
+        "Evaluated p=0,.16,.30,.34,.45,.52,.55,.61,.65,.68,.71,.75,.88,1 for both control values; inspected /tmp/atlas-refinement/auxin.png at representative p=.55.",
+        "Low auxin correctly keeps repressor and suppresses modeled induced RNA/growth; auxin has recognition→tagging→proteasome→transcription→later growth order. ARF remains DNA-associated; degradation does not target ARF.",
+        "DNA is a two-backbone helix with a local opening; nascent RNA is a single chain originating near the polymerase. No translation occurs in the nuclear view. The explicit strand polarities are metadata/text rather than atom-level chemistry.",
+        "ATP-dependent ubiquitin activation and proteasome mechanics are not quantitatively modeled; four drawn ubiquitins are explicitly schematic, not a fixed biological chain-length claim."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/2P1Q",
+          "title": "Tan et al. (2007), TIR1–ASK1–auxin–Aux/IAA structural dataset and primary-paper abstract",
+          "supports": "Opened the structure page and its primary-paper abstract. Auxin is anchored at the bottom of one TIR1 surface pocket; the Aux/IAA degron docks above it and closes the hormone-binding site. Arabidopsis TIR1, ASK1 and an IAA7 peptide are identified in the structure."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12353037/",
+          "title": "Yao and Cohen (2002), A cryptic protease couples deubiquitination and degradation by the proteasome",
+          "supports": "Opened and read abstract: 19S recognizes ubiquitin chains, substrate unfolds for axial translocation, and POH1/Rpn11 removes substrate-attached ubiquitin during degradation. This supports conserved proteasomal chemistry, not an Arabidopsis-specific kinetic claim."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4079373/",
+          "title": "Spartz et al. (2014), SAUR inhibition of PP2C-D phosphatases activates plasma membrane H+-ATPases",
+          "supports": "Opened the full primary paper. SAUR action links PP2C-D inhibition with H+-ATPase activation and cell expansion in Arabidopsis, supporting the later shoot-growth inset as a qualified downstream summary."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "plantSignals-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/plantSignals/auxinProcess.js",
+          "location": "111–124,149,392–404; structures.js 59–83 (lrr annular extrusion)",
+          "evidence": "TIR1 is an open annular LRR extrusion centered at (-2.3,1.25,0), inner radii .48/.59, with no pocket floor. Bound auxin is centered at (-2.31,1.25,.35), radius .105, inside the through-hole. At p=.40 a read-only traversal evaluated THREE.Triangle.closestPointToPoint against every transformed triangle in the entire receptor subtree, including LRR and F-box detail: minimum center-to-triangle distance .4648539527, so the radius-adjusted receptor–ligand surface gap is .3598539527. Thus the ligand is genuinely suspended away from every modeled receptor surface; this is not a nearest-vertex approximation. The same open-ring topology is visible in the supplied screenshot.",
+          "whyWrong": "The central teaching claim is molecular glue within a shared receptor/substrate surface pocket. A through-hole with a floating ligand fails to show receptor–auxin contact and falsely presents the recognition topology; the correct text does not repair that geometry.",
+          "fix": "Replace the open central aperture with a bounded concave TIR1 binding surface/pocket floor. Place auxin against that surface and bring the Aux/IAA degron over the same ligand. Keep other LRR features schematic, and preserve the later release toward the proteasome.",
+          "verification": "At the fully bound stage, inspect receptor pocket, auxin and degron together from two angles; the ligand must contact the depicted pocket and be capped by the degron without a clear through-hole below it. In the low-auxin condition neither ternary contact nor ubiquitin tagging should be shown.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/2P1Q"
+          ]
+        },
+        {
+          "issueId": "plantSignals-02",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/plantSignals/auxinProcess.js",
+          "location": "221–238,294–296,405–420",
+          "evidence": "The four original ubiquitin beads remain children of the shrinking repressor. tags.visible is determined solely by tag>.05 and never detached during degradation. At p=.65 the tagged repressor remains visible at scale .5 while all four separately allocated recycledUbiquitin beads are also visible. The original chain shrinks with the substrate until the repressor disappears.",
+          "whyWrong": "The animation represents the same illustrated ubiquitin pool twice and lets the attached copy be consumed with Aux/IAA. Deubiquitination/recycling is explicitly taught in stage 4, so this is not just an omitted pathway: the visible transition conflicts with that claim.",
+          "fix": "Transfer the existing chain/beads from substrate to the proteasome-associated recycling path, or make mutually exclusive linked states for each illustrated ubiquitin. Remove its substrate attachment before its recycled representation appears; keep ubiquitin scale independent of substrate unfolding/degradation.",
+          "verification": "Across dense p=.60–.70 samples each of the four illustrated ubiquitins must have exactly one visible state (attached or recycled), with no disappearing attached duplicate; only the Aux/IAA substrate becomes unfolded peptide/fragments.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/12353037/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Source nature05731 was blocked by Nature authentication; the opened primary structural deposition provides the Tan paper abstract and composition. The Winkler article full-text endpoint failed; it was not treated as independently opened verification.",
+        "The proteasome deubiquitination source is a conserved eukaryotic mechanism study rather than plant-specific dynamics. No fixed rates or stoichiometric expression output are inferred.",
+        "The existing p=.55 image is a representative frame only. All stages were traced and evaluated in Node, but no new browser view was generated."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "plantDefense",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis plasma-membrane FLS2–BAK1–BIK1–RBOHD branch of pattern-triggered immunity; external flg22; cytosolic kinase/electron donor; apoplastic ROS output.",
+      "checks": [
+        "Read both languages for all six stages, flg22/absent control, intro, labels, source metadata and plant-only entry; no alternate root contexts exist.",
+        "Traced paired lipid heads at y=+/-.24 and tails toward midplane; FLS2/BAK1 ectodomains are at y>0 and kinase domains at y<0. flg22 never crosses the bilayer.",
+        "RBOHD has six membrane helices with alternating loops, two heme discs, cytosolic FAD/NADPH domains and N-terminal EF-hand cartoons. BIK1 remains cytosolic; electron motion is cytosol-to-apoplast and the ROS particles originate above the membrane.",
+        "Evaluated the same stage boundaries and intermediate progress values as auxin for both ligand options, plus p=.40,.41,.45,.48,.49,.60,.68 contact/motion checks. Inspected /tmp/atlas-refinement/plantDefense.png at p=.55.",
+        "No-ligand condition suppresses recruitment, phosphomarks and modeled ROS; the text correctly limits this to induced output rather than claiming zero basal activity. Calcium and parallel pathways are expressly omitted, with BIK1 not described as the sole ROS input.",
+        "flg22 is drawn with 12 coarse peptide markers rather than an atom/residue count; neither text nor metadata claims these are 12 residues. The primary source correctly defines flg22 as 22 residues. ATP/NADPH stoichiometry and O2 consumption are not counted; the diagram is not a chemical mass-balance simulation."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/24114786/",
+          "title": "Sun et al. (2013), Structural basis for flg22-induced activation of the Arabidopsis FLS2–BAK1 immune complex",
+          "supports": "Opened and read abstract. flg22 binds the inner FLS2 LRR surface; BAK1 contacts FLS2 and the C-terminal part of receptor-bound flg22. Complex formation supports reciprocal receptor activation."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/4MN8",
+          "title": "FLS2–BAK1–flg22 ectodomain crystal structure",
+          "supports": "Opened deposited primary structural dataset. The peptide is a 22-residue chain and forms a heteromeric ectodomain recognition complex. This dataset does not establish intracellular kinase coordinates."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/24629339/",
+          "title": "Li et al. (2014), FLS2-associated BIK1 directly phosphorylates RbohD",
+          "supports": "Opened and read abstract. Receptor-complex BIK1 directly phosphorylates RbohD at specific sites, in a calcium-independent phosphorylation mechanism, enhancing ROS output; additional calcium signaling is also present."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18156215/",
+          "title": "Wong et al. (2007), Regulation of rice NADPH oxidase by Rac binding to its N-terminal extension",
+          "supports": "Opened paper record and figure captions. Plant Rboh architecture includes a cytoplasmic N-terminal EF-hand region, six transmembrane domains, and FAD/NADPH-binding regions. Used only for conserved family architecture, not to substitute rice Rac regulation for the Arabidopsis BIK1 branch."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "plantSignals-03",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/plantSignals/plantDefenseProcess.js",
+          "location": "175–187,215–216,388–412",
+          "evidence": "BAK1 recruitment moves only the rigid whole receptor to x=-3.3, while FLS2 remains at x=-2. Their intracellular kinase domains never move into a common interface, yet receptor phosphomarks appear once join>.65. At p=.49, closest sampled kinase vertices remain ~.674 scene units apart; FLS2 upper-domain x bounds are -2.385 to -1.7433 and BAK1 upper-domain bounds -3.59 to -3.0506. BIK1 at (-1.35,-1.25,.22) is already marked phosphorylated before its later RBOHD-directed movement, without a receptor-contact transition.",
+          "whyWrong": "The extracellular complex supports a physical kinase activation relay, not phosphorylation across empty cytoplasm. The current animation declares receptor/BIK1 activation while the intracellular interaction needed to convey it is geometrically absent. Ectodomain-only structural evidence must not be used as proof of the hard-coded kinase arrangement.",
+          "fix": "Introduce flexible juxtamembrane connections and move/rotate the kinase lobes into a readable transient contact configuration after ectodomain recruitment; stage BIK1 docking/phosphorylation at that complex before its release toward RBOHD. Alternatively show an explicitly separated intracellular interaction inset with actual contact, rather than distant phosphomarks.",
+          "verification": "For every induced frame where a new phosphomark appears, its donor and substrate must have a depicted contact/interface or an explicit correctly connected interaction inset. No phosphomark should appear before that contact, and the no-ligand control must remain unactivated. Validate ectodomain contact and correct membrane sides independently.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/24114786/",
+            "https://pubmed.ncbi.nlm.nih.gov/24629339/"
+          ]
+        },
+        {
+          "issueId": "plantSignals-04",
+          "severity": "P2",
+          "kind": "technical_spatial_coherence",
+          "file": "src/processes/modules/plantSignals/plantDefenseProcess.js",
+          "location": "100–113,392–393",
+          "evidence": "Lipid exclusions are fixed at both BAK1 start (x≈0) and final (x≈-3.3) sites. During recruitment z=sin(join*pi)*.72; at p=.41 the BAK1 transmembrane helix center is z=.72, beyond the displayed lipid-row centers (maximum .54, heads reach about .61). Both unused holes remain open while the receptor takes this detour.",
+          "whyWrong": "This is a finite-patch rendering inconsistency rather than evidence that the biological receptor leaves the cellular membrane. Nevertheless, the visible bilayer ceases to support the moving transmembrane protein, and unexplained empty holes make the teaching view ambiguous about receptor lateral recruitment and membrane continuity.",
+          "fix": "Keep the receptor inside an adequately sized depicted bilayer and animate its local lipid exclusion, or choose a shorter membrane-contained path. Remove unused start/end gaps when unoccupied.",
+          "verification": "At dense recruitment samples, the transmembrane span must stay in the displayed membrane patch, its ectodomain remain apoplastic, and all unoccupied excluded slots be filled. Confirm no pre-cut empty pore remains in either control.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/24114786/",
+            "https://www.rcsb.org/structure/4MN8"
+          ]
+        }
+      ],
+      "limitations": [
+        "Intracellular FLS2/BAK1/BIK1 contacts are inferred from interaction/activation biology; the 4MN8 structure resolves ectodomains, not a fitted kinase arrangement. The finding does not prescribe atomically exact distances.",
+        "RBOHD six-helix/fold topology is a schematic. Rice Rboh evidence was used only for family-level architecture; Arabidopsis BIK1 causality is supported by the opened Li study.",
+        "The Kadota PubMed endpoint returned no readable content; it was not counted as independently verified primary evidence. Oxygen substrate, proton balance, ROS interconversion and other immune branches remain acknowledged teaching abstractions.",
+        "Existing screenshot is a single time point; code/runtime coverage includes all controls and stages, with no browser mutation."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# Process visual refinement — acceptance standard
+
+The user's accepted baseline is src/processes/transcriptionProcess.js and the anatomical detail models under src/scene. The first expansion was rejected as coarse. Refine every assigned process individually; do not add process IDs. Existing stage/control/determinism/compartment correctness must survive.
+
+Deliver substantial mechanism-specific modeling changes, not merely higher sphere tessellation, generic roughness/noise, more random dots, or palette tweaks. Inspect the accepted transcription model and at least one relevant structural model before editing.
+
+Minimum target: recognizable organelle/complex silhouette at normal camera distance; meaningful secondary structures (membrane paired leaflets and cut edges, visible lumina, protein subunits/pockets, ribosome subunits/rRNA, DNA base-pair/backbone detail, tubular networks, chromosomal/chromatin organization); correct geometry and continuity during motion; visual hierarchy that exposes the active event rather than hiding it under decoration. Use instancing/shared geometry for repeated structural elements. Decorative surface features are schematic, never presented as atomic reconstructions. Keep molecular partners readable against the background and use bounded transparent cutaways, not uniformly ghostlike models. Ensure animated carriers/cargo remain visible.
+
+Own only your original modules/<group>/ folder. No shared renderer/kit/catalog/thumbnail changes. Root will replace vector thumbnails with rendered model images after review. Do not run browser or full-workspace tests. Read sources already embedded; browse authoritative references if changing scientific mechanism/scope. Retain controls and source boundaries. Geometry/material/node allocations must remain outside update. If swapping materials return full materials inventory. Add no random nondeterminism. Keep max dimension 2–20.
+
+For each assigned model report concrete before→after features, local validation, and any model that still fails the baseline. Do not claim complete on the basis of tests alone. Validate finite buffers/bounds, repeated seeks, node/resource stability and controls. Format owned files. Keep a concise refinement record in your folder REFINEMENT.md listing each model and changes. Root will judge screenshots and return defects.

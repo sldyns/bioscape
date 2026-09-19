@@ -1,0 +1,243 @@
+{
+  "group": "operons",
+  "reviewer": "/root/p_plant_signals (independent reviewer; not model author)",
+  "models": [
+    {
+      "id": "lacOperon",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "E. coli cytoplasmic lacZYA transcription; all four lactose/glucose combinations; no extra root contexts.",
+      "checks": [
+        "Read both languages, all six stages, intro, source metadata, labels, controls, all geometry and duplex/nascentBridge/nucleotideDetail helpers. Examined supplied representative PNG at progress 0.55; sampled every stage plus intermediate/end progress for all conditions.",
+        "0.00: CAP site, promoter, O1 and lacZYA are ordered left to right. Duplex has two backbones and paired bases; polarity labels are antiparallel. No nucleus is introduced.",
+        "0.16: lactose moves toward existing beta-galactosidase; allolactose markers appear on LacI; lactose-positive LacI leaves O1. Conversion is a symbolic event, not atom bookkeeping.",
+        "0.36: low-glucose CAP gains cAMP markers and approaches its upstream site; high-glucose CAP remains away. Inducer exclusion and auxiliary operators are explicitly omitted.",
+        "0.53: actual visibility count is lactose ? (lowGlucose ? 3 : 1) : 0. Transcription requires LacI relief and is stronger with CAP activation. No zero-leakage claim is made.",
+        "0.72: each visible polymerase moves toward increasing x and has its own growing, single-stranded RNA plus bridge to its exit. However, only polymerase 0 controls DNA unwinding: operons-01.",
+        "0.92/end truth table: lactose+/glucose-low -> 3 illustrative RNAs; lactose+/glucose-high -> 1; lactose-/either glucose -> 0 drawn with leakage explicitly acknowledged. Counts are qualitative, not experimental rates.",
+        "Translation is not animated in this model, so absent ribosomes are a safe scope omission. No RNA double helix is used."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26872/",
+          "title": "Alberts et al., How Genetic Switches Work, lac dual-control section",
+          "supports": "Opened: LacI/allolactose and CAP combine negative and positive control."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9850/",
+          "title": "Cooper, Transcription in Prokaryotes",
+          "supports": "Opened: elongating RNA polymerase maintains local unwound DNA and releases RNA on termination."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "operons-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/operons/lacOperonProcess.js",
+          "location": "224-245; structuralDetails.js duplex.update 64-107",
+          "evidence": "All three polymerases can be visible, but detailedDNA.update receives polymerases[0] only. At p=.80 their x coordinates are 3.274659, 2.210549 and .576955. At p=.88 polymerase 0 is hidden while the others remain visible; opening becomes zero for the entire DNA.",
+          "whyWrong": "The second and third active transcription complexes visibly traverse fully paired DNA.",
+          "fix": "Drive local DNA opening from every visible elongating complex, or use one mechanistically complete polymerase while conveying relative output separately.",
+          "verification": "For every visible elongating RNAP, local base-pair separation must be present; when one RNAP terminates, other active bubbles must remain. Check .72, .80, .88 and .92 in the lactose+/low-glucose branch.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK9850/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Protein/domain surfaces are schematic, not atomic structures. No transcript counts or ligand stoichiometry were interpreted quantitatively.",
+        "Only supplied representative screenshots were inspected; all-stage behavior was assessed from source and read-only runtime inspection, not browser playback."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "trpOperon",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "E. coli TrpR plus ribosome-mediated trpL attenuation; four free-tryptophan/charging-capacity combinations; lower leader view is explicitly conditional on an initiation event.",
+      "checks": [
+        "Read both languages and all six stages plus duplex/ribosome/tRNA/RNA helpers. Supplied progress-.55 PNG and all declared conditions were inspected. No Bacillus TRAP mechanism is incorrectly generalized.",
+        "0.00: two sensors are distinguished in text. 0.14: two Trp ligand marks enable TrpR binding; high-free-Trp decreases initiation independently of the lower conditional transcript.",
+        "0.31: region-1 UGG/UGG codons occur on one single RNA; the ribosome appears after RNA synthesis begins. A two-subunit ribosome and stem-like tRNA detail are shown; this is not a DNA duplex inside a ribosome.",
+        "0.49: high+normal moves ribosome from x=-3.48 to -1.9, covering region 2. Other combinations keep it at region 1. The tRNA amino-acid mark follows charged=high&&normal; the generic low label overstates this mapping (operons-02).",
+        "0.66: only one complete RNA branch is visible. The 2:3 and 3:4 stems are mutually exclusive, preserve region color identity, and their paired arms are antiparallel along one continuous RNA. Base-pair bars appear at .63. U-rich marks are visible only for the termination branch.",
+        "0.87/end: high+normal -> TrpR-bound, 3:4 terminator, no extension, RNAP dissociates. high+limited -> TrpR-bound but the conditional RNA stalls/uses 2:3/readthrough. low+normal and low+limited -> relief of TrpR plus 2:3/readthrough.",
+        "RNA extends left-to-right from labeled 5-prime toward its 3-prime end; the enlarged RNA view is not physically tethered to the top RNAP. Its explicitly declared zoom/conditional scope prevents treating it as a second transcription event. The 1:2 pause/synchronization hairpin and peptide release are omitted rather than contradicted.",
+        "No bacterial nucleus, DNA-like newly synthesized mRNA, simultaneous 2:3 and 3:4 hairpins, or claim that high-Trp initiation is completely impossible was found."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9850/",
+          "title": "Cooper, Transcription in Prokaryotes, Transcriptional Attenuation",
+          "supports": "Opened: attenuation depends on translation of still-growing RNA and alternative leader folding."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/6233264/",
+          "title": "Yanofsky et al. (1984), Repression is relieved before attenuation...",
+          "supports": "Primary abstract read via NCBI EFetch after inconsistent webpage access: repression and attenuation respond to different starvation ranges; relief of repression does not require exhausted charged tRNA.",
+          "accessUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=6233264&retmode=xml"
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "operons-02",
+          "severity": "P2",
+          "kind": "scope",
+          "file": "src/processes/modules/operons/trpOperonProcess.js",
+          "location": "controls 22-45; update 283-289, 294-315",
+          "evidence": "The condition is labeled simply low intracellular free tryptophan, yet charged = high && charging makes every low-Trp/normal-charging state obligatorily stalled with 2:3 readthrough.",
+          "whyWrong": "Low free tryptophan is not universally equivalent to tRNA starvation; the two responses have different thresholds.",
+          "fix": "Qualify the existing low condition as severe Trp limitation that makes charged tRNA limiting, in both languages and scenario metadata. Alternatively represent charged-tRNA availability independently; do not silently imply identical sensing thresholds.",
+          "verification": "The normal-charging/low-free-Trp branch must either explicitly state severe tRNA-limiting starvation or permit sufficient charging; retain high+limited as an independently stalled condition.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/6233264/"
+          ]
+        }
+      ],
+      "limitations": [
+        "The leader is a separated enlarged view, not a geometrically connected transcription-translation complex; an inset/provenance marker would improve teaching clarity.",
+        "Initial 1:2 pause hairpin, aminoacylation chemistry, elongation factors, leader peptide production/release, and feedback inhibition are outside this bounded two-control model.",
+        "The lower transcript is conditional on initiation; its readthrough under high+limited does not imply high total operon expression."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "yeastGal",
+      "roots": [
+        "yeast"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "S. cerevisiae local nuclear GAL1 promoter, accessible galactose assumed; four galactose/glucose combinations, no bacterial operon claim.",
+      "checks": [
+        "Read both languages, six stages, all labels/controls, root registration and structural helpers. Viewed supplied progress-.55 image and sampled every stage and all four control combinations.",
+        "0.00: Gal4 remains DNA-bound at UAS; Gal80 initially masks its activation region. A nuclear boundary contains the event.",
+        "0.17: galactose+ATP markers appear in Gal3 and its two lobes approach. ATP is a binding cofactor here, not depicted as catalytic phosphate transfer by Gal3.",
+        "0.37: galactose-positive Gal80 moves away from Gal4 into contact with Gal3; absent galactose retains masking. The text explicitly describes this as inhibition relief and does not require cytoplasmic sequestration.",
+        "0.56: high glucose visibly recruits Mig1/corepressor independent of local Gal80 release. Omitted GAL4-expression and sugar-transport effects are disclosed.",
+        "0.73: only galactose+/low-glucose recruits coactivator and moving Pol II, opens DNA locally and grows single-stranded RNA connected to the polymerase exit. No nuclear translation occurs.",
+        "0.92/end truth table: gal+/low -> induced; gal+/high -> Gal80 relief but Mig1 repression; gal-/low -> Gal80 repression; gal-/high -> both mechanisms. Repressed branches draw no RNA but explicitly allow nonzero basal expression.",
+        "Species, promoter/UAS order, polarity and compartment agree. A local early induction model need not animate the longer-term Gal1/Gal3 feedback replacement."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/3V2U",
+          "title": "RCSB PDB 3V2U / Lavy et al. (2012)",
+          "supports": "Opened structure record and primary abstract: Gal3 binds Gal80 in a ligand-induced closed state with galactose and ATP."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22210830/",
+          "title": "Abramczyk et al. (2012), Interplay of a ligand sensor and an enzyme...",
+          "supports": "Opened abstract: nuclear early Gal4/Gal80/Gal3 association; subsequent feedback differs."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/1915298/",
+          "title": "Nehlin et al. (1991), Control of yeast GAL genes by MIG1 repressor",
+          "supports": "Opened abstract: Mig1 acts at GAL4 and directly at GAL1, supporting the explicitly restricted local promoter branch."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Qualified early promoter-level model, not a quantitative prediction for all sugar concentrations or histories.",
+        "Gal80/Gal3 assembly and activation-domain release are cartoons; do not read their glyph count as structural stoichiometry. RCSB 3V2U reports a larger biological assembly.",
+        "Nuclear shuttling, chromatin remodeling, Gal1 feedback, GAL4 down-regulation and sugar transport are explicitly omitted. No new mechanism was inferred from decorative helices."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "yeastOsmoregulation",
+      "roots": [
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "S. cerevisiae moderate hyperosmotic step, Sln1-Ypd1-Ssk1 branch only; four osmolarity/Hog1 conditions, cytoplasm/nucleus/plasma membrane.",
+      "checks": [
+        "Read all six bilingual stages, intro, source list, controls, labels, helper membrane/nuclear geometries and full update. Inspected representative .55 image, all four truth-table states, and intermediate phosphorylation/transport coordinates.",
+        "0.00: Sln1 external sensor and intracellular domains cross the plasma-membrane rim; Ypd1/Ssk1 phosphate marks represent inhibitory basal relay. Lipid tails face the interleaflet region on both leaflets.",
+        "0.15: stress shrinks the membrane and sends water outward; Fps1 jaws close in both active and inhibited Hog1 branches, correctly preserving the stated early HOG-independent response.",
+        "0.32: sensor/Ypd1/Ssk1 phosphate marks disappear, Pbs2 phosphate subsequently appears. No direct osmolyte-Sln1 ligand binding is claimed.",
+        "0.49: actual Hog1 motion begins at .32 and its center is already inside the drawn nucleus by .40, before either Pbs2-P or Hog1-P is shown. The straight motion also misses every drawn pore. See operons-03 and operons-05.",
+        "0.68: induced RNA stays inside the nuclear rim; the glycerol/metabolic enzyme remains cytoplasmic. No protein translation is shown inside the nucleus. Glycerol glyphs have a three-carbon chain and hydroxyl substituent marks.",
+        "0.90/end: high+active -> 15 glycerol glyphs, membrane scale .98, transient Hog1 return and restored Ssk1-P; high+inhibited -> 5 glyphs, scale .8, channel closed, no normal recovery. Unchanged+either Hog1 -> 3 glyphs, scale 1, channel open, basal relay maintained.",
+        "High+inhibited retains active Pbs2 but prohibits all Hog1 phosphorylation and nuclear entry. This requires a specifically nonphosphorylatable intervention, not merely inhibited catalytic function (operons-04).",
+        "Sho1 is excluded explicitly; counts/volume/timing are qualitative. Persistent channel closure after adaptation is not treated as error because external osmolarity remains elevated."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/8808622/",
+          "title": "Posas et al. (1996), Sln1-Ypd1-Ssk1 phosphorelay",
+          "supports": "Opened abstract: Sln1 extracellular sensor with cytoplasmic histidine kinase/receiver; Ypd1 phosphotransfer to Ssk1."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/25888817/",
+          "title": "Dexter et al. (2015), Robust Sln1-Ypd1-Ssk1 network",
+          "supports": "Opened abstract: basal Ssk1 phosphorylation restrains HOG."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/7729414/",
+          "title": "Luyten et al. (1995), Fps1 glycerol flux",
+          "supports": "Opened abstract: hyperosmotic Fps1 inactivation does not require HOG."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/9755161/",
+          "title": "Ferrigno et al. (1998), Regulated Hog1 nuclear exchange",
+          "supports": "Opened primary abstract: phosphorylation permits Hog1 nuclear entry even without catalytic activity; import requires Nmd5/Ran."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "operons-03",
+          "severity": "P1",
+          "kind": "misleading_causality",
+          "file": "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+          "location": "295-320",
+          "evidence": "nuclearMove = activation*(1-.85*recovery), with activation=ease(p,.32,.54), but pbsP is not visible until p>.44 and hogP until p>.51. Runtime at p=.40 places Hog1 at [.344568,-.221600,.12], inside the nuclear ellipse, with both phosphate marks absent.",
+          "whyWrong": "The displayed temporal order teaches nuclear accumulation before upstream activation/phosphorylation.",
+          "fix": "Separate and order upstream activation, Hog1 phosphorylation, and nuclear import; start import after the Hog1 phosphorylation event.",
+          "verification": "In stressed normal Hog1, every nuclear-entry frame must follow shown Pbs2 activation and Hog1 phosphorylation. Check .39, .40, .44, .49, .51 and .52; reverse seeking must preserve that order.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/9755161/"
+          ]
+        },
+        {
+          "issueId": "operons-04",
+          "severity": "P2",
+          "kind": "scope",
+          "file": "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+          "location": "controls 32-41; 312-320",
+          "evidence": "Hog1 function=inhibited forces hogP=false and nuclearMove=0, although stress keeps Pbs2-P on. The intervention does not specify a phosphorylation-site mutant, deletion or catalytic inhibitor.",
+          "whyWrong": "Catalytically inactive Hog1 can still be phosphorylated and imported; the control merges distinct perturbations.",
+          "fix": "Specify a nonphosphorylatable Hog1 scenario if retaining the current geometry, or model catalytic inhibition with phosphorylation/import preserved and downstream output impaired. Align both languages.",
+          "verification": "The named intervention must determine phosphorylation separately from kinase activity. A catalytic-inhibition scenario must not categorically forbid Hog1-P or import.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/9755161/"
+          ]
+        },
+        {
+          "issueId": "operons-05",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+          "location": "130-135 and 316-320; structuralDetails.js 289-325",
+          "evidence": "Hog1 takes a straight line from [.02,-.45] to [1.10,.31]. It crosses the nuclear ellipse at movement fraction .2687, angle -2.72790 radians. The nearest pore is .59162 radians away, whereas the annular cut-hole half-width is .11579 radians. The path crosses an unperforated portion of the displayed envelope; export retraces it.",
+          "whyWrong": "The compartment-change animation bypasses the explicitly modeled nuclear pore route.",
+          "fix": "Route import/export through one actual pore opening; allow the carrier/complex to fit that aperture or resize the transport glyph appropriately.",
+          "verification": "Intersect the moving transport center/extent with the nuclear boundary: every transition must fall inside a designated pore opening, for both import and export. Confirm geometry rather than userData.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/9755161/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Control meaning for inhibited Hog1 must be resolved before interpreting that branch as a pharmacological experiment.",
+        "Nuclear-rim crossing is a topology/teaching finding for this cutaway; it is not a claim that these cartoons have atomically fitted membrane collision surfaces.",
+        "Cell-wall elasticity, detailed osmolyte metabolism, receptor stoichiometry and other compensation paths are outside scope."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

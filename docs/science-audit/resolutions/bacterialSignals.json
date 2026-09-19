@@ -1,0 +1,113 @@
+{
+  "group": "bacterialSignals",
+  "issues": [
+    {
+      "issueId": "bacterialSignals-01",
+      "status": "fixed",
+      "changes": "Normal tails now have left-handed geometry; one selected filament has a continuous integrated motor phase that reverses during each tumble, undergoes a smooth illustrative right-handed semicoiled transition, separates, and recovers. The viewing convention and non-universality of the polymorphic transition are bilingual.",
+      "files": [
+        "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Both environments: signed torsion of all five normal filaments; selected semicoiled filament positive torsion; actual endpoint angular velocity reverses and recovers while other motors retain run rotation.",
+        "All tumble intervals: boundary continuity, every segment joint and all hook connections. Mutation tests reject the original handedness and missing reversal."
+      ],
+      "limitations": [
+        "Schematic molecular shapes and illustrative absolute-time trajectories remain; no atomic conformations or measured kinetics are claimed.",
+        "Root browser/visual acceptance is pending; local geometry regressions do not establish every scientific fact."
+      ]
+    },
+    {
+      "issueId": "bacterialSignals-02",
+      "status": "fixed",
+      "changes": "NarL approaches and faces its Asp pocket toward NarX His before transfer; contact persists through the transfer interval. One phosphate sphere transfers from ATP gamma to His, across the short active-site gap, then follows Asp during NarL departure and reorientation. The former second bound phosphate sphere was removed.",
+      "files": [
+        "src/processes/modules/bacterialSignals/twoComponentProcess.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Both nitrate branches at 24 time samples including .619/.62/.625/.63: exactly three actual gold phosphate spheres across ATP/ADP/protein sites and exactly one terminal/transfer marker.",
+        "His–Asp distance below .13 model units during .46–.62; transferred marker on the line between contacting sites; after .62 it coincides with actual transformed Asp. ATP/His handoff position is continuous.",
+        "Mutations restoring a free courier or adding a duplicate bound sphere are rejected."
+      ],
+      "limitations": [
+        "Schematic molecular shapes and illustrative absolute-time trajectories remain; no atomic conformations or measured kinetics are claimed.",
+        "Root browser/visual acceptance is pending; local geometry regressions do not establish every scientific fact."
+      ]
+    },
+    {
+      "issueId": "bacterialSignals-03",
+      "status": "fixed",
+      "changes": "Mirrored one transverse coordinate in the shared DNA point generator, making both ordinary DNA backbones right-handed while preserving phosphate/base alignment, antiparallel labels and the opening bubble.",
+      "files": [
+        "src/processes/modules/bacterialSignals/structuralDetails.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "twoComponent: finite-difference torsion from actual backbone instance transforms is positive against an explicit right-handed reference, for both rails, both nitrate branches and six frames spanning activation.",
+        "Single nascent RNA backbone retained. Mutation restoring the shared mirrored DNA is rejected."
+      ],
+      "limitations": [
+        "Schematic molecular shapes and illustrative absolute-time trajectories remain; no atomic conformations or measured kinetics are claimed.",
+        "Root browser/visual acceptance is pending; local geometry regressions do not establish every scientific fact."
+      ]
+    },
+    {
+      "issueId": "bacterialSignals-04",
+      "status": "fixed",
+      "changes": "The same shared DNA coordinate correction makes the lux regulatory DNA right-handed; the LuxI/AHL/LuxR pathway and source/target controls are preserved.",
+      "files": [
+        "src/processes/modules/bacterialSignals/structuralDetails.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "quorumSensing: both rendered backbone rails tested against a right-handed reference under retained/diluted conditions at 0/.4/.6/.8/.85/1.",
+        "Single nascent RNA backbone retained; existing condition and deterministic-seek smoke checks pass. Shared mirrored-DNA mutation is rejected."
+      ],
+      "limitations": [
+        "Schematic molecular shapes and illustrative absolute-time trajectories remain; no atomic conformations or measured kinetics are claimed.",
+        "Root browser/visual acceptance is pending; local geometry regressions do not establish every scientific fact."
+      ]
+    },
+    {
+      "issueId": "bacterialSignals-05",
+      "status": "fixed",
+      "changes": "Reversed one transverse coordinate in both extracellular DNA strands. All six duplexes retain their original matrix placement and paired rungs.",
+      "files": [
+        "src/processes/modules/bacterialSignals/biofilmProcess.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Every actual TubeGeometry backbone of all six eDNA duplexes has positive signed torsion at five mature/dispersal frames in both NO/none branches.",
+        "Every paired rung endpoint coincides with its rail point, and matrix z placement remains extracellular. Mutation restoring mirrored eDNA is rejected."
+      ],
+      "limitations": [
+        "Schematic molecular shapes and illustrative absolute-time trajectories remain; no atomic conformations or measured kinetics are claimed.",
+        "Root browser/visual acceptance is pending; local geometry regressions do not establish every scientific fact."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/bacterialSignals/science.test.mjs",
+      "result": "PASS; scientific geometry checks plus imported local smoke suite: all four models, finite bounds/buffers, stable resources, deterministic seeks, conditions and esbuild."
+    },
+    {
+      "command": "Temporary six single-defect source mutations, each restored in finally; run local science.test.mjs per mutation",
+      "result": "PASS; all six mutations failed the regression as expected. Original corrected files restored, formatted and final suite passed."
+    },
+    {
+      "command": "prettier --write (only five modified owned JS/MJS files)",
+      "result": "PASS"
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1855780/",
+      "title": "Darnton et al., On Torque and Tumbling in Swimming Escherichia coli",
+      "supports": "Normal left-handed run filaments, CCW behind-cell convention and common reversal-associated polymorphic changes; primary paper was verified in Phase A."
+    }
+  ]
+}

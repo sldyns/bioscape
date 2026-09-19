@@ -1,0 +1,193 @@
+{
+  "group": "division",
+  "reviewer": "p_signals (independent Phase A audit; product files unchanged)",
+  "models": [
+    {
+      "id": "mitosis",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian somatic-cell open mitosis, starting after DNA replication; four replicated chromosomes are an explicitly declared visual subset, not a complete mammalian karyotype. Six stages; attachment control normal/unattached; no alternate root context.",
+      "checks": [
+        "Read entries, both language intros/stages/legends/control labels, all update formulas, divisionShapes helper and smoke tests; inspected representative /tmp/atlas-refinement/mitosis.png. Technical smoke metadata was not accepted as biological proof.",
+        "Actual chromatid construction has four chromosome indices × two sisters = eight groups. Read-only mesh traversal across p=0,.14,.22,.28,.43,.55,.62,.70,.86,.94,1 preserves eight groups; at p=1 four single chromatids lie at each daughter side (x≈±1.94). This is the correct replicated-to-daughter chromosome accounting for the stated subset.",
+        "Normal path: nuclear-envelope breakdown precedes metaphase, sisters orient toward opposite poles, cohesion disappears as separation begins, furrow and daughter envelopes follow segregation. Division is a schematic temporal sequence, not measured kinetics.",
+        "Unattached control actually clamps effective progress to .43, shortens one capture bundle to 58%, keeps sister centres .24 apart, and prevents separation, furrowing and daughter-cell reveal even at requested p=1. Arrest is implemented in geometry, not only userData.",
+        "Checked six stage anchors and intermediate transition intervals, including nuclear-envelope crossfade, metaphase, separation and membrane completion. No replication geometry is added during mitosis; ATP chemistry is outside stated scope.",
+        "Bilingual description correctly distinguishes an unattached kinetochore from successful biorientation and discloses subset/cutaway/schematic chromatin. Actual interpolar and kinetochore geometry still have the issues below."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26934/",
+          "title": "Alberts et al., Molecular Biology of the Cell: Mitosis",
+          "supports": "Opened chapter: kinetochore capture and opposite-pole attachment; interpolar microtubules interdigitate with oppositely oriented plus ends; anaphase A/B and nuclear reassembly."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26831/",
+          "title": "Alberts et al., Molecular Biology of the Cell: Cytokinesis",
+          "supports": "Opened chapter: animal actomyosin ring, membrane ingression and completion of cytokinesis."
+        },
+        {
+          "url": "https://rupress.org/jcb/article-abstract/130/4/941/20874/The-checkpoint-delaying-anaphase-in-response-to?redirectedFrom=PDF",
+          "title": "Rieder et al. (1995), The checkpoint delaying anaphase in response to chromosome monoorientation is mediated by an inhibitory signal produced by unattached kinetochores",
+          "supports": "Opened original paper page/abstract: laser removal of the last unattached kinetochore permits anaphase in PtK1 cells, supporting the implemented arrest branch."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2290872/fullTextXML",
+          "title": "Mastronarde et al. (1993), Interpolar spindle microtubules in PTK cells; DOI 10.1083/jcb.123.6.1475",
+          "supports": "Retrieved and read primary article XML/abstract: electron-microscopy reconstructions identify interdigitating interpolar arrays and antiparallel nearest neighbours. The old scanned article XML exposes abstract text, not a complete machine-readable results section."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "division-01",
+          "severity": "P1",
+          "kind": "misleading representation / microtubule topology",
+          "file": "src/processes/modules/division/mitosisProcess.js",
+          "location": "157–168; divisionShapes.js:64–98",
+          "evidence": "Each of eight overlap bundles is built from three continuous strands spanning -0.94*poleX to +0.94*poleX. setBundle constructs 12 consecutive cylinders per strand across the whole interval; it creates neither two half-spindle populations nor plus ends terminating within an overlap region. These strands remain continuous during pole separation.",
+          "whyWrong": "The lesson depicts interpolar microtubules as individual pole-to-pole cables. Mammalian interpolar arrays contain interdigitating antiparallel microtubules; their overlap and relative sliding are central to the claimed spindle architecture. A continuous strand is not the topology of the two overlapping populations.",
+          "fix": "Construct two opposed sets with separate plus-end terminations in a shared midzone; connect/crosslink the overlapping portions schematically and animate their relative movement during spindle elongation. Do not require every minus end to be located exactly at the centrosome.",
+          "verification": "Inspect actual strand endpoints at metaphase and anaphase: no individual interpolar strand spans both poles, opposing populations overlap in the midzone, and overlap/sliding changes coherently with pole distance.",
+          "sourceUrls": [
+            "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2290872/fullTextXML",
+            "https://www.ncbi.nlm.nih.gov/books/NBK26934/"
+          ]
+        },
+        {
+          "issueId": "division-02",
+          "severity": "P2",
+          "kind": "technical geometry / attachment ambiguity",
+          "file": "src/processes/modules/division/mitosisProcess.js",
+          "location": "128–144; divisionShapes.js:229–269",
+          "evidence": "Attached bundle endpoints use world offsets x=chromatid.x+side*.19,z=chromatid.z+.06 rather than the transformed layered kinetochore surface. A read-only nearest-triangle probe of the first fully captured strand at p=.43 and .55 gives endpoint-to-kinetochore distance≈.03158 with fibre radius .009, leaving approximately .0226 clear space. Probe includes outer/inner plates and interface rods, not userData.",
+          "whyWrong": "The normal branch is labelled attached and checkpoint satisfied but an explicitly drawn fibre ends visibly short of the explicitly drawn attachment interface. This is an attachment ambiguity rather than evidence that the biological checkpoint logic is wrong.",
+          "fix": "Expose a local outer-kinetochore attachment anchor and transform it through the chromatid world matrix for the bundle target; ensure the radius contacts the interface. Keep the unattached condition distinctly short.",
+          "verification": "At fully captured metaphase and separated states, test bundle end surfaces intersect the intended transformed kinetochore interface within rendering tolerance; the blocked fibre must remain separated.",
+          "sourceUrls": [
+            "https://rupress.org/jcb/article-abstract/130/4/941/20874/The-checkpoint-delaying-anaphase-in-response-to?redirectedFrom=PDF",
+            "https://www.ncbi.nlm.nih.gov/books/NBK26934/"
+          ]
+        }
+      ],
+      "limitations": [
+        "No browser operation or complete multi-angle visual acceptance was performed; the local screenshot is one representative frame. Mesh/formula checks cover all declared stages and the only control.",
+        "The chromosome/fibre models are coarse teaching meshes, not atomistic structures. This audit does not reject disclosed spatial-scale compression, reduced chromosome count, open-front cutaways or omitted biochemical detail.",
+        "Primary interpolar evidence was read from the available article XML abstract; full scanned figures were not re-analysed."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "meiosis",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mouse primary spermatocyte with two depicted autosomal homolog pairs, starting after S phase and ending as four connected haploid spermatids, not mature sperm. Seven stages; no user control or alternate root context is declared.",
+      "checks": [
+        "Read entries, both language intros/stages/legends, all update formulas and helper geometry; inspected representative /tmp/atlas-refinement/meiosis.png. Scope disclosure correctly says two pairs are a subset and that mature sperm are not produced by this scene.",
+        "Actual construction is two homolog pairs × two homologs × two sisters = eight chromatids. Read-only traversal across p=0,.14,.22,.28,.43,.55,.62,.70,.86,.94,1 preserves all eight. After I each side contains two dyads/four chromatids; at final x≈±2.05,y≈±1.25 each of four products contains two single chromosomes, one of each depicted pair.",
+        "Homologs separate in I while sisters retain paired geometry and the centromeric-cohesion marker; sister kinetochores orient to the same pole in I and opposite poles in II. No chromosome duplication or second DNA replication occurs between divisions.",
+        "Reciprocal distal recolouring affects one nonsister chromatid from each homolog within each pair. Two recombinants per pair and two unchanged sisters are retained in the correct final products. The chromosome-arm geometry at the exchange site is nevertheless misleading, as documented below.",
+        "The choice to orient both parental-colour homologs to the same side in I is one possible assortment, not a count error; text does not claim to enumerate all assortment outcomes.",
+        "Read every stage anchor and transition: synapsis/crossing-over, I spindle, I segregation/furrow, II spindle without replication, II segregation/furrow and final nuclei. No checkpoint intervention control is declared, so this depicts an unperturbed route rather than a test of arrest.",
+        "Three retained bridge objects yield a connected four-cell lineage graph at the end, consistent with male germ-cell incomplete cytokinesis in principle. Their actual membrane/channel topology is not correctly built.",
+        "Chinese and English agree about mouse scope, homolog-vs-sister separation, lack of intervening replication, retained bridges and spermatid endpoints. The stated mouse scope conflicts with the shared chromosome shape."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9901/",
+          "title": "Cooper, The Cell: Meiosis and Fertilization",
+          "supports": "Opened chapter: synapsis aligns homologous chromosomes; chiasmata mark sites of crossing over; homologs segregate in I, sisters in II without another replication round."
+        },
+        {
+          "url": "https://www.nature.com/articles/nature14097?error=cookies_not_supported&code=none",
+          "title": "Kim et al. (2015), Meikin is a conserved regulator of meiosis-I-specific kinetochore function",
+          "supports": "Opened original Nature article abstract: mouse MEIKIN promotes sister-kinetochore mono-orientation and centromeric cohesion protection in meiosis I."
+        },
+        {
+          "url": "https://www.informatics.jax.org/silver/chapters/5-2.shtml",
+          "title": "Mouse Genetics, Jackson Laboratory: The mouse karyotype",
+          "supports": "Opened authoritative chapter: standard mouse autosomes and X are telocentric; Robertsonian chromosome races are a specifically described exception, not the unstated default."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A16731628+AND+SRC%3AMED&format=json&resultType=core",
+          "title": "Kalitsis et al. (2006), Mouse telocentric sequences reveal a high rate of homogenization and possible role in Robertsonian translocation",
+          "supports": "Retrieved and read original-paper abstract via Europe PMC: sequencing of mouse telocentric ends places telomere and centromere sequences only 1.8–11 kb apart, supporting a terminal centromere rather than two comparable arms."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A16549803+AND+SRC%3AMED&format=json&resultType=core",
+          "title": "Greenbaum et al. (2006), TEX14 is essential for intercellular bridges and fertility in male mice",
+          "supports": "Retrieved and read original-paper abstract via Europe PMC: incomplete male germ-cell cytokinesis leaves a large cytoplasmic channel. Supports persistent communication, not a solid tether between sealed cells."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "division-03",
+          "severity": "P1",
+          "kind": "organism scope / chromosome morphology",
+          "file": "src/processes/modules/division/divisionShapes.js",
+          "location": "219–227; meiosisProcess.js:47–64,295–297",
+          "evidence": "Both mouse autosomal pairs use the shared chromatid helper: one arm extends from -.76L to the centromere at 0, the other from 0 to +L. Thus the depicted short arm occupies about 43% of chromosome length, with a conspicuously internal centromere on every chromosome.",
+          "whyWrong": "The standard mouse autosomal complement is telocentric. Two nearly comparable arms falsely depict the explicitly selected mouse specimen. Robertsonian mouse races can have fused metacentric chromosomes, but no such strain or fusion scope is declared; the reduced-count disclaimer does not resolve morphology.",
+          "fix": "Use a meiosis-specific telocentric chromosome parameter/shape placing the centromere close to one end, retaining matched homolog lengths, sister cohesion and the existing count. Alternatively, only if intentionally changing the specimen, explicitly document a scientifically supported Robertsonian karyotype and adapt homolog pairing accordingly.",
+          "verification": "Measure rendered arm lengths relative to the centromere for both homolog pairs; verify a terminal/near-terminal centromere for the declared standard mouse scope while keeping eight chromatids and correct I/II allocation.",
+          "sourceUrls": [
+            "https://www.informatics.jax.org/silver/chapters/5-2.shtml",
+            "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A16731628+AND+SRC%3AMED&format=json&resultType=core"
+          ]
+        },
+        {
+          "issueId": "division-04",
+          "severity": "P1",
+          "kind": "misleading representation / recombination geometry",
+          "file": "src/processes/modules/division/meiosisProcess.js",
+          "location": "146–161,206–237; divisionShapes.js:219–221,271–275",
+          "evidence": "The exchanged distal mesh begins at local y=.69L. The two gold chiasma cylinders form an X at y=.84L, with ends at .69L and .99L on opposite homolog sides. Chromosome arm meshes remain intact and simply swap distal materials. The fixed synapsis rungs at x=±.32 likewise do not derive endpoints from the homolog axes.",
+          "whyWrong": "The supposed exchange junction and the ancestry boundary are at different loci, and the connecting X joins unequal longitudinal positions on opposite homologs. This shows an arbitrary bridge plus recolouring instead of a crossover between aligned homologous loci of two nonsister chromatids.",
+          "fix": "Create a shared exchange coordinate on both aligned homolog axes; use it for the material breakpoint and connected/deformed nonsister chromatid paths. Anchor synapsis rungs to their actual paired axes. Retain reciprocal exchange without creating or deleting chromatid material.",
+          "verification": "At crossover, extract world-space exchange endpoints and ancestry boundaries: they must meet at matched homologous coordinates within tolerance, affect exactly two nonsister chromatids in the same pair, and remain continuous into the final reciprocal products.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK9901/"
+          ]
+        },
+        {
+          "issueId": "division-05",
+          "severity": "P1",
+          "kind": "misleading representation / cytoplasmic continuity",
+          "file": "src/processes/modules/division/meiosisProcess.js",
+          "location": "31–32,239–255; divisionShapes.js:32,61–62,445–535",
+          "evidence": "Retained bridges are k.line objects using closed CylinderGeometry, drawn between separately crossfaded daughter-cell ellipsoids. Cell membrane triangles are cut away only by front/back z, with no bridge-mouth apertures. The final connector is a capped solid cylinder and the daughter membranes have no channel openings at its endpoints.",
+          "whyWrong": "A male germ-cell intercellular bridge is a patent cytoplasmic channel bounded by membrane, allowing continuity between cells. A solid tether between otherwise sealed membranes conveys the wrong topology even though the text correctly says incomplete cytokinesis.",
+          "fix": "Model membrane necks with open lumens and matching apertures in the daughter surfaces, retaining the existing lineage connections. The open-front cutaway can expose the shared cytoplasmic channel without needing molecular TEX14 detail.",
+          "verification": "Cross-section each bridge and verify a continuous path between adjacent cell interiors with no membrane cap across the lumen; verify four final cells remain connected by the three retained channels.",
+          "sourceUrls": [
+            "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID%3A16549803+AND+SRC%3AMED&format=json&resultType=core"
+          ]
+        },
+        {
+          "issueId": "division-06",
+          "severity": "P2",
+          "kind": "technical geometry / attachment ambiguity",
+          "file": "src/processes/modules/division/meiosisProcess.js",
+          "location": "162–191; divisionShapes.js:229–269",
+          "evidence": "The I and II bundle targets are hardcoded offsets (x+homolog*.19,y,.3) and (x,y+sister*.19,.3). A read-only nearest-triangle probe finds≈.03158 from the first nominally attached strand endpoint to the kinetochore surfaces at p=.32 (I) and p=.68 (II), while the fibre radius is .009. The II target is not derived from the rotated chromatid matrix.",
+          "whyWrong": "Both meiotic stages claim attachment yet the drawn fibre terminates short of the layered kinetochore. Sister-pole orientation logic is correct, but the geometry weakens that explanation and is fragile under rotation/scale changes.",
+          "fix": "Use the transformed local kinetochore attachment anchor for each sister in I and II, accounting for chromatid rotation and scale, while retaining co-orientation in I and biorientation in II.",
+          "verification": "Assert surface contact for attached fibres in both divisions and through rotation; separately assert same-pole sister connections in I and opposite-pole sister connections in II using actual bundle endpoints.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/nature14097?error=cookies_not_supported&code=none",
+            "https://www.ncbi.nlm.nih.gov/books/NBK9901/"
+          ]
+        }
+      ],
+      "limitations": [
+        "No browser operation or complete multi-angle visual acceptance was performed; screenshot evidence is limited to one representative frame. Formula and mesh checks span all seven stages and the absence of controls/context variants was verified.",
+        "Primary mouse morphology and bridge papers were read through their original-paper abstracts returned by Europe PMC; direct PMC page access challenged the client. No unseen results or figures are claimed as reviewed.",
+        "This review does not require a full 20-pair mouse karyotype, exhaustive independent-assortment outcomes, mature sperm differentiation, atomic cohesin architecture or an unrequested arrest control."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

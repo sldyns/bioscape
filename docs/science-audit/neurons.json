@@ -1,0 +1,198 @@
+{
+  "group": "neurons",
+  "reviewer": "independent p_plant_water agent, Phase A read-only product audit",
+  "models": [
+    {
+      "id": "actionPotential",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Mammalian unmyelinated axon, longitudinal cutaway plus stationary magnification of region 3; no other root contexts declared.",
+      "checks": [
+        "Reviewed all six bilingual stages, intro, labels, stimulus on/off and geometry/helper/update code. Sampled each stage boundary and midpoint plus p=1 in both conditions (26 samples). Inspected provided p=.55 screenshot.",
+        "Na ions travel only across the local membrane inward; K ions travel outward. Region onset is 0.14+i*0.105; local Na window precedes the longer delayed K window, with a refractory color/state behind it. The advancing arrow is distinct from local ion beads.",
+        "The magnified view follows the same fixed region and ion orientation. No stimulus keeps channels closed and hides ion crossings/signal arrow; p>=.9 recovers the resting display. Root cell is explicitly specialized to a neuron in both languages."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK546639/",
+          "title": "NCBI Bookshelf: Neuroanatomy, Neuron Action Potential",
+          "supports": "Opened full page; Structure and Function describes Na influx, K efflux, inactivation/refractoriness and local-current regeneration along neighboring membrane."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "No quantitative membrane voltage, concentration, conductance or afterhyperpolarization curve is modeled. Leak/pump activity is explicitly omitted.",
+        "The same closed-gate object represents resting closure and inactivation; refractory color plus stage text distinguishes them, rather than a molecular inactivation gate. Protein helices are schematic.",
+        "Snapshot is one representative frame, not live-browser verification. Finite buffers do not establish biological validity."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "synapse",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian central glutamatergic synapse: presynaptic terminal, extracellular cleft, postsynaptic dendrite and astrocyte. Available/blocked presynaptic calcium; no other contexts.",
+      "checks": [
+        "Reviewed all six bilingual stages, labels, geometry including omega fusion shell, bilayer plugs, pore helper, every trajectory and both calcium conditions. Sampled 26 boundary/midpoint/end states; inspected provided p=.55 screenshot.",
+        "Correct global order: terminal signal then Ca influx then fusion. Blocking calcium preserves the arrival signal but prevents fusion, release and postsynaptic current. Glutamate traverses fusion opening, remains outside the dendrite and clears via the lateral EAAT opening; Na crosses the postsynaptic membrane.",
+        "Fusion is represented by switching a closed vesicle/plug to an omega profile. The persistent omega profile and omitted later retrieval are acceptable abbreviated exocytosis, not a full recycling model."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK11009/",
+          "title": "Purves Neuroscience: Chemical Synapses",
+          "supports": "Opened full page, sequence at paragraphs 37–44: Ca-triggered vesicle fusion precedes transmitter binding and postsynaptic channel activation."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK10807/",
+          "title": "Purves Neuroscience: Glutamate",
+          "supports": "Opened page; glutamate clearance includes uptake by surrounding glia."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/3KG2",
+          "title": "RCSB 3KG2: AMPA receptor structure",
+          "supports": "Opened structure entry; four receptor chains, extracellular paired-dimer organization and fourfold pore arrangement."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41467-026-71063-1",
+          "title": "Yen et al., Nature Communications 2026: GluA1/A2 AMPA receptor core",
+          "supports": "Opened full primary paper; reconstructed TMD contains M1/M3/M4 membrane-spanning helices and re-entrant M2; ligand binding gates cation flux."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "neurons-01",
+          "severity": "P1",
+          "kind": "incorrect molecular topology",
+          "file": "src/processes/modules/neurons/structural.js",
+          "location": "pore(): lines 96–109; used by synapseProcess.js lines 265–273",
+          "evidence": "The receptor=true path still creates four domains with six full-height membrane-spanning helices each. receptor only adds extracellular lobes at lines 111–135; no re-entrant M2 exists. The same 6-helix architecture is reused from voltage-gated channels.",
+          "whyWrong": "The countable transmembrane topology drawn for AMPA is wrong: each subunit has three membrane spans and an M2 re-entrant pore loop. Added ligand-binding lobes do not correct the membrane architecture.",
+          "fix": "Give AMPA a separate constructor with four subunits, three membrane spans per subunit and a cytoplasmic-side re-entrant M2 loop; retain extracellular ligand-binding clefts and correct postsynaptic orientation.",
+          "verification": "Inspect every receptor subunit: exactly three complete membrane crossings and one re-entrant loop; four subunits surround one cation pore. Confirm Na path remains in that pore.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/3KG2",
+            "https://www.nature.com/articles/s41467-026-71063-1"
+          ]
+        },
+        {
+          "issueId": "neurons-02",
+          "severity": "P1",
+          "kind": "misleading causal timing",
+          "file": "src/processes/modules/neurons/synapseProcess.js",
+          "location": "update lines 362–364, 384–409",
+          "evidence": "receptorOpen begins at p=.56 independently of transmitter positions. At p=.56 the first designated ligand is only at (-.51818,-.18727,.19091), while its target is (-.95,-.51,.25). Evaluating all 20 trajectories against all modeled upper binding lobes gives a minimum center distance ~.396; largest lobe radius .095 plus ligand radius .065 is only .160. Nevertheless the pore is open and Na influx begins.",
+          "whyWrong": "A ligand-gated AMPA response is displayed before any shown glutamate reaches the binding region, reversing the stated binding-before-opening causal dependency. This is visible over an interval, not just one floating-point boundary.",
+          "fix": "Create explicit extracellular ligand-contact anchors and derive receptor opening from arrival/occupancy, or move the diffusion/binding stage earlier. Keep ligand outside the ion pore and separately time sodium movement after occupancy.",
+          "verification": "For each receptor and sampled frame, open/current implies at least one designated glutamate at its modeled extracellular binding cleft; no Na crossing before first occupancy. Blocked-Ca scenario remains entirely closed.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK11009/",
+            "https://www.nature.com/articles/s41467-026-71063-1"
+          ]
+        }
+      ],
+      "limitations": [
+        "Schematic counts, dimensions, receptor subtype composition, transporter-coupled ions and vesicle retrieval are not simulated.",
+        "Some PMC/Nature legacy links returned a challenge or fetch failure; evidence above uses successfully opened Bookshelf, RCSB and the accessible 2026 primary paper."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "muscle",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian skeletal-muscle sarcomere in sarcoplasm; transient Ca release versus maintained low Ca. Upstream neuromuscular excitation explicitly omitted.",
+      "checks": [
+        "Reviewed all six bilingual stages, labels, motor-head helper and all transforms in both controls; sampled 26 stage/midpoint/end states and inspected p=.55 screenshot.",
+        "Fixed-length thin filaments and their Z discs translate inward by opposite signed offsets. Thick filament stays fixed; motor lever rotations on both halves move attached heads toward the center during the displayed stroke. A central bare zone is retained.",
+        "Ca shifts troponin/tropomyosin before attachment; heads detach before reset. Low Ca prevents attachment/shortening. Final length remains shortened, with the need for external restoration explicitly stated."
+      ],
+      "sources": [
+        {
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/10-3-muscle-fiber-contraction-and-relaxation",
+          "title": "OpenStax A&P: Muscle Fiber Contraction and Relaxation",
+          "supports": "Opened full page, ATP section: ATP binding releases actin; hydrolysis reprimes; Pi/ADP release belongs to the mechanical cycle."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26888/",
+          "title": "Alberts: Molecular Motors",
+          "supports": "Opened full page; fixed-length sliding, opposite thin-filament polarity and calcium-sensitive troponin regulation agree with this scope."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "neurons-03",
+          "severity": "P2",
+          "kind": "nucleotide-state annotation/condition mismatch",
+          "file": "src/processes/modules/neurons/muscleProcess.js",
+          "location": "stage ATP annotation lines 60–67 and update lines 298–304",
+          "evidence": "Gold objects are described as nucleotide-state markers, but h.atp.visible = p<.43 || p>=.65 is identical for both calcium conditions and does not distinguish ATP from ADP+Pi. In low-Ca mode heads remain primed/inactive while all markers disappear for .43<=p<.65, the active-scenario stroke window.",
+          "whyWrong": "This condition-independent disappearance communicates a timed nucleotide-release event in the comparison intended to remain inactive, and the single undifferentiated marker cannot identify the ATP-binding versus ADP/Pi-primed stages promised by its annotation. Core filament direction and active-cycle ordering remain sound.",
+          "fix": "Use explicit labeled/color-keyed nucleotide states driven by the same mechanochemical state as head attachment; keep a stable primed state in the low-Ca comparison unless separately modeling basal turnover.",
+          "verification": "Low-Ca head and nucleotide state remain unchanged across the active stroke interval. Active branch exposes ordered ADP+Pi, release, ATP-bound detached, then hydrolyzed primed states without presenting marker number as stoichiometry.",
+          "sourceUrls": [
+            "https://openstax.org/books/anatomy-and-physiology-2e/pages/10-3-muscle-fiber-contraction-and-relaxation"
+          ]
+        }
+      ],
+      "limitations": [
+        "This is one synchronized explanatory cycle, not asynchronous physiological kinetics; synchronization is already disclosed.",
+        "Actin plus/minus ends are not explicitly labeled, though the Z-disc attachment and inward movement are consistent.",
+        "Gold markers are symbolic, not nucleotide atomistic models or counts; issue severity is annotation/condition clarity rather than a reversed power stroke."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "ciliaryMotion",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "One Paramecium motile 9+2 cilium, with longitudinal cutaway and separate magnified transverse section; ATP available versus absent.",
+      "checks": [
+        "Reviewed all six bilingual stages, ATP control, all tube/rib/motor update formulas and transverse A/B geometry; sampled 26 boundary/midpoint/end states. Inspected supplied p=.55 screenshot.",
+        "Nine complete A/incomplete B doublets and two central singlets are represented; a basal anchor is fixed and no bacterial rotation is claimed. ATP absent produces a straight arrested structure.",
+        "Checked geometry rather than centerlineLength userData: all tube material rows use the same central sample index, with no per-doublet longitudinal sliding parameter. Measured actual tube axial edge lengths from position buffers at p=0,.34,.55,.70,.89,1."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26888/",
+          "title": "Alberts: Molecular Motors, cilia/flagella section",
+          "supports": "Opened full page, paragraphs 244–246: attached dynein acts on a neighboring doublet; constrained interdoublet sliding generates curvature."
+        },
+        {
+          "url": "https://epscor.w3.uvm.edu/judy/documents/NovelInsights.pdf",
+          "title": "Valentine et al., Cells 2015: Paramecium cilia",
+          "supports": "Opened University of Vermont hosted full PDF, page 2: Paramecium has nine outer doublets and a central pair; ATP supports motility in permeabilized preparations."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "neurons-04",
+          "severity": "P1",
+          "kind": "incorrect kinematics / misleading mechanism",
+          "file": "src/processes/modules/neurons/ciliaryMotionProcess.js",
+          "location": "update lines 343–381 and dynein stalk endpoints lines 429–436",
+          "evidence": "The centerline is integrated with constant length L=4.4, but each tube is offset at the same material index s: x=X[s]+rx*cos(a), y=Y[s]-rx*sin(a). This stretches the convex-side tube and compresses the concave-side tube instead of sliding material along near-inextensible doublets. Read-only measurements of complete A-tube axial edges (first and fifth doublets) are 4.400/4.400 at p=0 and 4.6582/4.1574 at p=.70 (~+5.9%/-5.5%). Stalk endpoints also remain at the same s on the neighbor.",
+          "whyWrong": "The model titled sliding-to-bending actually obtains curvature by substantial length change and has no material sliding, contrary to the central teaching mechanism. Constant central-axis length does not imply constant microtubule length.",
+          "fix": "Parameterize each doublet by its own conserved arc length, allowing curvature-dependent relative longitudinal offset/sliding while preserving basal constraints. Track motor contact along the adjacent B tubule toward its basal minus end; avoid anchoring both endpoints to identical material rows.",
+          "verification": "Across a dense beat-cycle sample, each doublet material centerline length and tubulin repeat spacing stay constant within a small numerical tolerance, while neighboring material rows show nonzero relative displacement correlated with curvature. ATP absent has neither sliding nor bending.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK26888/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Effective/recovery asymmetry, hydrodynamics and precise motor ATP chemistry remain qualitative; no physical beat frequency is claimed.",
+        "The Paramecium PDF is a review; the successfully opened textbook supplies the constrained-sliding mechanism. Direct PMC delivery of the embedded review was challenged."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

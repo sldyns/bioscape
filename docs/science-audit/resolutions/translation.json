@@ -1,0 +1,130 @@
+{
+  "group": "translation",
+  "issues": [
+    {
+      "issueId": "translation-01",
+      "status": "fixed",
+      "changes": "Removed hollow ribosomeAnatomy and its disconnected RNA-stem array. Added 4UG0 assembly drawn directly from both existing experimental coordinate files: all 17,156 RNA C4′/protein Cα points retain one common translation, uniform scale and rotation; chain breaks and chain identities are preserved. RNA/protein use distinct colors and bilingual labels. Translation now shows a larger static structural reference beside an explicitly separate enlargement of reactions inside the ribosome. Narrow layouts receive bilingual compact structural/mechanism titles; P/A and 5′/3′ labels outrank technical notes, with strand-end labels following mRNA movement.",
+      "files": [
+        "src/processes/modules/translation/ribosomeAssembly.js",
+        "src/processes/modules/translation/molecularDetails.js",
+        "src/processes/modules/translation/science.test.mjs",
+        "src/processes/modules/translation/translationReaction.js",
+        "src/processes/modules/translation/translationProcess.js",
+        "src/processes/modules/translation/mechanics.js"
+      ],
+      "verification": [
+        "science.test.mjs compares every displayed residue center and every backbone-segment endpoint against the deposited source arrays, including exact counts and gap rules.",
+        "Asserts identical world registration for both subunits and both molecular kinds, and no separate subunit transform.",
+        "All four translation roots pass 201 timeline samples; retired shell/tRNA helper removed rather than left in use."
+      ],
+      "limitations": [
+        "4UG0 is human and is explicitly a representative structural reference in plant, yeast and paramecium contexts.",
+        "Residue backbone is not a complete all-atom model. Stroke radii are display choices; missing residues remain gaps.",
+        "Final visual acceptance is owned by root; no browser was operated in this lane."
+      ]
+    },
+    {
+      "issueId": "translation-02",
+      "status": "fixed",
+      "changes": "Replaced remote flat tRNA transfer with continuous L-shaped schematic RNA traces whose anticodons occupy distinct decoding positions while CCA tips converge locally. The original peptide remains in place; at peptide transfer the P ester is replaced with a new peptide bond to the persistent incoming amino acid, while its A-tRNA ester remains intact. A→P translocation follows separately; only termination removes the remaining ester.",
+      "files": [
+        "src/processes/modules/translation/translationReaction.js",
+        "src/processes/modules/translation/translationProcess.js",
+        "src/processes/modules/translation/mechanics.js",
+        "src/processes/modules/translation/science.test.mjs"
+      ],
+      "verification": [
+        "Across all four roots and 201 frames, actual transformed cylinder endpoints meet the corresponding tRNA tip and peptide/amino-acid center.",
+        "The incoming amino acid never disappears; the newly formed peptide bond persists through termination.",
+        "Checks convergence of acceptor tips, each tRNA backbone endpoint coincident with its 3′-CCA marker, all 25 peptide links, A anticodon arrival at P, and both esters absent only after hydrolysis.",
+        "Peer-review hardening: each frame now checks actual 48-point RNA backbone ends and all 47 rendered RNA links, plus effective visibility through every ancestor for tRNA/CCA/esters/new peptide bond/amino acid. Separate in-memory mutations hiding the P-tRNA parent, displacing the real RNA end by +0.6, and hiding the reaction ancestor are all rejected."
+      ],
+      "limitations": [
+        "Reaction enlargement shows molecular connectivity and event order, not an atomistically simulated transition state.",
+        "Bond formation uses a discrete topology switch at p=0.41 instead of an unphysical drifting unbound chain.",
+        "Elongation factors, hybrid tRNA states and energy turnover remain outside this final-round schematic."
+      ]
+    },
+    {
+      "issueId": "translation-03",
+      "status": "fixed",
+      "changes": "Removed the fabricated tunnel on the structural reference. The separately labeled mechanism uses a fixed exit-path guide; the existing internal peptide stays inside it throughout transfer/translocation. Release advances the same continuous chain through the outlet before lateral drift. No moving tRNA or tunnel is claimed to be fitted into 4UG0.",
+      "files": [
+        "src/processes/modules/translation/translationReaction.js",
+        "src/processes/modules/translation/translationProcess.js",
+        "src/processes/modules/translation/science.test.mjs"
+      ],
+      "verification": [
+        "For every sampled frame, every peptide center within the guide axial range has its full rendered bead radius inside the explicit 0.25-radius corridor.",
+        "After release both the existing chain end and newly added terminal residue clear the outlet, retaining their peptide bond.",
+        "Experimental reference stays registered and static while only the independent mechanistic diagram animates."
+      ],
+      "limitations": [
+        "The functional PTC-to-exit route is explicitly schematic and is not mapped to 4UG0 atomic tunnel coordinates.",
+        "No fabricated protein wall is used to imply an experimentally measured lumen."
+      ]
+    },
+    {
+      "issueId": "translation-04",
+      "status": "fixed",
+      "changes": "Protein folding now reuses the same registered experimental 4UG0 reference. Its outlet/client region is an explicitly separate magnified mechanism, with an upstream chain continuation before synthesis completion rather than a falsely free C terminus. Intro, labels and first stage explain the reference/enlargement distinction in both languages.",
+      "files": [
+        "src/processes/modules/translation/ribosomeAssembly.js",
+        "src/processes/modules/translation/proteinFoldingProcess.js",
+        "src/processes/modules/translation/science.test.mjs"
+      ],
+      "verification": [
+        "All three roots and both Hsp70 cycle branches pass 201 samples.",
+        "Same per-residue/per-edge source registration test as translation-01.",
+        "Actual upstream-continuation visibility changes at synthesis completion; cycle branches retain distinct end geometries and deterministic seeking."
+      ],
+      "limitations": [
+        "Hsp70 and client conformations remain explicitly illustrative; they are not an experimentally registered complex with 4UG0.",
+        "The enlarged outlet is a functional depiction and does not assign an unverified exit coordinate to the experimental reference."
+      ]
+    },
+    {
+      "issueId": "translation-05",
+      "status": "fixed",
+      "changes": "Moved FeMo cofactors to corresponding left/right alpha domains at local x=−0.8/+0.8,y=0.64,z=0.05 with equal scale; retained P clusters at alpha-beta interfaces. Updated the selected catalytic-half electron relay, substrate/product origin and alpha/beta labels. Pocket rim drawings accompany each alpha domain and are not described as atomic metal ligands.",
+      "files": [
+        "src/processes/modules/translation/nitrogenFixationProcess.js",
+        "src/processes/modules/translation/science.test.mjs"
+      ],
+      "verification": [
+        "For both cofactors and every protected/exposed sample, actual mesh world bounds and cofactor geometry lie in the alpha-domain projection above the beta tier.",
+        "The original y=−0.71 cofactor placement fails this geometric invariant.",
+        "Both oxygen branches, all intermediate frames and distinct productive/blocked terminal states pass local smoke/science checks."
+      ],
+      "limitations": [
+        "MoFe shape and pockets remain a topology-preserving schematic, not an imported 3U7Q all-atom surface.",
+        "Projection/bounds checks establish alpha-versus-beta placement; they are not claimed point-to-triangle containment or chemical coordination validation.",
+        "E-state chemistry and N2 binding timing are not represented atomistically."
+      ]
+    }
+  ],
+  "unchangedModels": [
+    "alternativeSplicing"
+  ],
+  "commands": [
+    "node src/processes/modules/translation/science.test.mjs — PASS: 14 root/control combinations, 2814 frames; experimental geometry, connectivity, branch/seek/resource checks",
+    "node src/processes/modules/translation/refinementSmoke.mjs — PASS: all 9 root entries, both control branches; finite geometry, resources, deterministic seeks and esbuild browser bundles for all 4 models",
+    "npx prettier --write [owned modified files only]",
+    "Post-peer rerun: science.test.mjs PASS for 2814 frames plus 3 separate fault-injection rejections; translation browser bundle PASS."
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.rcsb.org/structure/4UG0",
+      "use": "Human experimental RNA C4′ and protein Cα registered backbone; existing repository source arrays retained."
+    },
+    {
+      "url": "https://www.nature.com/articles/s41477-023-01407-y",
+      "use": "Primary translating eukaryotic ribosome structure supports tRNA/CCA/PTC and nascent chain exit-path relationships; schematic is explicitly not fitted to coordinates."
+    },
+    {
+      "url": "https://www.rcsb.org/structure/3U7Q",
+      "use": "A. vinelandii alpha2beta2 MoFe topology and alpha-associated FeMo cofactors."
+    }
+  ]
+}

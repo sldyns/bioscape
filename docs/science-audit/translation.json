@@ -1,0 +1,246 @@
+{
+  "group": "translation",
+  "reviewer": "/root/p_regulation — independent Phase A audit",
+  "models": [
+    {
+      "id": "translation",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast",
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Shared eukaryotic cytosolic 80S elongation/termination schematic; ciliate nuclear-code caveat explicitly present.",
+      "checks": [
+        "Read all geometry helpers, all stages and both languages; no controls. Instantiated all four roots and executed p=0..1 in 0.01 increments. RootId does not change this geometry.",
+        "Reading direction is consistent in the ribosome-fixed frame: mRNA moves left by one codon; A-tRNA shifts A→P and deacylated P-tRNA shifts toward E before exit. Incoming stop marker moves to A.",
+        "N terminus is distal and C terminus proximal; release begins after stop-factor docking. Termination end state retains a factor while subunits separate slightly; treated as an incomplete recycling preview, not a validated recycling mechanism.",
+        "Confirmed attachment and tunnel defects from formulas, not only userData. Inspected the provided p≈0.55 screenshot.",
+        "Checked 80S/cytosol scope against plant primary structure and ciliate code against NCBI; omission of explicit universal stop sequence is appropriate."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/4UG0",
+          "title": "4UG0 — Structure of the human 80S ribosome",
+          "supports": "Opened structural entry: 3.6 Å human 80S, ribosomal RNA and protein architecture, subunit interface and tRNA binding sites. This is a registered molecular assembly, not a protein shell filled with separate RNA objects."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41477-023-01407-y",
+          "title": "Structure of the actively translating plant 80S ribosome at 2.2 Å resolution",
+          "supports": "Opened primary article, Results and Figs 1–2: interwoven rRNA/protein subunits; tRNA anticodons at the small subunit; acceptor/CCA regions at the large subunit; nascent chain connects to tRNA and follows the large-subunit exit tunnel. Plant cytosolic 80S is distinguished from organellar ribosomes."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG6",
+          "title": "NCBI genetic codes, table 6",
+          "supports": "Opened official code table: Paramecium nuclear translation reassigns UAA/UAG to glutamine. The scene wisely does not name a universal stop triplet."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "translation-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/translation/molecularDetails.js",
+          "location": "ribosomeAnatomy lines 157–235; cutawayLobe lines 126–155; translationProcess.js:200",
+          "evidence": "Three thin half-ellipsoid surfaces form the 60S bowl; six independent upright rnaStem objects are placed at x=±(0.65+i*0.52), plus one transverse stem. The 40S has seven independent stems at regular x intervals. No RNA paths connect them. /tmp/atlas-refinement/translation.png visibly confirms the empty shell and ordered hairpin array. Metadata even calls this an open 60S lumen.",
+          "whyWrong": "A ribosome is a compact ribonucleoprotein assembly, not a hollow protein container with rows of independent RNA hairpins. RNA can legitimately form paired helices; the scientific error is the invented disconnected architecture and missing rRNA catalytic core, not the mere presence of helices.",
+          "fix": "Replace the hollow bowl/stem array with the existing experimental 4UG0 residue backbones in src/scene/data/ribosome-4ug0-{largeSubunit,smallSubunit}.json. Combine both datasets before deriving one center, scale and rotation (ribosomeReference assembly:true can inform this); never normalize each subunit independently. Retain chain gaps and RNA/protein identities. Use selective clipping or fading of this registered assembly to reveal mapped decoding, PTC and exit-tunnel regions. Identify human coordinates as representative for the other eukaryotic contexts; do not claim species-specific atomistic anatomy.",
+          "verification": "Compare transformed subunit landmarks against a single rigid transform of the combined 4UG0 assembly; preserve intersubunit contacts and experimentally connected rRNA chains. A cutaway reveals dense RNA/protein architecture rather than an empty lumen. No decorative unconnected regular stem array substitutes for rRNA.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/4UG0",
+            "https://www.nature.com/articles/s41477-023-01407-y"
+          ]
+        },
+        {
+          "issueId": "translation-02",
+          "severity": "P1",
+          "kind": "fact_error",
+          "file": "src/processes/modules/translation/translationProcess.js",
+          "location": "update lines 138–177; mechanics.js trna acceptor tips",
+          "evidence": "During p=0.33–0.49 both docked tRNAs stay upright and 1.35 scene units apart. Their acceptor ends remain near x=0.28 and 1.63, while the peptide C-end is interpolated by anchorX=0.28+1.35*transfer. At p=0.41 it is x=0.955, 0.675 units from either acceptor end. The incoming amino-acid bead stays on A-tRNA until it disappears at p=0.49; no connecting transfer bond is shown.",
+          "whyWrong": "The growing peptide does not detach and float between remote tRNAs during peptide-bond formation. Peptidyl- and aminoacyl-tRNA acceptor ends must meet the common PTC; the peptide transfers onto the A-site amino acid while remaining covalently attached to tRNA. Flat parallel tRNAs plus global lateral chain interpolation teach the wrong reaction geometry.",
+          "fix": "Use tertiary L-shaped tRNAs with anticodons in distinct A/P decoding positions but CCA ends converging at the mapped PTC. Track the peptidyl ester before/after reaction; connect the incoming amino acid into the same continuous peptide and switch the ester attachment locally. Separate later tRNA translocation from bond formation.",
+          "verification": "Across pre-transfer, transfer and post-transfer samples, the peptide C terminus is attached to the appropriate 3′-CCA/amino-acid substrate except after hydrolytic termination; no free peptide interval before release. The transferred residue remains part of the chain, and P/A acceptor ends occupy the same catalytic neighborhood.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/s41477-023-01407-y"
+          ]
+        },
+        {
+          "issueId": "translation-03",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/translation/translationProcess.js",
+          "location": "chain formula lines 165–177 versus molecularDetails.js tunnel lines 189–214",
+          "evidence": "The fixed tunnel is centered at x=0.22,z=0.05, radius at most 0.31, y=1.585–2.435. At p=0.49, chain point i=5/25 lies at (1.38945,1.99,0.34365): radial offset 1.20575 from the tunnel axis, almost four times its maximum radius. This is inside the tunnel y-range but far outside the tunnel, while the peptide is still attached to A-tRNA.",
+          "whyWrong": "The nascent chain is visibly routed around the supposed exit tunnel during transfer. The large-subunit PTC and tunnel define a continuous exit path; switching carrier tRNA does not move the chain through the protein body or out through a lateral shell wall.",
+          "fix": "After establishing a registered PTC and exit tunnel, constrain the internal nascent chain to that route throughout elongation and translocation. Permit only local movement at the peptidyl end and motion of the exposed N-terminal segment. Map release-factor catalytic tip to that same PTC.",
+          "verification": "Sample the entire pre-release animation; the internal chain follows the mapped tunnel centerline within its clearance and never crosses the rendered tunnel wall. The chain remains connected from the PTC to the external N terminus.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/s41477-023-01407-y"
+          ]
+        }
+      ],
+      "limitations": [
+        "No browser operated; provided screenshot is one view, not all-angle visual validation.",
+        "Elongation factors, GTP turnover and full recycling are omitted; a correct simplified storyboard is possible, but current geometry fails the listed topology/attachment invariants.",
+        "4UG0 is a human structural reference; reuse for other roots must remain explicitly representative."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "proteinFolding",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Illustrative soluble eukaryotic cytosolic protein with Hsp70/J-protein/nucleotide-exchange cycle, not a named sequence or universal fold.",
+      "checks": [
+        "Read both languages and all stages; ran complete and hold controls for all three roots, p=0..1 in 0.01 steps.",
+        "N terminus is distal, C terminus is initially adjacent to the rotated ribosome exit; completion releases that end before global folding.",
+        "Hsp70 ATPase cleft, substrate groove and helical lid are separate objects. J protein approaches before hydrolysis; ADP-hold keeps lid closed and suppresses exchange/final fold. Complete cycle shows exchange factor, reopening and client release.",
+        "Intro explicitly limits final alpha/beta shape to an example and permits repeated cycles/other chaperones; no universal deterministic fold claim.",
+        "Nucleotide graphic removes/readds terminal phosphate while the same object leaves/returns; accepted only as the explicitly stated coarse ATP/ADP-state storyboard, not literal nucleotide chemistry."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/4UG0",
+          "title": "4UG0 — Structure of the human 80S ribosome",
+          "supports": "Opened structural entry: 3.6 Å human 80S, ribosomal RNA and protein architecture, subunit interface and tRNA binding sites. This is a registered molecular assembly, not a protein shell filled with separate RNA objects."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41477-023-01407-y",
+          "title": "Structure of the actively translating plant 80S ribosome at 2.2 Å resolution",
+          "supports": "Opened primary article, Results and Figs 1–2: interwoven rRNA/protein subunits; tRNA anticodons at the small subunit; acceptor/CCA regions at the large subunit; nascent chain connects to tRNA and follows the large-subunit exit tunnel. Plant cytosolic 80S is distinguished from organellar ribosomes."
+        },
+        {
+          "url": "https://www.nature.com/articles/nsmb.2583?error=cookies_not_supported",
+          "title": "Allosteric opening of the polypeptide-binding site when an Hsp70 binds ATP",
+          "supports": "Opened primary abstract and structural description: nucleotide-binding domain and substrate-binding domain; ATP-associated lid/channel opening promotes substrate release. The experimental molecule is bacterial DnaK, so it supports a conserved mechanism rather than an exact eukaryotic coordinate model."
+        },
+        {
+          "url": "https://www.nature.com/articles/nature20137",
+          "title": "Alternative modes of client binding enable functional plasticity of Hsp70",
+          "supports": "Opened primary abstract and extended-data description: Hsp70 can stabilize extended and partially folded clients, acts through groove/lid interactions, and does not impose one universal native fold."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "translation-04",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/translation/proteinFoldingProcess.js",
+          "location": "ribosome construction lines 18–29",
+          "evidence": "The folding process calls the same ribosomeAnatomy at line 26, then rotates/scales it. Thus its nascent-chain source repeats translation-01: a hollow shell with regular, separate RNA stems.",
+          "whyWrong": "Rotation and reduction in screen size do not correct the false ribosome architecture. The exit-site context of cotranslational folding is taught using the same misleading assembly.",
+          "fix": "Replace the hollow bowl/stem array with the existing experimental 4UG0 residue backbones in src/scene/data/ribosome-4ug0-{largeSubunit,smallSubunit}.json. Combine both datasets before deriving one center, scale and rotation (ribosomeReference assembly:true can inform this); never normalize each subunit independently. Retain chain gaps and RNA/protein identities. Use selective clipping or fading of this registered assembly to reveal mapped decoding, PTC and exit-tunnel regions. Identify human coordinates as representative for the other eukaryotic contexts; do not claim species-specific atomistic anatomy. Re-anchor the nascent chain to the transformed experimental exit-tunnel mouth.",
+          "verification": "Compare transformed subunit landmarks against a single rigid transform of the combined 4UG0 assembly; preserve intersubunit contacts and experimentally connected rRNA chains. A cutaway reveals dense RNA/protein architecture rather than an empty lumen. No decorative unconnected regular stem array substitutes for rRNA. In this model, the proximal nascent chain starts at that same exit mouth until synthesis completion.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/4UG0",
+            "https://www.nature.com/articles/s41477-023-01407-y"
+          ]
+        }
+      ],
+      "limitations": [
+        "Shared ribosome error is the same root cause as translation-01; count once when prioritizing remediation, despite two affected process records.",
+        "Hsp70 domain placement and client fold are illustrative; this audit does not certify atomic contacts, sequence-specific folding or eukaryotic species-specific cochaperone structure.",
+        "The title/stage label do not guarantee a universal fold, and the hold branch is a selected stalled cycle rather than proof no other client region can fold."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "alternativeSplicing",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Human nuclear SMN2 exon 6–8 fragment; compares selected exon-7 inclusion/skipping pathways, not regulatory kinetics or treatment response.",
+      "checks": [
+        "Read all geometry/update code and both-language text, labels/legend/sources; executed include and skip at p=0..1 in 0.01 increments.",
+        "Inclusion cuts donor links 15 and 48, then acceptor links 31 and 64, and joins [15,32] and [48,65]; final retained sequence is 6–7–8.",
+        "Skipping cuts links 15 and 64 and joins [15,65]; removed continuous region 16–64 contains exon7, final retained sequence is 6–8. No exon duplication.",
+        "Branch links connect intron starts 16/49 to branch points28/61 (include), or start16 to point54 in downstream intron7 (skip). Lariat has a loop plus tail and branch node; it is not substituted with a simple circular RNA.",
+        "Donor cleavage precedes acceptor cleavage/ligation; retained RNA keeps 5′→3′ order. Excised material departs; no protein appears in nucleus.",
+        "Bilingual scope identifies human SMN2, compressed/asynchronous-in-reality two-intron inclusion events, and impaired unstable SMNΔ7 rather than claiming all isoforms functional."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC26877/",
+          "title": "A single nucleotide in the SMN gene regulates splicing and is responsible for spinal muscular atrophy",
+          "supports": "Primary full text opened with urllib after web-tool CAPTCHA. Minigene and patient-transcript evidence links human SMN2 exon-7 variation to exon-7 skipping; SMNΔ7 is functionally impaired. This verifies the specimen and alternative exon junctions, not the invented spliceosome surface."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9864/",
+          "title": "RNA Processing and Turnover — The Cell",
+          "supports": "Opened official chapter, pre-mRNA splicing: first donor cleavage and intron 5′ end linkage to branch A 2′-OH; then acceptor cleavage and exon ligation; excised branched lariat is normally debranched/degraded."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6026014/",
+          "title": "Mechanism of Splicing Regulation of Spinal Muscular Atrophy Genes",
+          "supports": "Full text retrieved and inspected: exon-7-skipped SMN2 codes for partially functional, unstable SMNΔ7. Used to cross-check the stability sentence, alongside the primary SMN study."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Qualified only for exon/intron connectivity, compartment and the described pathway. Generic spliceosome cutaway/snRNA icons are not an experimentally registered catalytic structure; exact U2/U6/U5 contacts are not validated here.",
+        "RNA lengths and timing are compressed. Branch-site atoms and 2′/3′ chemistry are labels/topological links, not atomistic geometry; inclusion branch endpoints nearly overlap at final lariat layout.",
+        "No browser operated and no claim of all-angle visual acceptance."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "nitrogenFixation",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Azotobacter vinelandii cytosolic Mo nitrogenase; selected oxygen-protected/exposed scenarios, not a generic property of all bacteria.",
+      "checks": [
+        "Read all helpers, particle/cluster creation, both languages and all stages; executed protected and exposed controls at p=0..1 in 0.01 increments.",
+        "Fe protein is a dimer with one cubane and two ATP markers. Cubane/P-cluster/FeMo helpers distinguish 4Fe4S,8Fe7S,7Fe9SMoC topology at icon level.",
+        "Protected branch iterates eight electron-transfer cycles; each uses two ATP markers, P→FeMo before Fe→P replenishment, followed by hydrolysis. Final products are two NH3 and one H2. This order/net stoichiometry matches opened primary evidence.",
+        "Exposed branch becomes blocked at p>=0.19, halts electron/ATP cycle and suppresses NH3/H2 products; no claim A. vinelandii must be an obligate anaerobe.",
+        "Identified incorrect second FeMo placement by actual coordinates and beta material, independent of metadata.",
+        "Explicitly assessed cutawayLobe as representation: all four MoFe lobes contain beta sheets and local helices (lines54–75), so unlike the ribosome scene the interior is not simply a central empty bowl populated by detached RNA. However no experimentally registered continuous protein fold or realistic metal-coordination pocket is reconstructed. No additional P1 is inferred merely from decorative secondary-structure icons; the concrete catalytic-topology failure is the cofactor-to-subunit mismatch translation-05."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/3U7Q",
+          "title": "3U7Q — A. vinelandii nitrogenase MoFe protein at atomic resolution",
+          "supports": "Opened 1.00 Å structural dataset: alpha chains A/C, beta chains B/D; FeMo cluster ICS and homocitrate associated with alpha chains; alpha2beta2 biological assembly; FeMo composition includes interstitial carbon."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3799366/",
+          "title": "Electron transfer precedes ATP hydrolysis during nitrogenase catalysis",
+          "supports": "Primary full text retrieved and inspected after web-tool CAPTCHA: minimum eight electrons and sixteen ATP per N2 with H2 coproduct; Fe-protein homodimer with two nucleotide sites; proposed P-cluster to FeMo transfer precedes Fe-protein replenishment and ATP hydrolysis."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "translation-05",
+          "severity": "P1",
+          "kind": "fact_error",
+          "file": "src/processes/modules/translation/nitrogenFixationProcess.js",
+          "location": "MoFe subunits lines 37–75; cluster placement lines 78–81",
+          "evidence": "The upper two lobes use moMat at y=0.64; lower lobes explicitly use betaMat at y=-0.75. The first FeMo cofactor is at [0.01,0.59,0.54], but the second is at [0.36,-0.71,0.2], inside the lower beta-colored region. The two P clusters are separately placed near y=0.04/-0.08.",
+          "whyWrong": "Each catalytic alpha-beta half has its FeMo cofactor inside its alpha subunit and its P cluster at the alpha-beta interface. This placement puts one catalytic cofactor in the beta tier and fails to preserve equivalent catalytic-half topology. It is not merely a change of orientation because the alpha/beta material assignment is explicit.",
+          "fix": "Arrange the alpha2beta2 assembly and two cofactor pairs from a consistent 3U7Q coordinate frame or a topology-preserving reduction: one FeMo in each alpha and one P cluster at each alpha-beta interface. Then align the demonstrated electron path to one selected pair.",
+          "verification": "For both halves, identify alpha/beta identities and test that each FeMo is enclosed by the alpha domain, each P cluster lies at the corresponding alpha-beta interface, and electron markers follow the selected Fe-protein→P→FeMo pathway without changing subunit identity.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/3U7Q"
+          ]
+        }
+      ],
+      "limitations": [
+        "Eight steps are a net-cycle cartoon, not a verified E0–E8 intermediate sequence. N2 is positioned near the cofactor before cycling; the model must not be described as exact N2-binding timing or E4 hydride chemistry.",
+        "H2 and NH3 appear together as net products and N2 briefly overlaps their first appearance; particle fades are not atom-resolved conservation or reaction intermediates.",
+        "A single ferredoxin-like FeS donor icon stands for reduced donor supply; the slash label mentioning flavodoxin does not validate FMN-containing flavodoxin anatomy.",
+        "Protein shells/helices are schematic and the metal-cluster icons are not fully coordinated atomistic structures.",
+        "Phase B must preserve dense protein-domain identity around cofactors and alpha–beta contacts. A schematic cut surface is acceptable only if it cannot be mistaken for a membrane-bounded cavity; replacing the incorrect FeMo coordinates alone does not certify pocket or protein-volume fidelity."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,1080 @@
+{
+  "date": "2026-09-18",
+  "environment": "Codex browser; width 320; coarse pointer emulation; English; not a physical phone",
+  "routes": [
+    {
+      "route": "#/cell/membrane",
+      "title": "Plasma membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/membrane/bilayer",
+      "title": "Lipid bilayer",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/membrane/membraneProteins",
+      "title": "Membrane proteins",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/membrane/glycans",
+      "title": "Surface glycans",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus",
+      "title": "Nucleus",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/envelope",
+      "title": "Nuclear envelope",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/envelope/outerNuclear",
+      "title": "Outer nuclear membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/envelope/innerNuclear",
+      "title": "Inner nuclear membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/nuclearPores",
+      "title": "Nuclear pore complex",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/chromatin",
+      "title": "Chromatin",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/chromatin/nucleosome",
+      "title": "Nucleosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/chromatin/nucleosome/histones",
+      "title": "Histone core",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/chromatin/nucleosome/dna",
+      "title": "DNA double helix",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/chromatin/dna",
+      "title": "DNA double helix",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/nucleus/nucleolus",
+      "title": "Nucleolus",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/mitochondria",
+      "title": "Mitochondrion",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/mitochondria/mitoOuter",
+      "title": "Outer membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/mitochondria/mitoInner",
+      "title": "Inner membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/mitochondria/mitoInner/cristae",
+      "title": "Cristae",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/mitochondria/mitoInner/atpSynthase",
+      "title": "ATP synthase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/mitochondria/matrix",
+      "title": "Mitochondrial matrix",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/mitochondria/matrix/mitoDNA",
+      "title": "Mitochondrial DNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/roughER",
+      "title": "Rough ER",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/roughER/erCisternae",
+      "title": "Cisternae and lumen",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/roughER/boundRibosomes",
+      "title": "Bound ribosomes",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/roughER/boundRibosomes/largeSubunit",
+      "title": "Large subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/roughER/boundRibosomes/smallSubunit",
+      "title": "Small subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/roughER/boundRibosomes/mrna",
+      "title": "Messenger RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/roughER/boundRibosomes/trna",
+      "title": "Transfer RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/smoothER",
+      "title": "Smooth ER",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/smoothER/erTubules",
+      "title": "Tubular membrane network",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/golgi",
+      "title": "Golgi apparatus",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/golgi/golgiCisternae",
+      "title": "Flattened cisternae",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/golgi/vesicles",
+      "title": "Transport vesicles",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/golgi/vesicles/vesicleMembrane",
+      "title": "Vesicle membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/golgi/vesicles/cargo",
+      "title": "Transport cargo",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/ribosomes",
+      "title": "Ribosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/ribosomes/largeSubunit",
+      "title": "Large subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/ribosomes/smallSubunit",
+      "title": "Small subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/ribosomes/mrna",
+      "title": "Messenger RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/ribosomes/trna",
+      "title": "Transfer RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/lysosome",
+      "title": "Lysosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/lysosome/lysosomalMembrane",
+      "title": "Lysosomal membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/lysosome/lysosomalMembrane/lysosomalPump",
+      "title": "Proton pump",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/lysosome/hydrolases",
+      "title": "Acid hydrolases",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/lysosome/recycling",
+      "title": "Material for recycling",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/peroxisome",
+      "title": "Peroxisome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/peroxisome/peroxisomalMembrane",
+      "title": "Peroxisomal membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/peroxisome/oxidativeEnzymes",
+      "title": "Oxidases and catalase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/peroxisome/oxidativeEnzymes/catalase",
+      "title": "Catalase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/peroxisome/oxidativeEnzymes/acylCoAOxidase",
+      "title": "Acyl-CoA oxidase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/centrosome",
+      "title": "Centrosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/centrosome/centrioles",
+      "title": "Centrioles",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/centrosome/centrioles/triplets",
+      "title": "Microtubule triplets",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/centrosome/pcm",
+      "title": "Pericentriolar material",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoskeleton",
+      "title": "Cytoskeleton",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoskeleton/microtubules",
+      "title": "Microtubules",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoskeleton/microtubules/tubulinDimer",
+      "title": "Tubulin heterodimer",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoskeleton/actin",
+      "title": "Actin filaments",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoskeleton/intermediate",
+      "title": "Intermediate filaments",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoskeleton/intermediate/intermediateTetramer",
+      "title": "Antiparallel tetramer",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm",
+      "title": "Cytoplasm",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytosol",
+      "title": "Cytosol",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytosol/cytosolicEnzyme",
+      "title": "Soluble metabolic enzyme",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytosol/waterIons",
+      "title": "Water and ions",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/mitochondria",
+      "title": "Mitochondrion",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/mitochondria/mitoOuter",
+      "title": "Outer membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/mitochondria/mitoInner",
+      "title": "Inner membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/mitochondria/mitoInner/cristae",
+      "title": "Cristae",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/mitochondria/mitoInner/atpSynthase",
+      "title": "ATP synthase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/mitochondria/matrix",
+      "title": "Mitochondrial matrix",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/mitochondria/matrix/mitoDNA",
+      "title": "Mitochondrial DNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/roughER",
+      "title": "Rough ER",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/roughER/erCisternae",
+      "title": "Cisternae and lumen",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/roughER/boundRibosomes",
+      "title": "Bound ribosomes",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/roughER/boundRibosomes/largeSubunit",
+      "title": "Large subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/roughER/boundRibosomes/smallSubunit",
+      "title": "Small subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/roughER/boundRibosomes/mrna",
+      "title": "Messenger RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/roughER/boundRibosomes/trna",
+      "title": "Transfer RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/smoothER",
+      "title": "Smooth ER",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/smoothER/erTubules",
+      "title": "Tubular membrane network",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/golgi",
+      "title": "Golgi apparatus",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/golgi/golgiCisternae",
+      "title": "Flattened cisternae",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/golgi/vesicles",
+      "title": "Transport vesicles",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/golgi/vesicles/vesicleMembrane",
+      "title": "Vesicle membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/golgi/vesicles/cargo",
+      "title": "Transport cargo",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/ribosomes",
+      "title": "Ribosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/ribosomes/largeSubunit",
+      "title": "Large subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/ribosomes/smallSubunit",
+      "title": "Small subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/ribosomes/mrna",
+      "title": "Messenger RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/ribosomes/trna",
+      "title": "Transfer RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/lysosome",
+      "title": "Lysosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/lysosome/lysosomalMembrane",
+      "title": "Lysosomal membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/lysosome/lysosomalMembrane/lysosomalPump",
+      "title": "Proton pump",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/lysosome/hydrolases",
+      "title": "Acid hydrolases",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/lysosome/recycling",
+      "title": "Material for recycling",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/peroxisome",
+      "title": "Peroxisome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/peroxisome/peroxisomalMembrane",
+      "title": "Peroxisomal membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/peroxisome/oxidativeEnzymes",
+      "title": "Oxidases and catalase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/peroxisome/oxidativeEnzymes/catalase",
+      "title": "Catalase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/peroxisome/oxidativeEnzymes/acylCoAOxidase",
+      "title": "Acyl-CoA oxidase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/centrosome",
+      "title": "Centrosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/centrosome/centrioles",
+      "title": "Centrioles",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/centrosome/centrioles/triplets",
+      "title": "Microtubule triplets",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/centrosome/pcm",
+      "title": "Pericentriolar material",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytoskeleton",
+      "title": "Cytoskeleton",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytoskeleton/microtubules",
+      "title": "Microtubules",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytoskeleton/microtubules/tubulinDimer",
+      "title": "Tubulin heterodimer",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytoskeleton/actin",
+      "title": "Actin filaments",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytoskeleton/intermediate",
+      "title": "Intermediate filaments",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell/cytoplasm/cytoskeleton/intermediate/intermediateTetramer",
+      "title": "Antiparallel tetramer",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/cell",
+      "title": "Animal cell",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant",
+      "title": "Plant cell",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/cellWall",
+      "title": "Cell wall",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/cellWall/cellulose",
+      "title": "Cellulose microfibrils",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/cellWall/plasmodesmata",
+      "title": "Plasmodesmata",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantMembrane",
+      "title": "Plasma membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/vacuole",
+      "title": "Central vacuole",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/vacuole/tonoplast",
+      "title": "Tonoplast",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/vacuole/cellSap",
+      "title": "Cell sap",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/chloroplast",
+      "title": "Chloroplast",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/chloroplast/chloroplastEnvelope",
+      "title": "Chloroplast envelope",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/chloroplast/thylakoids",
+      "title": "Thylakoid system",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/chloroplast/thylakoids/granum",
+      "title": "Granum",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/chloroplast/thylakoids/stromaLamella",
+      "title": "Stroma lamellae",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/chloroplast/stroma",
+      "title": "Stroma",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/chloroplast/stroma/plastidDNA",
+      "title": "Chloroplast DNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus",
+      "title": "Nucleus",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/envelope",
+      "title": "Nuclear envelope",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/envelope/outerNuclear",
+      "title": "Outer nuclear membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/envelope/innerNuclear",
+      "title": "Inner nuclear membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/nuclearPores",
+      "title": "Nuclear pore complex",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/chromatin",
+      "title": "Chromatin",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/chromatin/nucleosome",
+      "title": "Nucleosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/chromatin/nucleosome/histones",
+      "title": "Histone core",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/chromatin/nucleosome/dna",
+      "title": "DNA double helix",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/chromatin/dna",
+      "title": "DNA double helix",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantNucleus/nucleolus",
+      "title": "Nucleolus",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantMitochondria",
+      "title": "Mitochondrion",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantMitochondria/mitoOuter",
+      "title": "Outer membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantMitochondria/mitoInner",
+      "title": "Inner membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantMitochondria/mitoInner/cristae",
+      "title": "Cristae",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantMitochondria/mitoInner/atpSynthase",
+      "title": "ATP synthase",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantMitochondria/plantMatrix",
+      "title": "Mitochondrial matrix",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantER",
+      "title": "Endoplasmic reticulum",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantER/plantCisternae",
+      "title": "Cisternae and lumen",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantER/plantRibosome",
+      "title": "Cytosolic ribosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantER/plantRibosome/plant60S",
+      "title": "60S large subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantER/plantRibosome/plant40S",
+      "title": "40S small subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantER/plantRibosome/mrna",
+      "title": "Messenger RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantER/plantRibosome/trna",
+      "title": "Transfer RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantGolgi",
+      "title": "Golgi apparatus",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantGolgi/golgiCisternae",
+      "title": "Flattened cisternae",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantGolgi/vesicles",
+      "title": "Transport vesicles",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantGolgi/vesicles/vesicleMembrane",
+      "title": "Vesicle membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantGolgi/vesicles/cargo",
+      "title": "Transport cargo",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantRibosome",
+      "title": "Cytosolic ribosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantRibosome/plant60S",
+      "title": "60S large subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantRibosome/plant40S",
+      "title": "40S small subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantRibosome/mrna",
+      "title": "Messenger RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantRibosome/trna",
+      "title": "Transfer RNA",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/plant/plantCytoplasm",
+      "title": "Cytosol",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium",
+      "title": "Bacterium",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/bacterialEnvelope",
+      "title": "Cell envelope",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/bacterialEnvelope/bacterialOuter",
+      "title": "Outer membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/bacterialEnvelope/peptidoglycan",
+      "title": "Peptidoglycan",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/bacterialEnvelope/bacterialMembrane",
+      "title": "Cytoplasmic membrane",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/nucleoid",
+      "title": "Nucleoid",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/nucleoid/bacterialDNA",
+      "title": "DNA segment",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/plasmids",
+      "title": "Plasmids",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/plasmids/bacterialDNA",
+      "title": "DNA segment",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/bacterialRibosome",
+      "title": "70S ribosome",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/bacterialRibosome/bacterial50S",
+      "title": "50S large subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/bacterialRibosome/bacterial30S",
+      "title": "30S small subunit",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/bacterialCytoplasm",
+      "title": "Cytoplasm",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/pili",
+      "title": "Pili",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/flagellum",
+      "title": "Flagellum",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/flagellum/flagellarFilament",
+      "title": "Filament and hook",
+      "overflow": false,
+      "error": ""
+    },
+    {
+      "route": "#/bacterium/flagellum/flagellarMotor",
+      "title": "Basal motor",
+      "overflow": false,
+      "error": ""
+    }
+  ]
+}

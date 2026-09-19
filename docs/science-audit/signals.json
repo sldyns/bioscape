@@ -1,0 +1,321 @@
+{
+  "group": "signals",
+  "reviewer": "p_division — independent Phase A",
+  "reviewedAt": "2026-09-19",
+  "method": "只读产品；核查 entries、四模块及 structuralKit 全阶段/条件公式，查看已有 /tmp/atlas-refinement/<id>.png 代表帧，独立内存公式采样，实际打开原始结构/论文和权威来源。未操作浏览器。",
+  "summary": {
+    "models": 4,
+    "confirmed_issue": 4,
+    "qualified_pass": 0,
+    "unresolved": 0,
+    "uniqueFindings": 8,
+    "P0": 0,
+    "P1": 6,
+    "P2": 2,
+    "sharedFinding": "signals-03 affects all four; counted once"
+  },
+  "models": [
+    {
+      "id": "signalTransduction",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "哺乳动物 PDGFR–Grb2/SOS–Ras–Raf/MEK/ERK–核内应答。",
+      "checks": [
+        "已读全部 zh/en intro、stages、控件、标签和 metadata。",
+        "PDGF 胞外、RTK 跨膜/激酶在胞质、Ras 脂锚侧别正确。",
+        "noLigand 不结合/不应答；kinaseInactive 可二聚但不启动磷酸化或下游；正常条件级联与 ERK 入核、转录有顺序。",
+        "几何核查确认 SOS 接触及共享染色质问题，不能用 userData 通过验收。"
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/1BKD",
+          "title": "H-Ras–SOS1 complex, Boriack-Sjodin et al. 1998 (PDB 1BKD)",
+          "supports": "原始结构及摘要：SOS 直接接触 Ras switch 区，促进鸟嘌呤核苷酸释放/重新结合；Ras 是小 GTP 酶。"
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26822/",
+          "title": "Molecular Biology of the Cell — Enzyme-linked receptors",
+          "supports": "胞外配体、胞质 RTK、Grb2/SOS、膜锚定 Ras 与 Raf–MEK–ERK 的方向和依赖。"
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AOI",
+          "title": "Nucleosome core particle, Luger et al. 1997 (PDB 1AOI)",
+          "supports": "双链 DNA 在组蛋白八聚体外部形成超螺旋。"
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "signals-01",
+          "severity": "P1",
+          "kind": "causality / contact",
+          "file": "src/processes/modules/signals/signalTransductionProcess.js",
+          "location": "88–100, 237–261",
+          "evidence": "SOS 球局部中心 (0.31,-0.13,0)，adaptor 最终 (-1.28,0.33,0.06)，因此 SOS 中心 (-0.97,0.20,0.06)；Ras 固定 (-0.15,1.01,0)。中心距离约 1.154，大于最大包围半径和约 0.61，没有催化接触或连接；p≥0.43 只切换 Ras 颜色和 nucleotide 可见性。",
+          "whyWrong": "画面把 SOS 介导的直接交换表示为隔空激活。",
+          "fix": "将被招募 SOS 催化面与膜 Ras 接触，依次显示 GDP 释放、GTP 结合和 Raf 招募。",
+          "verification": "p=0.28…0.51，Ras 活化前必须发生 SOS 接触；noLigand/kinaseInactive 不发生交换或下游活化。",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1BKD",
+            "https://www.ncbi.nlm.nih.gov/books/NBK26822/"
+          ]
+        },
+        {
+          "issueId": "signals-02",
+          "severity": "P2",
+          "kind": "structural identity",
+          "file": "src/processes/modules/signals/signalTransductionProcess.js",
+          "location": "224; structuralKit.js:35–71",
+          "evidence": "Ras 调用 kinaseFold(k, ras, rasMat, 0.42)；helper 明确生成激酶 N 叶 β 片层、大 C 叶 α 螺旋及中间裂隙，与 RTK/Raf/MEK/ERK 同一模板。",
+          "whyWrong": "给小 GTP 酶添加特指激酶的细节混淆分子身份；鉴于模型有形状示意声明，按 P2 而非将全部蛋白简化判错。",
+          "fix": "使用 GTPase fold 的简化几何、单个核苷酸口袋和 switch 区，移除激酶双叶模板。",
+          "verification": "Ras 不调用 kinaseFold；核苷酸和 SOS 接触位置可追踪。",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1BKD"
+          ]
+        },
+        {
+          "issueId": "signals-03",
+          "severity": "P1",
+          "kind": "shared nucleosome topology",
+          "file": "src/processes/modules/signals/structuralKit.js",
+          "location": "178–225; all four model callers",
+          "evidence": "组蛋白柱芯半径 0.085 放在同一 curve 上，DNA 两股仅偏离 0.02–0.035，未围绕芯建立超螺旋。芯旋转 (π/2,0,i*0.71)、缩放 (1,0.8,1)。按实际公式对 apoptosis 主染色质逆变换采样，18 个芯位置有 17 个 DNA 中心线点在芯实体内。调用方 signalTransduction:194、apoptosis:68/266、differentiation:76、immuneResponse:108/339。",
+          "whyWrong": "DNA 穿蛋白芯而非在外部包绕，是拓扑错误，比例声明不能修复。",
+          "fix": "在芯外建立连续 DNA 包绕并连接 linker；或移除假的核小体细节。四调用方共同修复。",
+          "verification": "DNA 管面不进入芯体积，核小体包绕与 linker 连续；所有调用方验证。",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1AOI"
+          ]
+        }
+      ],
+      "limitations": [
+        "级联部分用定时变色，未重现每次 ATP 转移；作为已声明省略反馈/支路的概览可以接受。",
+        "核孔与大型 ERK 图标的精确通行空间未完成碰撞证明，留给 Phase B 复查，不作为已证实问题。"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "apoptosis",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "哺乳动物线粒体内源性凋亡；stress/noStress；截止碎片形成。",
+      "checks": [
+        "已读全部 zh/en intro、stages、控件、标签和 metadata。",
+        "noStress 将 t 固定0，无 MOMP、释放、apoptosome或小体形成。",
+        "cytochrome c 初始在膜间隙，孔开放后从外膜右侧出口离开，到达胞质；没有从基质直接穿内膜的释放路径。",
+        "MOMP→释放→七 Apaf 平台→caspase→核变化顺序正确；正文未把 caspase 当 DNA 切割酶。",
+        "共享 signals-03 也影响本模型，计数仅一次。"
+      ],
+      "sources": [
+        {
+          "url": "https://mcb.berkeley.edu/courses/mcb230/jk_pdfs/15_coleman_rock_blebbing.pdf",
+          "title": "Coleman et al. 2001 — Membrane blebbing during apoptosis",
+          "supports": "已打开原始 PDF：质膜出芽和碎片 DNA 向 bleb/凋亡小体重新分配相关；只用于拆解过程，不套用其上游刺激。"
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9896/",
+          "title": "The Cell — Mitochondria",
+          "supports": "内膜与嵴属于同一膜系统，内膜将基质和膜间隙分开。"
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5050015/?pdf=1",
+          "title": "Cheng et al. 2016 — A near atomic structure of the active human apoptosome",
+          "supports": "原始全文通过 HTML 读取，Results/Figure 4 明确七叶+八叶 β 螺旋桨。"
+        },
+        {
+          "url": "https://www.rcsb.org/structure/5JUY",
+          "title": "Active human apoptosome with procaspase-9 (PDB 5JUY)",
+          "supports": "七 Apaf-1 平台、cytochrome c 结合及 procaspase-9 招募；单个图标不能表示测量所得 caspase 数。"
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26873/",
+          "title": "Molecular Biology of the Cell — Programmed Cell Death",
+          "supports": "线粒体 cytochrome c 到胞质后触发 Apaf-1/caspase 途径；caspase 为蛋白酶，DNA 断裂通过下游核酸酶。"
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AOI",
+          "title": "Nucleosome core particle, Luger et al. 1997 (PDB 1AOI)",
+          "supports": "双链 DNA 在组蛋白八聚体外部形成超螺旋。"
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "signals-04",
+          "severity": "P1",
+          "kind": "membrane continuity / cargo",
+          "file": "src/processes/modules/signals/apoptosisProcess.js",
+          "location": "253–276, 302–318, 379–399",
+          "evidence": "body 创建即含独立闭球膜、DNA 杆及染色质，t≈0.75 后在母细胞边缘缩放出现并外移；母 shell/cellBack/membraneDetail 仅整体缩放，无出芽口/颈。原核 DNA 直到 pack≥0.9 才隐藏，body DNA 已同时出现。",
+          "whyWrong": "独立小体穿完整母膜，货物凭空出现，未体现膜变形和原有内容物分配。",
+          "fix": "连续母膜 bleb→颈→分离；将既有碎片/胞质对象移入 bleb，切断后才成独立膜包体。",
+          "verification": "p=0.72…1：切断前连续边界，切断后无穿插；可追踪货物不能同时存在于母细胞与小体。",
+          "sourceUrls": [
+            "https://mcb.berkeley.edu/courses/mcb230/jk_pdfs/15_coleman_rock_blebbing.pdf",
+            "https://www.ncbi.nlm.nih.gov/books/NBK26873/"
+          ]
+        },
+        {
+          "issueId": "signals-05",
+          "severity": "P1",
+          "kind": "inner-membrane topology",
+          "file": "src/processes/modules/signals/apoptosisProcess.js",
+          "location": "105–155",
+          "evidence": "内边界为完整 (0.83,0.43) 椭圆，另插五条 crista tube 和五条 extruded membraneWall，无接合孔。i=2 的新嵴端点约 (-0.10,-0.35)、(0.03,-0.24)，均终止在内部；i=0 首端 (-0.61,-0.35) 还在内边界外。",
+          "whyWrong": "三维嵴不是基质中独立开放膜条，也不能穿完整内边界；这混淆嵴腔/基质/膜间隙。",
+          "fix": "重建连通内膜及嵴连接部，使嵴腔连通膜间隙且与基质隔离；MOMP 仍针对外膜。",
+          "verification": "所有嵴归属同一内膜组件，无悬空非切面边缘或穿越内边界；cytochrome c 释放不穿内膜。",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK9896/"
+          ]
+        },
+        {
+          "issueId": "signals-06",
+          "severity": "P2",
+          "kind": "synthetic fold detail",
+          "file": "src/processes/modules/signals/apoptosisProcess.js",
+          "location": "207–221",
+          "evidence": "Apaf 两个 β 螺旋桨都循环 b<7，形成七叶+七叶。",
+          "whyWrong": "加入可数的细节时应符合七叶+八叶，而不是复制相同域。",
+          "fix": "分别生成七叶和八叶，保持夹持 cytochrome c 的相对布局。",
+          "verification": "每个 Apaf 的两个传感域分别七/八叶，七 Apaf 平台数不变。",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC5050015/?pdf=1",
+            "https://www.rcsb.org/structure/5JUY"
+          ]
+        }
+      ],
+      "sharedFindingIds": [
+        "signals-03"
+      ],
+      "limitations": [
+        "BAX/BAK孔、cytochrome c和caspase图标不应读作实验分子数；完整BCL2/IAP调节和ATP/dATP交换未显式模拟。",
+        "PMC部分请求触发验证，Apaf细节实际通过可读?pdf=1 HTML及5JUY交叉核查；失败页面未作为支持证据。"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "differentiation",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "已承诺的小鼠定型红系早期有核红细胞，压缩单个后代路径到网织红细胞。",
+      "checks": [
+        "已读全部 zh/en intro、stages、GATA1 competent/impaired、标签和 metadata。",
+        "物种/谱系明确，省略中间分裂已双语说明；不是任意干细胞或通用动物分化。",
+        "impaired早期停滞；说明有其他因子及支持环境，不宣称GATA1单独决定全部命运。",
+        "程序→血红蛋白积累→缩小凝聚→极化排核順序正确；最终网织红细胞保留部分核糖体和线粒体，未错标成熟红细胞。",
+        "共享 signals-03 同样影响核内染色质。"
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5580276/",
+          "title": "Nowak et al. 2017 — Tropomodulin 1 controls erythroblast enucleation",
+          "supports": "小鼠出核时核呈哑铃形并通过表面颈部；文中亦限制唯一收缩环解释。"
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16174764/",
+          "title": "Zheng et al. 2006 — Differential effects of GATA-1",
+          "supports": "原始摘要显示 GATA1 对红系增殖和终末分化具有阶段差异。"
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AOI",
+          "title": "Nucleosome core particle, Luger et al. 1997 (PDB 1AOI)",
+          "supports": "双链 DNA 在组蛋白八聚体外部形成超螺旋。"
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "signals-07",
+          "severity": "P1",
+          "kind": "enucleation membrane / shape",
+          "file": "src/processes/modules/signals/differentiationProcess.js",
+          "location": "28–59, 200–226, 255–333",
+          "evidence": "full/open 切换时 cellEdge/cellBack 仍完整。p=0.835、extrude=0.5：核中心 x=1.075，半径约 (0.594,0.54,0.281)；neck x=1.08、半径0.1456；cortex x=0.95、半径0.1526，核在该 x 的截面 y 半径约0.528。核只有整体缩放，穿完整母膜和过小颈。",
+          "whyWrong": "小鼠出核不能由固定椭球穿数倍更窄的颈表示。终态包膜和 pyrenocyteMembraneEnclosed=true 不能证明中间态正确。",
+          "fix": "核与局部膜连续变形，可用小鼠代表性哑铃形；核通过后再收颈切断，删除重复封闭内面。",
+          "verification": "p=0.73…0.95：核包络不穿膜，颈截面容纳核截面；切断前连续包膜，切断后两独立包膜；保留最终网织红细胞的 RNA/细胞器。",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC5580276/"
+          ]
+        }
+      ],
+      "sharedFindingIds": [
+        "signals-03"
+      ],
+      "limitations": [
+        "未模拟完整红细胞岛、膜蛋白分选、巨噬吞噬或完整转录翻译。",
+        "正文限制了唯一收缩环解释，因此不另判收缩环理论错误；实际颈部穿插仍须修复。"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "immuneResponse",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "有核哺乳动物靶细胞内源性 MHC-I 呈递给已分化效应 CD8 T 细胞；不包括初始启动或杀伤。",
+      "checks": [
+        "已读全部 zh/en intro、stages、matched/unmatched、标签和 metadata。",
+        "蛋白酶体在胞质；TAP跨ER膜且ATP域朝胞质；MHC槽初始朝ER腔最终朝胞外。",
+        "两种肽均可装载；仅matched稳定接触/颗粒极化，unmatched松开而不极化；没有将不被某TCR识别等同于不装载。",
+        "TCR在T细胞左膜，rotation.z=π/2使可变区朝靶细胞；MHC rotation.z=-π/2使槽朝T细胞；CD8伸向α3附近。侧别与方向本身通过，未认定倒置。",
+        "胞质加工→ER装载→压缩分泌路径→表面→识别顺序正确，实际肽链转向有错误。",
+        "共享 signals-03 影响两个细胞的染色质。"
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK27137/",
+          "title": "Immunobiology — The generation of T-cell receptor ligands",
+          "supports": "胞质加工、ATP 依赖的 TAP 入 ER、腔面装载和表面呈递。"
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AO7",
+          "title": "TCR–Tax–HLA-A2, Garboczi et al. 1996 (PDB 1AO7)",
+          "supports": "TCR 可变区接触槽内肽和 MHC 表面。"
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AKJ",
+          "title": "CD8–HLA-A2, Gao et al. 1997 (PDB 1AKJ)",
+          "supports": "CD8 结合包括 α3 的另一 MHC 表面；本源为 CD8αα，只用于接触位置，不证明模型的 αβ 分子细节。"
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AOI",
+          "title": "Nucleosome core particle, Luger et al. 1997 (PDB 1AOI)",
+          "supports": "双链 DNA 在组蛋白八聚体外部形成超螺旋。"
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "signals-08",
+          "severity": "P1",
+          "kind": "pMHC binding geometry",
+          "file": "src/processes/modules/signals/immuneResponseProcess.js",
+          "location": "190–201, 228–259, 434–458",
+          "evidence": "peptide 是独立子组，点沿局部 x；MHC 在 p=0.5…0.6 转 -π/2，但 peptide 仅移动起点，未同步 rotation。p=1 槽长轴沿世界 y，肽仍沿世界 x 从约1.58至1.80，离槽指向 T 细胞，matched/unmatched 均如此。",
+          "whyWrong": "识别帧中的肽未留在槽内，无法正确表示稳定 pMHC 复合面。",
+          "fix": "装载后将 peptide 绑定到 MHC 局部坐标或同步全链旋转；两种肽均保持槽内，仅改变识别表面。",
+          "verification": "p=0.46…1 对肽点逆变换到 MHC 局部坐标，长轴沿槽且点在槽内；TCR 接触复合面，CD8 靠近 α3 侧部。",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1AO7",
+            "https://www.ncbi.nlm.nih.gov/books/NBK27137/"
+          ]
+        }
+      ],
+      "sharedFindingIds": [
+        "signals-03"
+      ],
+      "limitations": [
+        "ER/Golgi运输是压缩载体路径，完整出芽/融合和肽装载复合体省略已有说明。",
+        "不把本示意当成TAP原子通道、TCR精确对接角、CD8αβ残基或突触力学的证据；这里只通过膜侧别和相对接触面。",
+        "五个肽点没有声明等于五个氨基酸，不据图标数量推断生物学肽长度。"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

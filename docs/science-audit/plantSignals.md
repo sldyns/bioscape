@@ -1,0 +1,25 @@
+# plantSignals — Phase A scientific audit
+
+Inventory: **2/2 models covered**, both plant-only. **2 confirmed_issue; 0 qualified_pass; 0 unresolved.** Four findings: **3 P1, 1 P2; no P0.** Confidence high for the reported geometry/state contradictions. No product, test, SVG, or browser changes.
+
+Both languages, all six stages per model, both values of each control, labels, metadata, helper geometry, start/end and intermediate updates were inspected. Read-only Node evaluation covered stage boundaries and targeted transitions. Existing `/tmp/atlas-refinement/auxin.png` and `plantDefense.png` were viewed; these are single frames, not all-stage visual proof.
+
+## auxin — confirmed_issue
+
+**plantSignals-01 · P1 · TIR1 pocket is a through-hole.** `auxinProcess.js:111–124,149,399` uses `structures.js:59–83` to draw an annular LRR ring with no pocket floor. The bound auxin sphere sits in its empty center, away from the receptor. At p=.40 its radius is .105. A second read-only check evaluated the closest point on **every actual world-transformed receptor triangle**, including LRR and F-box: center-to-surface distance .46485395, leaving a **.35985395 surface gap**. This confirms genuine non-contact; it is not a nearest-vertex approximation or an atomic-distance claim. Tan’s primary structural deposition shows auxin at the bottom of a shared surface pocket, capped by Aux/IAA. Repair the bounded pocket and ternary contact; verify binding from multiple angles. [Opened structure and primary abstract](https://www.rcsb.org/structure/2P1Q).
+
+**plantSignals-02 · P1 · Ubiquitin is duplicated while the attached copy disappears with substrate.** At p=.65, `auxinProcess.js:405–417` keeps four attached tags visible on the half-scale repressor and simultaneously shows four independent recycled beads. Transfer the same represented ubiquitins into a mutually exclusive recycled state and decouple their size from substrate breakdown. Dense .60–.70 sampling should show one state per represented ubiquitin. Deubiquitination is part of proteasomal processing rather than production of replacement ubiquitin. [Opened primary study](https://pubmed.ncbi.nlm.nih.gov/12353037/).
+
+Checks that held: Arabidopsis shoot/nuclear scope; SCF recognizes Aux/IAA rather than destroying ARF; low-auxin control; single-stranded RNA; no nuclear translation; later tissue-growth inset explicitly separated from immediate signaling. SAUR-mediated H+-ATPase/expansion linkage was checked against the [opened Spartz primary paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC4079373/). ATP-dependent activation and detailed kinetics remain omitted, not quantified.
+
+## plantDefense — confirmed_issue
+
+**plantSignals-03 · P1 · Phosphorylation proceeds without the depicted intracellular contact.** `plantDefenseProcess.js:175–187,215–216,392–412` recruits rigid BAK1 to x=-3.3 while FLS2 stays at x=-2. The kinase domains remain separated (nearest sampled vertices ≈.674 scene units at p=.49); phosphomarks nevertheless appear. BIK1 is also phosphorylated before any receptor-docking transition. Add flexible intracellular geometry/contact, then phosphorylation and BIK1 release, or an explicitly connected interaction inset. Test that each new mark follows a represented donor–substrate interface. The source supports reciprocal receptor activation and direct BIK1–RBOHD regulation, not action across empty space. [Opened Sun paper](https://pubmed.ncbi.nlm.nih.gov/24114786/), [opened Li paper](https://pubmed.ncbi.nlm.nih.gov/24629339/).
+
+**plantSignals-04 · P2 · BAK1 recruitment leaves its displayed membrane patch; unused holes remain.** `plantDefenseProcess.js:100–113,392–393` pre-cuts both BAK1 endpoint sites, but the recruitment detour reaches z=.72 while the displayed lipid heads reach only about .61. This is a finite-view coherence issue, not a claim that the actual receptor biologically leaves the cell membrane. Keep recruitment inside the depicted patch and move the local exclusion with the receptor; fill unused holes. Validate membrane occupancy throughout the path. [Opened FLS2–BAK1–flg22 structure](https://www.rcsb.org/structure/4MN8).
+
+Checks that held: extracellular/apoplastic LRRs and flg22; intracellular kinases, EF-hand and NADPH/FAD domains; six RBOHD membrane spans; outward electron transfer and apoplastic ROS; no-ligand suppression limited to induced output. Calcium is explicitly a cooperating omitted input. Rboh family architecture was checked in the [opened Wong primary record and figure captions](https://pubmed.ncbi.nlm.nih.gov/18156215/); that rice study was not substituted for Arabidopsis BIK1 causality.
+
+## Evidence boundary
+
+Nature’s Tan/Winkler endpoints and some NCBI endpoints were blocked or blank. They were not counted as verified merely because their URLs appeared in the source list. The usable Tan structural deposition, Sun/Li/Yao primary abstracts, Wong figures and Spartz full text were actually opened. Full issue evidence, fixes and verification invariants are in `plantSignals.json`. Phase B fixes await global reconciliation.

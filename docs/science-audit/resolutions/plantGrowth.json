@@ -1,0 +1,121 @@
+{
+  "group": "plantGrowth",
+  "issues": [
+    {
+      "issueId": "plantGrowth-01",
+      "status": "fixed",
+      "changes": "Replaced independent slabs and solid rods with a shared membrane isosurface enclosing the cell-plate lumen. Real fenestrations close into a sheet; incoming vesicles merge through continuous necks with their internal membrane caps removed. Delivery follows the actual rounded plate margin, and the plate joins the parental plasma membrane in the same surface. Bilingual text identifies the enlarged topology schematic and front/back inspection cuts. Follow-up: zero the unused position/normal buffer tails after every membrane rebuild so full-capacity snapshots reset exactly after a larger surface.",
+      "files": [
+        "src/processes/modules/plantGrowth/plantDivisionProcess.js",
+        "src/processes/modules/plantGrowth/cellPlateMembrane.js",
+        "src/processes/modules/plantGrowth/science.test.mjs",
+        "src/processes/modules/plantGrowth/seek.test.mjs"
+      ],
+      "verification": [
+        "Welded rendered triangles at p=.44/.53/.65: both plate faces share one component and the nascent plate has zero boundary edges.",
+        "Euler characteristic is below 2 for the early perforated network at p=.44 and equals 2 for the closed sheet at p=.65.",
+        "At p=.484 a ray through the shared vesicle/plate lumen reaches the outer fusion membrane without encountering an obsolete internal cap.",
+        "Actual margin-to-triangle distance is below .12 units, accounting for a .095 fusion bulge. At p=1 the membrane connects both parental sides; boundary edges occur only at declared display cuts or continuations.",
+        "Reproduced the exact global seek-0 failure: actual f9d6ec7e versus expected 1549e0b7. All 55296 active scalar entries agreed; inactive tails contained 112500 differing position scalars and 79074 normal scalars. Clearing both tails removes the history dependence.",
+        "seek.test.mjs uses the same full attribute/index buffers, transforms, instanced data and material properties as tests/processes.mjs, plus the identical stage-derived forward/reverse/clamp/control sequence for all four owned models."
+      ],
+      "limitations": [
+        "Mesoscale topology schematic, not an experimentally fitted membrane shape or molecular dynamics.",
+        "Thirty advancing Node samples averaged about 19.5 ms/update on this host. Static initial/terminal states and repeated paused values are cached. Browser performance and visual acceptance remain for root."
+      ]
+    },
+    {
+      "issueId": "plantGrowth-02",
+      "status": "fixed",
+      "changes": "Microtubule endpoints, lengths and orientations now follow the actual kinetochore domains of the corresponding moving chromatids until anaphase disassembly.",
+      "files": [
+        "src/processes/modules/plantGrowth/plantDivisionProcess.js",
+        "src/processes/modules/plantGrowth/structuralDetail.js",
+        "src/processes/modules/plantGrowth/science.test.mjs"
+      ],
+      "verification": [
+        "At p=.13/.2/.27/.32/.35 all eight rendered cylinder endpoints remain within 1e-6 of their moving kinetochore mesh centers."
+      ],
+      "limitations": [
+        "Chromosome number, microtubule counts and motion rates remain illustrative."
+      ]
+    },
+    {
+      "issueId": "plantGrowth-03",
+      "status": "fixed",
+      "changes": "Preserved the two-cell embryo endpoint, with a larger basal daughter toward the micropyle and smaller apical daughter, distinct boundaries, one nucleus each and a division wall. Updated the bilingual final stage and added the Kimata primary paper to model sources.",
+      "files": [
+        "src/processes/modules/plantGrowth/doubleFertilizationProcess.js",
+        "src/processes/modules/plantGrowth/science.test.mjs"
+      ],
+      "verification": [
+        "Both assignment controls at p=.91: basal volume exceeds twice apical volume, basal position faces the micropyle, daughter ellipsoids do not overlap, and each has one visible 2n nucleus."
+      ],
+      "limitations": [
+        "Cell dimensions and timing are illustrative rather than fitted measurements; no full embryogenesis process was added."
+      ]
+    },
+    {
+      "issueId": "plantGrowth-04",
+      "status": "fixed",
+      "changes": "The sperm and its paternal nucleus now hand off exclusively at p=.72 to the paternal contribution inside the fusion product, eliminating the .72-.73 duplicate interval.",
+      "files": [
+        "src/processes/modules/plantGrowth/doubleFertilizationProcess.js",
+        "src/processes/modules/plantGrowth/science.test.mjs"
+      ],
+      "verification": [
+        "Both assignments at .70/.7199/.72/.725/.7299/.73/.75/.85: actual inherited mesh visibility gives exactly two paternal nuclear identities."
+      ],
+      "limitations": [
+        "The handoff illustrates identity transfer rather than nuclear-envelope fusion dynamics. Existing correct 2n/3n outcomes remain."
+      ]
+    },
+    {
+      "issueId": "plantGrowth-05",
+      "status": "fixed",
+      "changes": "Restricted transport cables to their own cytoplasmic compartments. Vesicles cross the central septal pores; the narrowed crossing region now accounts for the whole vesicle radius rather than its center alone.",
+      "files": [
+        "src/processes/modules/plantGrowth/fungalHyphaeProcess.js",
+        "src/processes/modules/plantGrowth/science.test.mjs"
+      ],
+      "verification": [
+        "Forty-one progress samples for each delivery control: all six cable bounds stay outside each solid septal slab.",
+        "Transformed actual vesicle vertices entering septal thickness remain within the .149 clear pore radius."
+      ],
+      "limitations": [
+        "Motor transfer between compartment-local tracks is not expanded; no continuous cable is implied through solid wall."
+      ]
+    },
+    {
+      "issueId": "plantGrowth-06",
+      "status": "fixed",
+      "changes": "Converted wall bundles to preallocated shoulder-deposition cohorts with different birth times. Deposited material retains its wall position as the apex advances and becomes lateral wall. Updated the bilingual explanation.",
+      "files": [
+        "src/processes/modules/plantGrowth/fungalHyphaeProcess.js",
+        "src/processes/modules/plantGrowth/science.test.mjs"
+      ],
+      "verification": [
+        "For both delivery controls, bundles visible at p=.55 retain identical world positions at p=.95 while the apex advances; their radial positions remain outside the wall cylinder."
+      ],
+      "limitations": [
+        "Fixed markers represent retained material over this illustrative interval, not a claim that real walls never deform."
+      ]
+    }
+  ],
+  "unchangedModels": [
+    "cellWallGrowth"
+  ],
+  "commands": [
+    "node src/processes/modules/plantGrowth/science.test.mjs: PASS; all six geometry/state invariants, both controls, deterministic seeking and stable resource identities.",
+    "node src/processes/modules/plantGrowth/smoke.mjs: PASS; all four models, finite attributes/bounds, distinct states, deterministic seeking and resource identity.",
+    "npx prettier --write on the six owned JS/MJS files: completed. No full-workspace verification run.",
+    "node src/processes/modules/plantGrowth/seek.test.mjs: PASS after tail reset; all four owned models use the exact global snapshot fields and progress sequence (26 reference states each)."
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5150365/",
+      "title": "Kimata et al. (2016), Cytoskeleton dynamics control the first asymmetric cell division in Arabidopsis zygote",
+      "supports": "Primary paper opened in Phase A; supports asymmetric first zygote division in Arabidopsis; now added to model sources."
+    }
+  ]
+}

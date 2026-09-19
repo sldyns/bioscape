@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+*.local
+__pycache__/
+*.py[cod]

@@ -1,0 +1,168 @@
+{
+  "group": "signals",
+  "issues": [
+    {
+      "issueId": "signals-01",
+      "status": "fixed",
+      "changes": "重新布置 SOS 催化面与膜锚定 Ras，使 Grb2 仍贴近受体尾；显式 GDP 离开和 GTP 到位，仅活性受体条件发生交换。",
+      "files": [
+        "src/processes/modules/signals/signalTransductionProcess.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "实际 SOS 催化球表面点进入 Ras 椭球接触区后才显示交换，检查 p=.415/.42/.43/.6/1；noLigand/kinaseInactive 保留GDP。"
+      ],
+      "limitations": [
+        "蛋白界面是机制示意，不是1BKD原子坐标轨迹。"
+      ]
+    },
+    {
+      "issueId": "signals-02",
+      "status": "fixed",
+      "changes": "移除 Ras 的 kinaseFold 子结构，保留单一小GTP酶域、核苷酸位置和两条switch区示意。",
+      "files": [
+        "src/processes/modules/signals/signalTransductionProcess.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "Ras对象不含激酶fold子组；小GTP酶与激酶使用不同几何身份。"
+      ],
+      "limitations": [
+        "未在src/public中找到可复用的1BKD结构资产，采用保守的非原子外形。"
+      ]
+    },
+    {
+      "issueId": "signals-03",
+      "status": "fixed",
+      "changes": "共享 chromatinFiber 改为芯外左手超螺旋包绕，沿包绕中心线生成右手DNA双链，使用连续linker连接；组蛋白芯不再放在DNA双螺旋轴内。",
+      "files": [
+        "src/processes/modules/signals/structuralKit.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "对四模型所有DNA管面顶点逐芯做实体排斥测试：没有顶点进入组蛋白圆柱实体；每fiber均有两条连续链。"
+      ],
+      "limitations": [
+        "核小体是带双链/芯/连接段的结构示意，不是1AOI原子重建；核小体数量不代表基因组计数。"
+      ]
+    },
+    {
+      "issueId": "signals-04",
+      "status": "fixed",
+      "changes": "改用单一连续等值膜面：重叠叶之间无内部重复膜，外移产生膜颈并最终分离；五个预先存在的染色质货物对象沿轨迹分配，不克隆新小体DNA。保留母体残留并收拢线粒体以避免缩小后穿膜。",
+      "files": [
+        "src/processes/modules/signals/apoptosisProcess.js",
+        "src/processes/modules/signals/continuousMembrane.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "抽样全过程对膜三角网格验证每条边有两个邻面；初态1个连通体、终态母体残留+5个小体共6个；同一DNA货物对象始终被实际三角面包围。",
+        "noStress终态仍为1个闭合膜体；资源对象稳定。"
+      ],
+      "limitations": [
+        "膜连续变形是几何插值，非细胞膜力学模拟；不展示巨噬清除。"
+      ]
+    },
+    {
+      "issueId": "signals-05",
+      "status": "fixed",
+      "changes": "将完整内边界叠加悬空嵴条改成单条闭合内折轮廓及其连续膜壁；每个嵴腔通过同一折叠轮廓通向膜间隙。移除封住外膜出口的重复后壳。",
+      "files": [
+        "src/processes/modules/signals/apoptosisProcess.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "实际内膜轮廓闭合，所有点位于内膜外包络以内；只有一个连接内膜组件，未保留浮动嵴条。",
+        "原有MOMP时间门控与外膜出口释放路径保留，noStress不释放。"
+      ],
+      "limitations": [
+        "采用剖面挤出膜壁展示通路，未重建组织特异的完整三维嵴网络。"
+      ]
+    },
+    {
+      "issueId": "signals-06",
+      "status": "fixed",
+      "changes": "每个Apaf-1分别生成七叶、八叶两个β螺旋桨，维持七Apaf平台。",
+      "files": [
+        "src/processes/modules/signals/apoptosisProcess.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "直接统计实际叶片mesh，七叶域共49片、八叶域共56片。"
+      ],
+      "limitations": [
+        "叶片是结构域示意，不是原子折叠重建，caspase图标不是化学计量。"
+      ]
+    },
+    {
+      "issueId": "signals-07",
+      "status": "fixed",
+      "changes": "母细胞和含核叶共同形成连续等值膜面，去掉始终闭合的母膜内面与过小固定圆柱颈；出核时核膜有局部腰部形变，包膜颈随重叠区自然变窄，核完全移出后形成独立排出核膜。",
+      "files": [
+        "src/processes/modules/signals/differentiationProcess.js",
+        "src/processes/modules/signals/continuousMembrane.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "p=0/.74/.78/.81/.835/.86/.89/.92/.95/1：采样实际核表面顶点，相对实际质膜三角面逐点射线奇偶判定均在内；初态1个、终态2个闭合膜组件。",
+        "impaired保持单一闭合膜体；网织红细胞仍保留RNA/细胞器。"
+      ],
+      "limitations": [
+        "该路径表达小鼠出核的形变及包膜拓扑，不主张特定唯一收缩环力学机制。"
+      ]
+    },
+    {
+      "issueId": "signals-08",
+      "status": "fixed",
+      "changes": "肽组在装载后采用与MHC相同旋转，整链保持在MHC局部槽内，运输、融合和识别全过程同步。",
+      "files": [
+        "src/processes/modules/signals/immuneResponseProcess.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "matched和unmatched在.46/.5/.53/.56/.6/.72/.78/.81/.94/1全部将残基点逆变换到MHC局部坐标，轴向位置不变，位于槽底上及壁间。"
+      ],
+      "limitations": [
+        "保留原TCR/CD8朝向；不宣称精确原子对接角或完整突触。"
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/signals/science.test.mjs — PASS (8 issues; all conditions; mutable geometry finite/deterministic; stable resources)",
+    "node src/processes/modules/signals/smoke.mjs — PASS (all four models; bilingual stages, geometry, branches, browser-target bundle)",
+    "node_modules/.bin/prettier --write [seven owned JS/MJS files] — complete"
+  ],
+  "sourcesAdded": [
+    "https://www.rcsb.org/structure/1BKD",
+    "https://www.rcsb.org/structure/1AOI",
+    "https://www.rcsb.org/structure/5JUY",
+    "https://mcb.berkeley.edu/courses/mcb230/jk_pdfs/15_coleman_rock_blebbing.pdf",
+    "https://www.rcsb.org/structure/1AO7",
+    "https://www.rcsb.org/structure/1AKJ"
+  ],
+  "acceptanceBoundary": "本轮未操作浏览器；根代理仍需渲染复核。测试证明具体几何/门控不变量，不证明所有科学事实。Phase A审计保持原样。",
+  "performance": "解析法线优化后，本地Node连续12个出芽阶段采样平均约24.1ms/apoptosis、25.6ms/differentiation更新；不包含浏览器渲染，非帧率保证。",
+  "supplementalVerification": "peer-signals-01: full DNA surface containment and triangle intersection regression passed; independent recheck pending.",
+  "peerExtensions": [
+    {
+      "issueId": "peer-signals-01",
+      "status": "fixed",
+      "changes": "把核膜与全部染色质网格（DNA、linker、组蛋白芯）顶点转换到共同核内坐标，按同一可逆 waist 变换变形，再还原各 mesh 局部坐标。使用初始顶点恢复每一帧，避免累积误差；保留所有染色质网格、顶点和可见性。",
+      "files": [
+        "src/processes/modules/signals/differentiationProcess.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "node src/processes/modules/signals/science.test.mjs：PASS；competent/impaired各12帧（含 .835 和质膜分裂点 .866254 两侧），全部1,556,064个DNA表面顶点均被实际核膜三角面包含。",
+        "144对完整DNA网格/核膜BVH三角面直接相交检查：0对相交；同时保留核膜在质膜内的原有回归。",
+        "全部8项原有几何回归及全条件可变几何字节往返跳转、有限顶点、稳定节点/几何/材质检查通过。",
+        "本组smoke四模型通过；未操作浏览器；已通知p_signals等待独立复验。"
+      ],
+      "limitations": [
+        "共同连续形变是示意核内物质随核形变的几何映射，不是核力学模拟；有限帧回归不能证明所有实数时刻。",
+        "独立peer复验与根代理视觉验收仍待执行，本条为实现者修复记录。"
+      ]
+    }
+  ]
+}

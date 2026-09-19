@@ -1,0 +1,664 @@
+.process-workspace {
+  display: grid;
+  grid-template-columns: 218px minmax(0, 1fr) 306px;
+  min-height: 550px;
+  height: calc(100svh - 162px);
+}
+.process-catalog,
+.process-explanation {
+  padding: 28px 24px;
+  overflow-y: auto;
+}
+.process-catalog {
+  border-right: 1px solid var(--line);
+}
+.process-eyebrow {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  margin-bottom: 13px;
+}
+.process-catalog h1 {
+  font-size: 21px;
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.process-catalog-back {
+  margin-bottom: 20px;
+  min-height: 26px;
+}
+.process-directory-content {
+  min-width: 0;
+  overflow-y: auto;
+  padding: 42px 34px;
+  background: var(--canvas);
+}
+.process-directory-content h2 {
+  font-size: 29px;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+  line-height: 1.4;
+}
+.process-directory-intro {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+  margin-top: 14px;
+  max-width: 420px;
+}
+.process-directory-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 22px 18px;
+  margin-top: 34px;
+}
+.process-directory-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+  background: white;
+  border: 1px solid #e7e7ed;
+  border-radius: 14px;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+.process-directory-card:hover {
+  border-color: #b6c6d8;
+  box-shadow: 0 3px 15px #29374608;
+}
+.process-directory-number {
+  font-size: 23px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  align-self: flex-start;
+}
+.process-directory-card-copy {
+  flex: 1;
+  min-width: 0;
+  padding: 17px 18px 20px;
+}
+.process-directory-card-copy strong {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.process-directory-card-copy > span {
+  display: block;
+  margin-top: 9px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.process-directory-image {
+  display: block;
+  aspect-ratio: 1;
+  background: #f5f5f7;
+}
+.process-directory-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+.process-directory-card-copy svg {
+  flex-shrink: 0;
+  color: #a0a5ad;
+}
+.process-directory-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 25px;
+}
+.process-directory-filter input,
+.process-directory-filter select {
+  border: 1px solid #dfdfe5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  min-width: 0;
+}
+.process-directory-filter input {
+  flex: 1;
+  min-width: 140px;
+}
+.process-no-results {
+  grid-column: 1 / -1;
+  padding: 24px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.process-no-results button {
+  color: var(--blue);
+  padding: 8px;
+}
+.process-conditions {
+  border: 0;
+  padding: 0;
+  margin: 25px 0;
+  min-width: 0;
+}
+.process-conditions legend {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.process-conditions label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #646471;
+}
+.process-conditions select {
+  width: 100%;
+  padding: 9px 8px;
+  border: 1px solid #dedee5;
+  border-radius: 7px;
+  background: #fafafb;
+  color: var(--ink);
+  font: inherit;
+}
+.process-directory-card > svg {
+  flex-shrink: 0;
+  color: #939ba5;
+}
+.process-empty-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 24px;
+  padding: 8px 0;
+  color: var(--blue);
+  font-size: 13px;
+}
+.process-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 25px -12px 0;
+}
+.process-steps button {
+  display: flex;
+  align-items: baseline;
+  text-align: left;
+  gap: 12px;
+  padding: 15px 12px;
+  border-radius: 9px;
+  line-height: 1.6;
+}
+.process-steps button:hover {
+  background: #f5f5f7;
+}
+.process-steps button[aria-current] {
+  background: #edf4fd;
+  color: var(--blue);
+}
+.process-step-number {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.62;
+}
+.process-stage {
+  min-width: 0;
+  min-height: 0;
+  background: var(--canvas);
+  display: flex;
+  flex-direction: column;
+}
+.process-visual {
+  position: relative;
+  flex: 1;
+  min-height: 280px;
+}
+.process-canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+}
+.process-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline-offset: -3px;
+}
+.process-scene-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+.process-scene-error button {
+  color: var(--blue);
+  padding: 10px 20px;
+  background: white;
+  border-radius: 8px;
+}
+.process-model-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: nowrap;
+  padding: 4px 7px;
+  border-radius: 5px;
+  color: #50535b;
+  background: #ffffffeb;
+  box-shadow: 0 1px 5px #30303508;
+  pointer-events: none;
+}
+.process-view-tools {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.process-view-tools .icon-button {
+  border: 1px solid #e2e2e8;
+  border-radius: 50%;
+  background: #ffffffb8;
+}
+.process-transport {
+  padding: 16px 26px 20px;
+}
+.process-playback {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.process-play {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  color: #fff;
+  background: #242428;
+}
+.process-play:hover {
+  background: #44444b;
+}
+.process-playback input {
+  width: 100%;
+  min-width: 40px;
+  accent-color: #737e8a;
+  cursor: pointer;
+  height: 32px;
+}
+.process-time {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #85858d;
+  font-variant-numeric: tabular-nums;
+}
+.process-reading-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-left: 54px;
+  font-size: 11px;
+  color: #777780;
+}
+.process-reading-controls button,
+.process-reading-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+}
+.process-reading-controls select {
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  font: inherit;
+  color: var(--ink);
+  padding: 6px 2px;
+  cursor: pointer;
+}
+.process-legend {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  pointer-events: none;
+  color: #74747e;
+  font-size: 10px;
+}
+.process-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.process-legend i {
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+}
+.process-step-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 13px;
+}
+.process-step-controls button {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-height: 30px;
+  padding: 3px 0;
+  color: #74747e;
+  font-size: 11px;
+}
+.process-step-controls > span {
+  font-size: 10px;
+  text-align: center;
+  color: #93939c;
+}
+.process-explanation {
+  border-left: 1px solid var(--line);
+}
+.process-explanation h2 {
+  font-size: 24px;
+  line-height: 1.45;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.process-stage-description {
+  margin-top: 24px;
+  font-size: 13px;
+  line-height: 1.95;
+  color: #54545e;
+}
+.process-context {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #7b7b86;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  margin-top: 30px;
+}
+.process-related {
+  margin-top: 25px;
+  font-size: 11px;
+}
+.process-related p {
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.process-related a {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--blue);
+  padding: 6px 0;
+  margin-right: 14px;
+}
+.process-disclaimer {
+  margin-top: 20px;
+  font-size: 10px;
+  line-height: 1.8;
+  color: #96969e;
+}
+.process-references {
+  font-size: 11px;
+  color: #85858d;
+  margin-top: 24px;
+}
+.process-references summary {
+  cursor: pointer;
+  padding: 7px 0;
+}
+.process-references a {
+  display: block;
+  line-height: 1.7;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+.process-workspace .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 1100px) {
+  .process-workspace {
+    grid-template-columns: 178px minmax(0, 1fr) 240px;
+  }
+  .process-catalog,
+  .process-explanation {
+    padding: 23px 18px;
+  }
+  .process-transport {
+    padding: 14px 18px 18px;
+  }
+  .process-step-controls > span {
+    max-width: 130px;
+  }
+}
+@media (max-width: 800px) {
+  .process-workspace {
+    grid-template-columns: 160px minmax(0, 1fr);
+    height: auto;
+    min-height: 0;
+  }
+  .process-stage {
+    min-height: 510px;
+  }
+  .process-explanation {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 24px;
+  }
+  .process-context {
+    margin-top: 22px;
+    padding-top: 20px;
+  }
+}
+@media (max-width: 700px) {
+  .process-directory {
+    display: flex;
+    flex-direction: column;
+  }
+  .process-directory-content {
+    overflow: visible;
+  }
+}
+@media (max-width: 600px) {
+  .process-directory-content {
+    padding: 28px 20px 36px;
+  }
+  .process-directory-content h2 {
+    font-size: 24px;
+  }
+  .process-directory-cards {
+    margin-top: 23px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .process-directory-card {
+    padding: 0;
+    gap: 0;
+  }
+  .process-directory-card-copy {
+    padding: 13px 12px 16px;
+  }
+  .process-directory-number {
+    font-size: 20px;
+  }
+  .process-directory-card-copy strong {
+    font-size: 14px;
+  }
+  .process-catalog-back {
+    margin-bottom: 10px;
+  }
+  .process-legend {
+    top: 58px;
+    left: 16px;
+    right: 16px;
+  }
+  .process-reading-controls {
+    padding-left: 48px;
+  }
+  .process-view-tools {
+    top: 12px;
+    bottom: auto;
+    flex-direction: row;
+  }
+  .experience-switch button {
+    min-height: 34px;
+  }
+  .process-workspace {
+    display: flex;
+    flex-direction: column;
+  }
+  .process-catalog {
+    padding: 17px 16px 11px;
+    border-right: 0;
+  }
+  .process-catalog .process-eyebrow {
+    display: none;
+  }
+  .process-catalog h1 {
+    font-size: 18px;
+  }
+  .process-steps {
+    flex-direction: row;
+    overflow-x: auto;
+    margin: 12px -4px 0;
+    gap: 5px;
+    padding: 2px 2px 6px;
+  }
+  .process-steps button {
+    padding: 10px;
+    flex-shrink: 0;
+    font-size: 11px;
+    gap: 7px;
+  }
+  .process-stage {
+    min-height: 490px;
+  }
+  .process-visual {
+    min-height: 365px;
+  }
+  .process-transport {
+    padding: 12px 16px 16px;
+  }
+  .process-step-controls > span {
+    max-width: 140px;
+    font-size: 9px;
+  }
+  .process-playback {
+    gap: 10px;
+  }
+  .process-model-label {
+    font-size: 10px;
+    padding: 3px 5px;
+  }
+  .process-explanation h2 {
+    font-size: 21px;
+  }
+  .process-stage-description {
+    margin-top: 15px;
+  }
+}
+@media (max-height: 480px) and (min-width: 601px) {
+  .atlas:has(.process-workspace) .app-header {
+    height: 48px;
+    padding: 6px 14px;
+    gap: 12px;
+  }
+  .atlas:has(.process-workspace) .breadcrumbs {
+    position: static;
+    flex: 1;
+    max-width: 340px;
+    justify-content: flex-start;
+  }
+  .atlas:has(.process-workspace) .cell-type-switch {
+    height: 40px;
+  }
+  .atlas:has(.process-workspace) .experience-bar {
+    padding: 4px 12px;
+  }
+  .atlas:has(.process-workspace) .experience-switch button {
+    padding-block: 3px;
+  }
+  .process-workspace {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+  .process-stage {
+    height: calc(100svh - 126px);
+    min-height: 235px;
+  }
+  .process-visual {
+    min-height: 135px;
+  }
+  .process-catalog {
+    padding: 16px 14px;
+    max-height: calc(100svh - 126px);
+  }
+  .process-catalog h1 {
+    font-size: 17px;
+  }
+  .process-steps {
+    margin-top: 14px;
+    gap: 3px;
+  }
+  .process-steps button {
+    padding: 9px;
+    font-size: 11px;
+  }
+  .process-transport {
+    padding: 8px 16px;
+  }
+  .process-view-tools {
+    right: 10px;
+    bottom: 8px;
+    flex-direction: row;
+  }
+  .process-step-controls {
+    display: none;
+  }
+}

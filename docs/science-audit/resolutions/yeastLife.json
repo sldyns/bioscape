@@ -1,0 +1,134 @@
+{
+  "group": "yeastLife",
+  "issues": [
+    {
+      "issueId": "yeastLife-01",
+      "status": "fixed",
+      "changes": "Replaced center-out disks with fixed-outer-radius annuli. Added an inward-moving terminal annulus to both actual cell-envelope meshes so membrane apertures close before separation. Updated both stage languages.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastBuddingProcess.js",
+        "src/processes/modules/yeastLife/science.test.mjs"
+      ],
+      "verification": [
+        "Regression reads septum radii and the real inner PM terminal rings through p=0.76-1.0; opening decreases to zero and both daughter apertures close before separation.",
+        "Local smoke suite passes finite geometry, deterministic seek, stable node/geometry inventory, material inventory, both controls and individual browser bundles."
+      ],
+      "limitations": [
+        "Geometric teaching representation; not a nanoscale membrane or atomic trajectory simulation. Root browser/visual acceptance remains pending."
+      ]
+    },
+    {
+      "issueId": "yeastLife-02",
+      "status": "fixed",
+      "changes": "Anchored both flattened SPB plaques at the actual polar vertices of the deforming nuclear envelope and extended the spindle to meet those anchors.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastBuddingProcess.js",
+        "src/processes/modules/yeastLife/science.test.mjs"
+      ],
+      "verification": [
+        "Regression checks SPB centers against exact NE polar surface vertices and cylinder endpoints at five spindle-visible intermediate frames.",
+        "Local smoke suite passes finite geometry, deterministic seek, stable node/geometry inventory, material inventory, both controls and individual browser bundles."
+      ],
+      "limitations": [
+        "Geometric teaching representation; not a nanoscale membrane or atomic trajectory simulation. Root browser/visual acceptance remains pending."
+      ]
+    },
+    {
+      "issueId": "yeastLife-03",
+      "status": "fixed",
+      "changes": "Changed the initial glucose carbon bookkeeping to an open six-carbon zigzag chain and removed the C6-C1 bond. Both stage languages describe the open-chain abstraction.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastFermentationProcess.js",
+        "src/processes/modules/yeastLife/science.test.mjs"
+      ],
+      "verification": [
+        "Regression reconstructs carbon adjacency from actual bond-cylinder endpoints for both oxygen conditions; initial chain has exactly five C-C edges and products retain exactly the two ethanol C-C edges.",
+        "Local smoke suite passes finite geometry, deterministic seek, stable node/geometry inventory, material inventory, both controls and individual browser bundles."
+      ],
+      "limitations": [
+        "Geometric teaching representation; not a nanoscale membrane or atomic trajectory simulation. Root browser/visual acceptance remains pending."
+      ]
+    },
+    {
+      "issueId": "yeastLife-04",
+      "status": "fixed",
+      "changes": "Located mating SPBs on each nuclear surface. Pre-fusion microtubules stay within their own cytoplasm; cross-neck microtubules are enabled only after the physical cell opening is complete. Nuclear congression begins after plasmogamy.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastMatingProcess.js",
+        "src/processes/modules/yeastLife/topology.js",
+        "src/processes/modules/yeastLife/science.test.mjs"
+      ],
+      "verification": [
+        "Regression samples actual microtubule centerlines against interpolated real PM mesh sections before and after fusion; checks NE exclusion and SPB surface anchors. Same-type controls show no bridging microtubules.",
+        "Local smoke suite passes finite geometry, deterministic seek, stable node/geometry inventory, material inventory, both controls and individual browser bundles."
+      ],
+      "limitations": [
+        "Geometric teaching representation; not a nanoscale membrane or atomic trajectory simulation. Root browser/visual acceptance remains pending."
+      ]
+    },
+    {
+      "issueId": "yeastLife-05",
+      "status": "fixed",
+      "changes": "Replaced appearance of a third nucleus with a continuous envelope joining the two contacting parental lobes. Preserved the same two chromatin populations. Enlarged the actual cell fusion neck and matched its membrane lipids so all nuclear geometry stays inside the cell.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastMatingProcess.js",
+        "src/processes/modules/yeastLife/topology.js",
+        "src/processes/modules/yeastLife/anatomy.js",
+        "src/processes/modules/yeastLife/science.test.mjs"
+      ],
+      "verification": [
+        "Regression counts visible real NE meshes through fusion, verifies a positive connecting lumen after contact, and tests all NE mesh vertices against the PM profiles; never three nuclei. Same-type control retains separate parental nuclei.",
+        "Local smoke suite passes finite geometry, deterministic seek, stable node/geometry inventory, material inventory, both controls and individual browser bundles."
+      ],
+      "limitations": [
+        "Geometric teaching representation; not a nanoscale membrane or atomic trajectory simulation. Root browser/visual acceptance remains pending."
+      ]
+    },
+    {
+      "issueId": "yeastLife-06",
+      "status": "fixed",
+      "changes": "Removed the two separated post-MI envelope meshes. One common nuclear surface remains through MI and MII, broadens around the two spindles and develops late constrictions before four daughter nuclei are partitioned at p=0.80. Updated bilingual description and nucleus metadata.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastSporulationProcess.js",
+        "src/processes/modules/yeastLife/science.test.mjs"
+      ],
+      "verification": [
+        "Regression verifies the common visible surface and nonzero sectional lumen at every longitudinal section across MI/MII; all four final nuclear meshes remain hidden until late partition. Rich-medium control retains the original state.",
+        "Local smoke suite passes finite geometry, deterministic seek, stable node/geometry inventory, material inventory, both controls and individual browser bundles."
+      ],
+      "limitations": [
+        "Geometric teaching representation; not a nanoscale membrane or atomic trajectory simulation. Root browser/visual acceptance remains pending."
+      ]
+    },
+    {
+      "issueId": "yeastLife-07",
+      "status": "fixed",
+      "changes": "The same inner prospore membrane now persists as mature spore PM. Mannan and glucan shells appear in the intermembrane space; outer membrane disappears before exterior chitosan and dityrosine layers. Separate wall materials and cut edges retain visible layered detail.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastSporulationProcess.js",
+        "src/processes/modules/yeastLife/anatomy.js",
+        "src/processes/modules/yeastLife/science.test.mjs"
+      ],
+      "verification": [
+        "Regression tracks the actual inner-membrane object and its radius across maturation; verifies nuclear containment, early wall radii between the membranes, outer membrane loss, mature wall outside PM, and rich-control suppression.",
+        "Local smoke suite passes finite geometry, deterministic seek, stable node/geometry inventory, material inventory, both controls and individual browser bundles."
+      ],
+      "limitations": [
+        "Geometric teaching representation; not a nanoscale membrane or atomic trajectory simulation. Root browser/visual acceptance remains pending."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/yeastLife/science.test.mjs - PASS, 7 issue invariants and both control branches",
+    "node src/processes/modules/yeastLife/smoke.mjs - PASS all four modules",
+    "npx prettier --write [seven changed files under src/processes/modules/yeastLife] - complete; no shared files formatted"
+  ],
+  "sourcesAdded": [
+    "https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006195",
+    "https://www.ebi.ac.uk/chebi/CHEBI:4167",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC2080914/",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC2132592/",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC3744438/"
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "group": "membrane",
+  "issues": [
+    {
+      "issueId": "membrane-01",
+      "status": "fixed",
+      "changes": "保留有限时长演示，在0.85–0.995加入4对平衡的返向穿膜轨迹；终点暂停仍表示快照。相同粒子沿原水孔或脂质通路返回，净转移不变。",
+      "files": [
+        "src/processes/modules/membrane/diffusionProcess.js",
+        "src/processes/modules/membrane/science.test.mjs"
+      ],
+      "verification": [
+        "遍历4 roots × 2 route × 2 gradient，共16组合，每组合1001时间点；实际y=0穿越统计在末段4进/4出。",
+        "终态32分子仍内外16/16；outside累计净入8，equal净入0；穿膜水的x/z位于单体孔，氧位于脂质区。"
+      ],
+      "limitations": [
+        "只是有限时间内可见的动态平衡示例，不要求播放器暂停后继续运动；非统计力学或真实速率模拟。"
+      ]
+    },
+    {
+      "issueId": "membrane-02",
+      "status": "fixed",
+      "changes": "闭锁标签改由两个实际门的闭合状态决定，并补齐中英双语关门、开门过渡标签；只有实际闭合且完成相应磷酸状态才显示闭锁。 同行复核后同步化学事件：示意磷酸转移推迟至内门完全闭合(.29)；外门.77闭合后保留短暂E2P钾闭锁态，.78起去磷酸化并释放Pi，.805完成，早于.81内门重开。",
+      "files": [
+        "src/processes/modules/membrane/activeTransportProcess.js",
+        "src/processes/modules/membrane/science.test.mjs"
+      ],
+      "verification": [
+        "2种能量分支共2002时间点，对实际门position/scale、可见磷酸与显示标签联合断言；两门不同时开放。",
+        "有ATP终态实际3Na外、2K内；无ATP无输出、摄入、磷酸转移；ATP末磷酸和转移磷酸不同时出现。",
+        "新增ATP末磷酸、P域磷酸实际可见性/位置时序断言：内门关闭前不转移，外门关闭前P域磷酸不移动；2002状态测试通过。",
+        "同行建议后的science.test.mjs及refinement.test.mjs再次全部PASS。"
+      ],
+      "limitations": [
+        "门运动及磷酸轨迹仍是教学示意，未据此声称原子级反应轨迹。",
+        "Na闭锁与磷酸转移采用保守的教学同步；不宣称唯一微观先后。K闭锁安排在去磷酸化前，但归一化进度阈值不是测量时间，也未细分酶-P断裂与Pi解离的全部中间态。"
+      ]
+    },
+    {
+      "issueId": "membrane-03",
+      "status": "fixed",
+      "changes": "去掉三轴统一缩小引起的膜材料损失，增加高渗皱褶/扁化，并按实际三角网面积进行归一约束；内叶与皮层随约束后的顶点移动。加入膜面积保留的中英阶段解释和原始红细胞研究来源。",
+      "files": [
+        "src/processes/modules/membrane/osmoticBalanceProcess.js",
+        "src/processes/modules/membrane/science.test.mjs"
+      ],
+      "verification": [
+        "3种tonicity各101步，直接积分外/内叶三角网面积；归一面积误差<1e-6，非userData断言。",
+        "实际体积低渗单调增至1.624757倍，高渗单调减至0.637394倍，等渗保持1；高渗赤道半径最大/最小>1.4，证实皱褶而非仅等比缩小。"
+      ],
+      "limitations": [
+        "表面积约束是保守几何示意，不是经过红细胞弹性参数拟合的力学模拟；不模拟膜囊泡脱落、调节或溶血。"
+      ]
+    },
+    {
+      "issueId": "membrane-04",
+      "status": "fixed",
+      "changes": "两份脂质II均增加可辨别的双磷酸与连续NAM–PP–脂质连接；载体位于NAM端。",
+      "files": [
+        "src/processes/modules/membrane/bacterialCellWallProcess.js",
+        "src/processes/modules/membrane/science.test.mjs"
+      ],
+      "verification": [
+        "两药物分支402帧，从真实圆柱端点与糖/磷酸对象世界坐标核验连接；连接接触NAM而远离NAG。",
+        "所有阶段均有受体NAM与焦磷酸相连，糖肽头仍在周质侧、脂质尾保留在膜中。"
+      ],
+      "limitations": [
+        "糖环、焦磷酸和脂质尾为化学拓扑简图，不表示原子数或真实键长。"
+      ]
+    },
+    {
+      "issueId": "membrane-05",
+      "status": "fixed",
+      "changes": "将无源出现的10糖链改为两份可持续追踪的二糖五肽，合成一段四糖链；同一批4糖与肽对象从底物连续移至产物。新糖苷键形成时释放供体载体，保留受体脂质锚；最终展示两次转肽并更新对应阶段文案及本组旧回归预期。",
+      "files": [
+        "src/processes/modules/membrane/bacterialCellWallProcess.js",
+        "src/processes/modules/membrane/refinement.test.mjs",
+        "src/processes/modules/membrane/science.test.mjs"
+      ],
+      "verification": [
+        "402帧检验4个糖对象UUID/可见性不变、糖-肽键端点连续；没有隐藏产物池。",
+        "聚合前2枚NAM–PP锚、聚合后1枚；新糖苷键端点随同一供受体糖对象移动。",
+        "正常终态2条新交联、释放2个D-Ala；药物分支无新交联、保留末端D-Ala键。"
+      ],
+      "limitations": [
+        "选取一个二糖添加实例，不演示长链的多轮延伸、最后脂质锚的释放、胞质合成或翻转。",
+        "RodA/PBP2与糖链迁移是放大的教学示意，未声称真实尺度的复合体接触面或原子催化路径。"
+      ]
+    },
+    {
+      "issueId": "membrane-06",
+      "status": "fixed",
+      "changes": "后排已有链补齐四肽，背景交联改为后排D-Ala4到前排mDAP3；前排两个mDAP预留给新链，避免一个受体氨基被重复交联。",
+      "files": [
+        "src/processes/modules/membrane/bacterialCellWallProcess.js",
+        "src/processes/modules/membrane/science.test.mjs"
+      ],
+      "verification": [
+        "逐帧从实际圆柱端点确认3条背景交联均落在对应肽残基，而不是糖环中心。",
+        "两条新交联分别接新链D-Ala4与前排空闲mDAP3；末端D-Ala5脱离后对应键隐藏，药物分支不发生。"
+      ],
+      "limitations": [
+        "保留E. coli的4→3交联范围，不推广到所有细菌或其他交联酶。"
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/membrane/science.test.mjs — PASS (all 6 audited issues, actual geometry)",
+    "node src/processes/modules/membrane/refinement.test.mjs — PASS (4 models; finite geometry, deterministic seeking, stable resources, browser bundle compilation)",
+    "./node_modules/.bin/prettier --write src/processes/modules/membrane/{diffusionProcess,activeTransportProcess,osmoticBalanceProcess,bacterialCellWallProcess}.js src/processes/modules/membrane/{science,refinement}.test.mjs — completed, owned files only"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/7082818/",
+      "title": "Geometric, osmotic, and membrane mechanical properties of density-separated human red cells",
+      "basis": "Phase A已实际读取Europe PMC原始摘要；用于膜面积与体积变化的区分。"
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/21190658/",
+      "title": "Kinetics of K(+) occlusion by the phosphoenzyme of the Na(+),K(+)-ATPase",
+      "basis": "p_turnover独立复核全文提出K闭锁先于去磷酸化；本次直接读取Europe PMC原始研究摘要验证实验体系与磷酸酶闭锁研究身份，全文端点返回500，未声称本次另行获取全文。"
+    }
+  ]
+}

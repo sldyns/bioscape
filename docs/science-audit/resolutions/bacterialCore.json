@@ -1,0 +1,185 @@
+{
+  "group": "bacterialCore",
+  "issues": [
+    {
+      "issueId": "bacterialCore-01",
+      "status": "fixed",
+      "changes": "新生肽从实际 50S 出口环坐标开始；添加连续肽键，并将出口隧道末端与环对齐。",
+      "files": [
+        "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "检查每个翻译时点首个肽残基中心与出口中心重合；检查所有可见肽键两端与相邻残基重合。",
+        "注入首个肽残基 z 偏移 0.35 后，相同几何检查失败。"
+      ],
+      "limitations": [
+        "蛋白质及出口仍为机制示意，未引入原子坐标；未展示肽酰 tRNA 的化学反应。"
+      ]
+    },
+    {
+      "issueId": "bacterialCore-02",
+      "status": "fixed",
+      "changes": "RNA 参数零点固定为 RNAP 活性 3′ 端；添加连续短 RNA–模板杂交路径和配对连接，3′ 标签跟随真实端点。",
+      "files": [
+        "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "检查全部 70 段 RNA 连续且首端与活性位点重合；杂交连接落在实际绘制的模板骨架附近（<0.025 场景单位）。",
+        "σ 缺失时 RNA/肽均不可见；注入活性位点 x 偏移 0.38 后测试失败。"
+      ],
+      "limitations": [
+        "杂交区长度为放大示意，不表示精确碱基数或实际复合物尺度。"
+      ]
+    },
+    {
+      "issueId": "bacterialCore-03",
+      "status": "fixed",
+      "changes": "复制期用三条连通 DNA 臂构成 θ 拓扑；两条新复制臂与未复制弧共享精确叉坐标。终止后才成为两个闭环并完成分离。",
+      "files": [
+        "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "两个条件全部中间采样均检查三臂端点与叉中心重合、臂内连续；复制完成后两个染色体均闭环。",
+        "p=0.37 将姐妹臂组平移 1.59 后测试失败。"
+      ],
+      "limitations": [
+        "DNA 粗管表示染色体片段，未展开每条双链的半保留复制、缠结解除与精确复制速度。已复制区域可在复制完成前分开，最终细胞两半的分配随后完成。"
+      ]
+    },
+    {
+      "issueId": "bacterialCore-04",
+      "status": "fixed",
+      "changes": "FtsZ 以固定粗细的短丝段沿收缩周缘组织；p=0.76–0.83 逐步减少占据并离开，内膜到 p=0.89 才封闭。保留晚期隔膜合成组分。",
+      "files": [
+        "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "p=0.85 直接测内膜顶点确认颈部仍开放，同时 FtsZ 不可见且 FtsWI 可见；阻断合成时 FtsZ 保留。",
+        "所有可见 FtsZ 横截面半径维持 0.043；恢复 p=0.85 的 FtsZ 可见性后测试失败。"
+      ],
+      "limitations": [
+        "时间轴为教学顺序，不代表以秒计的实验动力学；短丝以圆柱段示意。"
+      ]
+    },
+    {
+      "issueId": "bacterialCore-05",
+      "status": "fixed",
+      "changes": "移除分别拼接的供体 T 弧、转移桥和受体 T 弧，改为唯一按物质顺序参数化的 240 段 T 链。有限一段链占据放大转移通道，TraI 始终跟随 5′ 端，全部尾端入胞后闭环。供体替代链与受体补链只占已释放/已到达区。",
+      "files": [
+        "src/processes/modules/bacterialCore/conjugationProcess.js",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "检查 T 链全部相邻段端点连续、内部无重复节点；切开前/交付后闭环，转移中为开放链；TraI 与真实 5′ 端重合。",
+        "检查 p=0.64 链穿过实际孔中心；p>=0.8 原 T 链全部在受体，无跨细胞残链；切口阻断时全链留在供体。",
+        "注入中段 x 偏移 0.98 后测试失败。"
+      ],
+      "limitations": [
+        "通道长度和容纳的 DNA 比例为放大示意，非真实链长/速度；不模拟解旋酶步进及共价闭环化学过程。"
+      ]
+    },
+    {
+      "issueId": "bacterialCore-06",
+      "status": "fixed",
+      "changes": "将同源靠近（p=0.66–0.74）与接触后交换（p=0.74–0.87）分开；原链保留并仅在已有输入链接触的区域形成连通 D-loop。到整合端点才去除被替换原链段，输入链与原骨架边界精确连接。",
+      "files": [
+        "src/processes/modules/bacterialCore/transformationProcess.js",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "p<=0.74 和无同源性条件下受体原链全部可见且坐标未变；每个发生位移的原链顶点都要求输入 DNA 已处于对应配对位置。",
+        "检查交换中原链闭合连通、原有互补链始终闭合、最终输入片段与两侧骨架精确衔接。",
+        "p=0.68 隐藏原链段的缺陷注入被测试拒绝。"
+      ],
+      "limitations": [
+        "D-loop、切接与最终解析以连续骨架示意，未表示分子级连接酶/分支迁移中间体或后续复制。"
+      ]
+    },
+    {
+      "issueId": "bacterialCore-07",
+      "status": "fixed",
+      "changes": "ComEA 胞外 DNA 结合域通过可见系链连接跨膜螺旋；移除整个 ComEA 的横向缩放，保持锚定位置。",
+      "files": [
+        "src/processes/modules/bacterialCore/transformationProcess.js",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "对锚定路径作射线检测，确认同时穿过单个胞质膜的两张真实渲染三角面；两条件及全部采样均通过，结合域位于外侧。",
+        "将锚整体外移 0.5 后，膜面交叉检查失败。"
+      ],
+      "limitations": [
+        "ComEA 为域级示意，跨膜螺旋长度不作氨基酸尺度断言。"
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/bacterialCore/science.test.mjs",
+      "result": "PASS: 58/57/59/59 time points per model × 2 conditions (466 geometry-state checks); all seven defect injections rejected; deterministic seek, finite vertices/transforms/instances, stable resource inventory and esbuild bundles passed."
+    },
+    {
+      "command": "npx prettier --write (four owned Process.js files and science.test.mjs)",
+      "result": "Formatted owned files only."
+    },
+    {
+      "command": "node src/processes/modules/bacterialCore/bubble.science.test.mjs",
+      "result": "PASS: 2002 actual-mesh states, arbitrary neighboring cross-strand pairs, nonadjacent self pairs, phosphate envelopes, exact polygonal-prism SAT fallback, RNA active end; original collision negative control rejected."
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.rcsb.org/structure/6VYW",
+      "supports": "RNA-template hybrid and coupled bacterial transcription/translation; opened in Phase A."
+    },
+    {
+      "url": "https://www.rcsb.org/structure/6I0Y",
+      "supports": "Nascent chain at 50S exit; opened in Phase A."
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/24506818/",
+      "supports": "FtsZ departure before inner-membrane closure; opened in Phase A."
+    },
+    {
+      "url": "https://journals.asm.org/doi/10.1128/jb.01212-07",
+      "supports": "Replicating E. coli chromosome segregation; opened in Phase A."
+    },
+    {
+      "url": "https://www.nature.com/articles/s41467-023-35978-3",
+      "supports": "5-prime TraI-linked T-strand transfer and recipient circularization; opened in Phase A."
+    },
+    {
+      "url": "https://journals.asm.org/doi/10.1128/jb.01128-10",
+      "supports": "Membrane-bound ComEA and RecA-mediated local strand displacement; opened in Phase A."
+    }
+  ],
+  "acceptanceBoundary": "Local scientific regression passed. Root must render and inspect visual quality and acceptance. No browser or full-workspace verification was run; Phase A evidence is unchanged.",
+  "extensionEvidence": "docs/science-audit/acceptance/peer-bubble-extensions.md; Phase A unchanged.",
+  "peerExtensions": [
+    {
+      "issueId": "bubble-extension-01",
+      "status": "fixed",
+      "changes": "Replaced Cartesian fixed-axis bubble blending with a shared centerline, orthogonal Y/Z frame, positive opening radius and local phase unwinding. Opposite strand identities are retained; the RNA hybrid and active 3-prime end follow the same template frame. DNA tubes were not thinned or hidden.",
+      "files": [
+        "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+        "src/processes/modules/bacterialCore/bubble.science.test.mjs"
+      ],
+      "verification": [
+        "1001 time points x sigma present/absent: full finite-segment distances across all nearby i/j pairs with independent parameters, plus all nonadjacent self-strand segments.",
+        "Actual transformed cylinder and phosphate instance geometry is checked. Rounded capsule overlap at short neighboring segments triggers full separating-axis tests of the actual flat-capped 16-sided cylinder prisms.",
+        "Present minimum opposite-tube envelope clearance 0.299505; opposite phosphate clearance 0.2959999; phosphate-to-opposite-tube clearance 0.294250. Absent: 0.300581, 0.2959999, 0.298290.",
+        "No actual DNA solid intersections in 2002 states. Some same-strand capsule gaps are negative, but actual flat-capped prism solids are separated by SAT. 7565 exact SAT checks including the negative control.",
+        "Negative control at p=0.521 restores the original interpolation in two actual cylinders, reproducing axis distance 0.0000643364. The closest-point midpoint is strictly inside both actual polygonal solids and the test rejects it.",
+        "Existing science.test.mjs: 466 geometry states and all 7 defect injections still pass. Dense extension also checks RNA active-end attachment and no transcription in sigma-absent control."
+      ],
+      "limitations": [
+        "Bubble radius and phase are topology-preserving teaching geometry, not experimental atomic coordinates or torsional dynamics.",
+        "Extension checks the two DNA backbones, phosphate envelopes and existing RNA connection; root retains overall visual acceptance."
+      ]
+    }
+  ]
+}

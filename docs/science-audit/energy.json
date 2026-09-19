@@ -1,0 +1,275 @@
+{
+  "group": "energy",
+  "reviewer": "p_turnover (independent reviewer; original module authored by another lane)",
+  "models": [
+    {
+      "id": "respiration",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast",
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mitochondrial canonical cytochrome respiratory chain; S. cerevisiae replaces complex I with Ndi1. Plant/protist alternative branches are explicitly omitted.",
+      "checks": [
+        "Compared all six stages, zh/en intro, legends, labels, yeast context override and both coupling controls with create/update and detailKit geometry. All four roots were instantiated and exercised at stages and transition points (112 update combinations).",
+        "Matrix is below the membrane and intermembrane space above. Q remains membrane-associated; cytochrome c is on the intermembrane-space side. Complex II is not assigned a proton pump.",
+        "Electron supply, I/III/IV proton export, matrix-side oxygen reduction and proton return to matrix-facing F1 have the correct directions. Yeast removes complex-I pumping in actual particle selection as well as text.",
+        "Leak mode decreases the gradient and ATP output while preserving possible electron transfer; no universal ATP-per-glucose number is claimed. Particle number and rotor rate are explicitly illustrative.",
+        "Inspected the actual lipid exclusion mask and visible Ndi1 geometry, not only metadata. Independently calculated Ndi1 mesh bounds; inspected /tmp/atlas-refinement/respiration.png as a single representative frame."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/4G9K",
+          "title": "RCSB 4G9K — Structure of the yeast NADH dehydrogenase Ndi1",
+          "supports": "Opened primary structural record and publication abstract: Ndi1 is a matrix-facing monotopic/peripheral enzyme, not a transmembrane proton channel; it does not pump protons."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/2XND",
+          "title": "RCSB 2XND — Bovine F1-c8 subcomplex",
+          "supports": "Opened primary structural record and Watt et al. publication abstract: bovine mitochondrial ATP synthase has eight c subunits and three catalytic ATP events per full rotation."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26894/",
+          "title": "NCBI Bookshelf — The Mitochondrion",
+          "supports": "Opened mechanism reference for inner-membrane electron transport, chemiosmotic direction and matrix-facing ATP synthesis."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "energy-01",
+          "severity": "P1",
+          "kind": "misleading_topology",
+          "file": "src/processes/modules/energy/respirationProcess.js",
+          "location": "lines 75–95; detailKit.js bilayer lines 100–135",
+          "evidence": "The bilayer always excludes the ellipse [-3.25, 0, 0.64, 0.54] from BOTH leaflets. For yeast, complex-I bundles are replaced only by fold(ci,[0,-0.4,0],[0.83,0.61,0.8],...). Measured visible Ndi1 y bounds are approximately [-0.705,-0.0444], while the upper leaflet is centered at +0.205.",
+          "whyWrong": "The root-specific protein replacement leaves an unoccupied through-hole in the inner membrane at a non-transmembrane enzyme. That contradicts the proton-tight boundary required by the lesson and visually implies a pore through Ndi1.",
+          "fix": "Give the yeast entry a continuous opposite leaflet and an appropriate matrix-leaflet protein attachment; do not reuse the complex-I through-membrane lipid exclusion for Ndi1.",
+          "verification": "In the yeast scene, inspect both sides and assert continuous lipid coverage above the Ndi1 footprint; no aqueous through-path at Ndi1. Preserve Q access and absence of proton-pump particles there. Check other roots retain their embedded complex I.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/4G9K"
+          ]
+        },
+        {
+          "issueId": "energy-02",
+          "severity": "P2",
+          "kind": "species_scope_and_structural_stoichiometry",
+          "file": "src/processes/modules/energy/detailKit.js",
+          "location": "synthase lines 234–257; respirationProcess.js line 127",
+          "evidence": "synthase hides the old rotor meshes, then unconditionally creates ten twin-helix c subunits with for (let i=0;i<10;i++). The animal cell root gets exactly the same resolved c10 ring as yeast.",
+          "whyWrong": "An exactly resolved c10 ring is not a species-neutral mitochondrial model. Mammalian c8 structures contradict its use for an ordinary animal-cell exemplar; generic plant and protist roots also need an explicitly supported exemplar. The particle-count disclaimer does not qualify the resolved protein subunit count.",
+          "fix": "Parameterize c-ring geometry by a documented exemplar, e.g. c8 for a mammalian animal context and documented c10 for S. cerevisiae; establish rather than assume plant/protist counts, or visibly avoid resolving an exact count for unspecified species.",
+          "verification": "Count visible c-subunit groups per declared specimen; confirm changing count preserves rotor, a-subunit interface and F1 orientation. Do not derive H+/ATP or ATP/glucose from the current arbitrary shared count.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/2XND"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only a representative static screenshot was inspected; this is code plus headless geometry/update audit, not browser acceptance.",
+        "The exact protein folds, particle stoichiometry, Q-cycle microsteps, a/c half-channel trajectories and rotor speed are schematic rather than atomic/quantitative.",
+        "Specific c-ring sizes for unspecified plant and paramecium exemplars were not established; the confirmed counterexample is mammalian c8."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "glycolysis",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Cytosolic glycolysis with explicit six-carbon and phosphate bookkeeping; plant plastid glycolysis excluded; no controls.",
+      "checks": [
+        "Compared all seven stages and zh/en copy with the entire update function for all three roots (45 update combinations), including ATP-investment, cleavage, oxidation, both phosphate transfers and the final state.",
+        "Six carbon objects split into two three-carbon chains; two ATP invested, four ATP generated, two NADH and two pyruvate are correctly described. Inorganic phosphate supplies the oxidation-linked phosphates; direct oxygen use is not claimed.",
+        "NAD+ regeneration requirement is correctly stated. Open-chain carbon symbols and spatial enzyme stations are explicitly bookkeeping, not atomistic glucose or a fixed multienzyme complex.",
+        "Inspected phosphate-link endpoints rather than only count metadata. At p=0.76 the label is PEP, while the inherited phosphate remains attached to a terminal carbon. Inspected /tmp/atlas-refinement/glycolysis.png as a representative frame."
+      ],
+      "sources": [
+        {
+          "url": "https://iubmb.qmul.ac.uk/enzyme/EC5/4/2/11.html",
+          "title": "IUBMB EC 5.4.2.11 — Phosphoglycerate mutase",
+          "supports": "Opened official reaction record: 3-phosphoglycerate and 2-phosphoglycerate are interconverted; phosphate position changes between terminal C3 and middle C2."
+        },
+        {
+          "url": "https://iubmb.qmul.ac.uk/enzyme/EC4/2/1/11.html",
+          "title": "IUBMB EC 4.2.1.11 — Enolase",
+          "supports": "Opened official reaction record: 2-phosphoglycerate forms phosphoenolpyruvate plus water."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26882/",
+          "title": "NCBI Bookshelf — How Cells Obtain Energy from Food",
+          "supports": "Opened pathway reference: cytosolic glycolysis produces two pyruvate, two NADH and a net two ATP per glucose."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "energy-03",
+          "severity": "P1",
+          "kind": "misleading_molecular_connectivity",
+          "file": "src/processes/modules/energy/glycolysisProcess.js",
+          "location": "update lines 191–230 and PEP label lines 247–253",
+          "evidence": "substrateP stays positioned from end=positions[i?5:0], and its phosphateLinks endpoint is always that same end. The label changes to PEP at p>0.75; second=ease(p,0.78,0.91) transfers this phosphate directly to ADP without ever moving its substrate bond to positions[1] or positions[4]. At p=0.76 the left phosphate is (-2.19,-0.15,0.12), linked to terminal carbon (-1.94,-0.28,-0.05), not middle carbon (-1.65,-0.17,0).",
+          "whyWrong": "The lesson specifically teaches carbon and phosphate fate. It depicts terminal-carbon phosphate as PEP despite the preceding 3-PG→2-PG rearrangement described in its text. The omitted change alters the molecular connectivity being taught, even with the carbon-bookkeeping abstraction.",
+          "fix": "Before the PEP label, relocate the displayed phosphate attachment from C3 to C2 to represent the net phosphoglycerate-mutase step, then transfer from C2 during pyruvate-kinase action. Do not imply an atom-exact phosphate trajectory through the omitted enzyme/cofactor chemistry.",
+          "verification": "At a settled PEP frame, both phosphate bonds end on the middle carbon; first ATP transfer comes from the C1 acyl-phosphate end of 1,3-BPG and second transfer from the C2 enol-phosphate position. Preserve six carbons and final gross four/net two ATP.",
+          "sourceUrls": [
+            "https://iubmb.qmul.ac.uk/enzyme/EC5/4/2/11.html",
+            "https://iubmb.qmul.ac.uk/enzyme/EC4/2/1/11.html"
+          ]
+        }
+      ],
+      "limitations": [
+        "Carbon spheres omit O/H atoms and bond orders; this is acceptable only if displayed phosphate positions remain chemically consistent.",
+        "No browser or exhaustive rendered-state review; all declared roots and transition formulas were inspected."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "bacterialEnergetics",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "E. coli plasma-membrane aerobic respiration: selected NDH-I/bo3 and NDH-II/bd-I branches; outer membrane omitted.",
+      "checks": [
+        "Compared all six stages, both route controls, zh/en intro/labels/legend and actual branch visibility/particle updates (28 update combinations).",
+        "Periplasm is above the curved plasma membrane and cytoplasm below; F1 faces cytoplasm. These are E. coli quinol-oxidase pathways, not a transplanted mitochondrial III–cytochrome-c–IV chain.",
+        "NDH-I/bo3 proton pumping is distinguished from non-pumping NDH-II/bd-I. In the bd-I route, quinol proton release is periplasmic and oxygen reduction consumes cytoplasmic protons, so electrogenicity is retained.",
+        "Both branch energetics and qualitative ATP-speed differences are bounded by copy that rejects a universal bacterial ATP yield. No fermentative or anaerobic pathway is implied.",
+        "Inspected lipid exclusion and NDH-II mesh bounds plus /tmp/atlas-refinement/bacterialEnergetics.png. The alternative protein is peripheral, but the original through-hole remains."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:23089137&format=json&resultType=core",
+          "title": "Primary study PMID 23089137 — Maintenance and thermal stabilization of NADH dehydrogenase-2 conformation upon elimination of its C-terminal region",
+          "supports": "PubMed HTML was challenged; actually retrieved and read the primary abstract through Europe PMC core API. It identifies E. coli NDH-2 as peripheral membrane-bound and describes soluble C-terminal truncation."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/8491720/",
+          "title": "Calhoun et al. 1993 — Energetic efficiency of Escherichia coli respiratory-chain mutants",
+          "supports": "Opened primary abstract: alternative NADH dehydrogenases and terminal oxidases have different energetic efficiencies; the bd branch can still conserve energy."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "energy-04",
+          "severity": "P1",
+          "kind": "misleading_topology",
+          "file": "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+          "location": "bilayer lines 20–30; entry geometry lines 55–65; branch switch lines 183–186; detailKit.js lines 100–135",
+          "evidence": "The membrane always excludes [-2.35,0,0.8,0.5] on both leaflets. Switching route to ndh2-bd hides every NDH-I transmembrane bundle and exposes only fold(ndh2,[0,-0.4,0],[0.95,0.65,0.8],...). NDH-II local y bounds are approximately [-0.725,-0.0211], leaving the +0.205 periplasmic leaflet hole unfilled.",
+          "whyWrong": "A peripheral NDH-II does not make an open transmembrane pore. This route visibly breaches the very membrane barrier whose proton-motive force powers its ATP synthase.",
+          "fix": "Use route-dependent lipid filling at the NDH-II site, preserving the opposite leaflet and a peripheral cytoplasmic binding surface; keep the transmembrane mask only when NDH-I occupies it.",
+          "verification": "Toggle both routes at all stages. NDH-II must leave no empty through-membrane aperture, must not acquire proton-pump particles, and must still couple Q reduction to the membrane pool. Preserve bd-I scalar proton directions.",
+          "sourceUrls": [
+            "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:23089137&format=json&resultType=core"
+          ]
+        }
+      ],
+      "limitations": [
+        "The E. coli specimen choice supports this topology; the scene intentionally does not generalize all bacterial respiratory architectures.",
+        "No browser acceptance; representative image and all control updates were examined."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "bacterialPhotosynthesis",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Synechocystis sp. PCC 6803 internal thylakoid oxygenic linear electron transport; light/dark control; cyclic flow, respiration and carbon fixation omitted.",
+      "checks": [
+        "Compared all seven stages, light/dark settings, zh/en scope and full particle/rotor updates (30 update combinations), plus /tmp/atlas-refinement/bacterialPhotosynthesis.png.",
+        "Thylakoid lumen is enclosed between upper and lower membranes; cytoplasm lies outside. OEC is lumen-facing; phycobilisomes and F1 face cytoplasm. The sac is not called a chloroplast or the cell exterior.",
+        "Water oxidation supplies oxygen, electrons and lumenal protons. PQ stays in the membrane, b6f enriches lumenal H+, PC/c6 is lumenal, PSI sends electrons toward cytoplasmic Fd/FNR and NADPH.",
+        "Protons return from lumen toward cytoplasmic F1. Both photosystems require light; oxygen does not come from CO2. Dark mode stops illustrated sustained photochemistry, oxygen and light-driven ATP/NADPH while explicitly allowing real cyanobacterial respiration.",
+        "The species-specific model calls the shared ATP synthase helper, which resolves exactly ten c subunits. Structural evidence does not support that count for its declared cyanobacterium."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8390522/fullTextXML",
+          "title": "Kondo et al. 2021 — Phototroph-specific gamma-subunit beta hairpin and cyanobacterial ATP synthesis",
+          "supports": "Actually opened full XML. The S. 6803 preparation is described as alpha3beta3gammaepsilon-delta-abb-prime-cn; the paper explicitly says its experiment did not resolve n and refers to a previously reported c14 ring. This supports a c14 precedent, not a new direct count from this experiment."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:17545285&format=json&resultType=core",
+          "title": "Pogoryelov et al. 2007 — Oligomeric state of cyanobacterial ATP synthase c rings varies from 13 to 15",
+          "supports": "Actually retrieved primary abstract through Europe PMC core API after PMC HTML challenge/fulltext API failure. Eight cyanobacterial strains were examined; reported rings span c13–c15, not a universal c10."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4756276/fullTextXML",
+          "title": "Distribution and dynamics of electron transport complexes in cyanobacterial thylakoid membranes",
+          "supports": "Actually read fulltext XML: thylakoid localization, lumenal plastocyanin exchange, photosynthetic and respiratory complexes sharing cyanobacterial membranes."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "energy-05",
+          "severity": "P2",
+          "kind": "species_scope_and_structural_stoichiometry",
+          "file": "src/processes/modules/energy/detailKit.js",
+          "location": "synthase lines 234–257; bacterialPhotosynthesisProcess.js line 134",
+          "evidence": "The chosen S. PCC 6803 scene calls details.synthase without a species/count parameter. The helper explicitly creates ten twin-helix c-subunit groups, the same geometry used for E. coli and mitochondria.",
+          "whyWrong": "An exact c10 architecture is unsupported for this specified cyanobacterium; the directly accessed S. 6803 primary paper refers to a reported c14 ring, and comparative cyanobacterial primary measurements establish variable c13–c15 rings. A fixed visible subunit count is a structural claim even though moving particle counts are disclaimed.",
+          "fix": "Resolve and cite the declared strain’s ring count and pass it to the helper (the accessed literature supports investigating c14), or use a deliberately unresolved count with clear scope. Do not infer H+/ATP from the current ten-repeat convenience geometry.",
+          "verification": "Count the visible c hairpins against the chosen strain’s cited structure/measurement; preserve membrane insertion, cytoplasmic F1 and dark control. If a numerical H+/ATP ratio is later introduced, include the actual c count and three F1 catalytic sites.",
+          "sourceUrls": [
+            "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8390522/fullTextXML",
+            "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:17545285&format=json&resultType=core"
+          ]
+        }
+      ],
+      "limitations": [
+        "Confidence in the unsupported c10 finding is high; the exact replacement c14 is supported by a primary paper citing an earlier measurement, but that earlier fulltext was unavailable in this audit. Verify its strain table before implementing a species-specific exact count.",
+        "Respiration, cyclic electron flow, ATP/NADPH balancing and carbon fixation are explicitly outside this selected linear-light-reaction lesson.",
+        "Only representative rendering plus code/update coverage, not browser acceptance."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "photosynthesis",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Legacy higher-plant chloroplast overview: light capture, thylakoid light reactions, stromal Calvin cycle and energy-carrier return. No controls.",
+      "checks": [
+        "Read all 825 source lines, geometry helpers, all six stages, labels and zh/en intro/legend. Exercised stage and intermediate/end states headlessly; inspected /tmp/atlas-refinement/photosynthesis.png.",
+        "Two chloroplast envelope membranes enclose grana/thylakoids and stroma. PSII/OEC and PSI/F1 orientation were checked against the actual top-disc coordinates, rather than assuming the global y plane is the thylakoid lumen.",
+        "The plant-specific ATP synthase uses a c14 ring, unlike the new shared c10 helper. PSII dimer/OEC, PSI antenna and stromal Rubisco are distinguishable schematic assemblies.",
+        "Water/O2 is assigned to PSII light reactions; NADPH comes from the PSI side and ATP from the synthase side. Both feed stromal carbon fixation; CO2 supplies carbon, G3P is the output, and ADP/Pi/NADP+ return.",
+        "The arrows are explicitly reaction relationships rather than literal particle paths or stoichiometric counts. Cumulative stage activation does not teach a cell-wide sequential clock or a dark-only Calvin cycle.",
+        "No confirmed science defect found within this overview scope. It does not claim to resolve the detailed electron chain or proton stoichiometry."
+      ],
+      "sources": [
+        {
+          "url": "https://openstax.org/books/biology-2e/pages/8-2-the-light-dependent-reactions-of-photosynthesis",
+          "title": "OpenStax Biology 2e 8.2 — Light-dependent reactions",
+          "supports": "Opened and read light-reaction diagram/text: water oxidation, lumenal proton accumulation, lumen-to-stroma proton return and stromal ATP/NADPH production."
+        },
+        {
+          "url": "https://openstax.org/books/biology-2e/pages/8-3-using-light-energy-to-make-organic-molecules",
+          "title": "OpenStax Biology 2e 8.3 — Calvin cycle",
+          "supports": "Opened and read fixation/reduction/regeneration sections: CO2, ATP/NADPH use, G3P output and energy-carrier recycling."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/6TQJ",
+          "title": "RCSB 6TQJ — Spinach chloroplast ATP synthase c14 ring",
+          "supports": "Opened primary structural entry confirming the chloroplast c14 exemplar is biologically grounded."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Qualified pass for the declared overview, not an atomistic or quantitative model. Stylized protein folds and thylakoid connections do not establish structural coordinates.",
+        "Detailed cytochrome b6f/Q-cycle, a/c half channels and explicit proton/electron trajectories are not resolved; no numerical energy yield should be inferred from arrows or glow.",
+        "No browser interaction audit; one representative image plus source/headless update checks."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

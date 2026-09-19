@@ -1,0 +1,3048 @@
+{
+  "date": "2026-09-18",
+  "scope": {
+    "uniqueVisualModels": 120,
+    "automaticRoutes": 198,
+    "historicalWholeExplodedPairs": 45,
+    "currentExplodableModels": 41,
+    "targetedFinalChecks": 15,
+    "mobileEnglishChecks": 9,
+    "productionSmokeChecks": 4
+  },
+  "defaultChecks": [
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "",
+      "heading": "细菌",
+      "mode": "section",
+      "node": "bacterium",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterium",
+      "path": "bacterium",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细菌表面的一小块",
+      "heading": "细菌的外层结构",
+      "mode": "whole",
+      "node": "bacterialEnvelope",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterialEnvelope",
+      "path": "bacterium/bacterialEnvelope",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细菌最外侧的膜 · 局部放大",
+      "heading": "外膜",
+      "mode": "whole",
+      "node": "bacterialOuter",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterialOuter",
+      "path": "bacterium/bacterialEnvelope/bacterialOuter",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "外膜的一部分 · 放大观察",
+      "heading": "脂多糖",
+      "mode": "whole",
+      "node": "lps",
+      "overflow": false,
+      "width": 988,
+      "id": "lps",
+      "path": "bacterium/bacterialEnvelope/bacterialOuter/lps",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "外膜的一部分 · 放大观察",
+      "heading": "孔蛋白",
+      "mode": "whole",
+      "node": "porin",
+      "overflow": false,
+      "width": 988,
+      "id": "porin",
+      "path": "bacterium/bacterialEnvelope/bacterialOuter/porin",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细菌细胞壁中的网状材料",
+      "heading": "肽聚糖（细胞壁）",
+      "mode": "whole",
+      "node": "peptidoglycan",
+      "overflow": false,
+      "width": 988,
+      "id": "peptidoglycan",
+      "path": "bacterium/bacterialEnvelope/peptidoglycan",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细菌细胞质外的膜 · 局部放大",
+      "heading": "细胞膜",
+      "mode": "whole",
+      "node": "bacterialMembrane",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterialMembrane",
+      "path": "bacterium/bacterialEnvelope/bacterialMembrane",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞膜的一部分 · 放大观察",
+      "heading": "F型ATP合酶",
+      "mode": "whole",
+      "node": "bacterialATPase",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterialATPase",
+      "path": "bacterium/bacterialEnvelope/bacterialMembrane/bacterialATPase",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细菌内部 · 没有核膜的DNA区域",
+      "heading": "拟核",
+      "mode": "whole",
+      "node": "nucleoid",
+      "overflow": false,
+      "width": 988,
+      "id": "nucleoid",
+      "path": "bacterium/nucleoid",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "拟核的一部分 · 放大观察",
+      "heading": "DNA片段",
+      "mode": "whole",
+      "node": "bacterialDNA",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterialDNA",
+      "path": "bacterium/nucleoid/bacterialDNA",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "拟核的一部分 · 放大观察",
+      "heading": "拟核相关蛋白",
+      "mode": "whole",
+      "node": "nucleoidProteins",
+      "overflow": false,
+      "width": 988,
+      "id": "nucleoidProteins",
+      "path": "bacterium/nucleoid/nucleoidProteins",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细菌内部 · 染色体以外的DNA",
+      "heading": "质粒",
+      "mode": "whole",
+      "node": "plasmids",
+      "overflow": false,
+      "width": 988,
+      "id": "plasmids",
+      "path": "bacterium/plasmids",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细菌的一部分 · 放大观察",
+      "heading": "70S核糖体",
+      "mode": "whole",
+      "node": "bacterialRibosome",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterialRibosome",
+      "path": "bacterium/bacterialRibosome",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "70S核糖体的一部分 · 放大观察",
+      "heading": "50S大亚基",
+      "mode": "whole",
+      "node": "bacterial50S",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterial50S",
+      "path": "bacterium/bacterialRibosome/bacterial50S",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "70S核糖体的一部分 · 放大观察",
+      "heading": "30S小亚基",
+      "mode": "whole",
+      "node": "bacterial30S",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterial30S",
+      "path": "bacterium/bacterialRibosome/bacterial30S",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细菌的一部分 · 放大观察",
+      "heading": "细胞质",
+      "mode": "whole",
+      "node": "bacterialCytoplasm",
+      "overflow": false,
+      "width": 988,
+      "id": "bacterialCytoplasm",
+      "path": "bacterium/bacterialCytoplasm",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细菌表面的一根黏附菌毛",
+      "heading": "菌毛",
+      "mode": "whole",
+      "node": "pili",
+      "overflow": false,
+      "width": 988,
+      "id": "pili",
+      "path": "bacterium/pili",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "菌毛的一部分 · 放大观察",
+      "heading": "菌毛杆",
+      "mode": "whole",
+      "node": "pilusRod",
+      "overflow": false,
+      "width": 988,
+      "id": "pilusRod",
+      "path": "bacterium/pili/pilusRod",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "菌毛的一部分 · 放大观察",
+      "heading": "黏附尖端",
+      "mode": "whole",
+      "node": "pilusTip",
+      "overflow": false,
+      "width": 988,
+      "id": "pilusTip",
+      "path": "bacterium/pili/pilusTip",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细菌表面的一根运动鞭毛",
+      "heading": "鞭毛",
+      "mode": "section",
+      "node": "flagellum",
+      "overflow": false,
+      "width": 988,
+      "id": "flagellum",
+      "path": "bacterium/flagellum",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "鞭毛的一部分 · 放大观察",
+      "heading": "鞭毛丝",
+      "mode": "section",
+      "node": "flagellarFilament",
+      "overflow": false,
+      "width": 988,
+      "id": "flagellarFilament",
+      "path": "bacterium/flagellum/flagellarFilament",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "鞭毛的一部分 · 放大观察",
+      "heading": "弯钩",
+      "mode": "section",
+      "node": "flagellarHook",
+      "overflow": false,
+      "width": 988,
+      "id": "flagellarHook",
+      "path": "bacterium/flagellum/flagellarHook",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "鞭毛的一部分 · 放大观察",
+      "heading": "基部马达",
+      "mode": "section",
+      "node": "flagellarMotor",
+      "overflow": false,
+      "width": 988,
+      "id": "flagellarMotor",
+      "path": "bacterium/flagellum/flagellarMotor",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "基部马达的一部分 · 放大观察",
+      "heading": "转子与C环",
+      "mode": "section",
+      "node": "motorRotor",
+      "overflow": false,
+      "width": 988,
+      "id": "motorRotor",
+      "path": "bacterium/flagellum/flagellarMotor/motorRotor",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "基部马达的一部分 · 放大观察",
+      "heading": "杆与LP支承环",
+      "mode": "section",
+      "node": "motorBushing",
+      "overflow": false,
+      "width": 988,
+      "id": "motorBushing",
+      "path": "bacterium/flagellum/flagellarMotor/motorBushing",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "基部马达的一部分 · 放大观察",
+      "heading": "定子复合体",
+      "mode": "whole",
+      "node": "motorStator",
+      "overflow": false,
+      "width": 988,
+      "id": "motorStator",
+      "path": "bacterium/flagellum/flagellarMotor/motorStator",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "",
+      "heading": "植物细胞",
+      "mode": "section",
+      "node": "plant",
+      "overflow": false,
+      "width": 988,
+      "id": "plant",
+      "path": "plant",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "植物细胞最外侧的壁 · 局部放大",
+      "heading": "细胞壁",
+      "mode": "section",
+      "node": "cellWall",
+      "overflow": false,
+      "width": 988,
+      "id": "cellWall",
+      "path": "plant/cellWall",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞壁的一部分 · 放大观察",
+      "heading": "纤维素微纤丝",
+      "mode": "whole",
+      "node": "cellulose",
+      "overflow": false,
+      "width": 988,
+      "id": "cellulose",
+      "path": "plant/cellWall/cellulose",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "纤维素微纤丝的一部分 · 放大观察",
+      "heading": "β-葡聚糖链",
+      "mode": "whole",
+      "node": "glucanChain",
+      "overflow": false,
+      "width": 988,
+      "id": "glucanChain",
+      "path": "plant/cellWall/cellulose/glucanChain",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞壁的一部分 · 放大观察",
+      "heading": "壁内多糖基质",
+      "mode": "whole",
+      "node": "wallMatrix",
+      "overflow": false,
+      "width": 988,
+      "id": "wallMatrix",
+      "path": "plant/cellWall/wallMatrix",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "相邻植物细胞间的一条通道",
+      "heading": "胞间连丝",
+      "mode": "section",
+      "node": "plasmodesmata",
+      "overflow": false,
+      "width": 988,
+      "id": "plasmodesmata",
+      "path": "plant/cellWall/plasmodesmata",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "胞间连丝的一部分 · 放大观察",
+      "heading": "通道膜衬层",
+      "mode": "section",
+      "node": "pdMembrane",
+      "overflow": false,
+      "width": 988,
+      "id": "pdMembrane",
+      "path": "plant/cellWall/plasmodesmata/pdMembrane",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "胞间连丝的一部分 · 放大观察",
+      "heading": "连丝微管",
+      "mode": "whole",
+      "node": "pdDesmotubule",
+      "overflow": false,
+      "width": 988,
+      "id": "pdDesmotubule",
+      "path": "plant/cellWall/plasmodesmata/pdDesmotubule",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "植物细胞壁内侧的膜 · 局部放大",
+      "heading": "细胞膜",
+      "mode": "whole",
+      "node": "plantMembrane",
+      "overflow": false,
+      "width": 988,
+      "id": "plantMembrane",
+      "path": "plant/plantMembrane",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞膜的一部分 · 放大观察",
+      "heading": "质膜H⁺泵",
+      "mode": "whole",
+      "node": "plasmaPump",
+      "overflow": false,
+      "width": 988,
+      "id": "plasmaPump",
+      "path": "plant/plantMembrane/plasmaPump",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞膜的一部分 · 放大观察",
+      "heading": "水通道蛋白",
+      "mode": "whole",
+      "node": "plantAquaporin",
+      "overflow": false,
+      "width": 988,
+      "id": "plantAquaporin",
+      "path": "plant/plantMembrane/plantAquaporin",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "植物细胞的一部分 · 放大观察",
+      "heading": "中央液泡",
+      "mode": "section",
+      "node": "vacuole",
+      "overflow": false,
+      "width": 988,
+      "id": "vacuole",
+      "path": "plant/vacuole",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "包围液泡的膜 · 局部放大",
+      "heading": "液泡膜",
+      "mode": "whole",
+      "node": "tonoplast",
+      "overflow": false,
+      "width": 988,
+      "id": "tonoplast",
+      "path": "plant/vacuole/tonoplast",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "液泡膜的一部分 · 放大观察",
+      "heading": "液泡V-ATPase",
+      "mode": "whole",
+      "node": "vacuolarPump",
+      "overflow": false,
+      "width": 988,
+      "id": "vacuolarPump",
+      "path": "plant/vacuole/tonoplast/vacuolarPump",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "中央液泡的一部分 · 放大观察",
+      "heading": "细胞液",
+      "mode": "whole",
+      "node": "cellSap",
+      "overflow": false,
+      "width": 988,
+      "id": "cellSap",
+      "path": "plant/vacuole/cellSap",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "植物细胞内部的一个叶绿体",
+      "heading": "叶绿体",
+      "mode": "section",
+      "node": "chloroplast",
+      "overflow": false,
+      "width": 988,
+      "id": "chloroplast",
+      "path": "plant/chloroplast",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "叶绿体的一部分 · 放大观察",
+      "heading": "叶绿体被膜",
+      "mode": "section",
+      "node": "chloroplastEnvelope",
+      "overflow": false,
+      "width": 988,
+      "id": "chloroplastEnvelope",
+      "path": "plant/chloroplast/chloroplastEnvelope",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "叶绿体内部相互连通的膜囊",
+      "heading": "类囊体系统",
+      "mode": "section",
+      "node": "thylakoids",
+      "overflow": false,
+      "width": 988,
+      "id": "thylakoids",
+      "path": "plant/chloroplast/thylakoids",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "类囊体系统中的一处堆叠",
+      "heading": "基粒",
+      "mode": "section",
+      "node": "granum",
+      "overflow": false,
+      "width": 988,
+      "id": "granum",
+      "path": "plant/chloroplast/thylakoids/granum",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "连接基粒的片层 · 保留两侧基粒作参照",
+      "heading": "基质片层",
+      "mode": "section",
+      "node": "stromaLamella",
+      "overflow": false,
+      "width": 988,
+      "id": "stromaLamella",
+      "path": "plant/chloroplast/thylakoids/stromaLamella",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "叶绿体的一部分 · 放大观察",
+      "heading": "叶绿体基质",
+      "mode": "whole",
+      "node": "stroma",
+      "overflow": false,
+      "width": 988,
+      "id": "stroma",
+      "path": "plant/chloroplast/stroma",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "叶绿体基质的一部分 · 放大观察",
+      "heading": "叶绿体DNA",
+      "mode": "whole",
+      "node": "plastidDNA",
+      "overflow": false,
+      "width": 988,
+      "id": "plastidDNA",
+      "path": "plant/chloroplast/stroma/plastidDNA",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "叶绿体基质的一部分 · 放大观察",
+      "heading": "Rubisco",
+      "mode": "whole",
+      "node": "rubisco",
+      "overflow": false,
+      "width": 988,
+      "id": "rubisco",
+      "path": "plant/chloroplast/stroma/rubisco",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "植物细胞的一部分 · 放大观察",
+      "heading": "细胞核",
+      "mode": "section",
+      "node": "plantNucleus",
+      "overflow": false,
+      "width": 988,
+      "id": "plantNucleus",
+      "path": "plant/plantNucleus",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "植物细胞的一部分 · 放大观察",
+      "heading": "线粒体",
+      "mode": "section",
+      "node": "plantMitochondria",
+      "overflow": false,
+      "width": 988,
+      "id": "plantMitochondria",
+      "path": "plant/plantMitochondria",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "线粒体的一部分 · 放大观察",
+      "heading": "线粒体基质",
+      "mode": "whole",
+      "node": "plantMatrix",
+      "overflow": false,
+      "width": 988,
+      "id": "plantMatrix",
+      "path": "plant/plantMitochondria/plantMatrix",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "植物细胞的一部分 · 放大观察",
+      "heading": "内质网",
+      "mode": "section",
+      "node": "plantER",
+      "overflow": false,
+      "width": 988,
+      "id": "plantER",
+      "path": "plant/plantER",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "内质网的一部分 · 放大观察",
+      "heading": "膜囊与腔",
+      "mode": "section",
+      "node": "plantCisternae",
+      "overflow": false,
+      "width": 988,
+      "id": "plantCisternae",
+      "path": "plant/plantER/plantCisternae",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "内质网的一部分 · 放大观察",
+      "heading": "细胞质核糖体",
+      "mode": "whole",
+      "node": "plantRibosome",
+      "overflow": false,
+      "width": 988,
+      "id": "plantRibosome",
+      "path": "plant/plantER/plantRibosome",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞质核糖体的一部分 · 放大观察",
+      "heading": "60S大亚基",
+      "mode": "whole",
+      "node": "plant60S",
+      "overflow": false,
+      "width": 988,
+      "id": "plant60S",
+      "path": "plant/plantER/plantRibosome/plant60S",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞质核糖体的一部分 · 放大观察",
+      "heading": "40S小亚基",
+      "mode": "whole",
+      "node": "plant40S",
+      "overflow": false,
+      "width": 988,
+      "id": "plant40S",
+      "path": "plant/plantER/plantRibosome/plant40S",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "植物细胞的一部分 · 放大观察",
+      "heading": "高尔基体",
+      "mode": "section",
+      "node": "plantGolgi",
+      "overflow": false,
+      "width": 988,
+      "id": "plantGolgi",
+      "path": "plant/plantGolgi",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "植物细胞的一部分 · 放大观察",
+      "heading": "细胞质基质",
+      "mode": "whole",
+      "node": "plantCytoplasm",
+      "overflow": false,
+      "width": 988,
+      "id": "plantCytoplasm",
+      "path": "plant/plantCytoplasm",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "",
+      "heading": "动物细胞",
+      "mode": "section",
+      "node": "cell",
+      "overflow": false,
+      "width": 988,
+      "id": "cell",
+      "path": "cell",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "动物细胞表面的膜 · 局部放大",
+      "heading": "细胞膜",
+      "mode": "whole",
+      "node": "membrane",
+      "overflow": false,
+      "width": 988,
+      "id": "membrane",
+      "path": "cell/membrane",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞膜的一部分 · 放大观察",
+      "heading": "磷脂双分子层",
+      "mode": "whole",
+      "node": "bilayer",
+      "overflow": false,
+      "width": 988,
+      "id": "bilayer",
+      "path": "cell/membrane/bilayer",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞膜的一部分 · 放大观察",
+      "heading": "膜蛋白",
+      "mode": "whole",
+      "node": "membraneProteins",
+      "overflow": false,
+      "width": 988,
+      "id": "membraneProteins",
+      "path": "cell/membrane/membraneProteins",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞膜的一部分 · 放大观察",
+      "heading": "膜表面糖链",
+      "mode": "whole",
+      "node": "glycans",
+      "overflow": false,
+      "width": 988,
+      "id": "glycans",
+      "path": "cell/membrane/glycans",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "动物细胞的一部分 · 放大观察",
+      "heading": "细胞质",
+      "mode": "section",
+      "node": "cytoplasm",
+      "overflow": false,
+      "width": 988,
+      "id": "cytoplasm",
+      "path": "cell/cytoplasm",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "细胞质基质",
+      "mode": "whole",
+      "node": "cytosol",
+      "overflow": false,
+      "width": 988,
+      "id": "cytosol",
+      "path": "cell/cytoplasm/cytosol",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞质基质的一部分 · 放大观察",
+      "heading": "可溶性代谢酶",
+      "mode": "whole",
+      "node": "cytosolicEnzyme",
+      "overflow": false,
+      "width": 988,
+      "id": "cytosolicEnzyme",
+      "path": "cell/cytoplasm/cytosol/cytosolicEnzyme",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞质基质的一部分 · 放大观察",
+      "heading": "水与离子",
+      "mode": "whole",
+      "node": "waterIons",
+      "overflow": false,
+      "width": 988,
+      "id": "waterIons",
+      "path": "cell/cytoplasm/cytosol/waterIons",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "线粒体",
+      "mode": "section",
+      "node": "mitochondria",
+      "overflow": false,
+      "width": 988,
+      "id": "mitochondria",
+      "path": "cell/cytoplasm/mitochondria",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "线粒体的一部分 · 放大观察",
+      "heading": "外膜",
+      "mode": "section",
+      "node": "mitoOuter",
+      "overflow": false,
+      "width": 988,
+      "id": "mitoOuter",
+      "path": "cell/cytoplasm/mitochondria/mitoOuter",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "线粒体的一部分 · 放大观察",
+      "heading": "内膜",
+      "mode": "section",
+      "node": "mitoInner",
+      "overflow": false,
+      "width": 988,
+      "id": "mitoInner",
+      "path": "cell/cytoplasm/mitochondria/mitoInner",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "线粒体内膜的一处折叠",
+      "heading": "线粒体嵴",
+      "mode": "whole",
+      "node": "cristae",
+      "overflow": false,
+      "width": 988,
+      "id": "cristae",
+      "path": "cell/cytoplasm/mitochondria/mitoInner/cristae",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "内膜的一部分 · 放大观察",
+      "heading": "ATP 合酶",
+      "mode": "whole",
+      "node": "atpSynthase",
+      "overflow": false,
+      "width": 988,
+      "id": "atpSynthase",
+      "path": "cell/cytoplasm/mitochondria/mitoInner/atpSynthase",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "线粒体的一部分 · 放大观察",
+      "heading": "线粒体基质",
+      "mode": "whole",
+      "node": "matrix",
+      "overflow": false,
+      "width": 988,
+      "id": "matrix",
+      "path": "cell/cytoplasm/mitochondria/matrix",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "线粒体基质的一部分 · 放大观察",
+      "heading": "线粒体 DNA",
+      "mode": "whole",
+      "node": "mitoDNA",
+      "overflow": false,
+      "width": 988,
+      "id": "mitoDNA",
+      "path": "cell/cytoplasm/mitochondria/matrix/mitoDNA",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "粗面内质网",
+      "mode": "section",
+      "node": "roughER",
+      "overflow": false,
+      "width": 988,
+      "id": "roughER",
+      "path": "cell/cytoplasm/roughER",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "粗面内质网的一部分 · 放大观察",
+      "heading": "膜囊与腔",
+      "mode": "section",
+      "node": "erCisternae",
+      "overflow": false,
+      "width": 988,
+      "id": "erCisternae",
+      "path": "cell/cytoplasm/roughER/erCisternae",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "粗面内质网的一部分 · 放大观察",
+      "heading": "附着核糖体",
+      "mode": "whole",
+      "node": "boundRibosomes",
+      "overflow": false,
+      "width": 988,
+      "id": "boundRibosomes",
+      "path": "cell/cytoplasm/roughER/boundRibosomes",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "附着核糖体的一部分 · 放大观察",
+      "heading": "大亚基",
+      "mode": "whole",
+      "node": "largeSubunit",
+      "overflow": false,
+      "width": 988,
+      "id": "largeSubunit",
+      "path": "cell/cytoplasm/roughER/boundRibosomes/largeSubunit",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "附着核糖体的一部分 · 放大观察",
+      "heading": "小亚基",
+      "mode": "whole",
+      "node": "smallSubunit",
+      "overflow": false,
+      "width": 988,
+      "id": "smallSubunit",
+      "path": "cell/cytoplasm/roughER/boundRibosomes/smallSubunit",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "附着核糖体的一部分 · 放大观察",
+      "heading": "mRNA",
+      "mode": "whole",
+      "node": "mrna",
+      "overflow": false,
+      "width": 988,
+      "id": "mrna",
+      "path": "cell/cytoplasm/roughER/boundRibosomes/mrna",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "附着核糖体的一部分 · 放大观察",
+      "heading": "tRNA",
+      "mode": "whole",
+      "node": "trna",
+      "overflow": false,
+      "width": 988,
+      "id": "trna",
+      "path": "cell/cytoplasm/roughER/boundRibosomes/trna",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "光面内质网",
+      "mode": "section",
+      "node": "smoothER",
+      "overflow": false,
+      "width": 988,
+      "id": "smoothER",
+      "path": "cell/cytoplasm/smoothER",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "光面内质网的一部分 · 放大观察",
+      "heading": "管状膜网络",
+      "mode": "section",
+      "node": "erTubules",
+      "overflow": false,
+      "width": 988,
+      "id": "erTubules",
+      "path": "cell/cytoplasm/smoothER/erTubules",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "高尔基体",
+      "mode": "section",
+      "node": "golgi",
+      "overflow": false,
+      "width": 988,
+      "id": "golgi",
+      "path": "cell/cytoplasm/golgi",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "高尔基体的一部分 · 放大观察",
+      "heading": "扁平膜囊",
+      "mode": "section",
+      "node": "golgiCisternae",
+      "overflow": false,
+      "width": 988,
+      "id": "golgiCisternae",
+      "path": "cell/cytoplasm/golgi/golgiCisternae",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "高尔基体的一部分 · 放大观察",
+      "heading": "运输囊泡",
+      "mode": "section",
+      "node": "vesicles",
+      "overflow": false,
+      "width": 988,
+      "id": "vesicles",
+      "path": "cell/cytoplasm/golgi/vesicles",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "运输囊泡的一部分 · 放大观察",
+      "heading": "囊泡膜",
+      "mode": "section",
+      "node": "vesicleMembrane",
+      "overflow": false,
+      "width": 988,
+      "id": "vesicleMembrane",
+      "path": "cell/cytoplasm/golgi/vesicles/vesicleMembrane",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "运输囊泡的一部分 · 放大观察",
+      "heading": "运输货物",
+      "mode": "whole",
+      "node": "cargo",
+      "overflow": false,
+      "width": 988,
+      "id": "cargo",
+      "path": "cell/cytoplasm/golgi/vesicles/cargo",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "核糖体",
+      "mode": "whole",
+      "node": "ribosomes",
+      "overflow": false,
+      "width": 988,
+      "id": "ribosomes",
+      "path": "cell/cytoplasm/ribosomes",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "溶酶体",
+      "mode": "section",
+      "node": "lysosome",
+      "overflow": false,
+      "width": 988,
+      "id": "lysosome",
+      "path": "cell/cytoplasm/lysosome",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "溶酶体的一部分 · 放大观察",
+      "heading": "溶酶体膜",
+      "mode": "whole",
+      "node": "lysosomalMembrane",
+      "overflow": false,
+      "width": 988,
+      "id": "lysosomalMembrane",
+      "path": "cell/cytoplasm/lysosome/lysosomalMembrane",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "溶酶体膜的一部分 · 放大观察",
+      "heading": "质子泵",
+      "mode": "whole",
+      "node": "lysosomalPump",
+      "overflow": false,
+      "width": 988,
+      "id": "lysosomalPump",
+      "path": "cell/cytoplasm/lysosome/lysosomalMembrane/lysosomalPump",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "溶酶体的一部分 · 放大观察",
+      "heading": "酸性水解酶",
+      "mode": "whole",
+      "node": "hydrolases",
+      "overflow": false,
+      "width": 988,
+      "id": "hydrolases",
+      "path": "cell/cytoplasm/lysosome/hydrolases",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "溶酶体的一部分 · 放大观察",
+      "heading": "回收材料",
+      "mode": "whole",
+      "node": "recycling",
+      "overflow": false,
+      "width": 988,
+      "id": "recycling",
+      "path": "cell/cytoplasm/lysosome/recycling",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "过氧化物酶体",
+      "mode": "section",
+      "node": "peroxisome",
+      "overflow": false,
+      "width": 988,
+      "id": "peroxisome",
+      "path": "cell/cytoplasm/peroxisome",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "过氧化物酶体的一部分 · 放大观察",
+      "heading": "过氧化物酶体膜",
+      "mode": "whole",
+      "node": "peroxisomalMembrane",
+      "overflow": false,
+      "width": 988,
+      "id": "peroxisomalMembrane",
+      "path": "cell/cytoplasm/peroxisome/peroxisomalMembrane",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "过氧化物酶体的一部分 · 放大观察",
+      "heading": "氧化酶与过氧化氢酶",
+      "mode": "whole",
+      "node": "oxidativeEnzymes",
+      "overflow": false,
+      "width": 988,
+      "id": "oxidativeEnzymes",
+      "path": "cell/cytoplasm/peroxisome/oxidativeEnzymes",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "氧化酶与过氧化氢酶的一部分 · 放大观察",
+      "heading": "过氧化氢酶",
+      "mode": "whole",
+      "node": "catalase",
+      "overflow": false,
+      "width": 988,
+      "id": "catalase",
+      "path": "cell/cytoplasm/peroxisome/oxidativeEnzymes/catalase",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "氧化酶与过氧化氢酶的一部分 · 放大观察",
+      "heading": "脂酰辅酶A氧化酶",
+      "mode": "whole",
+      "node": "acylCoAOxidase",
+      "overflow": false,
+      "width": 988,
+      "id": "acylCoAOxidase",
+      "path": "cell/cytoplasm/peroxisome/oxidativeEnzymes/acylCoAOxidase",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "中心体",
+      "mode": "whole",
+      "node": "centrosome",
+      "overflow": false,
+      "width": 988,
+      "id": "centrosome",
+      "path": "cell/cytoplasm/centrosome",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "中心体的一部分 · 放大观察",
+      "heading": "中心粒",
+      "mode": "whole",
+      "node": "centrioles",
+      "overflow": false,
+      "width": 988,
+      "id": "centrioles",
+      "path": "cell/cytoplasm/centrosome/centrioles",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "中心粒的一部分 · 放大观察",
+      "heading": "微管三联体",
+      "mode": "whole",
+      "node": "triplets",
+      "overflow": false,
+      "width": 988,
+      "id": "triplets",
+      "path": "cell/cytoplasm/centrosome/centrioles/triplets",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "中心体的一部分 · 放大观察",
+      "heading": "中心粒周围物质",
+      "mode": "whole",
+      "node": "pcm",
+      "overflow": false,
+      "width": 988,
+      "id": "pcm",
+      "path": "cell/cytoplasm/centrosome/pcm",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞质的一部分 · 放大观察",
+      "heading": "细胞骨架",
+      "mode": "whole",
+      "node": "cytoskeleton",
+      "overflow": false,
+      "width": 988,
+      "id": "cytoskeleton",
+      "path": "cell/cytoplasm/cytoskeleton",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞骨架的一部分 · 放大观察",
+      "heading": "微管",
+      "mode": "whole",
+      "node": "microtubules",
+      "overflow": false,
+      "width": 988,
+      "id": "microtubules",
+      "path": "cell/cytoplasm/cytoskeleton/microtubules",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "微管的一部分 · 放大观察",
+      "heading": "微管蛋白二聚体",
+      "mode": "whole",
+      "node": "tubulinDimer",
+      "overflow": false,
+      "width": 988,
+      "id": "tubulinDimer",
+      "path": "cell/cytoplasm/cytoskeleton/microtubules/tubulinDimer",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞骨架的一部分 · 放大观察",
+      "heading": "肌动蛋白丝",
+      "mode": "whole",
+      "node": "actin",
+      "overflow": false,
+      "width": 988,
+      "id": "actin",
+      "path": "cell/cytoplasm/cytoskeleton/actin",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞骨架的一部分 · 放大观察",
+      "heading": "中间丝",
+      "mode": "whole",
+      "node": "intermediate",
+      "overflow": false,
+      "width": 988,
+      "id": "intermediate",
+      "path": "cell/cytoplasm/cytoskeleton/intermediate",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "中间丝的一部分 · 放大观察",
+      "heading": "反向平行四聚体",
+      "mode": "whole",
+      "node": "intermediateTetramer",
+      "overflow": false,
+      "width": 988,
+      "id": "intermediateTetramer",
+      "path": "cell/cytoplasm/cytoskeleton/intermediate/intermediateTetramer",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "动物细胞的一部分 · 放大观察",
+      "heading": "细胞核",
+      "mode": "section",
+      "node": "nucleus",
+      "overflow": false,
+      "width": 988,
+      "id": "nucleus",
+      "path": "cell/nucleus",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞核表面的双膜 · 局部放大",
+      "heading": "核被膜",
+      "mode": "whole",
+      "node": "envelope",
+      "overflow": false,
+      "width": 988,
+      "id": "envelope",
+      "path": "cell/nucleus/envelope",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "核被膜的一部分 · 放大观察",
+      "heading": "外核膜",
+      "mode": "whole",
+      "node": "outerNuclear",
+      "overflow": false,
+      "width": 988,
+      "id": "outerNuclear",
+      "path": "cell/nucleus/envelope/outerNuclear",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "核被膜的一部分 · 放大观察",
+      "heading": "内核膜",
+      "mode": "whole",
+      "node": "innerNuclear",
+      "overflow": false,
+      "width": 988,
+      "id": "innerNuclear",
+      "path": "cell/nucleus/envelope/innerNuclear",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "细胞核的一部分 · 放大观察",
+      "heading": "核孔复合体",
+      "mode": "whole",
+      "node": "nuclearPores",
+      "overflow": false,
+      "width": 988,
+      "id": "nuclearPores",
+      "path": "cell/nucleus/nuclearPores",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "细胞核的一部分 · 放大观察",
+      "heading": "染色质",
+      "mode": "whole",
+      "node": "chromatin",
+      "overflow": false,
+      "width": 988,
+      "id": "chromatin",
+      "path": "cell/nucleus/chromatin",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "true",
+          "text": "组装"
+        },
+        {
+          "pressed": "false",
+          "text": "拆解"
+        }
+      ],
+      "context": "染色质的一部分 · 放大观察",
+      "heading": "核小体",
+      "mode": "whole",
+      "node": "nucleosome",
+      "overflow": false,
+      "width": 988,
+      "id": "nucleosome",
+      "path": "cell/nucleus/chromatin/nucleosome",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "核小体的一部分 · 放大观察",
+      "heading": "组蛋白核心",
+      "mode": "whole",
+      "node": "histones",
+      "overflow": false,
+      "width": 988,
+      "id": "histones",
+      "path": "cell/nucleus/chromatin/nucleosome/histones",
+      "pass": true
+    },
+    {
+      "buttons": [],
+      "context": "核小体的一部分 · 放大观察",
+      "heading": "DNA 双螺旋",
+      "mode": "whole",
+      "node": "dna",
+      "overflow": false,
+      "width": 988,
+      "id": "dna",
+      "path": "cell/nucleus/chromatin/nucleosome/dna",
+      "pass": true
+    },
+    {
+      "buttons": [
+        {
+          "pressed": "false",
+          "text": "完整"
+        },
+        {
+          "pressed": "true",
+          "text": "剖面"
+        }
+      ],
+      "context": "细胞核的一部分 · 放大观察",
+      "heading": "核仁",
+      "mode": "section",
+      "node": "nucleolus",
+      "overflow": false,
+      "width": 988,
+      "id": "nucleolus",
+      "path": "cell/nucleus/nucleolus",
+      "pass": true
+    }
+  ],
+  "modeChecksBeforeLabelPolicyChange": [
+    {
+      "id": "bacterium",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "bacterium",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "bacterialEnvelope",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "bacterialEnvelope",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "bacterialOuter",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "bacterialOuter",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "bacterialMembrane",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "bacterialMembrane",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "nucleoid",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "nucleoid",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "bacterialRibosome",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "bacterialRibosome",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "pili",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "pili",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "flagellum",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "flagellum",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "flagellarMotor",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "flagellarMotor",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "plant",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "plant",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "cellWall",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "cellWall",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "plasmodesmata",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "plasmodesmata",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "plantMembrane",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "plantMembrane",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "vacuole",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "vacuole",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "tonoplast",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "tonoplast",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "chloroplast",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "chloroplast",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "thylakoids",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "thylakoids",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "stroma",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "stroma",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "plantNucleus",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "plantNucleus",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "plantMitochondria",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "plantMitochondria",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "plantER",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "plantER",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "plantRibosome",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "plantRibosome",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "plantGolgi",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "plantGolgi",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "cell",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "cell",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "membrane",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "membrane",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "cytoplasm",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "cytoplasm",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "cytosol",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "cytosol",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "mitochondria",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "mitochondria",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "mitoInner",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "mitoInner",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "matrix",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "matrix",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "roughER",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "roughER",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "boundRibosomes",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "boundRibosomes",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "golgi",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "golgi",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "vesicles",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "vesicles",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "ribosomes",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "ribosomes",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "lysosome",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "lysosome",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "lysosomalMembrane",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "lysosomalMembrane",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "peroxisome",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "peroxisome",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "oxidativeEnzymes",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "oxidativeEnzymes",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "centrosome",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "centrosome",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "cytoskeleton",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "cytoskeleton",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "nucleus",
+      "mode": "whole",
+      "pressed": "完整",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "nucleus",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "envelope",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "envelope",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "chromatin",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "chromatin",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    },
+    {
+      "id": "nucleosome",
+      "mode": "whole",
+      "pressed": "组装",
+      "separation": false,
+      "pass": true
+    },
+    {
+      "id": "nucleosome",
+      "mode": "explode",
+      "pressed": "拆解",
+      "separation": true,
+      "pass": true
+    }
+  ],
+  "finalTargetedChecks": [
+    {
+      "context": "细菌表面的一小块",
+      "controls": [
+        "整体",
+        "拆解"
+      ],
+      "heading": "细菌的外层结构",
+      "id": "bacterialEnvelope",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "植物线粒体基质中的分子样本",
+      "controls": [],
+      "heading": "线粒体基质",
+      "id": "plantMatrix",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "连接基粒的片层 · 保留两侧基粒作参照",
+      "controls": [
+        "整体",
+        "剖面"
+      ],
+      "heading": "基质片层",
+      "id": "stromaLamella",
+      "mode": "section",
+      "overflow": false
+    },
+    {
+      "context": "溶酶体膜上的一个质子泵",
+      "controls": [],
+      "heading": "质子泵",
+      "id": "lysosomalPump",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "植物细胞的一部分 · 放大观察",
+      "controls": [
+        "整体",
+        "剖面",
+        "拆解"
+      ],
+      "heading": "中央液泡",
+      "id": "vacuole",
+      "mode": "section",
+      "overflow": false
+    },
+    {
+      "context": "植物细胞的一部分 · 放大观察",
+      "controls": [
+        "整体",
+        "剖面",
+        "拆解"
+      ],
+      "heading": "内质网",
+      "id": "plantER",
+      "mode": "section",
+      "overflow": false
+    },
+    {
+      "context": "细胞质水相中的分子样本",
+      "controls": [],
+      "heading": "细胞质基质",
+      "id": "cytosol",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "叶绿体基质中的DNA与蛋白质样本",
+      "controls": [],
+      "heading": "叶绿体基质",
+      "id": "stroma",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "线粒体基质中的分子样本",
+      "controls": [],
+      "heading": "线粒体基质",
+      "id": "matrix",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "过氧化物酶体的一部分 · 放大观察",
+      "controls": [],
+      "heading": "氧化酶与过氧化氢酶",
+      "id": "oxidativeEnzymes",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "染色质的一小段 · 展开示意",
+      "controls": [
+        "整体",
+        "拆解"
+      ],
+      "heading": "染色质",
+      "id": "chromatin",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "溶酶体内待降解物与产物 · 过程示意",
+      "controls": [],
+      "heading": "回收材料",
+      "id": "recycling",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "细菌细胞质中的分子样本",
+      "controls": [],
+      "heading": "细胞质",
+      "id": "bacterialCytoplasm",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "植物细胞质水相中的分子样本",
+      "controls": [],
+      "heading": "细胞质基质",
+      "id": "plantCytoplasm",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "context": "液泡中的水与溶质 · 分子样本",
+      "controls": [],
+      "heading": "细胞液",
+      "id": "cellSap",
+      "mode": "whole",
+      "overflow": false
+    }
+  ],
+  "mobileEnglishChecks": [
+    {
+      "buttons": [
+        {
+          "fits": true,
+          "text": "Whole"
+        },
+        {
+          "fits": true,
+          "text": "Exploded"
+        }
+      ],
+      "context": "A patch of the bacterial surface",
+      "heading": "Cell envelope",
+      "id": "bacterialEnvelope",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "buttons": [
+        {
+          "fits": true,
+          "text": "Whole"
+        },
+        {
+          "fits": true,
+          "text": "Exploded"
+        }
+      ],
+      "context": "Part of Bacterium · Magnified view",
+      "heading": "70S ribosome",
+      "id": "bacterialRibosome",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "buttons": [
+        {
+          "fits": true,
+          "text": "Whole"
+        },
+        {
+          "fits": true,
+          "text": "Exploded"
+        }
+      ],
+      "context": "One adhesive pilus on the bacterial surface",
+      "heading": "Pili",
+      "id": "pili",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "buttons": [
+        {
+          "fits": true,
+          "text": "Whole"
+        },
+        {
+          "fits": true,
+          "text": "Exploded"
+        }
+      ],
+      "context": "Membrane inside the plant cell wall · Magnified patch",
+      "heading": "Plasma membrane",
+      "id": "plantMembrane",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "buttons": [
+        {
+          "fits": true,
+          "text": "Whole"
+        },
+        {
+          "fits": true,
+          "text": "Cutaway"
+        },
+        {
+          "fits": true,
+          "text": "Exploded"
+        }
+      ],
+      "context": "Part of Plant cell · Magnified view",
+      "heading": "Central vacuole",
+      "id": "vacuole",
+      "mode": "explode",
+      "overflow": false
+    },
+    {
+      "buttons": [
+        {
+          "fits": true,
+          "text": "Whole"
+        },
+        {
+          "fits": true,
+          "text": "Cutaway"
+        },
+        {
+          "fits": true,
+          "text": "Exploded"
+        }
+      ],
+      "context": "Part of Plant cell · Magnified view",
+      "heading": "Endoplasmic reticulum",
+      "id": "plantER",
+      "mode": "explode",
+      "overflow": false
+    },
+    {
+      "buttons": [
+        {
+          "fits": true,
+          "text": "Whole"
+        },
+        {
+          "fits": true,
+          "text": "Cutaway"
+        }
+      ],
+      "context": "Connecting lamellae · Grana retained for context",
+      "heading": "Stroma lamellae",
+      "id": "stromaLamella",
+      "mode": "section",
+      "overflow": false
+    },
+    {
+      "buttons": [],
+      "context": "One proton pump in the lysosomal membrane",
+      "heading": "Proton pump",
+      "id": "lysosomalPump",
+      "mode": "whole",
+      "overflow": false
+    },
+    {
+      "buttons": [
+        {
+          "fits": true,
+          "text": "Whole"
+        },
+        {
+          "fits": true,
+          "text": "Exploded"
+        }
+      ],
+      "context": "Part of Chromatin · Magnified view",
+      "heading": "Nucleosome",
+      "id": "nucleosome",
+      "mode": "whole",
+      "overflow": false
+    }
+  ],
+  "productionChecks": [
+    {
+      "heading": "Cell envelope",
+      "mode": "whole",
+      "node": "bacterialEnvelope"
+    },
+    {
+      "heading": "Plasma membrane",
+      "mode": "whole",
+      "node": "plantMembrane"
+    },
+    {
+      "heading": "Proton pump",
+      "mode": "whole",
+      "node": "lysosomalPump"
+    },
+    {
+      "heading": "Animal cell",
+      "mode": "section",
+      "node": "cell"
+    }
+  ],
+  "notes": [
+    "Mode records preserve labels used at capture time; final Whole label is 整体.",
+    "Removed explosion from four independent molecular samples after reviewing all 45 pairs.",
+    "Physical phone unavailable; narrow viewport with touch emulation only.",
+    "Full-page browser capture produced stitching artifacts; retained viewport capture is authoritative."
+  ]
+}

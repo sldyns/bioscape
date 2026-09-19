@@ -1,0 +1,83 @@
+{
+  "group": "rna",
+  "issues": [
+    {
+      "issueId": "rna-01",
+      "status": "fixed",
+      "changes": "保持第一步之前的5′剪接连接；使用实际第38个骨架顶点形成闭合套索。第一步后套索与外显子2保持共价连续，直到p=0.65外显子连接完成才开始释放套索。",
+      "files": [
+        "src/processes/modules/rna/rnaProcessingProcess.js",
+        "src/processes/modules/rna/science.test.mjs"
+      ],
+      "verification": [
+        "science.test.mjs PASS：cell/plant 每个root检查1005个时间点，直接读取圆柱网格及外显子管网格端点；验证46段内含子连续、第一步前5′连接、第二步前内含子–外显子2连接、分支闭合及连接后外显子连续。",
+        "原始p=0.60断裂反例现在由实际端点距离断言覆盖；恢复原插值会失败。",
+        "refinement.test.mjs PASS：全部root、有限缓冲、确定性跳转、稳定资源、材质完整及esbuild。"
+      ],
+      "limitations": [
+        "反应坐标为教学示意；不表示原子级反应轨迹、序列或定量链长。",
+        "本轮未操作浏览器；最终渲染视觉验收由root完成。"
+      ]
+    },
+    {
+      "issueId": "rna-02",
+      "status": "fixed",
+      "changes": "从单一椭圆中面沿单位法线偏移±0.085生成核孔膜叶层，消除原先两椭圆轴反向变化引起的交叉，保留双层膜、孔道和截面细节。",
+      "files": [
+        "src/processes/modules/rna/nuclearTransportProcess.js",
+        "src/processes/modules/rna/science.test.mjs"
+      ],
+      "verification": [
+        "science.test.mjs PASS：每个root读取实际三角网格57个角向截面，每截面19个顶点；穷举跨叶层线段交叉、自交，检查叶层顺序、0.17法向厚度及平膜连接端点。",
+        "cell/plant/yeast及NLS exposed/masked共6个组合，各1001个时间点检查实际货物网格顶点位于中央孔道内，masked分支保持胞质侧。",
+        "恢复审计中的原x/r公式会产生交叉并使实际膜面断言失败。",
+        "refinement.test.mjs PASS：全部root/controls、有限缓冲、确定性跳转、稳定资源及esbuild。"
+      ],
+      "limitations": [
+        "膜面是功能示意，不是某物种NPC的精确尺寸或实验结构拟合。",
+        "最终渲染视觉验收由root完成。"
+      ]
+    },
+    {
+      "issueId": "rna-03",
+      "status": "fixed",
+      "changes": "为dynein使用独立的10事件确定性轨迹，包含变步长、同一头连续步进及一次反向步；总运动朝微管负端。Kinesin保留规则交替步进。更新中英文阶段解释及哺乳动物dynein原始论文来源。",
+      "files": [
+        "src/processes/modules/rna/motorTransportProcess.js",
+        "src/processes/modules/rna/science.test.mjs"
+      ],
+      "verification": [
+        "science.test.mjs PASS：读取实际kinesin头与dynein微管结合柄端点；每事件检查5个中间时刻，支撑头世界坐标保持不动、移动头抬起、dynein连续同头/不同步长/反向步真实存在。",
+        "两种马达净位移分别+5.2/-5.2；ATP depleted两分支各1001个时间点实际头与货物沿轨道保持不动。",
+        "恢复共用交替脚步公式会使dynein轨迹差异、同头连续与反向事件断言失败。",
+        "refinement.test.mjs PASS：4种motor/ATP组合、有限缓冲、确定性跳转、稳定资源及esbuild。"
+      ],
+      "limitations": [
+        "轨迹是有科学依据的代表性例子，不编码测量概率、真实步长尺度、力或核苷酸动力学。",
+        "不声称每次dynein运行必须包含后退；最终渲染视觉验收由root完成。"
+      ]
+    }
+  ],
+  "unchangedModels": [
+    "organelleImport"
+  ],
+  "commands": [
+    "node src/processes/modules/rna/science.test.mjs — PASS (3 issue invariants)",
+    "node src/processes/modules/rna/refinement.test.mjs — PASS (4 models, all roots and controls, includes esbuild)",
+    "npx prettier --write src/processes/modules/rna/rnaProcessingProcess.js src/processes/modules/rna/nuclearTransportProcess.js src/processes/modules/rna/motorTransportProcess.js src/processes/modules/rna/science.test.mjs — PASS"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/28076345/",
+      "supports": "Fica et al. 2017：两步剪接、共价连接的lariat–3′ exon中间体；Phase A已实际打开。"
+    },
+    {
+      "url": "https://www.nature.com/articles/s41586-021-03985-3",
+      "supports": "Schuller et al. 2021：核孔处连续弯曲核膜；Phase A已实际打开。"
+    },
+    {
+      "url": "https://www.nature.com/articles/s41589-019-0352-0",
+      "supports": "Elshenawy et al. 2019：哺乳动物dynein–dynactin的变步长及后退/侧向步；Phase A已实际打开。"
+    }
+  ]
+}

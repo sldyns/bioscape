@@ -1,0 +1,159 @@
+{
+  "group": "energy",
+  "issues": [
+    {
+      "issueId": "energy-01",
+      "status": "fixed",
+      "changes": "The yeast branch no longer cuts either leaflet at the peripheral Ndi1 footprint. Other mitochondrial roots retain their occupied complex-I insertion site.",
+      "files": [
+        "src/processes/modules/energy/respirationProcess.js",
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Actual visible lipid-head instance positions match every expected lattice site on both leaflets in the old ellipse, with no missing or duplicate instances, over all stages and both coupling controls.",
+        "The animal branch retains the embedded complex I and its occupied insertion footprint.",
+        "Local finite-geometry, backward-seek, stable-resource and browser-target compilation regression passes."
+      ],
+      "limitations": [
+        "The lipid lattice and Ndi1 fold remain schematic; no atomic membrane contact or Q-binding-site conformation is claimed."
+      ]
+    },
+    {
+      "issueId": "energy-02",
+      "status": "fixed",
+      "changes": "Shared ATP synthase now requires an explicit supported cCount or null. Animal context chooses bovine-heart c8; S. cerevisiae uses c10. Arabidopsis and P. tetraurelia retain a continuous, unsegmented c-ring contour, shaft, a subunit, peripheral stator and alpha3beta3 head, with bilingual scope explaining why no exact count is claimed. Peer review additionally caught a c-hairpin loop side mismatch. Resolved c subunits now undergo a proper rigid 180-degree X rotation when F1 faces negative Y; no coordinate reflection is used.",
+      "files": [
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/respirationProcess.js",
+        "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Test counts actual visible twin-helix c-subunit groups and their angular distribution: animal 8 and yeast 10; each group contains two helix meshes plus connecting loop.",
+        "Plant/paramecium geometry contains an actual continuous LatheGeometry contour of membrane-spanning height and zero resolved c-subunit groups.",
+        "Six visible F1 lobes remain on the matrix side; all mitochondrial coupling branches are exercised.",
+        "E. coli is explicitly passed its supported c10 count to eliminate an accidental helper default.",
+        "Peer follow-up: every actual connecting-loop TubeGeometry vertex lies on the F1 side of the membrane in all c8/c10/c14 contexts; subunit transform determinant is +1 to preserve helix handedness. Full local science/refinement regression rerun PASS."
+      ],
+      "limitations": [
+        "C-ring counts are source-based; schematic helices and F1 folds are not fitted structures.",
+        "The 2025 plant subtomogram study reports 19–31 Å monomer maps; EMD-3441 reports 26 Å for P. tetraurelia. These are not used to manufacture an exact c-subunit count.",
+        "No H+/ATP or ATP/glucose ratio is inferred from illustrative particle numbers or speed."
+      ]
+    },
+    {
+      "issueId": "energy-03",
+      "status": "fixed",
+      "changes": "Net 3-PG→2-PG rearrangement relocates the displayed phosphate from terminal C3 to middle C2 before PEP. The substrate bond detaches during the omitted mutase intermediate and reforms at C2; it then detaches at the start of transfer to ADP. Labels now include 3-PG→2-PG and PEP→pyruvate intervals.",
+      "files": [
+        "src/processes/modules/energy/glycolysisProcess.js",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Transformed cylinder endpoints are checked against actual carbon and phosphate world coordinates at 1,3-BPG, 3-PG, PEP and transfer intervals.",
+        "Both PEP branches must connect to middle carbon at progress 0.75, 0.76, 0.77 and 0.78; the original terminal-C3 attachment fails this invariant.",
+        "No covalent link slides along a carbon chain during the omitted enzyme-bound rearrangement. One phosphate group remains visible on each branch.",
+        "Final actual geometry retains six carbons and exactly the two pairs of transferred phosphates at the first/second ATP output sites; investment symbols are hidden rather than duplicated."
+      ],
+      "limitations": [
+        "This traces net phosphate-group positions, not individual phosphorus atoms through mutase/cofactor chemistry. Oxygen/hydrogen atoms and bond orders remain outside the carbon-bookkeeping model."
+      ]
+    },
+    {
+      "issueId": "energy-04",
+      "status": "fixed",
+      "changes": "NDH-II control reveals an exactly matching lipid-lattice patch across both leaflets at the otherwise transmembrane NDH-I footprint. The patch is constructed once; control changes only switch visibility alongside the protein.",
+      "files": [
+        "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "For each stage, switch NDH-I→NDH-II and assert every expected curved-membrane lipid lattice site is filled exactly once on both sides.",
+        "NDH-I remains visible only in its branch; NDH-II only in the peripheral branch; both switches retain finite geometry and stable resources.",
+        "Existing local regression preserves non-pumping NDH-II/bd-I semantics and cytoplasmic ATP synthesis."
+      ],
+      "limitations": [
+        "The curve and protein shapes are educational; neither an atomic lipid seal nor kinetic membrane permeability is simulated."
+      ]
+    },
+    {
+      "issueId": "energy-05",
+      "status": "fixed",
+      "changes": "Synechocystis sp. PCC 6803 now has fourteen visible c hairpin subunits. Bilingual intro identifies the experimentally inferred c14 ring, and the original strain-specific 2007 source is added.",
+      "files": [
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/bacterialPhotosynthesisProcess.js",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Actual visible c-hairpin groups total 14 with uniform angular distribution in light and dark at all sampled stages.",
+        "Each subunit retains two helices and a connecting loop; F1 remains cytoplasmic.",
+        "Original paper fulltext was accessed through its ResearchGate publisher preview: Table 1 lists Synechocystis PCC 6803, estimated oligomer mass 113.42 ± 1.35 kDa and proposed stoichiometry 14. Its Discussion explicitly includes this strain among c14 cyanobacteria."
+      ],
+      "limitations": [
+        "This count is an inference from experimental mass/mobility measurements in the 2007 paper, not a newly claimed atomic structure of PCC 6803. The molecular contour and rate remain illustrative."
+      ]
+    }
+  ],
+  "unchangedModels": [
+    "photosynthesis"
+  ],
+  "commands": [
+    {
+      "command": "node src/processes/modules/energy/science.test.mjs",
+      "result": "PASS: issue-specific actual geometry tests and imported refinement-smoke for all four models, all declared roots/controls; finite geometry, finite bounds, deterministic seeks, stable resources, esbuild browser bundles."
+    },
+    {
+      "command": "npx prettier --write <six owned energy JS/MJS files>",
+      "result": "PASS; no global formatting or global test run."
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.rcsb.org/structure/2XND",
+      "supports": "Bovine mitochondrial c8; opened structural record."
+    },
+    {
+      "url": "https://www.rcsb.org/structure/3U2F",
+      "supports": "S. cerevisiae mitochondrial c10; opened structural record."
+    },
+    {
+      "url": "https://www.rcsb.org/structure/6OQR",
+      "supports": "E. coli ATP synthase c10 exemplar; opened structural record."
+    },
+    {
+      "url": "https://doi.org/10.1107/S2052252525006220",
+      "accessedVia": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12403170/fullTextXML",
+      "supports": "Actual plant primary fulltext read; available subtomogram monomer resolutions are 19–31 Å, not a measured c-ring repeat count."
+    },
+    {
+      "url": "https://doi.org/10.1073/pnas.1525430113",
+      "accessedVia": "https://www.ebi.ac.uk/emdb/EMD-3441",
+      "supports": "Actual primary structural archive opened: P. tetraurelia mitochondrial ATP synthase dimer, 26 Å map. Primary paper abstract was also read through Europe PMC core API."
+    },
+    {
+      "url": "https://doi.org/10.1128/JB.00581-07",
+      "accessedVia": "https://www.researchgate.net/publication/6291778_The_Oligomeric_State_of_c_Rings_from_Cyanobacterial_F-ATP_Synthases_Varies_from_13_to_15",
+      "supports": "Read original paper Table 1 and Discussion in publisher-provided fulltext: PCC 6803 c14 inferred from mass/mobility measurements. This closes Phase A missing-specific-strain-table limitation."
+    },
+    {
+      "url": "https://iubmb.qmul.ac.uk/enzyme/EC5/4/2/11.html",
+      "supports": "3-PG/2-PG phosphate-position interconversion; official reaction record actually opened."
+    },
+    {
+      "url": "https://iubmb.qmul.ac.uk/enzyme/EC4/2/1/11.html",
+      "supports": "2-PG dehydration to PEP; official reaction record actually opened."
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/23089137/",
+      "accessedVia": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:23089137&format=json&resultType=core",
+      "supports": "E. coli NDH-II peripheral membrane association; original abstract read via API during Phase A."
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4390263/fullTextXML",
+      "supports": "Primary fulltext actually read: bovine c-subunit hairpin loops lie at the matrix-facing headgroup region and some contact the central stalk foot."
+    }
+  ]
+}

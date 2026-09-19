@@ -1,0 +1,89 @@
+{
+  "group": "regulation",
+  "issues": [
+    {
+      "issueId": "regulation-01",
+      "status": "fixed",
+      "changes": "RNA 3′ and the template-associated RNA segment now use the actual Pol II catalytic transform. The opened template passes alongside this segment; older RNA peels continuously toward its exit. RNA base directions point toward the template. Peer cross-section review exposed bubble-edge strand collapse in the previous Cartesian opening. DNA now opens through a shared duplex frame with nonzero radius and fixed strand identities, interpolating phase rather than backbone coordinates.",
+      "files": [
+        "src/processes/modules/regulation/promoterRegulationProcess.js",
+        "src/processes/modules/regulation/geometry.js",
+        "src/processes/modules/regulation/science.test.mjs",
+        "src/processes/modules/regulation/duplexGeometry.test.mjs"
+      ],
+      "verification": [
+        "Actual tube-ring center equals catalytic mesh world center within 1e-6 at p=.755/.81/.9/.985.",
+        "Short RNA segment remains alongside actual opened-template centerline; altered-site branch produces no RNA.",
+        "An in-memory mutation restoring a .425-unit endpoint offset is rejected by the anchor assertion.",
+        "Actual complete backbone segment pairs remain at least .088 apart over 201 frames for intact and altered controls; this includes different sampling parameters at bubble edges."
+      ],
+      "limitations": [
+        "The template/RNA cleft is a molecular connectivity schematic, not an atomically fitted hybrid or explicit nucleotide chemistry."
+      ]
+    },
+    {
+      "issueId": "regulation-02",
+      "status": "fixed",
+      "changes": "The productive promoter linker now opens a continuous local bubble while retaining both original backbones and melting its base-pair bonds. A local frame moves Pol II along successive template nucleotide instances and anchors nascent RNA to its catalytic center. Two bursts release distinct retained RNA chains with continuous geometry at handoff. The impaired branch retains closed DNA without output, while global nucleosome trajectories remain identical. Peer review exposed cross-parameter collisions even in the closed linker. Both strands now use one non-folding linker axis and orthogonal radial frame; phase-based opening preserves their separation. Each endpoint retains its original wrapped-DNA strand identity.",
+      "files": [
+        "src/processes/modules/regulation/enhancerRegulationProcess.js",
+        "src/processes/modules/regulation/chromatinGeometry.js",
+        "src/processes/modules/regulation/geometry.js",
+        "src/processes/modules/regulation/science.test.mjs",
+        "src/processes/modules/regulation/duplexGeometry.test.mjs"
+      ],
+      "verification": [
+        "Actual RNA/catalytic contact, opened bond instances and template proximity pass at six times spanning both bursts.",
+        "The nearest engaged template nucleotide index advances by at least seven instances in each burst.",
+        "Both release boundaries preserve the prior RNA centerline to 1e-5 and impaired conditions show no released products.",
+        "Separate in-memory regressions that disable DNA opening or detach the RNA end both fail the geometry test.",
+        "All 8 linkers, both controls and 201 frames: exact finite-segment distance is at least .032; both ends join the corresponding wrapped-DNA strand within 1e-6. Independent original Linker-7 probe now measures minimum .04499193 instead of .000169/.004754."
+      ],
+      "limitations": [
+        "The local reaction is magnified and schematic; arbitrary burst timing is still not a predicted function of enhancer distance.",
+        "The retained released products indicate distinct output molecules; their later nuclear processing is not modeled.",
+        "Flexible linker routing is schematic and preserves strand topology/continuity; it is not a fitted chromatin conformation or atomistic bending-angle model."
+      ]
+    },
+    {
+      "issueId": "regulation-03",
+      "status": "fixed",
+      "changes": "A cut coordinate partitions the existing RNA centerline into non-overlapping upstream and downstream spans. Existing nucleotide markers stay with their respective spans. The downstream 3′ end remains attached during subsequent synthesis; its new 5′ end is the cut end. Later shortening removes the downstream span from its 5′ side. Released upstream RNA starts at the actual cleavage end rather than the former catalytic end. Peer review found a further termination-tail anchor defect: downstream RNA is now resolved by p=.98 before Pol II starts departure and the DNA bubble closes. The enzyme does not leave a visible RNA 3′ end behind. Original transcription bubble geometry also now uses a positive-radius shared frame instead of collapsing opposing Cartesian rails at adverse helix phases.",
+      "files": [
+        "src/processes/transcriptionProcess.js",
+        "src/processes/modules/regulation/science.test.mjs",
+        "src/processes/modules/regulation/duplexGeometry.test.mjs"
+      ],
+      "verification": [
+        "At p=.86, both products meet at the cut within 1e-6; summed backbone arc length differs from pre-cut length by less than .0002 scene units.",
+        "Every existing nucleotide marker preserves its cut-boundary position to 1e-6; upstream cut end is distinct from the catalytic end.",
+        "Downstream 3′ anchoring passes against the complete Pol II matrixWorld at .861/.88/.91/.95/.97; final state retains the released RNA and removes the downstream remnant.",
+        "Restoring the full uncut main chain alongside the remnant is rejected by the product-continuity assertion.",
+        "At .98/.99/1, downstream RNA is absent during Pol II disengagement. Restoring premature enzyme departure fails the full-transform anchor assertion.",
+        "Actual full template/coding segment pairs remain at least .084 apart over 201 frames, including every opening and termination interval."
+      ],
+      "limitations": [
+        "Nucleotide spheres are teaching markers, not a one-to-one nucleotide inventory or sequence-specific processing model.",
+        "The existing generic protein-coding scope remains; no animal-specific termination factor was added to the plant context."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/regulation/science.test.mjs — passed (actual geometry, both controls, intermediates, finite coordinates, stable resources, deterministic seeks)",
+    "npx prettier --write <six owned JavaScript/test files> — completed",
+    "node --input-type=module (read-only in-memory mutation harness) — four regressions rejected without modifying files",
+    "Peer follow-up: local science.test.mjs passed again; fifth in-memory regression (premature Pol II departure) rejected.",
+    "node src/processes/modules/regulation/duplexGeometry.test.mjs — passed; imported by science.test.mjs, which also passed after all peer corrections"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.rcsb.org/structure/5C44",
+      "files": [
+        "src/processes/modules/regulation/promoterRegulationProcess.js",
+        "src/processes/modules/regulation/enhancerRegulationProcess.js"
+      ],
+      "supports": "Transcribing Pol II DNA/RNA topology and the complete transcription bubble; source was opened in Phase A. No atomic coordinates are claimed for the schematic."
+    }
+  ]
+}

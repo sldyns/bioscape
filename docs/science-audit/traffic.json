@@ -1,0 +1,207 @@
+{
+  "group": "traffic",
+  "reviewer": "p_membrane (independent from traffic/legacy secretion authors)",
+  "models": [
+    {
+      "id": "endocytosis",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian LDL-receptor uptake at plasma membrane through initial acidic early-endosome sorting; no alternate controls or root contexts.",
+      "checks": [
+        "Inspected every zh/en stage at 0, .14, .34, .47, .67, .8 and intermediate/end states, plus intro, labels, legend, entries and helper geometry. Existing screenshot at .26 inspected.",
+        "LDLR ectodomain/cargo face extracellular or luminal space; its short tail/adaptor face cytosol. The inward normal on detached carriers preserves this relationship.",
+        "Pit stays connected until .43; detached carrier is one bilayer. Clathrin/adaptor removal (.45-.54) precedes fusion (.67); dynamin collar lies at the bud neck. Front viewing sector is explicitly a cutaway.",
+        "Acidic early-endosome assumption is consistent with ligand release and receptor compaction; the V-ATPase head is on cytosolic side. Proton flux, ATP hydrolysis and pH are not animated, so acidification kinetics are not validated.",
+        "Fused endosome shape retains LDL in lumen and sorts receptors along a narrow membrane tubule, but three receptors collapse to identical transforms during the fusion-to-sorting interval.",
+        "No parameter-dependent controls and no non-cell roots are declared; all continuous progress branches were inspected."
+      ],
+      "sources": [
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26870/",
+          "title": "Molecular Biology of the Cell — Transport into the Cell from the Plasma Membrane: Endocytosis",
+          "supports": "Opened full text; LDL-receptor complexes enter coated vesicles, uncoat, release LDL in acidic early endosomes, and receptors sort into recycling tubules; V-ATPase pumps protons from cytosol to lumen."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26859/",
+          "title": "Molecular Biology of the Cell — Molecular Mechanisms of Membrane Transport",
+          "supports": "Opened full text; adaptors and clathrin act on cytosolic face, dynamin participates at neck, and coat removal follows release."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "traffic-01",
+          "severity": "P2",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/traffic/endocytosisProcess.js",
+          "location": "157-168: fused receptor placement",
+          "evidence": "When fused becomes true at p=.67, xx=1+q*1.1+sort*(1.4+i*.12). sort is zero until p=.73, so every receptor receives exactly the same xx, y=-1.25, z=-rr and rotation. Read-only sampling: receptor pair distances at .66999 were .97448/1.66217; at .67, .68, .70 and .72 both distances are 0. Cargo remains three distinct particles.",
+          "whyWrong": "Separate transmembrane receptors disappear into one visual object during fusion, obscuring their identity and membrane-preserving redistribution. This is a confirmed transform overlap, not evidence of actual molecular coalescence.",
+          "fix": "Carry each receptor from its own carrier-membrane coordinate into distinct coordinates on the fused envelope; preserve independent membrane anchors throughout acid release and tubule sorting.",
+          "verification": "Across .66-.96, all three receptor anchors remain on the membrane, preserve sidedness and maintain resolvable pairwise separation; no discontinuous many-to-one collapse at .67.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK26870/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only the provided .26 screenshot was inspected; other stages were evaluated by geometry/formulas and read-only Node sampling, not new browser renders.",
+        "LDLR/LDL/clathrin are declared structural schematics. Exact atomic structures, coat stoichiometry, receptor diffusion rates and proton counts are not claimed.",
+        "PMC2803231 returned an access challenge; its listed title was not treated as scientific validation. Core LDL-trafficking claims were verified through the accessible NCBI chapter."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "autophagy",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian macroautophagy of an illustrative damaged cytosolic TPI aggregate; lysosomal cathepsin-D structural reference; no controls or alternate root contexts.",
+      "checks": [
+        "Inspected all zh/en stages at 0, .16, .44, .54, .65, .79, all transitions and end state, helpers and reference-coordinate provenance. Existing screenshot at .22 inspected.",
+        "Phagophore cups connect at an open rim before .44. Outer and inner membraneSurface objects each contain two leaflet surfaces, giving the correct four-leaflet double-membrane concept; cargo is inside inner membrane on closure.",
+        "At fusion (.65), only outer autophagosomal membrane is replaced by the continuous lysosome/autophagosome envelope; inner membrane remains around cargo. Numerical profile comparison at .65-.93 found the inner sphere enclosed by the merged envelope.",
+        "Luminal glycans and cytosolic V-ATPase head have correct side assignments. Native reference identities 1HTI and 1LYA were verified on RCSB; distorted TPI aggregate is explicitly illustrative.",
+        "The degradation branch does not actually breach the inner membrane: opacity and radius change while its topology stays a sphere until it is hidden. Cargo degradation and protease access occur before removal.",
+        "No controls declared. Dynamic membrane normals and bounds were inspected as supporting geometry; userData alone was not used to infer biological correctness."
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/s41421-020-0141-7",
+          "title": "Yim and Mizushima (2020), Lysosome biology in autophagy",
+          "supports": "Opened publisher full text (cookie-compatible URL). Outer membrane fusion precedes inner membrane degradation; lysosomal hydrolases gain access to autophagic cargo after the inner membrane barrier is degraded. Fig. 1 and the IAM-degradation section."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1HTI",
+          "title": "RCSB PDB 1HTI — Human triosephosphate isomerase",
+          "supports": "Opened structural record; confirms the reference identity, not the illustrative damaged aggregate conformation."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1LYA",
+          "title": "RCSB PDB 1LYA — Human cathepsin D",
+          "supports": "Opened structural record; confirms lysosomal protease reference identity."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "traffic-02",
+          "severity": "P1",
+          "kind": "misleading_topology_and_causality",
+          "file": "src/processes/modules/traffic/autophagyProcess.js",
+          "location": "95-111, 146-168: breakdown, inner sphere and enzyme trajectories",
+          "evidence": "breakdown=ease(p,.75,.96) simultaneously shrinks/fades the inner membrane, shrinks cargo and creates fragments. inner.set still uses a complete spherical profile (thetaMax=PI), and inner.mesh remains visible until p=.94. At p=.80 the inner radius is 1.2081 and opacity .8569, yet cargo degradation is .1431 and fragments are visible; every protease center remains outside (nearest 1.444). At p=.85 a cathepsin center lies 1.0627 from the autophagosome center, inside the still-closed sphere radius 1.1364 (opacity .5357). Only the permanently declared viewing cut is open.",
+          "whyWrong": "A transparent closed bilayer is still a barrier. The scene depicts cargo digestion before hydrolases have access, then hydrolases cross a geometrically intact inner membrane. The text instead correctly states inner-membrane degradation followed by cargo hydrolysis.",
+          "fix": "Give inner-membrane breakdown a real perforation/discontinuity or remove the barrier in a distinct preceding phase. Gate protease entry and cargo cleavage on accessible lumen connectivity; then degrade cargo into products while retaining the outer membrane.",
+          "verification": "Before inner-membrane permeability, proteases remain outside its enclosed region and cargo/fragments are unchanged. Protease paths cross only an actual breach after it exists; cargo degradation starts only after access. The visualization cut is never counted as the breach.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/s41421-020-0141-7"
+          ]
+        }
+      ],
+      "limitations": [
+        "Native backbone identities were verified but no atom-by-atom audit of the embedded decimated coordinate arrays was attempted.",
+        "Upstream signals, membrane supply, lipid hydrolysis enzymes, metabolite export and exact mass/kinetic conservation are explicitly outside this teaching scene.",
+        "The original two PMC review links returned access challenges; a publisher-hosted authoritative review was opened and used instead."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "secretion",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "One pre-folded soluble cargo in a conventional animal-cell ER-to-Golgi-to-plasma-membrane route; cisternal maturation is a teaching model. No control branches or other roots.",
+      "checks": [
+        "Inspected all zh/en stages at 0, .12, .20, .42, .67, .78, .90 and corresponding branch thresholds .34/.39/.70/.925/.963/.992; catalog cell-only registration and labels inspected. Existing screenshot at .28 inspected.",
+        "Cargo starts already folded in ER lumen. Therefore absence of an animated nascent chain/translocon is a declared upstream omission, not itself a claim that folded protein crosses the bilayer.",
+        "ER ribosomes are outside ER lumen, but the explicitly smaller subunit lies closer to membrane than the large subunit.",
+        "ER and Golgi caps are removed during transfer, yet independent mouth/neck surfaces have incompatible boundaries. Their open lumens are not connected by a single sealed surface.",
+        "During .42-.67 the tracked cargo stays on the centerline of the same moving cisterna. The cis-to-trans direction, changing cisternal identity and omitted retrograde enzyme traffic are described consistently. The moving background-cisterna reset is a schematic rather than lineage tracking.",
+        "Cargo follows a luminal carrier path and exits through the explicit plasma-membrane pore. Only one tracked cargo group persists throughout; no cargo destruction/duplication was found. The membrane itself is not persistently transferred into the surface geometry.",
+        "Coat and sorting machinery are explicitly omitted. Glycan linkage class is unspecified, so later glycan appearance cannot be treated as a confirmed N-glycosylation timing error."
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/ncomms9403",
+          "title": "Pfeffer et al. (2015), Structure of the native Sec61 protein-conducting channel",
+          "supports": "Opened primary structural article. Native rough-ER ribosome-Sec61 architecture and Fig. 1/2 identify the large-subunit/translocon interface and the cytosolic orientation of the ribosome."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9889/",
+          "title": "The Cell — The Endoplasmic Reticulum",
+          "supports": "Opened chapter; conventional secretory proteins translocate into ER during synthesis and are transported onward from the luminal compartment."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26941/",
+          "title": "Molecular Biology of the Cell — Transport from the ER through the Golgi Apparatus",
+          "supports": "Opened chapter; sealed membrane-bound carriers, luminal cargo transfer, cis-to-trans traffic and cisternal maturation with retrograde enzyme recycling."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26859/",
+          "title": "Molecular Biology of the Cell — Molecular Mechanisms of Membrane Transport",
+          "supports": "Opened chapter; docking is followed by membrane fusion, preserving distinct compartments outside the specific connection."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK26870/",
+          "title": "Molecular Biology of the Cell — Endocytosis",
+          "supports": "Opened chapter, endocytic-exocytic cycle section: exocytosis adds membrane to the cell surface, balancing membrane retrieval."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "traffic-03",
+          "severity": "P1",
+          "kind": "structural_orientation",
+          "file": "src/processes/secretionProcess.js",
+          "location": "220-234: ER-bound ribosome subunits",
+          "evidence": "The large ribosome mesh center is y=.89-row*.57. The explicitly named small mesh copies it then applies small.position.y-=.04. The ER lies below these meshes (first sac center y=.68; upper membrane near y=.82). Thus the small subunit is placed between the large subunit and ER, rather than offset on the cytosolic side of the large subunit. No separate Sec61 contact is modeled.",
+          "whyWrong": "The large subunit carries the peptide-exit tunnel and docks to the ER translocon. Inverting the two-subunit interface is a recognizable structural error even when translocation itself is omitted.",
+          "fix": "Orient a two-subunit ribosome with the large-subunit exit site toward the membrane and the small subunit on the cytosolic side/alongside. If adding a contact marker, attach it to the large-subunit exit site; do not expand the scene into an unrequested synthesis sequence.",
+          "verification": "For each ER-bound ribosome, its large-subunit exit/contact site is the membrane-facing interface and the small subunit never lies between it and the ER. Confirm in cross-section at every static ER row.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/ncomms9403"
+          ]
+        },
+        {
+          "issueId": "traffic-04",
+          "severity": "P1",
+          "kind": "misleading_membrane_topology",
+          "file": "src/processes/secretionProcess.js",
+          "location": "50-101, 174-193, 262-278, 463-503: cisterna mouth / cylindrical neck / open carrier",
+          "evidence": "At the ER budding mouth, the rotated cisterna opening at x=-2.03833 is an ellipse with semiaxes .08714 and .34233. erNeck is an independent open cylinder radius .15, spanning x=-2.05 to -1.79. The carrier opening has radius .20939 at x=-1.90859. No transition surface welds these incompatible loops; a back-side point such as mouth offset z=-.25 lies inside the cisterna aperture but outside the neck radius, leaving a cytosol-facing opening beyond the declared front viewing cut. Golgi mouths similarly use a flattened elliptical cisterna, .14/.19 neck and .20939 spherical carrier opening.",
+          "whyWrong": "Removing caps and overlapping mismatched tubes does not create one sealed lumen-to-lumen neck. These additional gaps contradict the stage promise that cargo remains in a membrane-enclosed space; they are not the named front visualization cut.",
+          "fix": "Construct each connected bud/fusion intermediate from a shared profile/mesh, or explicitly weld the full donor-mouth loop through a transition neck to the carrier loop. Derive all interface positions/radii from shared parameters and remove hidden internal duplicate surfaces.",
+          "verification": "Outside the intentionally marked viewing cut, the connected donor-neck-carrier surface has no boundary edges or uncovered aperture sectors. Cross-sectional lumen connectivity is donor-to-carrier only, never lumen-to-cytosol. Check .12-.20 and .34-.42/.67-.78, not only closed travel frames.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK26859/",
+            "https://www.ncbi.nlm.nih.gov/books/NBK26941/"
+          ]
+        },
+        {
+          "issueId": "traffic-05",
+          "severity": "P2",
+          "kind": "misleading_representation",
+          "file": "src/processes/secretionProcess.js",
+          "location": "340-360, 476-485: fusion shell and plasma membrane closure",
+          "evidence": "At p=.90 the radius-.31 carrier and all its lipid instances are hidden; a separate radius-.4 fusion shell appears. The plasma-membrane sheets and lipid instances never change. At .992 fusion is hidden and the original closure disk reappears. Therefore none of the tracked carrier membrane elements persist in the receiving membrane, despite the final stage explicitly saying carrier membrane joins the surface.",
+          "whyWrong": "The cargo transfer direction is correct, but membrane incorporation is represented as object disappearance/reset. This is an important teaching ambiguity, not a demand for exact molecular-area conservation in a schematic.",
+          "fix": "Morph the same carrier membrane into a marked patch of the cell surface, or keep a transferred lipid patch visible after flattening. If the field of view has a lipid reservoir, make that transfer explicit; avoid replacing all membrane with the unchanged initial state.",
+          "verification": "Carrier-derived membrane/leaflet identity survives docking, pore opening and flattening; after cargo release there is a traceable contribution in the surface. Cargo remains a single object and the closure creates no membrane-crossing path.",
+          "sourceUrls": [
+            "https://www.ncbi.nlm.nih.gov/books/NBK26870/",
+            "https://www.ncbi.nlm.nih.gov/books/NBK26859/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only a representative supplied image was inspected. Interface defects were derived from explicit geometric parameters, not inferred from transparency alone.",
+        "No measured rates, quantities or atomic fold claims are present. Enzyme/glycan chemistry and ER-Golgi intermediate compartments remain scoped simplifications.",
+        "No product files, tests, renderer, browser or thumbnails were changed during this Phase A audit."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

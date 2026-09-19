@@ -1,0 +1,202 @@
+{
+  "group": "rna",
+  "reviewer": "p_chromatin (independent of rna implementation)",
+  "models": [
+    {
+      "id": "rnaProcessing",
+      "roots": [
+        "cell",
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Intron-containing, polyadenylated nuclear Pol II pre-mRNA in animal and plant cells; representative two-exon substrate.",
+      "checks": [
+        "Read both languages, all six stages, labels, sources, strand/cap/spliceosome construction and the full update function. There are no controls; both declared roots use the same geometry.",
+        "Traced capping (0.12–0.25), first branching (0.43–0.55), exon approach (0.55–0.65), lariat release (0.61–0.76), cleavage (0.71–0.78), and poly(A) growth (0.77–0.92), including intermediate progress.",
+        "RNA is a single backbone with nucleotide motifs. Final 5-prime cap and 3-prime poly(A) orientation, downstream cleavage fragment and nuclear final compartment are consistent with the stated scope. Generic snRNA stem/loop motifs do not claim an atomistic spliceosome.",
+        "Viewed /tmp/atlas-refinement/rnaProcessing.png and independently evaluated actual position formulas at p=0.60; did not treat existing tests or userData as scientific validation."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/28076345/",
+          "title": "Fica et al. 2017, Structure of a spliceosome remodelled for exon ligation",
+          "supports": "Opened primary-paper abstract and figure legends. The post-branching C/C* substrate consists of a cleaved 5-prime exon and a covalently connected lariat–3-prime-exon intermediate; exon ligation is the second transesterification. Yeast structural specimen supports conserved catalytic topology, not exact animal/plant subunit shape."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9864/",
+          "title": "Cooper, The Cell: RNA Processing and Turnover",
+          "supports": "Opened official textbook chapter. Its splicing mechanism states that 3-prime splice-site cleavage and exon ligation occur together in the second reaction. Also supports 5-prime capping and cleavage before nontemplated poly(A) addition."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "rna-01",
+          "severity": "P1",
+          "kind": "topology / reaction-order error",
+          "file": "src/processes/modules/rna/rnaProcessingProcess.js",
+          "location": "update(), lines 281–329: join, release and intron endpoint interpolation",
+          "evidence": "At p=0.60, join=0.5, loop=1 and release=0. Exon 1 ends at (-1.1,0,0); exon 2 starts at (0,0,0); the intron 3-prime end is (0.9,0.725,0). Thus exon 2 is 1.15569 units away from its covalently attached intron while still 1.1 units from exon 1. The model displays three disconnected RNA pieces. Lariat release also begins at 0.61 before exon joining finishes at 0.65.",
+          "whyWrong": "After the first reaction the lariat intron remains covalently linked to exon 2. The second transesterification cleaves that junction while forming the exon–exon bond; it does not first generate a free exon 2 plus a released intron with both exons unligated.",
+          "fix": "Constrain the intron 3-prime endpoint to exon 2 throughout the pre-ligation approach. Bring exon 1 and exon 2 ends together, swap the 3-prime splice-site bond for the exon–exon bond at one event, then move the released lariat.",
+          "verification": "Across progress and both roots, connectivity must follow precursor -> free exon 1 plus lariat–exon 2 -> ligated exons plus lariat. No frame may show free exon 2 and unligated exon 1 after intron release. Check endpoint distances around the bond-swap event, not metadata flags.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/28076345/",
+            "https://www.ncbi.nlm.nih.gov/books/NBK9864/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Not a nucleotide sequence or experimental spliceosome reconstruction; subunit counts, native geometry and catalytic metal coordination are abstracted.",
+        "The sequential teaching timeline does not represent the frequent cotranscriptional overlap of processing; the introduction explicitly describes this overlap."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "nuclearTransport",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Classical importin-alpha/beta-mediated entry of a large NLS-containing protein into a eukaryotic nucleus; not a universal RNA-export mechanism.",
+      "checks": [
+        "Read both languages, all six stages, NLS exposed/masked control, labels and sources; traced identical functional geometry in all three declared roots.",
+        "Inspected both annular bilayers, inward lipid tails, bent pore membrane, eightfold scaffold, nuclear basket, cytoplasmic filaments and FG motifs. Central cargo transport is along x through the aqueous pore, not through the perinuclear lumen.",
+        "Exposed cargo reaches nuclear x=2.55; masked cargo stays cytoplasmic at x=-2.7. Ran associates on the nuclear side, importin-beta returns to x=-2.6 and hydrolysis occurs after return. Omitted importin-alpha/CAS recycling is stated.",
+        "Viewed /tmp/atlas-refinement/nuclearTransport.png. Independently intersected the actual 18-segment radial curves used to build each leaflet, rather than inferring topology from the screenshot or metadata."
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/s41586-021-03985-3",
+          "title": "Schuller et al. 2021, The cellular environment shapes the nuclear pore complex architecture",
+          "supports": "Opened primary cryo-electron-tomography article. Main text and Fig. 2 place the NPC at the fusion of inner and outer nuclear membranes, with a continuous bent membrane profile surrounding the central channel. The biological bilayer has ordered, nonintersecting leaflets; exact human dimensions are not asserted for plant or yeast."
+        },
+        {
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9927/",
+          "title": "Cooper, The Nuclear Envelope and Traffic between the Nucleus and Cytoplasm",
+          "supports": "Opened official textbook section on classical protein import: nuclear RanGTP binds importin-beta to release cargo; importin-beta–RanGTP returns to cytosol, where GTP hydrolysis resets the receptor. Used only for protein import, not for a claim that all RNA export is Ran-dependent."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "rna-02",
+          "severity": "P1",
+          "kind": "membrane topology error",
+          "file": "src/processes/modules/rna/nuclearTransportProcess.js",
+          "location": "Curved paired leaflets, lines 119–153; x and r formulas at lines 130–132",
+          "evidence": "For face +/-1 the code sets x=(0.46+face*0.085)*cos(t), r=1.21-(0.22-face*0.085)*sin(t). One surface has the larger axial semi-axis but smaller radial semi-axis. The actual 18-segment section polylines intersect at (x,r)=(+/-0.352891,1.107221), between segments 1/4 and 16/13. Revolving these sections produces two leaflet intersection arcs at every stage and for both NLS conditions.",
+          "whyWrong": "The two faces of a continuous lipid bilayer must stay separated and consistently ordered as the nuclear membranes bend into the pore rim. The present parameterization crosses and inverts them, so the model cannot represent the membrane barrier claimed by its stage text.",
+          "fix": "Generate one smooth pore-rim midsurface and offset along its normal to obtain nonintersecting leaflets of positive thickness; join each to the matching flat membrane leaflet. Preserve the aqueous central channel separately from the perinuclear lumen.",
+          "verification": "For every sampled radial section, both leaflets are non-self-intersecting and mutually disjoint, remain consistently ordered with positive separation, and meet the intended membrane-face endpoints. Verify cargo remains in the central channel for exposed NLS and cytoplasmic for masked NLS across all roots.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/s41586-021-03985-3"
+          ]
+        }
+      ],
+      "limitations": [
+        "Functional import cycle, not species-specific NPC stoichiometry or a measured transport trajectory; exact scaffold geometry differs among animal, plant and yeast NPCs.",
+        "Ran asymmetry, receptor binding and FG selectivity are schematic; no diffusion or free-energy simulation is claimed."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "motorTransport",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Animal cytosolic membrane cargo carried by conventional kinesin-1 or activated cytoplasmic dynein–dynactin–adaptor along a polar microtubule.",
+      "checks": [
+        "Read both languages and all six stages. Evaluated all four motor x ATP control combinations.",
+        "Inspected the hollow 13-protofilament alpha/beta track, two kinesin heads and stalk, dynein AAA+ rings with microtubule-binding stalks, dynactin/adaptor and membrane cargo. Protein helical motifs are not drawn as DNA.",
+        "With ATP, center advances from -2.6 to +2.6 for kinesin and reverses for dynein; depleted ATP fixes transport/head progress at zero. Early vertical cargo docking is a setup motion, not ATP-independent track transport.",
+        "Traced each head trajectory, lift and anchoring at every step transition in update(). Viewed /tmp/atlas-refinement/motorTransport.png."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/14684828/",
+          "title": "Yildiz et al. 2004, Kinesin walks hand-over-hand",
+          "supports": "Opened primary-paper abstract: labeled kinesin heads alternate approximately 17-nm and zero movements, supporting a hand-over-hand scheme and approximately 8-nm center-of-mass advances."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41589-019-0352-0",
+          "title": "Elshenawy et al. 2019, Cargo adaptors regulate stepping and force generation of mammalian dynein–dynactin",
+          "supports": "Opened primary-paper abstract and figure descriptions. Mammalian dynein–dynactin–adaptor complexes show variable 8–32-nm steps and lateral/backward steps while moving net toward the minus end. This is the relevant animal comparator, rather than treating a yeast motor construct as a universal animal stepping law."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22157083/",
+          "title": "DeWitt et al. 2012, Cytoplasmic dynein moves through uncoordinated stepping of the AAA+ ring domains",
+          "supports": "Opened primary-paper abstract and figure legends: the studied yeast dynein heads need not alternate and can step independently. Used as supplementary mechanistic context, with the organism limitation retained."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "rna-03",
+          "severity": "P2",
+          "kind": "misleading comparative representation",
+          "file": "src/processes/modules/rna/motorTransportProcess.js",
+          "location": "update(), lines 331–363: shared foot, count, fraction and lift arrays",
+          "evidence": "Both selected motors use the identical foot[count % 2] schedule, constant stride=5.2/6, one alternating head at a time, and the identical sinusoidal lift. isDynein only reverses sign and changes the visible architecture. There is no variable, repeated-head, lateral or backward dynein step in the comparison.",
+          "whyWrong": "This is not evidence that one alternating dynein step is impossible. The important ambiguity is that a comparative lesson renders the same obligatory, regular walking rule for both motors, despite the text describing different coordination and more variable dynein stepping. Mammalian dynein–dynactin data support variable and lateral/backward movements. The visual comparison currently fails to express that distinction.",
+          "fix": "Use separate deterministic representative step-event sequences: regular alternating kinesin heads, and a dynein sequence with variable step lengths and at least one nonalternating or lateral/backward event while preserving net minus-end motion. Keep the event sequence explicitly illustrative, not a measured probability distribution.",
+          "verification": "A trajectory-based check should show that dynein is not merely the sign-inverted kinesin head trajectory, while retaining correct net direction and no ATP-depleted track transport. Inspect head contact/attachment during each event; do not validate only cargo displacement.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/14684828/",
+            "https://www.nature.com/articles/s41589-019-0352-0"
+          ]
+        }
+      ],
+      "limitations": [
+        "P2 finding concerns the comparison and animation semantics; it is not a claim that every run of dynein must include a backward step.",
+        "No physical scale, mechanochemical rate constants, force–velocity relation or calibrated tubulin-binding-site step lattice. The explicit scope is conventional kinesin-1, not all kinesin families."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "organelleImport",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Nuclear-encoded land-plant stromal precursor with an N-terminal chloroplast transit peptide, using a functional TOC/TIC import schematic.",
+      "checks": [
+        "Read both languages, all six stages, labels, sources and transit present/absent branches in the only declared plant root.",
+        "Inspected separate outer and inner bilayers at x=-0.55/+0.55, inward tails, transmembrane channel placements, intermembrane bridge, cytoplasmic receptor and stromal ATP-dependent chaperone and SPP. No mitochondrial or thylakoid-targeting pathway is implied.",
+        "N terminus is the leading positive-x end. During membrane passage, abs(x)<=0.8 forces y=z=0, so the extended peptide threads through the aligned channels, not through lipid. At completion lead=4.13 and tail=0.83, beyond the inner membrane/channel, before the final fold begins.",
+        "Transit-absent branch sets docking, threading, cleavage and folding to zero and leaves the mature sequence on the cytoplasmic side. Transit-present branch removes the junction segment between residues 8/9 after import, retaining separate transit and mature products.",
+        "Energy annotations distinguish early GTP-linked TOC recognition from ATP-dependent stromal chaperone action. SPP is a peptidase, not depicted as an ATP motor. Cleavage timing is stated as an instructional emphasis and may occur during import in vivo.",
+        "Viewed /tmp/atlas-refinement/organelleImport.png and traced all continuous update intervals; existing smoke tests were not treated as scientific proof."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30464337/",
+          "title": "Chen et al. 2018, TIC236 links the outer and inner membrane translocons of the chloroplast",
+          "supports": "Opened primary abstract: nuclear-encoded precursors carry N-terminal transit peptides; TOC and TIC occupy the outer and inner envelope membranes; Arabidopsis TIC236 links the envelope translocons and its reduction impairs stromal import."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10508853/",
+          "title": "Richter and Lamppa 1999, Stromal processing peptidase binds transit peptides and initiates their ATP-dependent turnover in chloroplasts",
+          "supports": "Opened primary abstract and Fig. 8 legend: an N-terminal transit peptide enters the stroma first; SPP performs an endoproteolytic cut releasing mature protein, followed by transit-peptide turnover. ATP-dependent turnover is distinct from the SPP cleavage event."
+        },
+        {
+          "url": "https://academic.oup.com/plcell/article-abstract/26/3/1246/6099828",
+          "title": "Liu et al. 2014, ATP Requirement for Chloroplast Protein Import Is Set by the Km for ATP Hydrolysis of Stromal Hsp70 in Physcomitrella patens",
+          "supports": "Opened primary abstract on the publisher site: changing stromal Hsp70 ATP affinity in moss changes the ATP requirement for import, supporting an ATP-consuming stromal chaperone contribution without asserting that a single cartoon motor is the complete land-plant apparatus."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/36702157/",
+          "title": "Liu et al. 2023, Architecture of chloroplast TOC-TIC translocon supercomplex",
+          "supports": "Opened primary abstract. The cryo-EM specimen is Chlamydomonas reinhardtii, not a land plant; supports envelope-spanning translocon organization but does not validate the model as a literal universal land-plant subunit structure."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Qualified functional pass, not a validated atomic translocon or protein-fold model. Ring and helix counts are generic motifs, not land-plant subunit stoichiometry.",
+        "GTP and ATP hydrolysis are described but not individually animated or stoichiometrically counted. Generic stromal chaperone position is not an experimentally resolved complete import motor.",
+        "The final mature fold is illustrative; residue sequence, secondary structure and contour length are not quantitatively preserved. Transit-peptide degradation after cleavage is outside the shown process."
+      ],
+      "confidence": "medium"
+    }
+  ]
+}

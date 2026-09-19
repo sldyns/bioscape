@@ -1,0 +1,96 @@
+{
+  "group": "plantSignals",
+  "issues": [
+    {
+      "issueId": "plantSignals-01",
+      "status": "fixed",
+      "changes": "Replaced the empty annular TIR1 aperture with an experimentally derived local binding site from 2P1Q. TIR1 chain B contact residues, IAC auxin and the modeled chain C IAA7 degron use one deposited-coordinate transform; bound ligand is contacted by receptor atoms and capped by degron atoms. Both languages distinguish the selected structural site from schematic SCF and motion.",
+      "files": [
+        "src/processes/modules/plantSignals/auxinProcess.js",
+        "src/processes/modules/plantSignals/tir1Pocket.js",
+        "src/processes/modules/plantSignals/2p1q-pocket.json",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Actual transformed mesh triangles are queried with THREE.Triangle.closestPointToPoint, not nearest vertices. At p=.40 receptor–IAA minimum VDW surface gap is -0.01712 scene units and degron–IAA gap is +0.01300; multiple atoms must contact each partner and gross overlap fails.",
+        "Every displayed binding-site atom is compared against its deposited coordinate under the same assembly transform. Both auxin controls are covered by stage, finite geometry and deterministic-seek checks."
+      ],
+      "limitations": [
+        "The displayed structural subset includes complete 19 TIR1 residues with any heavy atom within 6 Å of IAC (161 atoms), all 114 modeled IAA7 atoms and 13 IAC atoms; waters and IHP are omitted. It is a local structural site, not a reconstructed full TIR1 atomic model.",
+        "Outer SCF, full Aux/IAA and travel/unfolding are teaching schematics. Molecular movement is not an atomic simulation. Root visual acceptance remains pending."
+      ]
+    },
+    {
+      "issueId": "plantSignals-02",
+      "status": "fixed",
+      "changes": "The same four ubiquitin objects move from the tagging/substrate state to an intact released-chain recycling path. They are independent of the shrinking Aux/IAA group. The physical substrate–ubiquitin link is removed before substrate loss; no separate recycled copies remain.",
+      "files": [
+        "src/processes/modules/plantSignals/auxinProcess.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Samples p=.48–.80 retain exactly the original four ubiquitin UUIDs at fixed world radius .085 while substrate loss proceeds.",
+        "The attachment link is absent after p=.63, and the low-auxin control has no visible induced ubiquitin chain."
+      ],
+      "limitations": [
+        "Four illustrated ubiquitins and the intact-chain recycling path summarize deubiquitination; chain disassembly/reuse kinetics and linkage chemistry are not simulated."
+      ]
+    },
+    {
+      "issueId": "plantSignals-03",
+      "status": "fixed",
+      "changes": "Added flexible cytosolic juxtamembrane links and mobile kinase lobes. FLS2–BAK1 contact precedes receptor phosphomarks; receptor-bound BIK1 is phosphorylated before release and docks against RBOHD before its phosphomarks appear.",
+      "files": [
+        "src/processes/modules/plantSignals/plantDefenseProcess.js",
+        "src/processes/modules/plantSignals/structures.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Raycaster triangle-surface interface gaps at first visible phosphomarks: FLS2–BAK1 p=.49 = -0.00198, FLS2–BIK1 p=.51 = -0.01643, BIK1–RBOHD p=.68 = -0.00246 scene units. Each must fall in the contact interval (-.06,.02).",
+        "Each phosphomark is absent immediately before its event; the no-flg22 control remains unphosphorylated. Both branches pass finite geometry, deterministic seeking, stable resource inventory and browser bundling."
+      ],
+      "limitations": [
+        "Intracellular docking poses are mechanism schematics, not coordinates inferred from the ectodomain-only 4MN8 crystal. These tests establish depicted physical contact and activation order, not atomically resolved kinase chemistry."
+      ]
+    },
+    {
+      "issueId": "plantSignals-04",
+      "status": "fixed",
+      "changes": "Reduced the BAK1 lateral z detour to remain inside the displayed membrane. Lipid head/tail exclusion follows the current BAK1 footprint, refilling vacated positions instead of leaving permanent initial/final holes.",
+      "files": [
+        "src/processes/modules/plantSignals/plantDefenseProcess.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Both control branches at 202 total progress samples satisfy transmembrane-span containment: absolute BAK1 z plus its .10 radius stays below the .61 displayed head boundary.",
+        "Actual paired leaflet instance transforms are checked: a lipid slot is collapsed only inside the current BAK1 footprint, and vacated slots are restored."
+      ],
+      "limitations": [
+        "The membrane is a finite schematic bilayer patch and lipid displacement is illustrative, not molecular diffusion."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/plantSignals/science.test.mjs",
+      "result": "PASS: four scientific regressions, both controls, finite buffers/bounds, deterministic seeks, stable object/resource inventory, and owned-module browser bundling."
+    },
+    {
+      "command": "npx prettier --write src/processes/modules/plantSignals/science.test.mjs src/processes/modules/plantSignals/plantDefenseProcess.js",
+      "result": "PASS: owned files formatted."
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://files.rcsb.org/download/2P1Q.pdb",
+      "title": "2P1Q original deposited atomic coordinates",
+      "use": "Downloaded actual PDB. Selected chain-B binding-site residues and retained chain-C IAA7 and IAC atom identities/original Å coordinates in 2p1q-pocket.json; a shared display transform preserves the ternary geometry."
+    },
+    {
+      "url": "https://www.rcsb.org/structure/2P1Q",
+      "title": "Tan et al. (2007), TIR1–ASK1–auxin–Aux/IAA structure",
+      "use": "Added primary structural deposition to model sources; supports the common binding-pocket topology. Original Phase A opened sources for proteasomal deubiquitination and BIK1/RBOHD causality continue to apply."
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "group": "phageLife",
+  "reviewer": "independent agent p_paramecium_life (not the phage model author)",
+  "models": [
+    {
+      "id": "phageLytic",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "T4 lytic infection in susceptible E. coli; one Gram-negative host cutaway, no lysogenic branch.",
+      "checks": [
+        "Read all six bilingual stages, intro, metadata, labels, geometry.js, refinedGeometry.js, and every update formula. No root-context override or control exists.",
+        "Stage 0: capsid remains outside, but actual incoming-DNA geometry is disconnected during entry (finding 01).",
+        "Stages .17/.34: single-stranded RNA runs through bacterial ribosome schematics; host DNA is removed and several DNA duplex paths appear. Exact amplification and concatemer lengths are intentionally schematic.",
+        "Stages .52/.67: heads move from the inner-envelope region, tails are spatially separate before joining, and packaged DNA appears later. Generic tail meshes already include fibers; separate fiber attachment timing is compressed rather than independently demonstrated.",
+        "Stage .85/end: mature progeny move outward while all three envelope layers rupture; no T4 integration or lambda-specific cos mechanism is asserted.",
+        "Read-only runtime sampled every stage plus .05/.55/.975/1 and inspected phageLytic.png at .9."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/26283379/",
+          "title": "Hu et al. (2015), Structural remodeling of bacteriophage T4 and host membranes during infection initiation",
+          "supports": "Primary cryo-ET study: contraction drives the tail tube into the periplasm; the cytoplasmic membrane curves outward to meet the tip and establish DNA passage. PubMed/PMC rendering was blocked; the full indexed abstract was retrieved through the Europe PMC core-record API."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/emdb/EMD-6082",
+          "title": "EMD-6082, infective T4 after sheath contraction",
+          "supports": "Opened primary deposition: wild-type T4 with full DNA after sheath contraction, linked to Hu et al. This supports separating contraction from subsequent DNA transfer."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9958956/",
+          "title": "Rao et al. (2023), Bacteriophage T4 Head: Structure, Assembly, and Genome Packaging",
+          "supports": "Opened review sections 2.2 and 3.1: membrane-associated gp20 initiates a DNA-free prohead; gp21 proteolysis precedes packaging; gp13/gp14 seal the filled head before independent tail docking. Includes 12-fold gp20, 12-fold gp13 and 6-fold gp14."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "phageLife-01",
+          "severity": "P1",
+          "kind": "misleading representation / disconnected molecular delivery",
+          "file": "src/processes/modules/phageLife/phageLyticProcess.js",
+          "location": "incoming construction lines 89-111; update lines 238-244",
+          "evidence": "incoming is a world-origin duplex with upper centerline y=2.45, but update sets incoming.scale.y=entry. At p=.05 its measured world y bounds are .045701 to .515077; the visitor origin is y=2.370792 and its rigid tail tip is y=1.762792. Thus the visible incoming DNA is already deep inside the cell, separated from the tail by over 1.2 scene units. Meanwhile the capsid genome independently shrinks. Scaling makes the incoming strand expand upward toward the phage instead of emerge continuously from its tail.",
+          "whyWrong": "DNA delivery is a continuous route through the tail and connected host-envelope channel. A disconnected intracellular strand growing back toward the particle misrepresents that direction and continuity; an overview disclaimer does not correct the visible event.",
+          "fix": "Keep the head/tail outlet fixed in world space and animate a contiguous interval or leading end of one centerline passing through the tail/envelope into cytoplasm. Couple external packed and entering portions so the visible DNA cannot appear detached in cytoplasm.",
+          "verification": "Sample .03/.05/.10/.15: before transfer completes, a connected DNA path must link residual head DNA, tail lumen and cytoplasmic leading end. The leading end moves inward; the source path must not scale about the host origin. Assert a small outlet-to-path distance and use representative frames.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/26283379/",
+            "https://www.ebi.ac.uk/emdb/EMD-6082"
+          ]
+        }
+      ],
+      "limitations": [
+        "Atomic receptor identity, T4 entry membrane proteins, the detailed T4 replication fork and lysis proteins are not represented; these omissions do not authorize extrapolation to other phages.",
+        "Screenshots cover only one representative time; entry defect was verified by runtime geometry, not inferred from userData."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "phageLysogenic",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Temperate lambda in E. coli, lineage selected for lysogeny; maintain vs DNA-damage-induced left daughter.",
+      "checks": [
+        "Read all seven bilingual stages, both fate options, labels, metadata, shared host/phage/chromosome helpers, and all update branches; roots are only phage.",
+        "Stage 0: lambda helper uses a thin curved noncontractile tail; linear duplex is replaced by a circular duplex. Cohesive-end base pairing itself is summarized.",
+        "Stage .18: normal host segment is replaced by a continuous purple insert; chromosomal centerline endpoints are shared. attP/attB and integrase labels agree with lysogenic integration.",
+        "Stages .35/.49: CI objects appear and two chromosome groups are distributed with host division; both carry purple insert segments.",
+        "Stages .67/.78/.92: induced left lineage loses CI, excises prophage, amplifies DNA and assembles/release particles; right lineage stays intact. Maintain branch correctly suppresses these steps except for terminal chromosome visibility (finding 02).",
+        "Read-only runtime executed every stage and both options, including .975 and 1; inspected phageLysogenic.png at .24."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/38372210/",
+          "title": "Van Duyne and Landy (2024), Bacteriophage lambda site-specific recombination",
+          "supports": "Opened abstract and figure descriptions: integration joins attP/attB to yield chromosomal attL/attR; lysogenic growth copies the integrated prophage with the host; Int/IHF/Xis mediate excision."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4424060/",
+          "title": "Bacteriophage lambda: early pioneer and still relevant",
+          "supports": "Opened article for lambda scope: noncontractile lambda, repressor-dependent lysogeny and inducible lytic development. No claim that T4 has this temperate pathway."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "phageLife-02",
+          "severity": "P1",
+          "kind": "condition-dependent biological state contradicted by geometry",
+          "file": "src/processes/modules/phageLife/phageLysogenicProcess.js",
+          "location": "update line 307; final bilingual stage; userData lines 379-385",
+          "evidence": "chr.group.visible = i === 0 ? p < 0.97 : p >= 0.5 is unconditional on induce. Runtime at p=1 with fate=maintain shows left chromosome parent.visible=false and right=true, while both host envelopes remain intact and the final stage says both retain prophages. The inserted segment remains logically enabled but inherits the hidden parent.",
+          "whyWrong": "A stable uninduced lysogenic daughter retains the host chromosome containing its prophage. Erasing one chromosome solely because animation time reached .97 falsely depicts genome/prophage loss in the maintain condition.",
+          "fix": "Apply the late chromosome disappearance only to the lysing induced left daughter; keep chr0 and its integrated segment visible through p=1 in maintain, together with CI and the intact envelope.",
+          "verification": "For maintain at .96/.975/1, both chromosome groups and their integrated inserts must be effectively visible in their own intact daughters, with no excision or virions. For induce, only the lysing left chromosome may disappear and the right integrated chromosome must persist.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/38372210/"
+          ]
+        }
+      ],
+      "limitations": [
+        "CI self-cleavage, RecA filament activation and Holliday-junction strand exchange are symbolic state transitions, not molecular reaction simulations.",
+        "Late lambda DNA replication is summarized as circles; a future packaging-level view would need concatemer/cos-specific geometry. This overview does not label lambda as using T4 headful cuts."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "phageAssembly",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "T4 head/tail morphogenesis in E. coli cytoplasm; gp21 active/inactive branches.",
+      "checks": [
+        "Read all six bilingual stages and both protease options; traced cutawayHead/assemblyTail and all component transforms. Runtime sampled every stage and both options.",
+        "Stages 0/.15: portal sits at an inner-membrane strip; capsid/scaffold form on one side and baseplate/tube/sheath on the other. Head is initially DNA-free.",
+        "Stage .33: active gp21 clears scaffold before load; inactive gp21 retains scaffold and blocks head maturation while tail grows.",
+        "Stage .5: processed prohead leaves membrane, expands and gains DNA. This is an occupancy summary; there is no exterior DNA feed strand, so it does not resolve packaging topology.",
+        "Stages .69/.83/end: neck seal appears after loading, head and tail converge, fibers appear last, sheath remains extended. At inactive end, head stays unfilled/unjoined and fibers are not installed.",
+        "Final docking is geometrically coherent: neck lower ring center near y=-.494 and tail terminator center y=-.48. Inspected phageAssembly.png at .55."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9958956/",
+          "title": "Rao et al. (2023), Bacteriophage T4 Head: Structure, Assembly, and Genome Packaging",
+          "supports": "Opened review sections 2.2 and 3.1: membrane-associated gp20 initiates a DNA-free prohead; gp21 proteolysis precedes packaging; gp13/gp14 seal the filled head before independent tail docking. Includes 12-fold gp20, 12-fold gp13 and 6-fold gp14."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/6UZC",
+          "title": "RCSB PDB 6UZC, Portal vertex structure of bacteriophage T4",
+          "supports": "Opened primary cryo-EM deposition and linked abstract: a 12-subunit portal occupies a symmetry-mismatched capsid vertex used in assembly, packaging and ejection."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3004832/fullTextXML",
+          "title": "Morphogenesis of the T4 tail and tail fibers, full-text XML",
+          "supports": "Actually retrieved article body: T4 tail comprises a tube, sheath and distal baseplate; independent assembly of long-tail-fiber halves and sixfold baseplate organization. No generic siphovirus sheath is implied."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Qualified only as a morphogenesis overview. External concatemer, gp16/gp17 ATP chemistry and packaged-DNA terminal redundancy are omitted; the dedicated packaging model covers more detail.",
+        "Subunit relief/capsid lattice is schematic rather than a fitted T4 atomic reconstruction. No new scientific claim should be inferred from decorative counts."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "phagePackaging",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Processed T4 prohead, gp20 portal and gp17 packaging motor; ATP present/absent branches; stops after gp13/gp14 sealing.",
+      "checks": [
+        "Read all six bilingual stages, both ATP options, labels and cutawayHead/refinedGeometry helpers; runtime sampled all stages plus endpoints for both options.",
+        "Stages 0/.16: major scaffold is absent; portal has 12 subunit groups and motor has 5. The portal is held fixed, not rotated as a rotor. gp16 omission is stated.",
+        "Stages .3/.51: ATP availability gates DNA-load fraction, expansion and motor cycling. No ATP preserves zero lumen load and blocks headful/seal outcomes. ATP icons are symbolic rather than an exact ATP-per-base-pair account.",
+        "Stages .78/.92: loading completes before visible cut gap/motor displacement; external concatemer is separated and motor leaves before neck rings grow. The helper has 12 gp13 and 6 gp14 subunits; no tail is retained from motor.",
+        "Terminal handling is T4 headful, not lambda cos cleavage. No exact genome-length claim is made. Helical rails/base pairs explicitly identify duplex DNA.",
+        "Inspected phagePackaging.png at .55 and traced the external duplex, axial entry connector and partial packed-DNA draw range."
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/s41467-021-26800-z",
+          "title": "Dai et al. (2021), A viral genome packaging ring-ATPase is a flexibly coordinated pentamer",
+          "supports": "Opened primary single-molecule study: actively packaging T4 motor has five gp17 subunits; ATPase drives translocation into a preassembled prohead. Its discussion distinguishes ATPase and nuclease domains and concatemer headful packaging; precise firing is not a rigid universal sequence."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/6UZC",
+          "title": "RCSB PDB 6UZC, Portal vertex structure of bacteriophage T4",
+          "supports": "Opened primary cryo-EM deposition and linked abstract: a 12-subunit portal occupies a symmetry-mismatched capsid vertex used in assembly, packaging and ejection."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9958956/",
+          "title": "Rao et al. (2023), Bacteriophage T4 Head: Structure, Assembly, and Genome Packaging",
+          "supports": "Opened review sections 2.2 and 3.1: membrane-associated gp20 initiates a DNA-free prohead; gp21 proteolysis precedes packaging; gp13/gp14 seal the filled head before independent tail docking. Includes 12-fold gp20, 12-fold gp13 and 6-fold gp14."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "External DNA and interior accumulation use separate draw ranges with a thin axial connector, not a length-conserving molecular trajectory. The visible direction and compartment are coherent, but exact strand-by-strand continuity and packaged-length conservation are not demonstrated.",
+        "Terminal redundancy/circular permutation are not displayed. Keep the model qualified as a headful mechanism schematic rather than a complete account of mature genome ends.",
+        "Sinusoidal subunit motion is illustrative; the primary motor study does not establish a rigid five-step universal firing sequence."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "infection",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Legacy initial-entry model explicitly scoped to T4 on a Gram-negative bacterial envelope, despite being opened from the T2 structural atlas root.",
+      "checks": [
+        "Read all three bilingual stages, intro, catalog summary and dependent phageDetails/microbeGeometry helpers. No condition controls or root overrides exist.",
+        "Stage 0: capsid and tail remain extracellular while fibers approach receptors. Two lipid bilayers plus peptidoglycan delimit the Gram-negative envelope.",
+        "Stage .32: sheath shortens/widens; the tail tube keeps fixed axial length and translates toward the periplasm. Cytoplasmic membrane bulges to the tip; pore seals are removed only during entry.",
+        "Stage .6/end: one contiguous arclength interval of duplex geometry passes from the capsid through the tail and channel into cytoplasm; capsid remains outside. Tail outlet/channel dimensions and alignment were traced in code.",
+        "The intro explicitly calls this T4 mechanism and excludes a precise T2 reconstruction; catalog repeats T4. Reusing a schematic T-even head silhouette does not itself assert identical T2/T4 proteins.",
+        "Read-only bundled runtime executed 0/.28/.32/.55/.6/.8/1; inspected infection.png at .55. No model/product files were written."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/26283379/",
+          "title": "Hu et al. (2015), Structural remodeling of bacteriophage T4 and host membranes during infection initiation",
+          "supports": "Primary cryo-ET study: contraction drives the tail tube into the periplasm; the cytoplasmic membrane curves outward to meet the tip and establish DNA passage. PubMed/PMC rendering was blocked; the full indexed abstract was retrieved through the Europe PMC core-record API."
+        },
+        {
+          "url": "https://www.ebi.ac.uk/emdb/EMD-6082",
+          "title": "EMD-6082, infective T4 after sheath contraction",
+          "supports": "Opened primary deposition: wild-type T4 with full DNA after sheath contraction, linked to Hu et al. This supports separating contraction from subsequent DNA transfer."
+        }
+      ],
+      "findings": [],
+      "limitations": [
+        "Molecular identity of receptors and the transmembrane delivery complex is not resolved; source treats gp27/gp29 involvement as a mechanistic proposal, and this animation appropriately leaves the proteins unnamed.",
+        "Primary Hu full-text web access was blocked. The primary abstract was read through Europe PMC, and the linked EMDB deposition was opened. Force balance and exact receptor-binding intermediates remain outside scope."
+      ],
+      "confidence": "medium"
+    }
+  ]
+}

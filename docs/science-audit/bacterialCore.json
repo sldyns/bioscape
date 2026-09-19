@@ -1,0 +1,267 @@
+{
+  "group": "bacterialCore",
+  "reviewer": "p_bacterial_signals (independent author of bacterialSignals, not bacterialCore)",
+  "phase": "A - read-only product audit",
+  "models": [
+    {
+      "id": "bacterialExpression",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "E. coli, sigma70-dependent promoter; cytoplasmic close-up of transcription and translation on the same nascent mRNA; no nuclear membrane, no claimed direct RNAP-ribosome protein bridge.",
+      "checks": [
+        "Read every zh/en intro, stage, control, label, legend and entry; only bacterium is registered and there are no root contexts.",
+        "Sampled both sigma=present/absent across all six stage boundaries and midpoints, endpoints, and extra transition samples: 22 progress values per condition. The absent branch removes mRNA, ribosome and peptide; the core-polymerase approach alone is not counted as transcription.",
+        "Direction check: RNAP px increases while the template is labeled 3-prime to 5-prime; rnaPoint t=1 is the 5-prime end and t=0 is the new 3-prime end; riboT decreases 0.84 to 0.47, so ribosome progression is toward the mRNA 3-prime end. No direction reversal found.",
+        "The two DNA strands remain outside the ribosome. rRNA surface motifs are single tubing, not an imported DNA duplex; their exact RNA topology is schematic and unvalidated. This model does not show DNA being translated.",
+        "Inspected the saved p=0.55 image; it precedes ribosome loading and therefore cannot validate the coupled end state. Reviewed late-state formulas directly.",
+        "Checked 30S/50S identities and assembly, peptide exit and RNA 3-prime continuity. The omitted NTP/GTP, tRNA cycle and atomic rRNA folds are scope limitations, not evidence of an energy-free biochemical claim."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/32820061/",
+          "title": "Wang et al., Structural basis of transcription-translation coupling (2020)",
+          "supports": "Opened PubMed primary-paper abstract and Figure 1 description: the E. coli transcription scaffold contains a transcription bubble, RNA-DNA hybrid and an RNA exit segment; one mRNA connects RNAP and the ribosome."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/6VYW",
+          "title": "RCSB PDB 6VYW: E. coli transcription-translation complex",
+          "supports": "Opened the primary structure record. Confirms distinct template/nontemplate DNA, mRNA and ribosomal components; supports separating RNA from DNA and preserving an RNAP-associated 3-prime end."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/6I0Y",
+          "title": "RCSB PDB 6I0Y: TnaC-stalled ribosome with an emerging folding domain",
+          "supports": "Opened the structural record and its primary-citation summary. A nascent polypeptide occupies/emerges from the large-subunit exit tunnel, rather than floating separately beside it."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "bacterialCore-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+          "location": "lines 221-232, 379-395; exit ring and peptide[0] after load=1",
+          "evidence": "At full ribosome loading, the exit-ring center is [rp.x, rp.y-0.61, 0.36]. The first peptide bead is [rp.x, rp.y-0.52, 0.71]. Their centers are 0.361 world units apart; the peptide radius is 0.072 and ring outer radius is 0.095. No segment joins this gap. The modeled tunnel ends at z=0.36, whereas the peptide begins at z=0.71.",
+          "whyWrong": "The stage says that the nascent peptide emerges from the 50S outlet, but the actual polypeptide is detached well beyond the shown outlet throughout elongation. It looks like a separate product already released during ongoing translation.",
+          "fix": "Derive the peptide start from the large-subunit tunnel endpoint transformed into world space, or parent the peptide path to the large subunit. Include a continuous path from the exit through all visible peptide segments; keep a free distal N terminus and the growing C terminus associated with the ribosome.",
+          "verification": "For every loaded, translating sample, the proximal peptide centerline must meet the modeled exit within a small tolerance below one peptide radius. Inspect an oblique view, not only the front projection.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/6I0Y"
+          ]
+        },
+        {
+          "issueId": "bacterialCore-02",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+          "location": "lines 173, 296-302, 311-321, 363-378, 420-421; RNA start versus RNAP active site",
+          "evidence": "The RNA centerline starts at rnaPoint(0)=[px-0.24,0.69,0.20]. Once docked, the modeled active-site bead is [px+0.04,0.87,0.01] (polymerase position plus [0.04,-0.08,-0.06]), approximately 0.383 units away. No RNA segment connects them and no RNA-template hybrid is built. The growing-3-prime label is independently placed at [px+0.4,0.27,0.3], not at that RNA endpoint.",
+          "whyWrong": "This explicitly teaches the location and connectivity of a growing RNA 3-prime end, but the shown RNA terminates outside the catalytic/template region. The 3-prime attachment claim in userData is not implemented by the geometry.",
+          "fix": "Continue the same RNA strand inward from the exit path to the RNAP active center, include a short template-associated RNA-DNA hybrid, and place the 3-prime label at its actual active endpoint. Preserve a single continuous mRNA to the ribosome and its free 5-prime end.",
+          "verification": "At all transcription-active samples, a connected RNA path must end at the active site and overlap the template only in the short hybrid region. The 3-prime label must follow that endpoint. The sigma-absent condition must still have no RNA.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/32820061/",
+            "https://www.rcsb.org/structure/6VYW"
+          ]
+        }
+      ],
+      "limitations": [
+        "Protein and rRNA folds are illustrative, not validated coordinate models. The existing saved frame does not include a loaded ribosome; late geometry was checked numerically and by code, without a new browser run.",
+        "The embedded PMC3440003 and PMC7566311 pages returned browser challenges on direct open. Equivalent primary evidence was actually opened through PubMed and RCSB; sigma-specific promoter initiation itself is not an identified defect."
+      ],
+      "confidence": "high",
+      "sourceSha256": "7464444b80230e00cd9def09ca08b330499a1cc5b563c694634f1fd5bcd39d21"
+    },
+    {
+      "id": "bacterialDivision",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "One simplified slow-growth E. coli cycle with inner membrane, periplasmic peptidoglycan and outer membrane; chromosome replication/segregation followed by septation; a septal-wall-synthesis-blocked comparison.",
+      "checks": [
+        "Read all six bilingual stages, intro, labels, legend, entry and both septalSynthesis options; no additional roots/contexts.",
+        "Sampled 17 progress values per condition, including all stage starts/midpoints and endpoint. Active synthesis closes/separates two envelopes; blocked synthesis leaves an undivided envelope with two replicated chromosome representations.",
+        "The envelope layer ordering is correct and FtsZ is placed on the cytoplasmic side, with wall synthesis farther outward. The text correctly says FtsZ alone is insufficient and excludes fast-growth overlapping cycles.",
+        "The DNA formula and fork trajectories were inspected while replication and segregation overlap, not just in the p=0.55 saved image where replication is already complete.",
+        "Quantitative code-formula check at p=0.37: replication=0.944606, segregation=0.467412; homologous parent/sister branchpoint positions are 1.59084 units apart; one fork is 0.39236 units from its matching parental branchpoint and 1.21080 units from the matching sister end.",
+        "FtsZ departure timing was compared with primary compartmentalization experiments. No quantitative synthesis rate, GTP budget or exact divisome stoichiometry is claimed."
+      ],
+      "sources": [
+        {
+          "url": "https://journals.asm.org/doi/10.1128/jb.01212-07",
+          "title": "Nielsen et al., Dynamics of E. coli Chromosome Segregation during Multifork Replication (2007)",
+          "supports": "Opened the primary ASM article. Its introduction describes bidirectional ori-to-terminus replication; live-cell locus measurements show replication and sister segregation proceeding together. The evidence concerns progressive segregation, not physically severed unfinished replication products."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/24506818/",
+          "title": "Soderstrom et al., Disassembly of the divisome in E. coli (2014)",
+          "supports": "Opened the primary PubMed record including abstract and figures. FtsZ/ZapA leave before cytoplasmic compartmentalization, while several later divisome components remain."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11102604/",
+          "title": "Cameron and Margolin, New insights into assembly and regulation of the bacterial divisome",
+          "supports": "Opened this embedded review. It supports the declared layer ordering, FtsZ/FtsA/ZipA scaffold, FtsWI wall synthesis and earlier FtsZ departure. Used as corroboration alongside the primary papers."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "bacterialCore-03",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+          "location": "lines 474-499; chromosomes transforms, dnaPieces[1] visibility and forks positions",
+          "evidence": "Before replication finishes, the entire parental circle is moved left by -1.7*segregation, while only the newly visible sister arc is moved right by +1.7*segregation. The fork position instead subtracts only 0.7*segregation and does not inherit either chromosome scale. At p=0.37, the two representations of a branchpoint are 1.59 units apart although replication is only 94.5% complete. Both incomplete sister-arc tips are free in space; neither joins the unrepeated parental region, and forks float between them.",
+          "whyWrong": "Overlapping replication and segregation is biologically appropriate; breaking the topology is not. Before completion, the replicated arms and unreplicated region meet at two replication forks. The animation instead portrays synthesis of a disconnected partial second chromosome.",
+          "fix": "Represent the pretermination chromosome as a connected theta-like branched network with shared fork coordinates. Allow replicated domains to separate while preserving their junctions to the unreplicated region. Bind fork objects to those actual junctions; split into two closed circles only at completed replication/resolution.",
+          "verification": "Across 0<replication<1, both replication forks must coincide with DNA branchpoints and every nascent arm end must have a DNA connection. After completion, each daughter must contain one closed chromosome representation. Check active and blocked septation conditions.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/10.1128/jb.01212-07"
+          ]
+        },
+        {
+          "issueId": "bacterialCore-04",
+          "severity": "P2",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+          "location": "lines 501-535; scaffold visibility and uniform scale",
+          "evidence": "FtsZ scaffold radius and all its molecular dimensions are multiplied by 1-constriction, while visibility persists until p=0.91. Inner-membrane closure occurs when constriction reaches 1 at p=0.89. There is no separate departure/disassembly before final sealing; the same FtsZ pieces shrink almost to zero along with the septum.",
+          "whyWrong": "The text avoids calling FtsZ a lone constriction engine, but this motion still suggests a continuous shrinking FtsZ apparatus participating until closure. The cited E. coli evidence separates FtsZ departure from later envelope closure.",
+          "fix": "Add an earlier FtsZ-disassembly phase that reduces filament occupancy without shrinking protein-subunit size to zero, while later wall-synthesis/remodeling components continue to closure. Preserve the blocked-synthesis condition as an early arrested ring.",
+          "verification": "In the active branch there must be a nonzero interval with the inner-membrane neck still open but FtsZ absent/reduced before closure. Protein thickness must not scale to zero merely because the septal radius decreases.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/24506818/",
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC11102604/"
+          ]
+        }
+      ],
+      "limitations": [
+        "The replication geometry is a coarse chromosome-centerline schematic and does not claim to show every DNA strand or decatenation enzyme. The proposed fix requires connectivity, not a full replication biochemistry expansion.",
+        "Existing screenshot is p=0.55; intermediate topology was established from formulas and stage sampling."
+      ],
+      "confidence": "high",
+      "sourceSha256": "f56742e1a30f1fd44de77518394dc6bb94aa69b498b903a99ff341d3ed1d1d71"
+    },
+    {
+      "id": "conjugation",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "E. coli autonomous F plasmid from donor to F-negative recipient, distinct pilus/contact apparatus, TraI/oriT-dependent ssDNA transfer and synthesis in both cells; not Hfr transfer and not cell fusion or reproduction.",
+      "checks": [
+        "Read six bilingual stages, controls, labels, legends, intro and entry; bacterium is the only declared root.",
+        "Sampled 22 progress values for each oriT=intact/blocked condition. Blocked nicking suppresses transferred/recipient strands; donor template remains. With intact oriT both cells retain their original chromosomes and end with a double-stranded plasmid.",
+        "Single-strand transfer, 5-prime TraI-leading end, donor replacement synthesis and recipient complementary synthesis are described correctly. The timing of recipient synthesis relative to final transfer is intentionally schematic; primary evidence does not justify a more rigid universal order.",
+        "No cell number increase, fusion, gametes or sexual-reproduction claim is made. The recipient donor-capability delay is explicitly acknowledged.",
+        "Inspected the p=0.55 saved frame and traced donorOutgoing, donorNew, recipientT, transfer and relaxase over nicking, transfer and circularization. The final counts alone conceal a transient DNA topology defect.",
+        "The contact apparatus is enlarged and no precise T4SS stoichiometry/recipient-entry pore structure is claimed. ATP-dependent energetics are omitted, not negated."
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/s41467-023-35978-3",
+          "title": "Couturier et al., Real-time visualisation of intracellular dynamics of conjugative plasmid transfer (2023)",
+          "supports": "Opened the Nature Communications primary paper. The introduction and live-cell experiment describe TraI-associated 5-prime T-strand entry, donor replacement replication, conversion in the recipient, and circularization after both T-strand ends have arrived. It explicitly notes uncertainty in the timing of recipient complement synthesis."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37592747/",
+          "title": "Frankel et al., Plasmids pick a bacterial partner before committing to conjugation (2023)",
+          "supports": "Opened the PubMed record corresponding to the embedded paper. Supports donor-surface TraN recognition/mating-pair stabilization and unidirectional contact-dependent transfer."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "bacterialCore-05",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/bacterialCore/conjugationProcess.js",
+          "location": "lines 124-141, 264-271, 315-334; donorOutgoing arc, fixed route and recipient closure",
+          "evidence": "transfer is drawn from p>0.43, but tf remains 0 until p=0.5, so at p=0.47 all 72 donor T-strand segments still form a closed circle while an additional same-colored bridge is already leaving it. During transfer the retained donor T arc has a moving free endpoint at angle 2*pi*tf, yet route(0) stays at the original oriT coordinate (-cx+0.49,-0.65,0.26), not that endpoint. At p=0.64 (tf=0.5) the moving donor endpoint is at x=-cx-0.49: a 0.98-unit x gap from the route origin. At p=0.785, tf=1 and recipientT is closed, but the transfer bridge remains visible until p=0.79.",
+          "whyWrong": "The transferred entity should be one nicked, continuous T strand linking the remaining donor segment through the apparatus to the recipient until its trailing end is delivered. Closed-circle-plus-branch, detached moving donor tail and a bridge remaining attached to a closed recipient circle falsely depict strand duplication/branching rather than strand transfer.",
+          "fix": "Drive donor unwinding, the channel segment and recipient accumulation from a single continuous T-strand path with tracked material order and leading/trailing ends. Open oriT when the bridge starts. Keep donor and bridge endpoints coincident, and remove the bridge as the trailing end arrives before recipient circularization. Retain the existing complementary-synthesis branch logic.",
+          "verification": "Before nicking there is one closed donor T strand and no bridge; after nicking and before completion there is one connected nonbranched T-strand path. Relaxase stays on its leading 5-prime endpoint; recipient closure requires both ends inside and no remaining intercellular strand. Verify the blocked condition creates no nicked/transferred path.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/s41467-023-35978-3"
+          ]
+        }
+      ],
+      "limitations": [
+        "No claim is made that all transfer occurs exclusively through the short stable junction in every biological setting; this model selects that route and distinguishes it from the initial pilus.",
+        "The exact translocation architecture remains unresolved experimentally, so the audit does not treat the drawn annular-subunit count as an asserted structural stoichiometry."
+      ],
+      "confidence": "high",
+      "sourceSha256": "293c9c82682ce1679618513e2049ef8dc55eea4bd7dbaa2657665500dff178b0"
+    },
+    {
+      "id": "transformation",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Naturally competent B. subtilis subpopulation; Gram-positive wall plus one cytoplasmic membrane; polar uptake of one strand and RecA-dependent chromosomal homologous recombination, ending at a heteroduplex.",
+      "checks": [
+        "Read all six zh/en stages, homology controls, labels, legends and entry. Only bacterium is registered; no plant or other bacterial-species context is implied.",
+        "Sampled 21 progress values for each homology=matched/absent condition. Uptake occurs in both; only matched produces the replaced chromosome segment. The absent branch preserves resident DNA and removes unintegrated input later.",
+        "rod(...wall:true) creates one membrane and an external peptidoglycan layer; there is no Gram-negative outer membrane. The membrane crosses the polar ComEC region; environmental dsDNA is not drawn intact through the cytoplasm.",
+        "ComEC ssDNA uptake, external partner-strand loss, SSB/DprA protection and RecA filament loading are in the appropriate broad order and cytoplasmic/extracellular domains. The helical coating is RecA protein on ssDNA, not a second DNA strand.",
+        "The final matched segment replaces only chr[0], leaving chr[1] intact; no automatic second genome or immediate replication is claimed. Subsequent mismatch processing/replication/segregation is explicitly out of scope.",
+        "Inspected saved p=0.55 frame, then followed pair interpolation and resident-strand visibility through p=0.66-0.9. ComEA position was compared with the actual rod/cap surface, not only the named group.",
+        "Energy coupling (ComFA/PMF), nuclease identity and exact uptake-machine oligomer counts are not resolved by the diagram; no numerical stoichiometry or energy claim is made."
+      ],
+      "sources": [
+        {
+          "url": "https://journals.asm.org/doi/10.1128/jb.01128-10",
+          "title": "Kaufenstein et al., The Three-Layered DNA Uptake Machinery at the Cell Pole in Competent B. subtilis Cells Is a Stable Complex (2011)",
+          "supports": "Actually opened the full primary ASM paper. It locates ComEA at the membrane, ComEC at polar uptake sites, ssDNA transport into cytosol and RecA-mediated introduction of ssDNA into homologous duplex with displacement of one resident strand."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3829333/",
+          "title": "Yadav et al., B. subtilis DprA Recruits RecA onto ssDNA (2013)",
+          "supports": "Search-retrieved full abstract/discussion supports DprA-assisted RecA loading on SSB-coated ssDNA. Direct PMC/PubMed/publisher opens were blocked or errored, so this is corroborating metadata/text rather than an independently opened full text."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4824099/",
+          "title": "Carrasco et al., Chromosomal transformation in B. subtilis is a non-polar recombination reaction (2016)",
+          "supports": "Title and identifier verified through PubMed/search; direct full-text open was blocked. No new claim or finding relies exclusively on this unavailable full text."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "bacterialCore-06",
+          "severity": "P1",
+          "kind": "misleading_causality",
+          "file": "src/processes/modules/bacterialCore/transformationProcess.js",
+          "location": "lines 271, 299-308, 348-366; global pair interpolation versus chromosome arc hiding",
+          "evidence": "incoming(t) is interpolated from a cytoplasmic uptake path to target(t) using pair. As soon as pair>0.01, all resident-strand segments with chromosome angle 0.5..2.5 disappear together, and an entire displaced arc is drawn. At p=0.68, pair is only 0.028; the incoming t=0 endpoint is still about 1.52 units from its target, yet the whole resident arc has already been removed from the duplex. The displacement is thus driven by progress, not actual homologous contact/local strand exchange.",
+          "whyWrong": "RecA-mediated strand invasion/exchange requires homologous juxtaposition. The current animation removes and displaces a large resident sequence while the corresponding donor strand is still remote, reversing the event that is supposed to cause displacement.",
+          "fix": "Separate homology search/docking from strand exchange. Keep the recipient duplex intact until the incoming filament reaches the homologous site, then extend a local D-loop/exchange boundary while transferring the corresponding resident segments into a connected displaced path. The final heteroduplex can preserve the existing one-strand replacement outcome.",
+          "verification": "At every intermediate sample, resident-strand displacement must be limited to positions already contacted and paired by incoming DNA. Before docking, the recipient chromosome is intact. After integration, the incoming segment and retained complement remain connected to their respective chromosome backbones; absent homology never removes the resident arc.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/10.1128/jb.01128-10"
+          ]
+        },
+        {
+          "issueId": "bacterialCore-07",
+          "severity": "P2",
+          "kind": "compartment_annotation",
+          "file": "src/processes/modules/bacterialCore/transformationProcess.js",
+          "location": "lines 112-119, 199-214; comea group versus rod membrane cap",
+          "evidence": "ComEA consists only of two lobes and a short local tube at world position [-2.12,0.37,0.16], with no transmembrane element or membrane tether. At that radial coordinate the modeled membrane cap is near x=-1.77; even the rightmost ComEA geometry ends around x=-1.98, leaving a visible extracellular gap. It may approach the enlarged ComEC complex, but its own membrane association is not represented.",
+          "whyWrong": "The specific B. subtilis ComEA in the cited study is membrane-bound, whereas this figure presents the named receptor as a free extracellular capture protein. The current stage/legend does not explain that its anchor has been omitted.",
+          "fix": "Extend a clear ComEA membrane anchor into the actual cytoplasmic membrane and keep its DNA-binding domain on the external side. Alternatively depict it as a labeled partial domain with an explicit visible tether/cut boundary, without claiming an unsupported oligomer structure.",
+          "verification": "The ComEA anchor intersects only the single cytoplasmic membrane; its DNA-binding lobe remains extracytoplasmic and can contact dsDNA. Verify the geometry at both homology conditions and during capture.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/10.1128/jb.01128-10"
+          ]
+        }
+      ],
+      "limitations": [
+        "ComEC and RecA details remain structural schematics; this review does not assert their drawn repeat counts or precise folds are experimental structures.",
+        "Direct access to two embedded recombination papers was unavailable; the findings are supported by the primary ASM paper that was successfully opened."
+      ],
+      "confidence": "high",
+      "sourceSha256": "7024f5016955d54169947d4c2b4176f278c376befc7110231dc6f80e03a7c392"
+    }
+  ]
+}

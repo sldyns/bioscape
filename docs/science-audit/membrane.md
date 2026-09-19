@@ -1,0 +1,140 @@
+# Membrane 科学审计（Phase A）
+
+只读产品审计；仅新增本组 JSON/Markdown。覆盖 entries.js 全部 4 个过程、7 个 root 实例、23 个控制/root 组合。读取每个中英文阶段与实际几何/更新公式，并对关键路径和红细胞面积做直接几何测量。未进行浏览器交互验收。
+
+结果：4 confirmed_issue；0 qualified_pass；0 unresolved。共 6 项：P0 0、P1 4、P2 2。全部置信度 high；并非宣称除此之外绝无问题。
+
+## diffusion — confirmed_issue
+
+四种 root 的质膜局部示意；氧经脂质区、水经通用水通道蛋白。非完整细胞包被、非实测扩散速率。
+
+已核对：读取全部 5 个中英文阶段、intro、legend、controls、labels、entries 和 membraneGeometry.js。route=water/oxygen × gradient=outside/equal × 4 roots，共 16 组合；检查默认和阶段边界及终态。；实际膜几何头基位于 y±0.65，疏水尾朝向膜内；AQP 为四单体、每单体有自己的孔。水轨迹进入四个单体孔；氧在蛋白之外的脂质区域穿膜。未引入 ATP。；跟踪 32 个 diffusing-molecule 对象的位置：outside 初始内/外=8/24，12 向内及4向外转移后为16/16；equal 初始16/16且8进8出。所有 root 相同。总数守恒，净方向正确。；水控制明确称水活度，并注明未绘出不透膜溶质；plant/yeast/bacterium 的额外包被省略已在 root 文案限定，未把动物 AQP1 亚型泛称为全部物种。
+
+### membrane-01 · P2 · annotation-animation mismatch
+
+位置：`src/processes/modules/membrane/diffusionProcess.js`，stages[4] lines 52–58; update lines 193–196。
+
+每个入选分子只做一次 ease(p,a,a+0.37) 穿越；outside 最后一次在 p=0.824 完成，equal 在 p=0.688 完成。p≥0.86 两种模式都只有各侧局部抖动，无任何穿膜事件，但最后阶段写双向交换持续。
+
+当前终段把零净通量画成零跨膜交换，易混淆动态平衡与交换停止。
+
+修法：在平衡终段安排成对的正反穿膜轨迹，保持净通量为零；或将该终段明确标为平衡分布的冻结快照，并避免继续播放仅各侧抖动来代表跨膜动态平衡。
+
+验收：从几何轨迹计数 p=0.86–1 的穿膜事件：若声称持续动态交换，两个方向均须非零且相等，总分子数32、分布16/16附近保持平衡。
+
+依据：
+- [RCSB 1J4N / Structural basis of water-specific transport through the AQP1 water channel](https://www.rcsb.org/structure/1J4N) — 已打开结构页面及原始论文摘要：AQP1 水孔连接内外水相；作者指派生物学组装为 C4 四聚体。用于结构原理，不作为四种 root 同一亚型证据。
+- [OpenStax Biology: Passive Transport](https://openstax.org/books/biology/pages/5-2-passive-transport) — 已打开正文：扩散平衡仍有分子的双向运动，净通量为零。
+- [Molecular Biology of the Cell: Principles of Membrane Transport](https://www.ncbi.nlm.nih.gov/books/NBK26815/) — 已打开正文：小非极性分子可跨脂双层，通道介导被动运输沿相应驱动力。
+
+边界：未进行浏览器交互验收；查看已有代表帧并以几何/更新公式覆盖全部阶段。；通道折叠、尺度及轨迹为明确的教学示意；未据此声称原子级结构或真实水活度定量。
+
+## activeTransport — confirmed_issue
+
+动物质膜 Na⁺/K⁺-ATPase 单周期，省略 FXYD 与原子级配位。
+
+已核对：读取全部6阶段及中英文/控制/标签；energy=atp/none 两条件，检查0、阶段点、0.24、0.29、0.36、0.71、0.77、0.84、1等状态边界。；α10跨膜螺旋，N/P/A在胞质侧，β单跨膜及外侧头部；Na从 y<0 到 y>0 共3个，K反向共2个。ATP和磷酸转移在胞质侧；一个ATP对应一次循环。；none 将 q 限于0.18，允许Na结合但无Na输出、K摄入或磷酸化。内外门开放区间不重叠。；直接读取门 position/scale 与标签：p=.24 内门 x=-.46056 尚未关闭；p=.71 外门 x=.74624，开放量 .944606。
+
+### membrane-02 · P2 · state-label mismatch
+
+位置：`src/processes/modules/membrane/activeTransportProcess.js`，update gate formulas lines 241–248; phosphorylation lines 289–303; state/stateTexts lines 309–326。
+
+标签在 q=.24 切到 E1P sodium occluded，但磷酸出现阈值为 .25，内门到 .29 才完全关闭；q=.71 切到 E2 potassium occluded，而外门从 .70 到 .77 才关闭，在 .71 仍开放94.46%。
+
+闭锁态的命名要求结合腔对两侧不连通；现在明确标签先于实际几何，且 E1P 标签先于磷酸化。
+
+修法：以门的实际闭合和磷酸状态决定标签；过渡区使用 closing/opening 等过渡文案，仅两门均闭合且符合磷酸状态时标注相应 occluded。
+
+验收：遍历时间，凡 occluded 标签出现则两门均已关闭；E1P 必须已有P域磷酸。继续保证无同时内外开放、无ATP停滞、3:2:1计量。
+
+依据：
+- [Structural basis for gating mechanism of the human sodium-potassium pump (2022), full text XML](https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9458724/fullTextXML) — 已实际读取 Europe PMC 全文：1 ATP 驱动3Na外排/2K内入；α为10TM及胞质N/P/A域。Na闭锁态已磷酸化且不通胞质；K闭锁态不通外侧。
+
+边界：门和结合腔是明确简化的切面几何；没有检验原子级离子配位或将人工折线当作结构数据。；FXYD省略不改变此模型限定的核心循环；不同组织亚型和完整离子浓度未模拟。
+
+## osmoticBalance — confirmed_issue
+
+成熟哺乳动物红细胞的短时低渗/等渗/高渗响应，不模拟溶血或膜囊泡脱落。
+
+已核对：读取全部5阶段、中英文、3个tonicity条件与默认值；实际外层/内层膜顶点在0、.38、.63、1测量，未依赖userData的volume声明。；初态为双凹、无核无壁；水双向轨迹及箭头低渗净入/高渗净出/等渗平衡，溶质始终在外侧。spectrin示意位于膜内侧。；对索引三角网直接计算面积（叉积之和/2）与封闭网体积（有向四面体和/6）。终态 V/V0、A/A0：低渗1.687773、1.025692；等渗1、1；高渗0.480279、0.683836。；高渗p=.38: A/A0=.910194；p=.63: .761005。膜面积损失贯穿形变，非仅一个终帧误差。内层膜逐顶点为外层*.935，存在同样比例变化。
+
+### membrane-03 · P1 · misleading geometry / membrane conservation
+
+位置：`src/processes/modules/membrane/osmoticBalanceProcess.js`，update shape formulas lines 253–266。
+
+高渗分支 shrink=1-hyper*.22 同时乘三个坐标，角向crenation未补足表面积。最终实际外层网面积仅初态68.38%，体积48.03%；没有膜脱落、断裂或材料转移。
+
+短时渗透性失水减少细胞内体积，应由大致保留的脂膜容纳并改变形状；模型却把完整膜材料收缩掉约三分之一，表现成显著可压缩弹性皮囊。
+
+修法：使用近似面积守恒的红细胞形变，让失水通过更明显的皱褶/形态重排容纳。不要仅均匀缩小；对每步求面积约束，并以体积单调下降作为独立约束。
+
+验收：直接积分三角网：所有tonicity和阶段膜面积接近A0（选定小数值容差，如≤3%，并解释离散误差），低渗V上升、高渗V下降、等渗几何不变；禁止用userData假数值代替几何验证。
+
+依据：
+- [Linderkamp & Meiselman, Geometric, osmotic, and membrane mechanical properties of density-separated human red cells (Blood, 1982; PMID 7082818)](https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:7082818&format=json&resultType=core) — 实际打开 Europe PMC 原始研究摘要：改变外液渗透条件时红细胞体积变化，而所测各组膜表面积保持不变。不是声称该研究覆盖本模型全部高渗浓度。
+- [Physiology, Osmosis](https://www.ncbi.nlm.nih.gov/books/NBK557609/) — 已打开正文：低渗红细胞吸水，高渗失水，等渗净水流为零。
+- [Structural basis of membrane skeleton organization in red blood cells (2023)](https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:37044097&format=json&resultType=core) — 已打开原始研究摘要：spectrin-actin膜骨架位于脂膜下方；细节来自猪红细胞，不能把模型三角网当作该复合物精确结构。
+
+边界：源研究直接验证的是其测量的渗透压范围；对短时高渗分支的膜材料守恒判断同时依赖本模型明确排除膜损失事件。；外侧溶质数量与水示意粒子非真实浓度；内部渗透质省略，张力相对细胞内的定义已在阶段文字说明。；未做活细胞力学拟合、溶血预测或浏览器验收。
+
+## bacterialCellWall — confirmed_issue
+
+已翻转脂质II到 E. coli RodA-PBP2 周质聚合/转肽；外膜、细胞质合成、翻转及继发抗生素反应明确省略。
+
+已核对：读取6个阶段、中英文、antibiotic=none/betaLactam两条件；检查进料、p=.25–.59逐糖显隐、p=.35载体回收、p=.57–.92交联和终态。；RodA10TM、PBP2单TM及周质催化域；新链NAM连接五肽；新交联端点是供体D-Ala4至邻链mDAP3，同时D-Ala5释放，正常5条/药物0条。；β-内酰胺示意四元环在结合后断一键、出现活性位点共价连线，先于交联事件；药物控制阻断转肽，不凭此推演裂解。；逐对象检查前体糖颜色/坐标/载体连接，新链显隐单位，已有网架的真实连接端点；没有仅依据结构元数据判定。
+
+### membrane-04 · P1 · molecular topology
+
+位置：`src/processes/modules/membrane/bacterialCellWallProcess.js`，lipidII and carrier construction lines 249–265。
+
+前体NAG在local x=0、NAM在x=.3；肽干附在NAM，但载体上端在[0,.78,.27]，位于NAG[0,.91,.27]正下方，未绘PP桥。载体与前体同x平移后保持这一错误对应。
+
+脂质II载体应经焦磷酸连接NAM的还原端，不能把载体放在NAG端代表这种连接。
+
+修法：将载体连接定位到NAM，并画出简化但连续的Und-PP-NAM-NAG关系；肽干仍附NAM。
+
+验收：每个前体在所有移动阶段保持Und-PP-NAM连接，不能连接NAG；糖肽头位于周质，异戊二烯链在内膜。
+
+### membrane-05 · P1 · substrate-to-product causality
+
+位置：`src/processes/modules/membrane/bacterialCellWallProcess.js`，update count lines 322–329 and lipidII/carrier lines 352–355。
+
+场景只有1个二糖五肽前体，p=.35永久消失；新链却以floor(growth*10)逐个显出10个单糖及5个肽干。载体自.35回收，而.35–.59仍增长，生长链未保留脂质锚。
+
+这种连续因果动画把1份二糖前体变成5份且按单糖添加，并让仍在聚合的糖链失去膜锚；这不是仅省略真实速率。
+
+修法：缩为一个守恒的二糖添加实例，或明确呈现连续5次前体供给/转移；按二糖单位加入，展示生长链保留的Und-PP锚与被释放载体的区别。
+
+验收：每新增NAG-NAM单位消耗1个脂质II；可跟踪同一糖/肽身份而非从隐藏池无源出现。聚合阶段至少保持一个生长链脂质锚，回收量与供体反应相符。
+
+### membrane-06 · P1 · peptidoglycan network topology
+
+位置：`src/processes/modules/membrane/bacterialCellWallProcess.js`，second pre-existing strand lines 241–247。
+
+后排旧链只有糖环，无肽干；奇数j的紫色线直接从前排NAM中心[x,2.8,.3]连到后排NAM中心[x,3.2,-.37]，被用来表示已有网架。
+
+已有网架被画成糖环之间的直接交联；真实相邻链通过连接在NAM上的肽干交联。新链处正确的4→3肽交联不能纠正背景链的另一套错误连接规则。
+
+修法：给后排补齐可读的肽干并把连接端点放在适当氨基酸残基上；如空间不足，移除该后排网架示意，避免直接糖-糖跨链键。
+
+验收：所有跨糖链的共价连线端点均落在肽干残基，绝不直连NAM糖环中心；链内糖苷键与链间肽键视觉和身份可区分。
+
+依据：
+- [Structural basis of peptidoglycan synthesis by E. coli RodA-PBP2 complex (2023), full text XML](https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10449877/fullTextXML) — 已实际读取全文：脂质II的MurNAc连接Und-PP；二糖单位参与RodA聚合，生长链保持Und-PP锚定；相邻糖链由肽干交联。
+- [Genome-wide identification of genes required for alternative peptidoglycan cross-linking in Escherichia coli revealed unexpected impacts of β-lactams (2022)](https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:36575173&format=json&resultType=core) — 已实际读取原始研究摘要：PBP的D,D转肽酶是β-内酰胺主要靶点；杀菌涉及下游过程，因此目前只解释直接转肽阻断的范围合理。
+
+边界：RodA/PBP2域折叠、尺寸和间距为简化；尚不能据此声称真实复合体接触界面或逐原子催化轨迹。；抗生素选项限定占据PBP2后的直接效应，不推论所有β-内酰胺对各种PBP选择性相同。；未把E. coli的mDAP交联方式泛用于所有细菌；无浏览器验收。
+
+## 测量记录
+
+红细胞通过实际索引三角形面积与有向四面体体积积分得到；均以相应模式p=0归一。
+
+| 条件/进度 | V/V₀ | A/A₀ |
+|---|---:|---:|
+| 低渗 1 | 1.687773 | 1.025692 |
+| 等渗 1 | 1 | 1 |
+| 高渗 .38 | .859578 | .910194 |
+| 高渗 .63 | .606981 | .761005 |
+| 高渗 1 | .480279 | .683836 |
+
+扩散32分子终态均为16/16；outside最后穿越结束p=.824，equal为.688。泵的两个门从不同时开放，但闭锁标签领先于真实闭门时刻。报告的结论基于几何而非仅凭userData。

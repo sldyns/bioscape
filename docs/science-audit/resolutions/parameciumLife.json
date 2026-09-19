@@ -1,0 +1,141 @@
+{
+  "group": "parameciumLife",
+  "issues": [
+    {
+      "issueId": "parameciumLife-01",
+      "status": "fixed",
+      "changes": "Representative acidosomes and lysosomes dock outside the food vacuole. Recipient and donor membranes open and share both leaflet boundaries with a fusion neck. Cargo enters through the opening while donor membrane shrinks at the external contact. Acidification still precedes lysosomal delivery.",
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+        "src/processes/modules/parameciumLife/scientificGeometry.js",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Sample actual membrane vertices in both fusion intervals: shared recipient/neck and donor/neck rims, nonzero aperture, and all donor membrane vertices external to the recipient.",
+        "Check neck closure outside fusion intervals.",
+        "science.test.mjs and refinementSmoke.mjs pass."
+      ],
+      "limitations": [
+        "Representative fusion events and membrane absorption trajectories are schematic, not molecular fusion simulations.",
+        "Root visual acceptance remains pending; no browser was operated."
+      ]
+    },
+    {
+      "issueId": "parameciumLife-02",
+      "status": "fixed",
+      "changes": "Removed the preloaded internal food and separate incoming prey populations. The same seven objects travel from outside through the oral/cytopharyngeal route into the nascent vacuole, then move with its lumen without a duplicate or position jump.",
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "All seven tracked objects begin outside.",
+        "Every arrival is sampled at plus/minus 1e-7 and checked for coordinate continuity.",
+        "The same seven visible food objects lie inside the actual transformed membrane after intake.",
+        "science.test.mjs and refinementSmoke.mjs pass."
+      ],
+      "limitations": [
+        "Particle counts, sizes and oral route remain teaching-scale representations rather than quantitative uptake or complete oral ultrastructure."
+      ]
+    },
+    {
+      "issueId": "parameciumLife-03",
+      "status": "fixed",
+      "changes": "The central bladder now has six actual ports in both cutaway membrane layers. Dynamic hollow inlet necks share the exact port boundary vertices while following bladder expansion. Ports close and necks detach during isolation. Water markers enter the bladder through the connected path and remain on the ampulla side during isolation.",
+      "files": [
+        "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+        "src/processes/modules/parameciumLife/scientificGeometry.js",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Both osmotic branches are sampled at 121 times; both inlet leaflet rims match the actual bladder membrane port boundaries.",
+        "Ray/triangle intersections verify an unobstructed aperture during filling and membrane closure during isolation.",
+        "Inlet side faces have no end caps; apertures have nonzero width. Water markers reach the bladder in both branches and stay outside during isolation.",
+        "science.test.mjs and refinementSmoke.mjs pass."
+      ],
+      "limitations": [
+        "The front viewing cut remains; membrane thickness, ampulla/spongiome proportions and cycle timing are schematic.",
+        "Six radial arms are an example, not universal stoichiometry. Osmotic and membrane-tension dynamics are not quantitative.",
+        "Root visual acceptance of the new ports and necks remains pending."
+      ]
+    },
+    {
+      "issueId": "parameciumLife-04",
+      "status": "fixed",
+      "changes": "Expanded and advanced micronuclear envelope elongation and coordinated spindle elongation. Segregating chromatid and spindle geometry now remains within the reconstructed closed envelope.",
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "At p=.300 through .538 in .002 increments, transform every visible chromatid and spindle geometry vertex into micronuclear coordinates and assert full reconstructed-ellipsoid containment.",
+        "science.test.mjs and refinementSmoke.mjs pass."
+      ],
+      "limitations": [
+        "Chromatid symbols do not represent species-specific chromosome counts. The ellipsoidal envelope and front viewing cut are schematic."
+      ]
+    },
+    {
+      "issueId": "parameciumLife-05",
+      "status": "fixed",
+      "changes": "Replaced the floating bridge plus disconnected daughter shells with one continuous paired dumbbell-shaped membrane before separation. At separation the continuous surface is removed and exactly two daughter envelopes remain.",
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+        "src/processes/modules/parameciumLife/scientificGeometry.js",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "From p=.59 through .755 all interior cross-sections of the continuous membrane are nonzero and independent daughter envelopes are hidden.",
+        "From p=.76 through 1 the continuous bridge is hidden and both daughter envelopes are visible, excluding a free central third volume.",
+        "science.test.mjs and refinementSmoke.mjs pass."
+      ],
+      "limitations": [
+        "Nuclear shape changes are teaching interpolations. Detailed macronuclear microtubules and membrane mechanics are not simulated; the original comparative species qualification remains."
+      ]
+    },
+    {
+      "issueId": "parameciumLife-06",
+      "status": "fixed",
+      "changes": "Both introduction and final-stage copy now state the nutritional support/refeeding assumption for postconjugational selection of one micronucleus, and explain persistence of multiple presumptive micronuclei during continued starvation. Added the primary nutrient-selection study without changing the correct nuclear counts, ploidy or reciprocal exchange.",
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Bilingual introduction and final stage explicitly name the nutritional condition; tested in science.test.mjs.",
+        "Manually checked the condition qualification and added primary source.",
+        "science.test.mjs and refinementSmoke.mjs pass."
+      ],
+      "limitations": [
+        "No starvation control was added; the lesson follows one nutritionally supported representative course."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/parameciumLife/science.test.mjs",
+      "result": "PASS for all four models: actual geometry, both osmotic branches, finite data, deterministic seeks, stable nodes and geometry inventory."
+    },
+    {
+      "command": "node src/processes/modules/parameciumLife/refinementSmoke.mjs",
+      "result": "PASS for all four models. Feeding 383 nodes/50 geometries/41 materials; CVC 271/192/23; division 322/73/35; conjugation 677/227/37."
+    },
+    {
+      "command": "npx prettier --write [six owned JavaScript/test files]",
+      "result": "Formatted only owned parameciumLife files."
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www6.pbrc.hawaii.edu/allen/ch06/12-pmdv780609-7.html",
+      "model": "parameciumFeeding",
+      "supports": "Primary microscopy identifies fusion necks at the phagosome perimeter; opened and assessed in Phase A."
+    },
+    {
+      "url": "https://www.jstage.jst.go.jp/article/pjab1977/76/7/76_7_87/_article/-char/en",
+      "model": "parameciumConjugation",
+      "supports": "Primary experiment links germinal nuclear selection in exconjugants with nutrient supply; opened and assessed in Phase A."
+    }
+  ]
+}

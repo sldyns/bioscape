@@ -1,0 +1,250 @@
+{
+  "group": "parameciumLife",
+  "reviewer": "p_yeast_life (independent reviewer; not the author of parameciumLife)",
+  "models": [
+    {
+      "id": "parameciumFeeding",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "P. multimicronucleatum; oral uptake, intracellular phagosome maturation, posterior cytoproct egestion.",
+      "checks": [
+        "Read all six bilingual stages, intro, labels, sources and entry metadata; no controls or root overrides.",
+        "Traced all update intervals and vesicleMembrane/addParamecium helpers; inspected supplied p=.55 screenshot.",
+        "Correct: acidification precedes lysosomal delivery; digestion remains associated with a food vacuole; uptake and egestion sites differ; residue exits while retrieval markers move back into cytoplasm.",
+        "No quantitative ATP, pH or kinetics are claimed; particle sizes/counts and route are schematic."
+      ],
+      "sources": [
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch06/01-pmdv830408-14.html",
+          "title": "Allen microscopy collection: nascent digestive vacuole",
+          "supports": "Opened primary microscopy description. Food reaches the cytopharynx before phagosome formation; docked acidosomes fuse after release of the phagosome."
+        },
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch06/12-pmdv780609-7.html",
+          "title": "Allen microscopy collection: acidosome fusion necks",
+          "supports": "Opened electron-micrograph description identifies fusion necks at the phagosome perimeter."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/3622528/",
+          "title": "Fok et al. 1987, phagosomal acidification and lysosomal fusion",
+          "supports": "Opened primary abstract. Perturbation experiments support acidification before subsequent lysosomal fusion."
+        },
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch07/02-pmcyp820525-17.html",
+          "title": "Allen microscopy collection: open cytoproct",
+          "supports": "Opened microscopy description. Egestion involves vacuole–surface membrane continuity and retrieval of membrane into cytosolic vesicles; membrane is not expelled."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "parameciumLife-01",
+          "severity": "P1",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+          "location": "355–365: acid/lyso trajectories; 200–205: invariant food-vacuole membrane",
+          "evidence": "Acidosome radius around the vacuole center falls from .7 to 0 while each intact sphere retains radius .095 until p=.47. At p=.45 its center is only .01377 from the vacuole center. Lysosomes similarly travel all the way to the center by p=.61 before disappearing; the food-vacuole membrane has no fusion deformation.",
+          "whyWrong": "This depicts intact organelles crossing a boundary into the food-vacuole lumen rather than membrane fusion at the vacuole surface. The cutaway permits viewing but does not make that transport mechanism valid.",
+          "fix": "Dock each donor at the current outer membrane, open a local fusion connection, transfer lumen cargo, and merge/retrieve donor membrane at that contact. Do not translate the complete donor sphere into the recipient lumen.",
+          "verification": "Sample the acidification and lysosomal-delivery intervals: intact donor vesicles must stay outside the reconstructed recipient envelope until a local fusion connection exists; only delivered contents may enter its lumen.",
+          "sourceUrls": [
+            "https://www6.pbrc.hawaii.edu/allen/ch06/12-pmdv780609-7.html",
+            "https://pubmed.ncbi.nlm.nih.gov/3622528/"
+          ]
+        },
+        {
+          "issueId": "parameciumLife-02",
+          "severity": "P2",
+          "kind": "misleading_representation",
+          "file": "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+          "location": "246–269 and 340–354: independent food and prey populations",
+          "evidence": "Seven food meshes are visible inside the tracked vacuole already at p=0, while seven separate prey meshes approach from outside and disappear together at p=.27. The final sixth prey center is approximately (.330,-.140,.530), whereas the food-vacuole center remains around (.400,-.820,.450); this last prey does not reach the vacuole before vanishing.",
+          "whyWrong": "The scene promises to follow the formation of one food vacuole, but its incoming cargo is not continuous with its contents. It can appear that food is already inside or material vanishes in the oral route.",
+          "fix": "Track each prey into the cytopharynx and then into the nascent lumen, retaining identity or handing off at the same coordinates; reveal internal food only after its corresponding intake event.",
+          "verification": "For every represented prey, sample the trajectory through the oral route and assert exactly one visible representation before digestion, with any mesh handoff colocated in the nascent lumen.",
+          "sourceUrls": [
+            "https://www6.pbrc.hawaii.edu/allen/ch06/01-pmdv830408-14.html"
+          ]
+        }
+      ],
+      "limitations": [
+        "No browser was operated; the supplied screenshot covers one frame, while intermediate states were checked by source formulas and read-only Node evaluation.",
+        "Exact oral topology, molecular transporters, pH rebound and membrane recycling destinations remain schematic, not validated ultrastructural reconstructions."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "contractileVacuole",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "One P. multimicronucleatum contractile-vacuole complex; radial arms, ampullae, central bladder and dedicated cortical pore.",
+      "checks": [
+        "Read five bilingual stages, intro, labels, metadata and both osmotic control branches; no additional root contexts.",
+        "Direction is correct in formulas: entry decreases z across cortex; radial droplets move inward; extracellular discharge increases z.",
+        "Both freshwater and mild change actual filling-cycle speed and particle counts. The more hypotonic branch cycles sooner; amplitudes/speeds are explicitly illustrative.",
+        "Inspected supplied p=.55 screenshot, traced filling/detachment/discharge/reconnection including second-cycle wrap."
+      ],
+      "sources": [
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch09/video/vid-1/",
+          "title": "Allen/Tani live microscopy: CVC filling and discharge",
+          "supports": "Opened primary video description. Radial arms join the bladder after discharge and detach shortly before the next discharge; fluid continues accumulating in ampullae during systole."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/8834807/",
+          "title": "Ishida et al. 1996, osmotic stress and decorated spongiome",
+          "supports": "Opened primary abstract. Increasing external osmolarity reduced expulsion activity; extreme hyperosmotic stress also reorganized decorated spongiome. This supports the qualitative condition direction, not the chosen numeric speeds."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "parameciumLife-03",
+          "severity": "P1",
+          "kind": "misleading_topology",
+          "file": "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+          "location": "216–221 fixed inlet geometry; 313–340 bladder scale and connected-state flow",
+          "evidence": "The innermost inlet endpoint stays at radial distance .62 (tube radius .075). At cycle=0 the bladder radius is .38966 and its center is at z=.22, leaving at least .23034 radial separation before accounting for the inlet height. Yet inlets are visible and the scene says radialArmsConnected=true. Droplets stop at radius .65 in the connected phase, outside the small bladder.",
+          "whyWrong": "The filling network is physically disconnected during early diastole although it is presented as transferring water into the bladder. This is distinct from the intentional pre-discharge arm detachment.",
+          "fix": "Anchor inlet necks to the evolving bladder boundary and ampulla endpoints, maintain an open continuous lumen during filling, and detach only in the isolation interval. Carry flow markers through that actual lumen into the bladder.",
+          "verification": "For both controls at early filling and after discharge, assert connected membrane/lumen endpoints and a continuous particle route into the bladder. During the declared isolation interval, assert a gap and no flow from ampulla into bladder.",
+          "sourceUrls": [
+            "https://www6.pbrc.hawaii.edu/allen/ch09/video/vid-1/"
+          ]
+        }
+      ],
+      "limitations": [
+        "Six arms are a schematic instance within the documented variable number; no claim of universal six-arm stoichiometry.",
+        "Proton-pump energetics, exact osmotic flux and tension-driven membrane mechanics are omitted; the model is not a quantitative rate model.",
+        "The direct DOI landing page for 10.1006/cbir.2002.0937 did not load; observed connectivity is independently supported by the opened primary microscopy description."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "parameciumDivision",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "P. caudatum vegetative transverse fission; one diploid micronucleus and one polyploid macronucleus partition to each daughter.",
+      "checks": [
+        "Read all six bilingual stages, intro, labels and metadata; no controls or root-context overrides.",
+        "Correct distinctions: micronuclear closed mitosis, no conventional macronuclear metaphase plate, posterior oral apparatus formation, transverse furrow, no partner exchange.",
+        "Final state gives two cells with one nucleus of each type per cell; counted visible model objects and traced transition formulas rather than relying on userData.",
+        "Inspected supplied p=.55 screenshot and evaluated earlier/later nuclear transition geometry."
+      ],
+      "sources": [
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch10a/47-pca730323-15.html",
+          "title": "Allen microscopy collection: P. caudatum micronucleus",
+          "supports": "Opened microscopy page for the species-specific single micronucleus."
+        },
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch10a/48-pca740125-46.html",
+          "title": "Allen microscopy collection: dividing P. caudatum micronucleus",
+          "supports": "Opened primary EM description. Chromosomes and spindle remain within an intact nuclear envelope during micronuclear division."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/7440651/",
+          "title": "Tucker et al. 1980, macronuclear division in P. tetraurelia",
+          "supports": "Opened primary abstract. Macronuclear elongation includes organized intranuclear microtubules and controlled shape changes. This is comparative evidence, not species-specific proof for P. caudatum."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "parameciumLife-04",
+          "severity": "P1",
+          "kind": "misleading_topology",
+          "file": "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+          "location": "138–143 chromosome construction; 202–216 micronuclear size/segregation",
+          "evidence": "At p=.52, the micronucleus is centered near (-.58,0,.56) with radii (.26,.77,.24). An outer chromosome endpoint has offsets (.135,.6667,.16), giving reconstructed-ellipsoid membership Q≈1.464 (>1). Its thickness extends farther outside.",
+          "whyWrong": "The moving chromosome tips leave even the reconstructed full envelope during a stage explicitly described as closed mitosis. Omitting the front half for viewing does not account for exceeding the full-envelope boundary.",
+          "fix": "Compute the envelope and chromosome trajectories from a shared nuclear coordinate system; enlarge/reshape the elongating envelope or reduce the displacement/marker extent so all segregating material stays inside until two sealed daughter nuclei form.",
+          "verification": "Across the entire closed-mitosis interval, assert that chromosome geometry and spindle material remain within the reconstructed envelope (with an explicit rendering-cut allowance only, not extra anatomical space).",
+          "sourceUrls": [
+            "https://www6.pbrc.hawaii.edu/allen/ch10a/48-pca740125-46.html"
+          ]
+        },
+        {
+          "issueId": "parameciumLife-05",
+          "severity": "P1",
+          "kind": "misleading_topology",
+          "file": "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+          "location": "225–237 macronuclear daughters and bridge",
+          "evidence": "At p=.70, daughter macronuclear centers lie at y=±1.38976 and their half-length is .54; the central bridge ends at y=±.65. There is a .19976 gap on each side while the bridge remains visible until p=.76 and the model still reports one macronucleus.",
+          "whyWrong": "The supposed connecting nuclear bridge is a free third nuclear-shaped volume, not continuous elongating macronuclear material. This breaks the depicted one-to-two partition.",
+          "fix": "Use one deforming dumbbell/elongated nuclear surface with a continuous connection until the chosen scission point, then exactly two envelopes. If a separate bridge mesh is retained, update both its ends and radii to meet the lobes and remove it at separation.",
+          "verification": "Before macronuclear separation the nuclear membrane/lumen must form one connected component; after separation it must form exactly two, with no floating middle component.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/7440651/"
+          ]
+        }
+      ],
+      "limitations": [
+        "The macronuclear microtubule paper is P. tetraurelia and is explicitly comparative in the existing source title; it cannot establish every P. caudatum shape detail.",
+        "Representative chromatid symbols do not encode a real chromosome count, and the cortical handoff at final daughter formation remains schematic."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "parameciumConjugation",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "P. caudatum conjugation through postzygotic nuclear differentiation; subsequent two vegetative fissions omitted.",
+      "checks": [
+        "Read all seven bilingual stages, intro, labels, root entry and sources; no controls or root overrides.",
+        "Verified the species-specific sequence: one diploid micronucleus → four haploid products → one survivor → two haploid pronuclei → reciprocal exchange → one diploid synkaryon per partner → 2/4/8 postzygotic products.",
+        "Actual update retains two cells, exchanges both differently colored migrants, maintains the resident pronucleus, separates partners, yields four posterior anlagen plus one retained anterior descendant, and keeps old macronuclear fragments.",
+        "Discrete appearance/merging of nuclear symbols is an abstraction; no extra cell count increase or permanent fusion is asserted. Supplied p=.55 screenshot and intermediate visibility intervals were inspected."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/11908901/",
+          "title": "Nakajima et al. 2002, postmeiotic nuclear behavior in P. caudatum",
+          "supports": "Opened primary abstract. One of four haploid nuclei survives near the oral region, divides into two pronuclei, and the migratory nucleus enters the partner and fuses with its stationary nucleus."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37281122/",
+          "title": "Mikami 1985, nuclear differentiation in P. caudatum",
+          "supports": "Opened primary abstract. Following the third synkaryon division, posterior products become macronuclear anlagen and anterior products are presumptive micronuclei."
+        },
+        {
+          "url": "https://www.jstage.jst.go.jp/article/pjab1977/76/7/76_7_87/_article/-char/en",
+          "title": "Nutrient supply induces germinal nuclear selection in exconjugants of P. caudatum",
+          "supports": "Opened primary abstract. Starved exconjugants retain multiple presumptive micronuclei; nutrient provision is associated with selection of one and degeneration of the others."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12919103/",
+          "title": "Kimura and Mikami 2003, maternal and new macronuclei",
+          "supports": "Opened primary abstract. Maternal macronuclear fragments persist and remain functional after conjugation; their immediate total disappearance would be wrong."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "parameciumLife-06",
+          "severity": "P2",
+          "kind": "scope",
+          "file": "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+          "location": "intro; stage at .8 (lines 66–70); selectMicro and descendant visibility at 232–303",
+          "evidence": "The endpoint always removes three anterior presumptive micronuclei between p=.975 and 1 and presents one retained micronucleus without stating a postconjugational nutrition/refeeding assumption. No nutrient condition is represented or named.",
+          "whyWrong": "The endpoint is supported for appropriate postconjugational culture conditions, but primary experiments associate this selection with nutrient supply and show multiple presumptive micronuclei persisting in starved exconjugants. The current unconditional caption hides a relevant causal condition.",
+          "fix": "Qualify the intro/final stage as a representative nutritionally supported postconjugational course and cite the nutrient-selection study. A new control is unnecessary unless starvation persistence is intentionally taught.",
+          "verification": "Bilingual scope and final-stage copy must name the relevant nutritional assumption; a reader must not infer that one-micronucleus selection is unconditional in continuously starved exconjugants.",
+          "sourceUrls": [
+            "https://www.jstage.jst.go.jp/article/pjab1977/76/7/76_7_87/_article/-char/en"
+          ]
+        }
+      ],
+      "limitations": [
+        "No contradiction found in the core species-specific counts, ploidy, parental exchange or persistence of old macronuclear fragments.",
+        "Synkaryon descendants/anlagen briefly overlap as a maturation handoff; exact membrane fusion and spindle dynamics are not resolved by this nuclear-history schematic.",
+        "The PMC review landing page was challenged by recaptcha, so conclusions rely on opened primary abstracts and the microscopy sources instead."
+      ],
+      "confidence": "high"
+    }
+  ]
+}
