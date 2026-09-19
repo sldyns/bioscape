@@ -662,3 +662,142 @@
     display: none;
   }
 }
+
+/* Keep explanations and controls outside the geometry viewport. */
+.process-visual {
+  display: flex;
+  flex-direction: column;
+}
+.process-scene-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px 4px;
+  flex-shrink: 0;
+}
+.process-scene-toolbar .process-legend {
+  position: static;
+  flex: 1;
+  padding-top: 7px;
+  gap: 6px 14px;
+}
+.process-scene-toolbar .process-view-tools {
+  position: static;
+  flex-direction: row;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.process-scene-toolbar .icon-button {
+  width: 30px;
+  height: 30px;
+}
+.process-scene-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.process-scene-shell .process-canvas {
+  position: relative;
+  inset: auto;
+  flex: 1;
+  min-height: 150px;
+}
+.process-annotation-key {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 5px 14px;
+  flex-shrink: 0;
+  max-height: 88px;
+  overflow-y: auto;
+  padding: 8px 20px 3px;
+  scrollbar-width: thin;
+}
+.process-annotation-key:empty,
+.process-scene-shell[data-annotations="false"] .process-annotation-key,
+.process-annotation-item[hidden] {
+  display: none;
+}
+.process-annotation-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  color: #666975;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.55;
+  padding: 3px 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.process-annotation-item:hover,
+.process-annotation-item:focus-visible {
+  color: var(--blue);
+}
+.process-annotation-number {
+  color: #858b99;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.process-model-label.numbered {
+  width: 21px;
+  height: 21px;
+  padding: 0;
+  border: 1px solid #a9afbd88;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  background: #ffffffd9;
+  box-shadow: none;
+}
+.process-model-label.highlighted {
+  color: white;
+  background: var(--blue);
+  border-color: var(--blue);
+  z-index: 3;
+}
+.process-label-leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.process-label-leaders line {
+  stroke: #969fae;
+  stroke-width: 0.8;
+  opacity: 0.65;
+}
+.process-label-leaders line.highlighted {
+  stroke: var(--blue);
+  stroke-width: 1.4;
+  opacity: 1;
+}
+@media (max-width: 600px) {
+  .process-scene-toolbar {
+    padding: 12px 14px 0;
+    flex-wrap: wrap;
+  }
+  .process-scene-toolbar .process-legend {
+    min-width: 210px;
+  }
+  .process-scene-shell .process-canvas {
+    min-height: 260px;
+  }
+  .process-annotation-key {
+    max-height: 102px;
+    padding-inline: 16px;
+  }
+  .process-annotation-item {
+    min-height: 28px;
+  }
+}

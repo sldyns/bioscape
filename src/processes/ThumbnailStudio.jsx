@@ -60,6 +60,7 @@ function Studio() {
           <ProcessScene
             key={`${rootId}:${id}`}
             definition={contextualDefinition}
+            annotations={false}
             rootId={rootId}
             progress={progress}
             lang="en"
@@ -120,6 +121,6 @@ function Studio() {
   );
 }
 const style = document.createElement("style");
-style.textContent = `*{box-sizing:border-box}body{margin:0;background:#f5f5f7;font:13px system-ui;color:#333}.studio-frame{width:640px;height:640px;margin:0 auto;position:relative}.process-canvas{position:absolute;inset:0;overflow:hidden}.process-canvas>canvas{display:block;width:100%;height:100%}.process-model-labels{display:none}.studio-controls{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px}select{max-width:240px}label{display:flex;gap:8px;align-items:center}`;
+style.textContent = `*{box-sizing:border-box}body{margin:0;background:#f5f5f7;font:13px system-ui;color:#333}.studio-frame{width:640px;height:640px;margin:0 auto;position:relative}.process-scene-shell{position:absolute;inset:0}.process-annotation-key{display:none}.process-canvas{position:absolute;inset:0;overflow:hidden}.process-canvas>canvas{display:block;width:100%;height:100%}.process-model-labels{display:none}.studio-controls{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px}select{max-width:240px}label{display:flex;gap:8px;align-items:center}`;
 document.head.append(style);
 createRoot(document.getElementById("root")).render(<Studio />);

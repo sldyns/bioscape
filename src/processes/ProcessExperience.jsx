@@ -196,6 +196,48 @@ function ProcessPlayer({
         aria-label={t("交互过程模型", "Interactive process model")}
       >
         <div className="process-visual">
+          <div className="process-scene-toolbar">
+            {definition.legend && (
+              <div
+                className="process-legend"
+                aria-label={t("颜色图例", "Color key")}
+              >
+                {definition.legend.map((item) => (
+                  <span key={item.color}>
+                    <i style={{ background: item.color }} aria-hidden="true" />
+                    {item.text[lang]}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="process-view-tools">
+              <button
+                className="icon-button"
+                aria-label={t("放大", "Zoom in")}
+                onClick={() =>
+                  setZoom((v) => ({ direction: "in", key: v.key + 1 }))
+                }
+              >
+                <Plus size={17} />
+              </button>
+              <button
+                className="icon-button"
+                aria-label={t("缩小", "Zoom out")}
+                onClick={() =>
+                  setZoom((v) => ({ direction: "out", key: v.key + 1 }))
+                }
+              >
+                <Minus size={17} />
+              </button>
+              <button
+                className="icon-button"
+                aria-label={t("重置视角", "Reset view")}
+                onClick={() => setResetKey((v) => v + 1)}
+              >
+                <RotateCcw size={17} />
+              </button>
+            </div>
+          </div>
           <ProcessScene
             definition={definition}
             rootId={rootId}
@@ -205,46 +247,6 @@ function ProcessPlayer({
             resetKey={resetKey}
             zoom={zoom}
           />
-          {definition.legend && (
-            <div
-              className="process-legend"
-              aria-label={t("颜色图例", "Color key")}
-            >
-              {definition.legend.map((item) => (
-                <span key={item.color}>
-                  <i style={{ background: item.color }} aria-hidden="true" />
-                  {item.text[lang]}
-                </span>
-              ))}
-            </div>
-          )}
-          <div className="process-view-tools">
-            <button
-              className="icon-button"
-              aria-label={t("放大", "Zoom in")}
-              onClick={() =>
-                setZoom((v) => ({ direction: "in", key: v.key + 1 }))
-              }
-            >
-              <Plus size={17} />
-            </button>
-            <button
-              className="icon-button"
-              aria-label={t("缩小", "Zoom out")}
-              onClick={() =>
-                setZoom((v) => ({ direction: "out", key: v.key + 1 }))
-              }
-            >
-              <Minus size={17} />
-            </button>
-            <button
-              className="icon-button"
-              aria-label={t("重置视角", "Reset view")}
-              onClick={() => setResetKey((v) => v + 1)}
-            >
-              <RotateCcw size={17} />
-            </button>
-          </div>
         </div>
         <div className="process-transport">
           <div className="process-playback">

@@ -3,6 +3,11 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { visibleProcessBounds } from "./sceneBounds.js";
+import {
+  annotationNumbers,
+  isShortNotation,
+  placeLabel,
+} from "./labelLayout.js";
 
 const clampProgress = (value) =>
   Number.isFinite(value) ? THREE.MathUtils.clamp(value, 0, 1) : 0;
@@ -37,9 +42,11 @@ export default function ProcessScene({
   lang,
   resetKey = 0,
   zoom = { direction: null, key: 0 },
+  annotations = true,
 }) {
   const host = useRef(null);
   const engine = useRef(null);
+  const keyHost = useRef(null);
   const live = useRef({ progress, lang, parameters });
   live.current = { progress, lang, parameters };
   const [error, setError] = useState(null);
@@ -49,7 +56,7 @@ export default function ProcessScene({
   useEffect(() => {
     const element = host.current;
     let renderer, controls, environment, pmrem, room, observer;
-    let scene, model, labelLayer;
+    let scene, model, labelLayer, leaders;
     let disposed = false;
     let contextLost = false;
     let frame = 0;
@@ -83,6 +90,7 @@ export default function ProcessScene({
       renderer?.dispose();
       renderer?.domElement.remove();
       labelLayer?.remove();
+      keyHost.current?.replaceChildren();
       if (engine.current?.dispose === dispose) engine.current = null;
     };
     const fail = () => {
@@ -104,44 +112,64 @@ export default function ProcessScene({
     const projectLabels = () => {
       const occupied = [];
       const projected = new THREE.Vector3();
+      const numbers = annotationNumbers(model.labels ?? [], live.current.lang);
       for (const item of labelItems) {
-        const wording =
-          width < 480 && item.source.compactText
-            ? item.source.compactText
-            : item.source.text;
         const text =
-          wording[live.current.lang] ?? wording.zh ?? wording.en ?? "";
-        if (item.element.textContent !== text) item.element.textContent = text;
+          item.source.text[live.current.lang] ??
+          item.source.text.zh ??
+          item.source.text.en ??
+          "";
+        const numbered = !isShortNotation(text);
+        const active = item.source.active !== false;
+        const number = numbers[item.sourceIndex];
+        const numberText = number === null ? "" : String(number);
+        if (item.numberElement.textContent !== numberText)
+          item.numberElement.textContent = numberText;
+        item.key.hidden = !active || !numbered;
+        if (item.wording.textContent !== text) item.wording.textContent = text;
+        item.key.setAttribute(
+          "aria-label",
+          numbered && active ? `${number}. ${text}` : text,
+        );
+        const marker = numbered ? numberText : text;
+        if (item.element.textContent !== marker)
+          item.element.textContent = marker;
+        item.element.classList.toggle("numbered", numbered);
         projected.fromArray(item.source.position).project(camera);
-        const x = ((projected.x + 1) * width) / 2;
-        const y = ((1 - projected.y) * height) / 2;
-        const halfWidth = Math.max(4, item.element.offsetWidth / 2);
-        const halfHeight = Math.max(12, item.element.offsetHeight / 2);
-        const rect = {
-          left: x - halfWidth,
-          right: x + halfWidth,
-          top: y - halfHeight,
-          bottom: y + halfHeight,
+        const anchor = {
+          x: ((projected.x + 1) * width) / 2,
+          y: ((1 - projected.y) * height) / 2,
         };
-        const hidden =
-          item.source.active === false ||
-          projected.z < -1 ||
-          projected.z > 1 ||
-          rect.left < 8 ||
-          rect.right > width - 8 ||
-          rect.top < 8 ||
-          rect.bottom > height - 8 ||
-          occupied.some(
-            (other) =>
-              rect.left < other.right + 12 &&
-              rect.right > other.left - 12 &&
-              rect.top < other.bottom + 8 &&
-              rect.bottom > other.top - 8,
-          );
-        item.element.style.visibility = hidden ? "hidden" : "visible";
-        item.element.style.left = `${x}px`;
-        item.element.style.top = `${y}px`;
-        if (!hidden) occupied.push(rect);
+        const placement =
+          active &&
+          projected.z >= -1 &&
+          projected.z <= 1 &&
+          anchor.x >= 0 &&
+          anchor.x <= width &&
+          anchor.y >= 0 &&
+          anchor.y <= height
+            ? placeLabel(
+                anchor,
+                {
+                  width: item.element.offsetWidth,
+                  height: item.element.offsetHeight,
+                },
+                { width, height },
+                occupied,
+                numbered,
+              )
+            : null;
+        item.element.style.visibility = placement ? "visible" : "hidden";
+        item.line.style.visibility =
+          placement && numbered ? "visible" : "hidden";
+        if (!placement) continue;
+        occupied.push(placement.rect);
+        item.element.style.left = `${placement.x}px`;
+        item.element.style.top = `${placement.y}px`;
+        item.line.setAttribute("x1", anchor.x);
+        item.line.setAttribute("y1", anchor.y);
+        item.line.setAttribute("x2", placement.x);
+        item.line.setAttribute("y2", placement.y);
       }
     };
     const requestRender = () => {
@@ -313,6 +341,9 @@ export default function ProcessScene({
       labelLayer.style.cssText =
         "position:absolute;inset:0;pointer-events:none;overflow:hidden";
       element.append(labelLayer);
+      leaders = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      leaders.classList.add("process-label-leaders");
+      labelLayer.append(leaders);
       for (const [index, label] of (model.labels ?? []).entries()) {
         const span = document.createElement("span");
         span.className = "process-model-label";
@@ -320,8 +351,34 @@ export default function ProcessScene({
         span.style.cssText =
           "position:absolute;transform:translate(-50%,-50%);white-space:nowrap";
         labelLayer.append(span);
+        const line = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line",
+        );
+        leaders.append(line);
+        const key = document.createElement("button");
+        key.type = "button";
+        key.className = "process-annotation-item";
+        const number = document.createElement("span");
+        number.className = "process-annotation-number";
+        const wording = document.createElement("span");
+        key.append(number, wording);
+        keyHost.current.append(key);
+        const highlight = (value) => {
+          span.classList.toggle("highlighted", value);
+          line.classList.toggle("highlighted", value);
+        };
+        key.addEventListener("pointerenter", () => highlight(true));
+        key.addEventListener("pointerleave", () => highlight(false));
+        key.addEventListener("focus", () => highlight(true));
+        key.addEventListener("blur", () => highlight(false));
         labelItems.push({
           element: span,
+          key,
+          wording,
+          line,
+          numberElement: number,
+          sourceIndex: index,
           source: label,
           text: label.text,
         });
@@ -389,32 +446,40 @@ export default function ProcessScene({
   }, [zoom.key, zoom.direction]);
 
   return (
-    <div
-      ref={host}
-      className="process-canvas"
-      data-process={definition.id}
-      aria-busy={busy}
-      aria-label={
-        lang === "zh"
-          ? "可旋转缩放的过程模型"
-          : "Rotatable, zoomable process model"
-      }
-    >
-      {error && (
-        <div className="process-scene-error" role="alert">
-          <p>
-            {lang === "zh"
-              ? "三维画面暂时不可用，可以重试加载。"
-              : "The 3D view is temporarily unavailable. Please try loading it again."}
-          </p>
-          <button
-            type="button"
-            onClick={() => setAttempt((value) => value + 1)}
-          >
-            {lang === "zh" ? "重新加载" : "Reload model"}
-          </button>
-        </div>
-      )}
+    <div className="process-scene-shell" data-annotations={annotations}>
+      <div
+        ref={host}
+        className="process-canvas"
+        data-process={definition.id}
+        aria-busy={busy}
+        aria-label={
+          lang === "zh"
+            ? "可旋转缩放的过程模型"
+            : "Rotatable, zoomable process model"
+        }
+      >
+        {error && (
+          <div className="process-scene-error" role="alert">
+            <p>
+              {lang === "zh"
+                ? "三维画面暂时不可用，可以重试加载。"
+                : "The 3D view is temporarily unavailable. Please try loading it again."}
+            </p>
+            <button
+              type="button"
+              onClick={() => setAttempt((value) => value + 1)}
+            >
+              {lang === "zh" ? "重新加载" : "Reload model"}
+            </button>
+          </div>
+        )}
+      </div>
+      <div
+        ref={keyHost}
+        className="process-annotation-key"
+        role="group"
+        aria-label={lang === "zh" ? "模型标注" : "Model annotations"}
+      />
     </div>
   );
 }

@@ -18,6 +18,7 @@ try {
   process.exitCode = result.status ?? 1;
   for (const test of [
     "tests/asset-url.mjs",
+    "tests/process-label-layout.mjs",
     "tests/process-contract.mjs",
     "tests/secretion-refinement.mjs",
     "tests/process-bounds.mjs",
