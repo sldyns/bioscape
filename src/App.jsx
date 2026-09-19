@@ -288,37 +288,29 @@ export default function App() {
                 {i > 0 && <ChevronRight size={13} />}
                 <button
                   aria-current={
-                    experience === "structure" && i === path.length - 1
+                    (experience === "structure" && i === path.length - 1) ||
+                    (experience === "process" && !processId)
                       ? "page"
                       : undefined
                   }
-                  onClick={() => navigate(path.slice(0, i + 1))}
+                  onClick={() =>
+                    navigate(path.slice(0, i + 1), true, experience, null)
+                  }
                 >
-                  {experience === "process" && key === "phage"
-                    ? t("噬菌体", "Bacteriophage")
+                  {i === 0
+                    ? (cellTypes.find((type) => type.id === key)?.[lang] ??
+                      getNode(key, lang).name)
                     : getNode(key, lang).name}
                 </button>
               </React.Fragment>
             ),
           )}
-          {experience === "process" && (
+          {experience === "process" && processId && (
             <>
               <ChevronRight size={13} />
-              {processId ? (
-                <>
-                  <button onClick={() => navigate(path, true, "process", null)}>
-                    {t("生物学过程", "Biological processes")}
-                  </button>
-                  <ChevronRight size={13} />
-                  <span className="breadcrumb-current" aria-current="page">
-                    {processCatalog[processId]?.title[lang]}
-                  </span>
-                </>
-              ) : (
-                <span className="breadcrumb-current" aria-current="page">
-                  {t("生物学过程", "Biological processes")}
-                </span>
-              )}
+              <span className="breadcrumb-current" aria-current="page">
+                {processCatalog[processId]?.title[lang]}
+              </span>
             </>
           )}
         </nav>

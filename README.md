@@ -4,6 +4,8 @@
 
 支持动物细胞、植物细胞、细菌、真菌、草履虫与噬菌体。每类都有「结构」和「生物学过程」目录；当前包含 84 个独立过程，按适用物种复用。React + Three.js + Vite，纯静态部署，无需账号、API 密钥或后端。
 
+[在线体验](https://sldyns.github.io/bioscape/) · [GitHub 仓库](https://github.com/sldyns/bioscape)
+
 ## 开始运行
 
 使用 Node.js 22（见 [.nvmrc](.nvmrc)），在项目根目录执行：

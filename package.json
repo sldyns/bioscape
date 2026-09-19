@@ -2,6 +2,11 @@
   "name": "bioscape",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://sldyns.github.io/bioscape/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sldyns/bioscape.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",

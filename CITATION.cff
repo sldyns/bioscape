@@ -2,6 +2,8 @@ cff-version: 1.2.0
 message: "If you use BioScape for noncommercial teaching or research, please cite this project and relevant underlying scientific sources. Citation does not replace commercial permission."
 title: "BioScape: Interactive 3D Biological Structures and Processes"
 type: software
+url: "https://sldyns.github.io/bioscape/"
+repository-code: "https://github.com/sldyns/bioscape"
 version: 1.0.0
 authors:
   - family-names: Qian
