@@ -3,11 +3,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { visibleProcessBounds } from "./sceneBounds.js";
-import {
-  annotationNumbers,
-  isShortNotation,
-  placeLabel,
-} from "./labelLayout.js";
+import { placeLabel } from "./labelLayout.js";
+import { prepareAnnotationLabels } from "./annotationDom.js";
 
 const clampProgress = (value) =>
   Number.isFinite(value) ? THREE.MathUtils.clamp(value, 0, 1) : 0;
@@ -63,6 +60,7 @@ export default function ProcessScene({
     let width = 1;
     let height = 1;
     let camera;
+    let matricesDirty = true;
     let fittedDistance = 1;
     const labelItems = [];
     setError(null);
@@ -73,6 +71,7 @@ export default function ProcessScene({
       disposed = true;
       cancelAnimationFrame(frame);
       observer?.disconnect();
+      document.fonts?.removeEventListener("loadingdone", fontsChanged);
       controls?.dispose();
       renderer?.domElement.removeEventListener(
         "webglcontextlost",
@@ -112,29 +111,14 @@ export default function ProcessScene({
     const projectLabels = () => {
       const occupied = [];
       const projected = new THREE.Vector3();
-      const numbers = annotationNumbers(model.labels ?? [], live.current.lang);
+      prepareAnnotationLabels(
+        labelItems,
+        model.labels ?? [],
+        live.current.lang,
+        `${width}|${height}`,
+      );
       for (const item of labelItems) {
-        const text =
-          item.source.text[live.current.lang] ??
-          item.source.text.zh ??
-          item.source.text.en ??
-          "";
-        const numbered = !isShortNotation(text);
-        const active = item.source.active !== false;
-        const number = numbers[item.sourceIndex];
-        const numberText = number === null ? "" : String(number);
-        if (item.numberElement.textContent !== numberText)
-          item.numberElement.textContent = numberText;
-        item.key.hidden = !active || !numbered;
-        if (item.wording.textContent !== text) item.wording.textContent = text;
-        item.key.setAttribute(
-          "aria-label",
-          numbered && active ? `${number}. ${text}` : text,
-        );
-        const marker = numbered ? numberText : text;
-        if (item.element.textContent !== marker)
-          item.element.textContent = marker;
-        item.element.classList.toggle("numbered", numbered);
+        const { active, numbered } = item;
         projected.fromArray(item.source.position).project(camera);
         const anchor = {
           x: ((projected.x + 1) * width) / 2,
@@ -150,10 +134,7 @@ export default function ProcessScene({
           anchor.y <= height
             ? placeLabel(
                 anchor,
-                {
-                  width: item.element.offsetWidth,
-                  height: item.element.offsetHeight,
-                },
+                item.size,
                 { width, height },
                 occupied,
                 numbered,
@@ -172,6 +153,10 @@ export default function ProcessScene({
         item.line.setAttribute("y2", placement.y);
       }
     };
+    const fontsChanged = () => {
+      for (const item of labelItems) item.measuredKey = null;
+      requestRender();
+    };
     const requestRender = () => {
       if (!disposed && !contextLost && !frame) {
         element.dataset.renderState = "active";
@@ -185,6 +170,10 @@ export default function ProcessScene({
         // OrbitControls emits change only while damping still moves the camera.
         // The final unchanged frame ends the loop; paused scenes stay idle.
         controls.update();
+        if (matricesDirty) {
+          scene.updateMatrixWorld();
+          matricesDirty = false;
+        }
         renderer.render(scene, camera);
         projectLabels();
         element.dataset.renderState = frame ? "active" : "idle";
@@ -212,13 +201,16 @@ export default function ProcessScene({
       );
       element.prepend(renderer.domElement);
       scene = new THREE.Scene();
+      // Only model.update() changes process geometry. Orbiting a paused process
+      // can reuse the complete, full-resolution scene transform hierarchy.
+      scene.matrixWorldAutoUpdate = false;
       camera = new THREE.PerspectiveCamera(36, 1, 0.1, 150);
       controls = new OrbitControls(camera, renderer.domElement);
       controls.enablePan = false;
       controls.enableDamping = !window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-      controls.dampingFactor = 0.085;
+      controls.dampingFactor = 0.18;
       controls.addEventListener("change", requestRender);
       pmrem = new THREE.PMREMGenerator(renderer);
       room = new RoomEnvironment();
@@ -390,12 +382,14 @@ export default function ProcessScene({
       controls.saveState();
       observer = new ResizeObserver(() => resize());
       observer.observe(element);
+      document.fonts?.addEventListener("loadingdone", fontsChanged);
       engine.current = {
         dispose,
         update(value) {
           if (disposed) return;
           try {
             model.update(clampProgress(value), live.current.parameters);
+            matricesDirty = true;
             requestRender();
           } catch {
             fail();

@@ -19,6 +19,8 @@ try {
   for (const test of [
     "tests/asset-url.mjs",
     "tests/process-label-layout.mjs",
+    "tests/render-updates.mjs",
+    "tests/exact-vertex-index.mjs",
     "tests/process-contract.mjs",
     "tests/secretion-refinement.mjs",
     "tests/process-bounds.mjs",

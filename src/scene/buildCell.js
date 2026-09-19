@@ -1,3 +1,4 @@
+import { indexRepeatedGeometry } from "./indexRepeatedGeometry";
 import { centrosomeAssembly } from "./centrosomeDetails";
 import { skeletonNetwork } from "./cytoskeletonDetails";
 import { peroxisomeAssembly } from "./peroxisomeDetails";
@@ -139,7 +140,7 @@ export function buildCell() {
   }
   function beads(parent, samples, material, detail = 1) {
     const m = new THREE.InstancedMesh(
-      new THREE.IcosahedronGeometry(1, detail),
+      indexRepeatedGeometry(new THREE.IcosahedronGeometry(1, detail)),
       material,
       samples.length,
     );

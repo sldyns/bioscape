@@ -7,6 +7,7 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { createCellLoader } from "./scene/cellLoader";
 import { disposeCell } from "./scene/cellTransfer";
 import { makePresentation } from "./scene/presentation";
+import { createPresentationAppearance } from "./scene/presentationAppearance";
 import { explodedFitDistance } from "./scene/viewFraming";
 import { supportsExplosion } from "./scene/viewCapabilities";
 import { getNode } from "./hierarchy";
@@ -85,11 +86,14 @@ export default function CellScene({
     el.prepend(renderer.domElement);
     const scene = new THREE.Scene(),
       camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
+    // Structure geometry moves only on entry, disassembly or contraction.
+    // Camera-only frames reuse its world matrices, including for shadows/picking.
+    scene.matrixWorldAutoUpdate = false;
     camera.position.set(0.5, 0.65, 11.4);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = !reduceMotion;
     controls.enablePan = false;
-    controls.dampingFactor = 0.075;
+    controls.dampingFactor = 0.18;
     controls.minDistance = 4;
     controls.maxDistance = 24;
     controls.autoRotateSpeed = 0.24;
@@ -153,6 +157,8 @@ export default function CellScene({
     let model = null;
     let currentKey = null,
       pickable = [];
+    let matricesDirty = true,
+      updateAppearance;
     let current = null,
       frame = 0,
       previous = 0,
@@ -221,8 +227,6 @@ export default function CellScene({
     };
     const desiredCamera = new THREE.Vector3(0.5, 0.65, 11.4);
     let fitting = false;
-    const hoverColor = new THREE.Color("#294866"),
-      black = new THREE.Color(0);
     const loadingLabel = document.createElement("div");
     loadingLabel.className = "model-loading";
     loadingLabel.setAttribute("role", "status");
@@ -310,6 +314,8 @@ export default function CellScene({
         cache.delete(oldest);
       }
       scene.add(current.root);
+      matricesDirty = true;
+      updateAppearance = createPresentationAppearance(current.root);
       transition = reduceMotion ? 1 : 0.86;
       current.root.scale.setScalar(transition);
       currentKey = live.current.viewKey;
@@ -663,7 +669,8 @@ export default function CellScene({
       const p = live.current;
       const ease = reduceMotion ? 1 : 1 - Math.pow(0.87, dt * 30),
         cameraEase = reduceMotion ? 1 : 1 - Math.pow(0.88, dt * 30);
-      controls.dampingFactor = 1 - Math.pow(0.925, dt * 30);
+      // Short, time-based inertia keeps direct manipulation responsive.
+      controls.dampingFactor = 1 - Math.pow(0.82, dt * 60);
       if (
         !current ||
         currentKey !== p.viewKey ||
@@ -706,6 +713,8 @@ export default function CellScene({
         return;
       }
       const cpuStart = performance.now();
+      // Project labels using this frame's orbit, not the pre-lookAt matrix.
+      camera.updateMatrixWorld();
       dirty = false;
       partsMoving = false;
       highlightMoving = false;
@@ -713,7 +722,10 @@ export default function CellScene({
       transition = THREE.MathUtils.lerp(transition, 1, ease);
       if (1 - transition < 0.0001) transition = 1;
       current.root.scale.setScalar(transition);
-      if (oldTransition !== transition) renderer.shadowMap.needsUpdate = true;
+      if (oldTransition !== transition) {
+        renderer.shadowMap.needsUpdate = true;
+        matricesDirty = true;
+      }
       const amount =
         p.mode === "explode" && current.parts.length > 1 ? p.explode / 100 : 0;
       const projectedLabels = [];
@@ -743,24 +755,41 @@ export default function CellScene({
           );
           partsMoving = true;
           renderer.shadowMap.needsUpdate = true;
-        } else part.scale.set(sx, sy, sz);
+          matricesDirty = true;
+        } else if (
+          part.scale.x !== sx ||
+          part.scale.y !== sy ||
+          part.scale.z !== sz
+        ) {
+          part.scale.set(sx, sy, sz);
+          matricesDirty = true;
+          renderer.shadowMap.needsUpdate = true;
+        }
         if (part.position.distanceToSquared(target) > 0.000001) {
           renderer.shadowMap.needsUpdate = true;
           part.position.lerp(target, ease);
           partsMoving = true;
+          matricesDirty = true;
         } else if (!part.position.equals(target)) {
           part.position.copy(target);
           renderer.shadowMap.needsUpdate = true;
+          matricesDirty = true;
         }
-        part.updateWorldMatrix(true, true);
+      }
+      if (matricesDirty) {
+        scene.updateMatrixWorld();
+        matricesDirty = false;
+      }
+      for (const part of current.parts) {
         const label = labelElements.get(part.userData.hitId);
         if (label) {
           const text = getNode(part.userData.hitId, p.lang).name;
           if (label.textContent !== text) label.textContent = text;
           label.style.display = p.labels ? "block" : "none";
           if (p.labels) {
-            const v = part
-              .localToWorld(tempProjected.copy(part.userData.labelAnchor))
+            const v = tempProjected
+              .copy(part.userData.labelAnchor)
+              .applyMatrix4(part.matrixWorld)
               .project(camera);
             projectedLabels.push({
               label,
@@ -850,37 +879,13 @@ export default function CellScene({
         `${railHeight}px`
       )
         el.parentElement.style.setProperty("--label-rail", `${railHeight}px`);
-      current.root.traverse((o) => {
-        if (o.userData.assembledOnly) {
-          const visible = p.mode !== "explode";
-          if (o.visible !== visible) renderer.shadowMap.needsUpdate = true;
-          o.visible = visible;
-        }
-        if (o.userData.cap || o.userData.cutOnly) {
-          const visible = o.userData.cap
-            ? p.mode === "whole"
-            : p.mode !== "whole";
-          if (o.visible !== visible) renderer.shadowMap.needsUpdate = true;
-          o.visible = visible;
-        }
-        if (o.isMesh && o.material.emissive) {
-          const base = o.userData.restEmissive;
-          const active = p.highlight || hoverId;
-          const target =
-            active && o.userData.hitId === active ? hoverColor : base;
-          const color = target || black,
-            e = o.material.emissive;
-          if (
-            Math.abs(e.r - color.r) +
-              Math.abs(e.g - color.g) +
-              Math.abs(e.b - color.b) >
-            0.0001
-          ) {
-            e.lerp(color, reduceMotion ? 1 : 1 - Math.pow(0.78, dt * 30));
-            highlightMoving = true;
-          } else e.copy(color);
-        }
-      });
+      const appearance = updateAppearance(
+        p.mode,
+        p.highlight || hoverId,
+        reduceMotion ? 1 : 1 - Math.pow(0.78, dt * 30),
+      );
+      highlightMoving = appearance.moving;
+      if (appearance.shadowChanged) renderer.shadowMap.needsUpdate = true;
       renderer.render(scene, camera);
       el.dataset.pose = isContracted ? "contracted" : "rest";
       renderCount++;
