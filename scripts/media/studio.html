@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="UTF-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  />
+  <title>BioScape · Film studio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #e6e8ec;
+      color: #182128;
+      font: 14px system-ui;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 26px;
+      background: white;
+    }
+    strong {
+      margin-right: auto;
+    }
+    button,
+    select {
+      font: inherit;
+      padding: 9px 14px;
+      border: 1px solid #c7cdd3;
+      border-radius: 8px;
+      background: white;
+    }
+    button {
+      cursor: pointer;
+    }
+    main {
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+    canvas {
+      width: min(100%, 1200px);
+      height: auto;
+      box-shadow: 0 20px 70px #25313a22;
+    }
+    output {
+      display: block;
+      text-align: center;
+      padding: 0 24px 24px;
+      white-space: pre-wrap;
+    }
+  </style>
+  <header>
+    <strong>BioScape / Film studio</strong
+    ><select aria-label="Shot"></select
+    ><button id="still">Export still</button
+    ><button id="record">Render selected clip</button
+    ><button id="all">Render from selected</button>
+  </header>
+  <main><canvas id="film" width="1920" height="1080"></canvas></main>
+  <output id="status">Preparing…</output>
+  <script type="module" src="./studio.js"></script>
+</html>
