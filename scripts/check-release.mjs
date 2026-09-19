@@ -6,10 +6,17 @@ import { processCatalog } from "../src/processes/catalog.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const dist = path.join(root, "dist");
-assert(
-  fs.existsSync(path.join(dist, "THIRD_PARTY_NOTICES.txt")),
-  "Third-party notices must accompany the build",
-);
+for (const [built, source] of Object.entries({
+  "LICENSE.txt": "LICENSE",
+  "NOTICE.txt": "NOTICE",
+  "THIRD_PARTY_NOTICES.txt": "THIRD_PARTY_NOTICES.md",
+})) {
+  assert.equal(
+    fs.readFileSync(path.join(dist, built), "utf8"),
+    fs.readFileSync(path.join(root, source), "utf8"),
+    `${built} must accompany the build without alteration`,
+  );
+}
 assert(fs.existsSync(path.join(dist, "index.html")), "Run npm run build first");
 const previews = JSON.parse(
   fs.readFileSync(path.join(root, "docs/process-rendered-previews.json")),

@@ -1,19 +1,30 @@
 import { defineConfig } from "vite";
 import { readFileSync } from "node:fs";
+const releaseNotices = {
+  "LICENSE.txt": "LICENSE",
+  "NOTICE.txt": "NOTICE",
+  "THIRD_PARTY_NOTICES.txt": "THIRD_PARTY_NOTICES.md",
+};
+const noticeText = (file) =>
+  readFileSync(new URL(`./${file}`, import.meta.url), "utf8");
 export default defineConfig({
   base: "./",
   plugins: [
     {
-      name: "third-party-notices",
-      generateBundle() {
-        this.emitFile({
-          type: "asset",
-          fileName: "THIRD_PARTY_NOTICES.txt",
-          source: readFileSync(
-            new URL("./THIRD_PARTY_NOTICES.md", import.meta.url),
-            "utf8",
-          ),
+      name: "release-notices",
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          const name = (req.url ?? "").split("?")[0].slice(1);
+          if (!Object.hasOwn(releaseNotices, name)) return next();
+          const file = releaseNotices[name];
+          res.setHeader("Content-Type", "text/plain; charset=utf-8");
+          res.end(noticeText(file));
         });
+      },
+      generateBundle() {
+        for (const [fileName, file] of Object.entries(releaseNotices)) {
+          this.emitFile({ type: "asset", fileName, source: noticeText(file) });
+        }
       },
     },
   ],

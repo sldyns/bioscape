@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use BioScape for noncommercial teaching or research, please cite this project and relevant underlying scientific sources. Citation does not replace commercial permission."
+title: "BioScape: Interactive 3D Biological Structures and Processes"
+type: software
+version: 1.0.0
+authors:
+  - family-names: Qian
+    given-names: Kun
+    website: "https://sldyns.github.io/"
+    email: "kunqian@stu.pku.edu.cn"
+license: LicenseRef-BioScape-NC-1.0
+abstract: "A bilingual interactive 3D teaching project for biological structures and processes across animal and plant cells, bacteria, fungi, ciliates, and bacteriophages."
+keywords:
+  - biology education
+  - interactive visualization
+  - molecular biology
+  - three-dimensional models

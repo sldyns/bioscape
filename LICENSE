@@ -1,0 +1,92 @@
+BioScape Noncommercial License 1.0
+License identifier: LicenseRef-BioScape-NC-1.0
+
+Copyright (c) 2026 Kun Qian
+Author: https://sldyns.github.io/
+Commercial permission: kunqian@stu.pku.edu.cn
+
+1. Scope
+
+This license applies to the original BioScape source code, documentation,
+teaching text, procedural models, animations, and original visual assets
+provided with this license (the "Work"), only to the extent the licensor owns
+or is authorized to license the relevant rights. The licensor is Kun Qian.
+Third-party materials and material in the public domain are excluded from
+this license; see section 5.
+
+2. Noncommercial permission
+
+Subject to these conditions, the licensor grants you a worldwide, royalty-free,
+nonexclusive license to use, run, study, copy, modify, display, perform, and
+redistribute the Work and adaptations solely for noncommercial purposes.
+This includes personal learning, noncommercial research and teaching, and
+noncommercial sharing and hosting. No requirement to publish your modifications
+is imposed. Permission continues for the duration of applicable copyright,
+provided you comply with this license.
+
+3. Commercial permission
+
+Commercial use is not granted by this license. You must obtain prior, separate
+written permission from Kun Qian for commercial use of the Work or adaptations.
+Commercial use means use primarily intended for or directed toward commercial
+advantage or monetary compensation. This includes selling or licensing the
+Work, incorporating it into a commercial product or paid service, paid access
+or paid courses using the Work, business operations, and advertising- or
+sponsorship-supported deployments intended to generate revenue.
+
+The user's nonprofit, educational, or research status does not by itself
+exempt a commercial use. Mere public access to a repository or website is not
+commercial permission. A commercial permission is limited to the rights and
+scope explicitly granted in that separate agreement.
+
+4. Attribution and redistribution
+
+When you share the Work or an adaptation, retain the copyright and author
+notices, provide a copy of this license, and preserve applicable third-party
+notices. In a public website or application, keep a reasonably accessible
+credit identifying "BioScape — Kun Qian" and the author's homepage, for example
+in an About or Credits view. For other media, provide this credit in an
+appropriate credits or accompanying-notes section.
+
+Clearly identify substantive modifications and do not imply that the author
+endorses you or your adaptation. You may license your own independent additions
+separately, but may not grant commercial rights in the original Work or remove
+its conditions. Each recipient receives permission for the original Work
+directly under this license. You may not impose terms or technical restrictions
+that prevent recipients from exercising the permissions granted here.
+
+5. Third-party materials and independent rights
+
+Third-party libraries, experimental structure data, and other separately
+identified materials retain their own licenses and attribution requirements.
+This license does not restrict independently obtained third-party materials,
+public-domain material, scientific facts, ideas, or uses allowed by applicable
+law without permission. References to papers do not grant rights in their full
+text or figures. Consult THIRD_PARTY_NOTICES.md and the source-specific notices.
+
+No trademark, publicity, or endorsement rights are granted, except identifying
+the author and Work for attribution. No patent license is granted. All rights
+not expressly granted are reserved by their respective holders.
+
+6. Termination
+
+Your permission under this license terminates automatically if you violate
+its terms. It is reinstated if you cure the violation within 30 days after
+first becoming aware of it, or if the licensor reinstates it in writing.
+Reinstatement does not waive claims arising from a past violation. Compliant
+recipients' permissions are not terminated by your violation.
+
+7. Disclaimer
+
+TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE WORK IS PROVIDED "AS IS", WITHOUT
+WARRANTY OF ANY KIND, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, ACCURACY, AND NONINFRINGEMENT. THE LICENSOR IS NOT LIABLE FOR CLAIMS,
+DAMAGES, OR OTHER LIABILITY ARISING FROM THE WORK OR ITS USE. THESE TERMS DO
+NOT EXCLUDE RIGHTS OR LIABILITY THAT CANNOT LAWFULLY BE EXCLUDED.
+
+8. Interpretation
+
+This is a project-specific, source-available noncommercial license, not an
+OSI-approved open-source license. If a provision is unenforceable, the remaining
+provisions continue to the extent allowed by law. The English text of this
+license governs; Chinese descriptions in the project are convenience summaries.

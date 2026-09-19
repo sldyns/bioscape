@@ -568,6 +568,63 @@ svg {
   color: #6084ae;
   overflow-wrap: anywhere;
 }
+/* Authorship and licensing stay in About, leaving the model workspace quiet. */
+.about-modal .about-eyebrow {
+  margin: 0 0 12px;
+  font-size: 11px;
+}
+.about-subtitle {
+  display: block;
+  margin-top: 7px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #777781;
+}
+.about-authorship {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #777781;
+}
+.about-authorship a {
+  margin: 0;
+  font-size: 13px;
+}
+.about-authorship small {
+  margin-left: auto;
+  font-size: 10px;
+}
+.about-license {
+  border-block: 1px solid var(--line);
+  padding: 18px 0;
+  margin-top: 22px;
+}
+.about-license h3 {
+  margin: 0;
+}
+.about-license p {
+  margin: 10px 0;
+}
+.about-license-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.about-license-links a {
+  margin: 0;
+}
+.about-references {
+  margin-top: 24px;
+  font-size: 12px;
+}
+.about-references summary {
+  cursor: pointer;
+  color: #666975;
+  padding-block: 8px;
+}
 .webgl-error {
   position: absolute;
   inset: 40% 15% auto;

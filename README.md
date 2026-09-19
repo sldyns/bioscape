@@ -1,6 +1,6 @@
-# Cell Atlas · 细胞图鉴
+# BioScape · 生物图景
 
-中英文交互式 3D 生物学学习网站。逐层进入细胞内部，旋转、剖视、拆解结构；通过可拖动时间轴了解结构如何参与生命活动。
+**Created by [Kun Qian](https://sldyns.github.io/)** · 中英文交互式 3D 生物学学习网站。逐层探索生物结构，旋转、剖视、拆解模型；通过可拖动时间轴了解结构如何参与生命活动。
 
 支持动物细胞、植物细胞、细菌、真菌、草履虫与噬菌体。每类都有「结构」和「生物学过程」目录；当前包含 84 个独立过程，按适用物种复用。React + Three.js + Vite，纯静态部署，无需账号、API 密钥或后端。
 
@@ -66,4 +66,13 @@ npm run preview   # 预览已构建的 dist/
 
 ## 授权与引用
 
-项目源码暂未指定开源许可证（`UNLICENSED`）；发布仓库不等于授予开源使用权。依赖及实验数据各自保留原许可，详见 [第三方声明](THIRD_PARTY_NOTICES.md)。
+© 2026 [Kun Qian](https://sldyns.github.io/)。项目原创部分采用 [BioScape Noncommercial License 1.0](LICENSE)，是**源码公开的非商业许可，不是 OSI 意义的开源许可证**。
+
+- 允许非商业学习、研究、教学、使用、修改、部署和分享；无需公开自己的修改源码。
+- 分享时保留作者署名、许可及第三方声明，说明实质修改。公开部署应在关于/致谢等可访问位置保留 `BioScape — Kun Qian` 和作者主页。
+- **商业使用须事先获得 Kun Qian 的单独书面授权**，包括收费产品、付费课程/服务、商业内部使用及以营利为目的的广告或赞助部署。学校、科研机构身份不会自动豁免商业用途。
+- 第三方代码、PDB 等实验数据保留各自许可；项目许可不对公共领域数据和科学事实增加限制。详见 [第三方声明](THIRD_PARTY_NOTICES.md)。
+
+许可英文正文为准。以上为便于理解的中文摘要。授权联系：[kunqian@stu.pku.edu.cn](mailto:kunqian@stu.pku.edu.cn)。
+
+推荐引用：Kun Qian. *BioScape: Interactive 3D Biological Structures and Processes*, version 1.0.0. 另请引用使用到的原始结构数据与文献。[CITATION.cff](CITATION.cff) 提供机器可读信息；引用不替代商业授权。

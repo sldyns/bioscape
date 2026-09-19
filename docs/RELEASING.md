@@ -13,14 +13,14 @@ npm run check
 
 ## 创建或连接 GitHub 仓库
 
-先确定仓库所属账号、名称、可见性，以及源码许可证。当前未授予开源许可证，不自动选用 MIT 等许可。不要覆盖已有远端历史。
+先确定仓库所属账号、名称和可见性。当前原创项目采用 BioScape Noncommercial License 1.0，作者为 Kun Qian，商业使用须另行书面授权。发布前复核 LICENSE、NOTICE、CITATION.cff 与第三方声明；这是源码公开项目，不标为 OSI 开源。不要覆盖已有远端历史。
 
 本地已初始化时无需再次 `git init`。检查拟提交文件后建立初始提交，再使用实际仓库地址连接：
 
 ```sh
 git status --short
 git add .
-git commit -m "Prepare Cell Atlas for GitHub"
+git commit -m "Prepare BioScape for GitHub"
 git remote add origin <实际仓库地址>
 git push -u origin main
 ```

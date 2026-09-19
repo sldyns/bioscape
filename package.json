@@ -1,5 +1,5 @@
 {
-  "name": "cell-atlas",
+  "name": "bioscape",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -26,10 +26,15 @@
     "prettier": "^3.6.2",
     "vite": "^6.1.0"
   },
-  "description": "Bilingual interactive 3D cell structures and biological processes",
-  "license": "UNLICENSED",
+  "description": "Bilingual interactive 3D biological structures and processes",
+  "license": "SEE LICENSE IN LICENSE",
   "engines": {
     "node": ">=22.12.0"
   },
-  "packageManager": "npm@10.9.4"
+  "packageManager": "npm@10.9.4",
+  "author": {
+    "name": "Kun Qian",
+    "url": "https://sldyns.github.io/",
+    "email": "kunqian@stu.pku.edu.cn"
+  }
 }

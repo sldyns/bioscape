@@ -1,3 +1,4 @@
+import { project } from "./project";
 import AboutModel from "./components/AboutModel";
 import ProcessDirectory from "./processes/ProcessDirectory";
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
@@ -222,7 +223,7 @@ export default function App() {
   }, [path[0], lang]);
   useEffect(() => {
     document.documentElement.lang = en ? "en" : "zh-CN";
-    document.title = `${experience === "process" ? (processCatalog[processId]?.title[lang] ?? t("生物学过程", "Biological processes")) : node.name} · Cell Atlas`;
+    document.title = `${experience === "process" ? (processCatalog[processId]?.title[lang] ?? t("生物学过程", "Biological processes")) : node.name} · ${project.name}`;
     try {
       localStorage.setItem("cell-atlas-language", lang);
     } catch {}
@@ -277,7 +278,8 @@ export default function App() {
     <div className="atlas">
       <header className="app-header" inert={about ? true : undefined}>
         <button className="wordmark" onClick={() => navigate([path[0]])}>
-          Cell Atlas<span>{t("细胞图鉴", "")}</span>
+          {project.name}
+          <span>{t(project.nameZh, "")}</span>
         </button>
         <nav className="breadcrumbs" aria-label={t("当前位置", "Location")}>
           {(experience === "process" ? path.slice(0, 1) : path).map(
