@@ -1,0 +1,22 @@
+[
+  {
+    "language": "en",
+    "file": "public/media/bioscape-en.mp4",
+    "attachment": "https://github.com/user-attachments/assets/aef051f6-ff7b-4f08-ac92-f0a5da6f4082",
+    "sha256": "6cd87dedb1f0436e900396794af7e9c5bb10bdeb1abd65f7149de3c534378887",
+    "bytes": 12428682,
+    "width": 1920,
+    "height": 1080,
+    "durationSeconds": 50
+  },
+  {
+    "language": "zh",
+    "file": "public/media/bioscape-zh.mp4",
+    "attachment": "https://github.com/user-attachments/assets/905f474c-2173-4c98-b542-b1d3c5a84258",
+    "sha256": "76c23caae8cbfd7de92b2c4101a1c7f703751ad24b452552e9d661cc1eec6c34",
+    "bytes": 12477290,
+    "width": 1920,
+    "height": 1080,
+    "durationSeconds": 50
+  }
+]

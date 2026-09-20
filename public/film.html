@@ -1,19 +1,19 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f5f5f7" />
-    <title>BioScape · 看见微观，理解生命</title>
+    <title>BioScape — A closer look at life.</title>
     <meta
       name="description"
-      content="Explore BioScape in a short film: six microscopic worlds, detailed 3D structures and biological processes. Created by Kun Qian."
+      content="A closer look at life. A film about biological structures and processes, created by Kun Qian."
     />
     <meta property="og:title" content="BioScape — A closer look at life." />
     <meta property="og:type" content="video.other" />
     <meta
       property="og:image"
-      content="https://sldyns.github.io/bioscape/media/cover.jpg"
+      content="https://sldyns.github.io/bioscape/media/cover-en.jpg"
     />
     <meta
       property="og:url"
@@ -165,60 +165,83 @@
     <header>
       <a class="brand" href="./">BioScape</a>
       <nav aria-label="Links">
-        <a href="./">进入探索 / Explore</a
-        ><a href="https://github.com/sldyns/bioscape">GitHub ↗</a>
+        <a id="language" href="?lang=zh" lang="zh-CN">中文</a>
+        <a href="https://github.com/sldyns/bioscape">GitHub ↗</a>
       </nav>
     </header>
     <main>
       <div class="intro">
-        <div class="eyebrow">THE BIOSCAPE FILM</div>
-        <h1>看见微观。理解生命。</h1>
-        <p class="subtitle" lang="en">A closer look at life.</p>
+        <div class="eyebrow" id="eyebrow">THE BIOSCAPE FILM</div>
+        <h1 id="heading">A closer look at life.</h1>
+        <p class="subtitle" id="subtitle">
+          Explore the structures and processes of life.
+        </p>
       </div>
       <video
         controls
         playsinline
         preload="metadata"
-        poster="media/cover.jpg"
-        aria-label="BioScape introductory film / BioScape 宣传介绍片"
+        poster="media/cover-en.jpg"
+        aria-label="BioScape film in English"
       >
-        <source src="media/bioscape-film.mp4" type="video/mp4" />
+        <source src="media/bioscape-en.mp4" type="video/mp4" />
         <track
-          kind="subtitles"
+          kind="captions"
           src="media/film.en.vtt"
           srclang="en"
           label="English"
         />
-        <track
-          kind="subtitles"
-          src="media/film.zh.vtt"
-          srclang="zh-CN"
-          label="中文"
-        />
-        <p>
-          <a href="media/bioscape-film.mp4">下载影片 / Download the film</a>
-        </p>
+        <p><a href="media/bioscape-en.mp4">Download the film</a></p>
       </video>
       <div class="caption">
-        <span
-          >1080p · 项目真实三维模型与动画 · 原创配乐<br /><span lang="en"
-            >Actual project models and animations. Original soundtrack.</span
-          ></span
-        ><a href="media/bioscape-film.mp4" download>下载影片 / Download ↓</a>
+        <span id="credit">A film by Kun Qian</span>
+        <a id="download" href="media/bioscape-en.mp4" download>Download ↓</a>
       </div>
       <a class="cta" href="./"
-        >开始探索 · Explore BioScape <span aria-hidden="true">→</span></a
+        ><span id="explore">Explore BioScape</span
+        ><span aria-hidden="true">→</span></a
       >
     </main>
     <footer>
-      <span
-        >Created by <a href="https://sldyns.github.io/">Kun Qian</a> · ©
-        2026</span
-      ><span
-        >教学示意，非真实比例。<br /><a href="LICENSE.txt"
-          >非商业使用许可 · Commercial use requires permission.</a
-        ></span
+      <span>© 2026 <a href="https://sldyns.github.io/">Kun Qian</a></span>
+      <a id="license" href="LICENSE.txt"
+        >Noncommercial use · Commercial licensing by permission</a
       >
     </footer>
+    <script>
+      const zh = new URLSearchParams(location.search).get("lang") === "zh";
+      if (zh) {
+        document.documentElement.lang = "zh-CN";
+        document.title = "BioScape · 看见微观，理解生命";
+        const labels = {
+          eyebrow: "生物图景 · 介绍片",
+          heading: "看见微观。理解生命。",
+          subtitle: "从结构，走进生命的过程。",
+          credit: "Kun Qian 创作",
+          download: "下载影片 ↓",
+          explore: "开始探索",
+          license: "非商业使用许可 · 商用须经授权",
+          language: "English",
+        };
+        for (const [id, text] of Object.entries(labels))
+          document.getElementById(id).textContent = text;
+        const language = document.getElementById("language");
+        language.href = "?lang=en";
+        language.lang = "en";
+        const video = document.querySelector("video");
+        video.poster = "media/cover-zh.jpg";
+        video.setAttribute("aria-label", "BioScape 中文介绍片");
+        video.querySelector("source").src = "media/bioscape-zh.mp4";
+        const track = video.querySelector("track");
+        track.src = "media/film.zh.vtt";
+        track.srclang = "zh-CN";
+        track.label = "中文";
+        const fallback = video.querySelector("a");
+        fallback.href = "media/bioscape-zh.mp4";
+        fallback.textContent = "下载影片";
+        document.getElementById("download").href = fallback.href;
+        video.load();
+      }
+    </script>
   </body>
 </html>

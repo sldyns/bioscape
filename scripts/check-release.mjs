@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { processCatalog } from "../src/processes/catalog.js";
@@ -8,8 +9,8 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const dist = path.join(root, "dist");
 for (const [built, source] of Object.entries({
   "LICENSE.txt": "LICENSE",
-  "NOTICE.txt": "NOTICE",
-  "THIRD_PARTY_NOTICES.txt": "THIRD_PARTY_NOTICES.md",
+  "NOTICE.txt": "docs/legal/NOTICE",
+  "THIRD_PARTY_NOTICES.txt": "docs/legal/THIRD_PARTY_NOTICES.md",
 })) {
   assert.equal(
     fs.readFileSync(path.join(dist, built), "utf8"),
@@ -18,6 +19,39 @@ for (const [built, source] of Object.entries({
   );
 }
 assert(fs.existsSync(path.join(dist, "index.html")), "Run npm run build first");
+// Each localized README and film page must ship the matching final edition.
+const films = JSON.parse(
+  fs.readFileSync(path.join(root, "docs/media/films.json"), "utf8"),
+);
+assert.deepEqual(films.map((film) => film.language).sort(), ["en", "zh"]);
+for (const film of films) {
+  const bytes = fs.readFileSync(
+    path.join(dist, film.file.replace(/^public\//, "")),
+  );
+  assert.equal(
+    createHash("sha256").update(bytes).digest("hex"),
+    film.sha256,
+    `Film manifest mismatch: ${film.language}`,
+  );
+  const readme = fs.readFileSync(
+    path.join(root, film.language === "en" ? "README.md" : "README.zh-CN.md"),
+    "utf8",
+  );
+  assert(
+    readme.includes(`\n${film.attachment}\n`),
+    `Missing native video: ${film.language}`,
+  );
+  assert(readme.includes(`docs/media/${film.language}/structures.jpg`));
+  assert(readme.includes(`docs/media/${film.language}/transcription.jpg`));
+  for (const asset of [
+    `media/cover-${film.language}.jpg`,
+    `media/film.${film.language}.vtt`,
+  ])
+    assert(
+      fs.statSync(path.join(dist, asset)).size > 0,
+      `Missing film asset: ${asset}`,
+    );
+}
 const previews = JSON.parse(
   fs.readFileSync(path.join(root, "docs/process-rendered-previews.json")),
 );
@@ -39,6 +73,7 @@ const files = fs
   .readdirSync(dist, { recursive: true })
   .filter((name) => fs.statSync(path.join(dist, name)).isFile());
 for (const name of files) {
+  assert(!/^scripts[/\\]/.test(name), `Development studio in build: ${name}`);
   assert(
     !/(?:^|[/\\])(?:\.env(?:\..*)?|.*\.(?:test|smoke)\.[cm]?js|process-preview\.html)$/.test(
       name,

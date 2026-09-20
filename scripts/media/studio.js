@@ -7,127 +7,215 @@ import { createPresentationAppearance } from "../../src/scene/presentationAppear
 import { processLoaders } from "../../src/processes/loaders.js";
 import { visibleProcessBounds } from "../../src/processes/sceneBounds.js";
 
+// Each edition has its own editorial copy; neither relies on translated subtitles.
 const shots = [
   {
     id: "01-cell",
     node: "cell",
     seconds: 6,
-    kicker: "BIOSCAPE / 生物图景",
-    zh: ["看见微观。", "理解生命。"],
-    en: "A closer look at life.",
-    detail: "交互式三维结构与生物学过程",
     color: "#688e85",
+    zh: {
+      kicker: "生物图景",
+      title: ["看见微观。", "理解生命。"],
+      subtitle: "从结构，走进生命的过程。",
+      detail: "交互式三维生物学",
+    },
+    en: {
+      kicker: "BIOSCAPE",
+      title: ["A closer look", "at life."],
+      subtitle: "Explore the structures and processes of life.",
+      detail: "Interactive biology in three dimensions.",
+    },
   },
   {
     id: "02-plant",
     node: "plant",
     seconds: 5,
-    kicker: "01 / STRUCTURES",
-    zh: ["一层层深入。", "一个个看清。"],
-    en: "From the cell to its inner world.",
-    detail: "植物细胞 · 中央液泡与周缘细胞器",
     color: "#799166",
+    zh: {
+      kicker: "由整体，进入内部",
+      title: ["一层层深入。", "一个个看清。"],
+      subtitle: "植物细胞",
+      detail: "中央液泡与周缘细胞器",
+    },
+    en: {
+      kicker: "FROM THE WHOLE, TO WITHIN",
+      title: ["Look inside.", "Go deeper."],
+      subtitle: "The plant cell",
+      detail: "A central vacuole. Organelles at its edges.",
+    },
   },
   {
     id: "03-bacterium",
     node: "bacterium",
     seconds: 3,
-    kicker: "SIX POINTS OF VIEW",
-    zh: ["细菌。"],
-    en: "Bacterium",
-    detail: "革兰阴性杆菌的教学示意",
     color: "#6c9998",
+    zh: {
+      kicker: "微观世界",
+      title: ["细菌。"],
+      subtitle: "另一种细胞结构。",
+      detail: "以革兰阴性杆菌为例",
+    },
+    en: {
+      kicker: "MICROSCOPIC WORLDS",
+      title: ["Bacteria."],
+      subtitle: "Another way to be a cell.",
+      detail: "A Gram-negative rod, revealed.",
+    },
   },
   {
     id: "04-yeast",
     node: "yeast",
     seconds: 3,
-    kicker: "SIX POINTS OF VIEW",
-    zh: ["真菌。"],
-    en: "Yeast",
-    detail: "以酵母为代表，观察真核微生物",
     color: "#a18b99",
+    zh: {
+      kicker: "微观世界",
+      title: ["真菌。"],
+      subtitle: "从酵母，看见真核微生物。",
+      detail: "细胞壁、细胞核与内部区室",
+    },
+    en: {
+      kicker: "MICROSCOPIC WORLDS",
+      title: ["Fungi."],
+      subtitle: "The inner world of yeast.",
+      detail: "A cell wall, a nucleus, and living compartments.",
+    },
   },
   {
     id: "05-paramecium",
     node: "paramecium",
     seconds: 3,
-    kicker: "SIX POINTS OF VIEW",
-    zh: ["草履虫。"],
-    en: "Paramecium",
-    detail: "纤毛、核与细胞内的功能分工",
     color: "#8a94ae",
+    zh: {
+      kicker: "微观世界",
+      title: ["草履虫。"],
+      subtitle: "一个细胞，也能分工协作。",
+      detail: "纤毛、细胞核与食物泡",
+    },
+    en: {
+      kicker: "MICROSCOPIC WORLDS",
+      title: ["Paramecium."],
+      subtitle: "A single cell. Many coordinated functions.",
+      detail: "Cilia, nuclei, and food vacuoles.",
+    },
   },
   {
     id: "06-phage",
     node: "phage",
     seconds: 4,
-    kicker: "BEYOND THE CELL",
-    zh: ["也不止于", "细胞。"],
-    en: "Life, viewed at another scale.",
-    detail: "T₂ 噬菌体 · 无细胞结构的病毒",
     color: "#879eb1",
+    zh: {
+      kicker: "也不止于细胞",
+      title: ["换个尺度，", "继续探索。"],
+      subtitle: "T₂ 噬菌体",
+      detail: "没有细胞结构的病毒",
+    },
+    en: {
+      kicker: "BEYOND THE CELL",
+      title: ["Another scale.", "Another world."],
+      subtitle: "The T₂ bacteriophage",
+      detail: "A virus without a cellular structure.",
+    },
   },
   {
     id: "07-mitochondria",
     node: "mitochondria",
     seconds: 6,
     explode: true,
-    kicker: "02 / LOOK INSIDE",
-    zh: ["旋转。剖视。", "拆解。"],
-    en: "Understand how the pieces fit.",
-    detail: "线粒体 · 由整体进入内部结构",
     color: "#b59972",
+    zh: {
+      kicker: "看清结构之间的联系",
+      title: ["旋转。剖视。", "拆解。"],
+      subtitle: "线粒体",
+      detail: "从双层膜，深入内部的嵴",
+    },
+    en: {
+      kicker: "SEE HOW THE PIECES FIT",
+      title: ["Turn it.", "Open it up."],
+      subtitle: "Inside the mitochondrion",
+      detail: "From its membranes to the folds within.",
+    },
   },
   {
     id: "08-transcription",
     process: "transcription",
     root: "cell",
     seconds: 7,
-    kicker: "03 / BIOLOGICAL PROCESSES",
-    zh: ["让生命的过程，变得可见。"],
-    en: "Transcription · follow the making of RNA.",
-    detail: "转录 · RNA 聚合酶读取模板并合成 RNA",
     color: "#709796",
+    zh: {
+      kicker: "生物学过程 · 转录",
+      title: ["让生命的过程，变得可见。"],
+      subtitle: "RNA 聚合酶读取 DNA 模板，合成新的 RNA。",
+    },
+    en: {
+      kicker: "BIOLOGICAL PROCESSES · TRANSCRIPTION",
+      title: ["Watch genetic information unfold."],
+      subtitle:
+        "RNA polymerase reads the DNA template and builds a new RNA strand.",
+    },
   },
   {
     id: "09-photosynthesis",
     process: "photosynthesis",
     root: "plant",
     seconds: 6,
-    kicker: "FOLLOW THE TRANSFORMATION",
-    zh: ["从光能，到生命的化学。"],
-    en: "Photosynthesis · connect structure and function.",
-    detail: "光合作用 · 光反应与卡尔文循环的联系",
     color: "#829b64",
+    zh: {
+      kicker: "生物学过程 · 光合作用",
+      title: ["从光能，到生命的化学。"],
+      subtitle: "在类囊体膜与基质之间，连接光反应和卡尔文循环。",
+    },
+    en: {
+      kicker: "BIOLOGICAL PROCESSES · PHOTOSYNTHESIS",
+      title: ["From light to living chemistry."],
+      subtitle:
+        "Connect the light reactions in thylakoid membranes with the Calvin cycle in the stroma.",
+    },
   },
   {
     id: "10-translation",
     process: "translation",
     root: "cell",
     seconds: 6,
-    kicker: "ZOOM IN ON THE MECHANISM",
-    zh: ["从遗传信息，到蛋白质。"],
-    en: "Translation · one step at a time.",
-    detail: "核糖体翻译 · 实验结构与放大机制示意",
     color: "#9a879e",
+    zh: {
+      kicker: "生物学过程 · 核糖体翻译",
+      title: ["从遗传信息，到蛋白质。"],
+      subtitle: "以实验结构为参照，逐步观察肽链的延长。",
+    },
+    en: {
+      kicker: "BIOLOGICAL PROCESSES · TRANSLATION",
+      title: ["From genetic information to protein."],
+      subtitle:
+        "An experimental structure beside a closer view of a growing peptide chain.",
+    },
   },
   {
     id: "11-finale",
     node: "cell",
     seconds: 5,
-    kicker: "EXPLORE BIOSCAPE",
-    zh: ["生命的细节，", "值得看清。"],
-    en: "Explore. Uncover. Understand.",
-    detail: "84 个生物学过程 · 六类入口 · 中英双语",
     color: "#688e85",
     finale: true,
+    zh: {
+      kicker: "探索 BIOSCAPE",
+      title: ["生命的细节，", "值得看清。"],
+      subtitle: "由你，继续探索。",
+      detail: "Kun Qian 创作",
+    },
+    en: {
+      kicker: "EXPLORE BIOSCAPE",
+      title: ["The detail", "of life."],
+      subtitle: "Yours to explore.",
+      detail: "Created by Kun Qian",
+    },
   },
 ];
+const languages = ["en", "zh"];
 const canvas = document.querySelector("#film");
 const ctx = canvas.getContext("2d", { alpha: false });
 const status = document.querySelector("#status");
-const select = document.querySelector("select");
+const select = document.querySelector("#shot");
+const language = document.querySelector("#language");
 for (const shot of shots) select.add(new Option(shot.id, shot.id));
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
@@ -213,7 +301,7 @@ async function loadShot(shot) {
   cache.set(shot.id, data);
   return data;
 }
-function render(data, time) {
+function renderModel(data, time) {
   const { shot, model, view, scene, camera, target, initial, bounds } = data;
   const p = Math.min(1, Math.max(0, time / shot.seconds));
   const wide = Boolean(shot.process);
@@ -271,11 +359,25 @@ function render(data, time) {
     .addScaledVector(direction, distance * (1.035 - 0.035 * smooth(p)));
   camera.lookAt(target);
   renderer.render(scene, camera);
+  return { p, wide, w, h };
+}
+function fitText(content, x, y, size, width, color, weight = 400) {
+  ctx.font = font(size, weight);
+  const adjusted = Math.min(
+    size,
+    (size * width) / Math.max(1, ctx.measureText(content).width),
+  );
+  text(content, x, y, adjusted, color, weight);
+}
+function compose(data, frame, lang) {
+  const { shot } = data;
+  const { p, wide, w, h } = frame;
+  const copy = shot[lang];
   ctx.fillStyle = "#f5f5f7";
   ctx.fillRect(0, 0, 1920, 1080);
   ctx.drawImage(renderer.domElement, wide ? 100 : 620, wide ? 245 : 40, w, h);
   text("BioScape", 90, 75, 30, "#253039", 650);
-  text("生物图景", 242, 74, 17, "#828b91");
+  if (lang === "zh") text("生物图景", 242, 74, 17, "#828b91");
   text("KUN QIAN", 1690, 72, 15, "#7f8991", 500);
   ctx.strokeStyle = "#d9dde1";
   ctx.lineWidth = 1;
@@ -284,39 +386,45 @@ function render(data, time) {
   ctx.lineTo(1830, 105);
   ctx.stroke();
   if (wide) {
-    text(shot.kicker, 90, 154, 15, shot.color, 550);
-    text(shot.zh[0], 90, 218, 48, "#253039", 600);
-    text(shot.en, 90, 1020, 23, "#63717a");
-    text(shot.detail, 90, 1056, 16, "#7e8992");
+    text(copy.kicker, 90, 154, 15, shot.color, 550);
+    fitText(copy.title[0], 90, 218, 48, 1700, "#253039", 600);
+    fitText(copy.subtitle, 90, 1032, 23, 1660, "#63717a");
   } else {
-    const fade = smooth(p * 5);
-    ctx.globalAlpha = fade;
-    text(shot.kicker, 95, 325, 17, shot.color, 600);
-    shot.zh.forEach((line, i) =>
-      text(line, 90, 424 + i * 100, 76, "#253039", 600),
+    // Keep the opening frame readable in GitHub's native video poster.
+    ctx.globalAlpha = shot.id === "01-cell" ? 1 : smooth(p * 5);
+    fitText(copy.kicker, 95, 325, 17, 500, shot.color, 600);
+    copy.title.forEach((line, i) =>
+      fitText(
+        line,
+        90,
+        424 + i * 100,
+        lang === "en" ? 68 : 76,
+        510,
+        "#253039",
+        600,
+      ),
     );
-    const end = 424 + (shot.zh.length - 1) * 100;
-    text(shot.en, 95, end + 72, 24, "#63717a");
+    const end = 424 + (copy.title.length - 1) * 100;
+    fitText(copy.subtitle, 95, end + 72, 24, 490, "#63717a");
     ctx.fillStyle = shot.color;
     ctx.fillRect(95, end + 117, 42, 3);
-    text(shot.detail, 95, end + 171, 21, "#73808a");
-    if (shot.finale) {
+    fitText(copy.detail, 95, end + 171, 21, 490, "#73808a");
+    if (shot.finale)
       text("sldyns.github.io/bioscape", 95, end + 233, 27, "#253039", 500);
-      text("Created by Kun Qian", 95, end + 280, 19, "#73808a");
-    }
     ctx.globalAlpha = 1;
+    text(
+      lang === "zh"
+        ? "教学示意 · 非真实比例"
+        : "Educational visualizations · not to scale",
+      95,
+      1035,
+      16,
+      "#8c959c",
+    );
   }
-  if (!wide) {
-    text("交互式教学示意 · 非真实比例", 95, 1016, 16, "#8c959c");
-    text("INTERACTIVE BIOLOGY, IN THREE DIMENSIONS", 95, 1047, 12, "#8c959c");
-  }
-  text(
-    `${String(shots.indexOf(shot) + 1).padStart(2, "0")} / ${shots.length}`,
-    1750,
-    1035,
-    18,
-    "#8c959c",
-  );
+}
+function render(data, time) {
+  compose(data, renderModel(data, time), language.value);
 }
 async function save(name, body) {
   const r = await fetch(`/__media/${name}`, { method: "POST", body });
@@ -324,13 +432,17 @@ async function save(name, body) {
   return r.json();
 }
 async function still(data) {
-  render(data, data.shot.seconds * 0.46);
-  const blob = await new Promise((r) => canvas.toBlob(r, "image/png"));
-  await save(`${data.shot.id}.png`, blob);
+  const frame = renderModel(data, data.shot.seconds * 0.46);
+  for (const lang of languages) {
+    compose(data, frame, lang);
+    const blob = await new Promise((r) => canvas.toBlob(r, "image/png"));
+    await save(`${data.shot.id}-${lang}.png`, blob);
+  }
   const modelBlob = await new Promise((r) =>
     renderer.domElement.toBlob(r, "image/png"),
   );
   await save(`${data.shot.id}-model.png`, modelBlob);
+  compose(data, frame, language.value);
 }
 async function record(shot) {
   const data = await loadShot(shot);
@@ -338,14 +450,19 @@ async function record(shot) {
   await still(data);
   const frames = Math.round(shot.seconds * 30);
   for (let i = 0; i < frames; i++) {
-    const started = performance.now();
-    render(data, i / 30);
-    const rendered = performance.now();
-    const blob = await new Promise((resolve) =>
-      canvas.toBlob(resolve, "image/jpeg", 0.98),
-    );
-    await save(`${shot.id}-frame-${String(i).padStart(5, "0")}.jpg`, blob);
-    status.textContent = `Rendering ${shot.id}: ${i + 1} / ${frames} · draw ${Math.round(rendered - started)} ms · total ${Math.round(performance.now() - started)} ms`;
+    // Share one full-detail 3D render between the two language compositions.
+    const frame = renderModel(data, i / 30);
+    for (const lang of languages) {
+      compose(data, frame, lang);
+      const blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/jpeg", 0.98),
+      );
+      await save(
+        `${shot.id}-${lang}-frame-${String(i).padStart(5, "0")}.jpg`,
+        blob,
+      );
+    }
+    status.textContent = `Rendering both editions: ${shot.id} · ${i + 1} / ${frames}`;
   }
   await save(
     `${shot.id}.json`,
@@ -355,6 +472,7 @@ async function record(shot) {
       fps: 30,
       width: 1920,
       height: 1080,
+      languages,
       source: shot.node ?? shot.process,
     }),
   );
@@ -388,6 +506,7 @@ async function action(fn) {
       .forEach((e) => (e.disabled = false));
   }
 }
+language.onchange = () => render(active, active.shot.seconds * 0.46);
 select.onchange = () =>
   action(async () => {
     active = await loadShot(shots.find((s) => s.id === select.value));

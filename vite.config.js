@@ -2,8 +2,8 @@ import { defineConfig } from "vite";
 import { readFileSync } from "node:fs";
 const releaseNotices = {
   "LICENSE.txt": "LICENSE",
-  "NOTICE.txt": "NOTICE",
-  "THIRD_PARTY_NOTICES.txt": "THIRD_PARTY_NOTICES.md",
+  "NOTICE.txt": "docs/legal/NOTICE",
+  "THIRD_PARTY_NOTICES.txt": "docs/legal/THIRD_PARTY_NOTICES.md",
 };
 const noticeText = (file) =>
   readFileSync(new URL(`./${file}`, import.meta.url), "utf8");

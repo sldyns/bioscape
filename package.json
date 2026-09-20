@@ -13,8 +13,8 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "verify": "node scripts/verify.mjs",
-    "format": "prettier --write \"src/**/*.{js,jsx,css,mjs}\" tests/*.mjs scripts/*.mjs index.html process-preview.html package.json vite.config.js \".github/workflows/*.yml\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,css,mjs}\" tests/*.mjs scripts/*.mjs index.html process-preview.html package.json vite.config.js \".github/workflows/*.yml\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,css,mjs}\" tests/*.mjs \"scripts/**/*.{js,mjs,html}\" index.html public/film.html package.json vite.config.js \".github/workflows/*.yml\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css,mjs}\" tests/*.mjs \"scripts/**/*.{js,mjs,html}\" index.html public/film.html package.json vite.config.js \".github/workflows/*.yml\"",
     "test:science": "node tests/science-regressions.mjs",
     "check:release": "node scripts/check-release.mjs",
     "check": "npm run format:check && npm run verify && npm run build && npm run check:release"

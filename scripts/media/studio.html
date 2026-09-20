@@ -55,10 +55,13 @@
   </style>
   <header>
     <strong>BioScape / Film studio</strong
-    ><select aria-label="Shot"></select
+    ><select id="language" aria-label="Edition">
+      <option value="en">English</option>
+      <option value="zh">中文</option></select
+    ><select id="shot" aria-label="Shot"></select
     ><button id="still">Export still</button
-    ><button id="record">Render selected clip</button
-    ><button id="all">Render from selected</button>
+    ><button id="record">Render selected · both editions</button
+    ><button id="all">Render all · both editions</button>
   </header>
   <main><canvas id="film" width="1920" height="1080"></canvas></main>
   <output id="status">Preparing…</output>

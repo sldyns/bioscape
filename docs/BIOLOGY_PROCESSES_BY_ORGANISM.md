@@ -135,6 +135,6 @@
 - TAD 是接触结构域，不是有膜小室；环挤出不等于所有表达变化。植物采用物种明确的三维基因组案例，不照搬哺乳动物 CTCF 机制。
 - 每个候选开工前需固定物种与实验范围，写明可操作条件和可观察输出。没有定量模型时使用定性趋势，不能伪造表达倍数或真实反应速度。
 
-详细的交互、证据和实施顺序见 [生物学过程与调控路线图](BIOLOGY_PROCESS_ROADMAP.md)。
+详细的交互、证据和实施顺序见 [生物学过程与调控路线图](archive/BIOLOGY_PROCESS_ROADMAP.md)。
 
 关键依据：[cohesin 环挤出实验](https://pmc.ncbi.nlm.nih.gov/articles/PMC7387118/)、[TAD 边界扰动](https://pmc.ncbi.nlm.nih.gov/articles/PMC4791538/)、[cohesin 去除与表达](https://pmc.ncbi.nlm.nih.gov/articles/PMC5846482/)、[植物染色质结构](https://www.nature.com/articles/s41467-023-44347-z)、[细菌基因调控](https://www.ncbi.nlm.nih.gov/books/NBK9850/)、[能量转换](https://www.ncbi.nlm.nih.gov/books/NBK21063/)。这些支持主要机制与边界，不代表对全部候选的最终动画脚本逐项审校。
