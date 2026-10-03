@@ -2,6 +2,8 @@
 
 User direction: keep the approved composition and light palette, reduce the amount and fragmentation of visible guidance, and let the models lead. This follow-up changes homepage presentation and its primary resume link; it does not change the models or scientific catalog.
 
+Later update: the [guidance follow-up](guidance.md) restores selected metric descriptions, separate Start and Continue actions, and the scroll prompt at the user's request. The notes below record the earlier minimal version.
+
 ## Changes
 
 - Keep the two-line hero headline, one short description and two actions. Returning visitors use the primary action to continue their saved scene; its native link and click action both follow the selected language. Remove the duplicate header action, separate resume sentence and scroll prompt.

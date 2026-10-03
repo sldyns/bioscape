@@ -199,6 +199,17 @@ export default function HomePage({
             <span aria-hidden="true">/</span>
             <span className={lang === "en" ? "active" : ""}>EN</span>
           </button>
+          {resume && (
+            <a
+              className="home-header-resume"
+              href={resume.href}
+              title={resume.label?.[lang]}
+              onClick={(event) => follow(event, resume.href, onResume)}
+            >
+              {t("继续探索", "Continue exploring")}
+              <ArrowUpRight size={15} />
+            </a>
+          )}
         </div>
       </header>
       <main id="home-main" tabIndex={-1}>
@@ -219,19 +230,10 @@ export default function HomePage({
               <div className="home-hero-actions">
                 <a
                   className="home-primary"
-                  href={resume?.href || "#/cell"}
-                  title={resume?.label?.[lang]}
-                  onClick={(event) =>
-                    follow(
-                      event,
-                      resume?.href || "#/cell",
-                      resume ? onResume : null,
-                    )
-                  }
+                  href="#/cell"
+                  onClick={(event) => follow(event, "#/cell")}
                 >
-                  {resume
-                    ? t("继续探索", "Continue exploring")
-                    : t("开始探索", "Start exploring")}
+                  {t("开始探索", "Start exploring")}
                   <ArrowRight size={18} />
                 </a>
                 <button
@@ -242,8 +244,27 @@ export default function HomePage({
                   <ArrowRight size={16} />
                 </button>
               </div>
+              {resume && (
+                <a
+                  className="home-resume-inline"
+                  href={resume.href}
+                  onClick={(event) => follow(event, resume.href, onResume)}
+                >
+                  {t("继续探索", "Continue exploring")}
+                  <span>{resume.label?.[lang]}</span>
+                  <ArrowUpRight size={12} />
+                </a>
+              )}
             </div>
             <HeroScene lang={lang} onExplore={onExplore} />
+            <button
+              className="home-scroll-cue"
+              onClick={() => jump("home-models")}
+            >
+              <span aria-hidden="true" />
+              {t("向下，发现更多", "Scroll to discover")}
+              <ChevronDown size={13} />
+            </button>
           </div>
           <div
             className="home-metrics home-container"
@@ -253,15 +274,30 @@ export default function HomePage({
               <strong>
                 {homepageMetrics.modelCount.toString().padStart(2, "0")}
               </strong>
-              <span>{t("类模型", "Models")}</span>
+              <div className="home-metric-copy">
+                <span>{t("类三维模型", "3D model types")}</span>
+                <small>
+                  {t("细胞、微生物与噬菌体", "Cells, microbes and phages")}
+                </small>
+              </div>
             </div>
             <div>
               <strong>{homepageMetrics.structureCount}</strong>
-              <span>{t("个结构", "Structures")}</span>
+              <div className="home-metric-copy">
+                <span>{t("个结构节点", "Structures")}</span>
+                <small>
+                  {t("由整体，深入分子尺度", "From whole cells to molecules")}
+                </small>
+              </div>
             </div>
             <div>
               <strong>{homepageMetrics.processCount}</strong>
-              <span>{t("个过程", "Processes")}</span>
+              <div className="home-metric-copy">
+                <span>{t("个生命过程", "Biological processes")}</span>
+                <small>
+                  {t("逐步观察，让机制可见", "Watch mechanisms unfold")}
+                </small>
+              </div>
             </div>
           </div>
         </section>

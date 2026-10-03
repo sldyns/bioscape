@@ -80,6 +80,23 @@
   align-items: center;
   gap: 26px;
 }
+.home-header-resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  border: 1px solid var(--home-line);
+  border-radius: 9px;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.home-header-resume:hover {
+  background: #f5f7f8;
+}
+.home-resume-inline {
+  display: none;
+}
 .home-language {
   display: flex;
   align-items: center;
@@ -166,6 +183,25 @@
 }
 .home-secondary:hover {
   background: #0871dc08;
+}
+.home-scroll-cue {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  color: var(--home-muted);
+  font-size: 11px;
+}
+.home-scroll-cue > span {
+  width: 28px;
+  height: 1px;
+  background: #cdd6d6;
+}
+.home-scroll-cue:hover {
+  color: var(--home-blue);
 }
 .home-hero-art {
   position: relative;
@@ -301,6 +337,18 @@
   font-size: 12px;
   line-height: 1.7;
   color: #555c65;
+}
+.home-metric-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.home-metric-copy small {
+  color: var(--home-muted);
+  font-size: 10px;
+  line-height: 1.6;
+  text-wrap: balance;
 }
 .home-section {
   padding-top: 92px;
@@ -755,7 +803,12 @@
     margin-right: 5px;
   }
   .home-header-actions {
-    gap: 18px;
+    gap: 14px;
+  }
+  .home-header-resume {
+    padding-inline: 10px;
+    gap: 8px;
+    font-size: 11px;
   }
   .home-hero-inner {
     min-height: 530px;
@@ -791,6 +844,31 @@
   }
 }
 @media (max-width: 800px) {
+  .home-header-resume {
+    display: none;
+  }
+  .home-resume-inline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 12px;
+    padding: 7px 0;
+    color: var(--home-muted);
+    font-size: 11px;
+  }
+  .home-resume-inline > span {
+    color: #526c63;
+  }
+  .home-resume-inline:hover {
+    color: var(--home-blue);
+  }
+  .home-scroll-cue {
+    position: static;
+    justify-self: center;
+    margin-bottom: 18px;
+  }
   .home-nav {
     gap: 16px;
   }
@@ -834,8 +912,11 @@
   }
   .home-metrics span {
     display: block;
-    margin-top: 7px;
     font-size: 11px;
+  }
+  .home-metric-copy {
+    margin: 7px auto 0;
+    max-width: 90%;
   }
   .home-section {
     padding-block: 66px;
@@ -983,7 +1064,7 @@
     letter-spacing: -1px;
   }
   .home-metrics span {
-    font-size: 9px;
+    font-size: 10px;
   }
   .home-section {
     padding-block: 53px;
