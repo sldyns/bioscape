@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Capture resource and timing checks</title>
+  </head>
+  <body style="font: 16px system-ui; padding: 24px; background: #eef0f3">
+    <h1>Capture resource and timing checks</h1>
+    <p id="result">Running bounded GPU capture checks…</p>
+    <pre id="metrics"></pre>
+    <div id="images"></div>
+    <script type="module">
+      import * as THREE from "three";
+      import { createSceneCapture } from "../src/scene/sceneCapture.js";
+      const output = document.querySelector("#result"),
+        metrics = document.querySelector("#metrics");
+      const check = (condition, message) => {
+        if (!condition) throw new Error(message);
+      };
+      const canvasBytes = (canvas) =>
+        canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height)
+          .data;
+      const equal = (a, b) =>
+        a.length === b.length && a.every((value, index) => value === b[index]);
+      let renderer, capture;
+      const resources = [];
+      try {
+        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(320, 480);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.autoUpdate = false;
+        renderer.shadowMap.needsUpdate = true;
+        const scene = new THREE.Scene(),
+          camera = new THREE.PerspectiveCamera(36, 2 / 3, 0.1, 100),
+          target = new THREE.Vector3();
+        camera.position.set(0, 0, 10);
+        camera.lookAt(target);
+        scene.add(new THREE.HemisphereLight("#ffffff", "#708090", 2));
+        const light = new THREE.DirectionalLight("#ffffff", 2.3);
+        light.position.set(-5, 5, 7);
+        light.castShadow = true;
+        light.shadow.mapSize.set(2048, 2048);
+        scene.add(light);
+        const geometry = new THREE.SphereGeometry(0.16, 12, 8),
+          material = new THREE.MeshStandardMaterial({ color: "#bd6773" });
+        resources.push(geometry, material);
+        let shadowDraws = 0;
+        for (let i = 0; i < 96; i++) {
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.position.set(
+            ((i % 8) - 3.5) * 0.32,
+            (Math.floor(i / 8) - 5.5) * 0.32,
+            Math.sin(i) * 0.3,
+          );
+          mesh.castShadow = true;
+          mesh.onBeforeShadow = () => shadowDraws++;
+          scene.add(mesh);
+        }
+        const ground = new THREE.Mesh(
+          new THREE.PlaneGeometry(8, 8),
+          new THREE.MeshStandardMaterial({ color: "#eee" }),
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -2.1;
+        ground.receiveShadow = true;
+        scene.add(ground);
+        resources.push(ground.geometry, ground.material);
+        scene.updateMatrixWorld(true);
+        renderer.render(scene, camera);
+        const liveShadow = light.shadow,
+          liveMap = light.shadow.map;
+        let clones = 0,
+          canReuse = true;
+        const clone = liveShadow.clone.bind(liveShadow);
+        liveShadow.clone = () => {
+          clones++;
+          return clone();
+        };
+        const readback = new Set(),
+          maps = new Set();
+        const readPixels = renderer.readRenderTargetPixels.bind(renderer);
+        renderer.readRenderTargetPixels = (
+          target,
+          x,
+          y,
+          width,
+          height,
+          buffer,
+          ...rest
+        ) => {
+          readback.add(buffer);
+          return readPixels(target, x, y, width, height, buffer, ...rest);
+        };
+        capture = createSceneCapture({
+          renderer,
+          scene,
+          camera,
+          target,
+          getFittedDistance: () => 10,
+          fitDistance: () => 10,
+          canReuseLiveShadows: () => canReuse,
+          getLabels: () => [
+            {
+              text: "Upper annotation",
+              position: new THREE.Vector3(0, 1.5, 0),
+            },
+            {
+              text: "Lower annotation / 下方标注",
+              position: new THREE.Vector3(0, -1.5, 0),
+            },
+          ],
+        });
+        const measure = (width, height, count) => {
+          const durations = [],
+            canvases = new Set();
+          for (let i = 0; i < count + 2; i++) {
+            const started = performance.now();
+            const frame = capture.captureFrame({
+              width,
+              height,
+              background: "#ffffff",
+              labels: true,
+              turn: i * 0.03,
+              reuseFrame: true,
+              labelScale: width / 1080,
+            });
+            if (i >= 2) {
+              durations.push(performance.now() - started);
+              canvases.add(frame);
+            }
+          }
+          durations.sort((a, b) => a - b);
+          return {
+            width,
+            height,
+            frames: count,
+            medianMs: +durations[Math.floor(count / 2)].toFixed(2),
+            p95Ms:
+              +durations[Math.min(count - 1, Math.floor(count * 0.95))].toFixed(
+                2,
+              ),
+            canvases: canvases.size,
+          };
+        };
+        shadowDraws = 0;
+        readback.clear();
+        const preview = measure(270, 430, 12);
+        const previewResources = {
+          readbackBuffers: readback.size,
+          shadowClones: clones,
+          shadowDraws,
+        };
+        readback.clear();
+        const full = measure(1080, 1720, 6);
+        metrics.textContent = JSON.stringify(
+          { preview, previewResources, full },
+          null,
+          2,
+        );
+        check(
+          preview.canvases === 1,
+          "Transient captures must reuse one canvas",
+        );
+        check(
+          previewResources.readbackBuffers === 1,
+          "Same-size captures must reuse one readback buffer",
+        );
+        check(
+          previewResources.shadowClones === 0 &&
+            previewResources.shadowDraws === 0,
+          "Static orbit captures must reuse the current live shadow map",
+        );
+        const options = {
+          width: 320,
+          height: 480,
+          background: "transparent",
+          labels: true,
+        };
+        const a = capture.captureFrame(options),
+          aBytes = canvasBytes(a).slice(),
+          b = capture.captureFrame({ ...options, turn: 0.6 });
+        check(
+          a !== b && equal(aBytes, canvasBytes(a)),
+          "Default captures must remain independent immutable snapshots",
+        );
+        check(
+          !equal(aBytes, canvasBytes(b)),
+          "Different camera poses must change capture pixels",
+        );
+        canReuse = false;
+        const cloneCount = clones;
+        const oldBefore = scene.children.find(
+          (item) => item.isMesh,
+        ).onBeforeShadow;
+        const firstMesh = scene.children.find((item) => item.isMesh);
+        firstMesh.onBeforeShadow = () => {
+          oldBefore();
+          maps.add(light.shadow.map);
+        };
+        for (let i = 0; i < 4; i++) {
+          firstMesh.position.z = i * 0.1;
+          scene.updateMatrixWorld(true);
+          capture.captureFrame({ ...options, reuseFrame: true });
+        }
+        check(
+          clones === cloneCount + 1 && maps.size === 1,
+          "Changed geometry must reuse one private shadow allocation",
+        );
+        check(
+          light.shadow === liveShadow && light.shadow.map === liveMap,
+          "Private captures must preserve live shadow resources",
+        );
+        const releasedMap = [...maps][0];
+        let mapDisposed = false;
+        releasedMap.addEventListener("dispose", () => {
+          mapDisposed = true;
+        });
+        capture.dispose();
+        check(
+          mapDisposed,
+          "Capture cleanup must dispose its private shadow map",
+        );
+        const postRelease = capture.captureFrame(options);
+        check(
+          postRelease.width === 320 && postRelease.height === 480,
+          "Capture must recover after release",
+        );
+        for (const frame of [a, b]) {
+          frame.style.width = "220px";
+          frame.style.height = "auto";
+          document.querySelector("#images").append(frame);
+        }
+        output.textContent =
+          "PASS: pooled transient canvases/readback, preserved detached snapshots, zero static shadow rerenders, reused private shadow maps, and complete cleanup.";
+        document.body.dataset.result = "pass";
+        liveShadow.dispose();
+      } catch (error) {
+        output.textContent = `FAIL: ${error.stack}`;
+        document.body.dataset.result = "fail";
+      } finally {
+        capture?.dispose();
+        resources.forEach((resource) => resource.dispose());
+        renderer?.dispose();
+      }
+    </script>
+  </body>
+</html>

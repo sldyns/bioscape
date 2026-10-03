@@ -1,0 +1,580 @@
+{
+  "date": "2026-10-03",
+  "viewport": "1280x720 unchanged",
+  "method": "CUA own tab. Start at 0 using Play, allow full natural playback. Visibly inspect sampled midpoint and terminal screenshots.",
+  "limitations": [
+    "Not every-frame inspection, FPS, mobile, scientific validation or complete option coverage.",
+    "Replication additionally sampled .543; boundary jumps cannot be ruled out from these samples.",
+    "Photosynthesis and respiration particle-loop reset continuity not established.",
+    "Only proteasome initial run uses latest5174, others4200."
+  ],
+  "items": [
+    {
+      "id": "secretion",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 24,
+      "observedProgress": [
+        0.862,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Vesicle approaches membrane; final cargo extracellular",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "transcription",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1,
+      "duration": 28,
+      "observedProgress": [
+        0.332,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "RNA extension visible; terminal released RNA",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "photosynthesis",
+      "root": "plant",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 24,
+      "observedProgress": [
+        0.523,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Thylakoid and stroma transfer visible",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "infection",
+      "root": "phage",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 24,
+      "observedProgress": [
+        0.519,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Tail contraction; empty capsid and intracellular DNA at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "replication",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 36,
+      "observedProgress": [
+        0.368,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Fork and fragments visible; two daughter duplexes at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "dnaRepair",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 34,
+      "observedProgress": [
+        0.478,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Dual-incision complex; filled and closed duplex at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "transduction",
+      "root": "phage",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 36,
+      "observedProgress": [
+        0.472,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Separate donor and recipient; donor DNA enters recipient",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "bacterialSporulation",
+      "root": "bacterium",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 38,
+      "observedProgress": [
+        0.487,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Engulfment; one released dormant spore at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "promoterRegulation",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 32,
+      "observedProgress": [
+        0.487,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Polymerase assembly; new RNA at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "enhancerRegulation",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 34,
+      "observedProgress": [
+        0.482,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Coactivator recruitment and RNA pulse",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "chromatinAccess",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 32,
+      "observedProgress": [
+        0.491,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Nucleosome slides; binding site exposed",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "tad",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 36,
+      "observedProgress": [
+        0.483,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Loop and contact-domain dashed guide; default model small but readable",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "plantGenome",
+      "root": "plant",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 36,
+      "observedProgress": [
+        0.476,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Three genomic compartments and imported proteins",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "plantRdDM",
+      "root": "plant",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 38,
+      "observedProgress": [
+        0.487,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Guide loading; methylation marks at target",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "rnaProcessing",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 34,
+      "observedProgress": [
+        0.48,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Splicing intermediate; mature RNA and lariat at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "nuclearTransport",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 32,
+      "observedProgress": [
+        0.487,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Pore passage; separated cargo and receptor cycle",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "motorTransport",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 32,
+      "observedProgress": [
+        0.484,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Motor translates on microtubule to plus end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "organelleImport",
+      "root": "plant",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 35,
+      "observedProgress": [
+        0.488,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Double-membrane channel; folded stromal product",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "translation",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 32,
+      "observedProgress": [
+        0.489,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Experimental ribosome plus separate reaction model; peptide release",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "proteinFolding",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 34,
+      "observedProgress": [
+        0.479,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Hsp70 holding state; release and folding at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "alternativeSplicing",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 32,
+      "observedProgress": [
+        0.487,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Two lariats; exon7 included in terminal RNA",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "nitrogenFixation",
+      "root": "bacterium",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 36,
+      "observedProgress": [
+        0.475,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Fe-protein cycle; NH3 and H2 products",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "rnaSilencing",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 32,
+      "observedProgress": [
+        0.486,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "miRISC association; target RNA turnover",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "proteasome",
+      "root": "cell",
+      "server": 5174,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 36,
+      "observedProgress": [
+        0.472,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Cutaway axial chamber; peptide release and ubiquitin recycling",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "crispr",
+      "root": "bacterium",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 32,
+      "observedProgress": [
+        0.489,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "R-loop intermediate; cuts in both DNA strands at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "bacterialRepair",
+      "root": "bacterium",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 34,
+      "observedProgress": [
+        0.479,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "RecA LexA intermediate; response RNA at end",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "respiration",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 36,
+      "observedProgress": [
+        0.474,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Membrane complexes and electron transfer; ATP products",
+      "defectObserved": false,
+      "optionsTested": []
+    },
+    {
+      "id": "glycolysis",
+      "root": "cell",
+      "server": 4200,
+      "defaultBranch": true,
+      "playback": "Actual uninterrupted UI play from 0 to 1; no seeking",
+      "speed": 1.5,
+      "duration": 34,
+      "observedProgress": [
+        0.481,
+        1
+      ],
+      "endValue": 1000,
+      "visualObservation": "Two three-carbon paths; pyruvate ATP NADH products",
+      "defectObserved": false,
+      "optionsTested": []
+    }
+  ],
+  "focusedFollowups": [
+    {
+      "id": "replication",
+      "server": 5174,
+      "condition": "active",
+      "speed": 0.5,
+      "actualFullPlayback": true,
+      "samples": [
+        0.344,
+        0.458,
+        0.536,
+        0.626,
+        0.71,
+        1
+      ],
+      "observation": "Lagging polymerase visibly fades near .344 and .710; no opaque crossing body in sampled frames. Samples do not establish every-frame continuity at all four exact reset boundaries."
+    },
+    {
+      "id": "replication",
+      "server": 5174,
+      "condition": "absent",
+      "speed": 1.5,
+      "actualFullPlayback": true,
+      "samples": [
+        0.474,
+        1
+      ],
+      "observation": "Condition resets progress to0. Full natural playback ends1000. Response card distinguishes retained nicks from normal mechanism. Nicks remain visually subtle at default scale."
+    },
+    {
+      "id": "proteasome",
+      "server": 5174,
+      "condition": "untagged + whole",
+      "speed": 1.5,
+      "actualFullPlayback": true,
+      "samples": [
+        0.474,
+        1
+      ],
+      "observation": "Intact four-ring exterior. Untagged substrate remains outside and intact through endpoint, no peptide release. Clear condition response card."
+    },
+    {
+      "id": "respiration",
+      "server": 5174,
+      "condition": "leak",
+      "speed": 1.5,
+      "actualFullPlayback": true,
+      "samples": [
+        0.481,
+        1
+      ],
+      "observation": "Proton leakage pathway visible; terminal ATP products suppressed, electron carriers remain. Condition response distinct from mechanism chapter."
+    }
+  ],
+  "sharedControlsSample": {
+    "process": "respiration",
+    "server": 5174,
+    "startOver": 0,
+    "next": 160,
+    "previous": 0,
+    "playPause": 14,
+    "zoomInOutReset": "visually verified",
+    "labels": "off removes markers and legend; restored on using AX checkbox",
+    "consoleWarnErrorCurrentTab": [],
+    "scope": "Sampled shared controls on one process, not every individual process control or every option."
+  },
+  "finalBuildDelta": {
+    "server": 4201,
+    "method": "UI timeline seeking only; separate from32 full plays",
+    "replication": {
+      "progress": [
+        0.36,
+        0.48
+      ],
+      "result": "Lagging polymerase absent at both reset boundaries; fork and DNA intact; matches fade redesign"
+    },
+    "proteasome": {
+      "progress": [
+        1
+      ],
+      "result": "Cutaway chamber, released short peptides, recycled ubiquitin match5174 terminal state"
+    },
+    "respiration": {
+      "condition": "leak",
+      "progress": [
+        1
+      ],
+      "result": "Chinese condition card explicitly states electron transfer continues and ATP synthesis suppressed; leakage path and suppressed ATP products match5174"
+    },
+    "defectObserved": false
+  }
+}

@@ -15,12 +15,17 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowLeft,
+  Tag,
 } from "lucide-react";
 import ProcessScene from "./ProcessScene";
-import { processCatalog, relatedStructures } from "./catalog";
+import { processCatalog } from "./catalog";
 import { getNode } from "../hierarchy";
-import { pathHash } from "../navigation";
+import { groupProcessStructures } from "../exploration/relationships.js";
+import { restoreProcessSession } from "../exploration/processSession.js";
+import { getConditionNote } from "../exploration/conditionNotes.js";
+import SceneActions from "../exploration/SceneActions.jsx";
 import "./processes.css";
+import "../exploration/processContinuity.css";
 import { processLoaders } from "./loaders.js";
 const players = Object.fromEntries(
   Object.entries(processLoaders).map(([id, load]) => [
@@ -61,25 +66,102 @@ function ProcessPlayer({
   onBack,
   titleRef,
   restoreFocus,
+  initialState,
+  onStateChange,
+  onSceneReady,
+  originPath = [rootId],
+  onStructure,
+  onExploreStructure,
+  onStudio,
+  onShare,
 }) {
   const definition = useMemo(
     () => ({ ...baseDefinition, ...baseDefinition.contexts?.[rootId] }),
     [baseDefinition, rootId],
   );
-  const [parameters, setParameters] = useState(() =>
-    Object.fromEntries(
-      (definition.controls ?? []).map((control) => [
-        control.id,
-        control.default,
-      ]),
-    ),
+  const [initial] = useState(() =>
+    restoreProcessSession(definition, initialState),
   );
-  const [progress, setProgress] = useState(0);
+  const [parameters, setParameters] = useState(initial.parameters);
+  const [progress, setProgress] = useState(initial.progress);
   const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(initial.speed);
+  const [annotations, setAnnotations] = useState(initial.annotations);
+  const [ready, setReady] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [zoom, setZoom] = useState({ direction: null, key: 0 });
-  const progressRef = useRef(0);
+  const progressRef = useRef(initial.progress);
+  const cameraRef = useRef(initial.camera);
+  const stateCallback = useRef(onStateChange);
+  stateCallback.current = onStateChange;
+  const latest = useRef(initial);
+  const publishState = React.useCallback((patch, immediate = false) => {
+    latest.current = { ...latest.current, ...patch };
+    stateCallback.current?.(latest.current, { immediate });
+  }, []);
+  useEffect(() => {
+    publishState({});
+  }, [publishState]);
+  const sceneReady = React.useCallback(
+    (api) => {
+      setReady(Boolean(api?.ready));
+      onSceneReady?.(
+        api
+          ? Object.assign(Object.create(api), {
+              getScientificNote: () =>
+                [
+                  groupProcessStructures(
+                    rootId,
+                    definition.id,
+                    definition.stages,
+                  ).scope?.label?.[lang],
+                  getConditionNote(
+                    definition.id,
+                    latest.current.parameters,
+                    lang,
+                  )?.title,
+                ]
+                  .filter(Boolean)
+                  .join(" · "),
+              getFrameCaption: (fraction) => {
+                const condition = getConditionNote(
+                  definition.id,
+                  latest.current.parameters,
+                  lang,
+                );
+                if (condition?.kind === "reference") return condition.title;
+                const value = Number.isFinite(fraction)
+                  ? fraction
+                  : progressRef.current;
+                const index = Math.max(
+                  0,
+                  definition.stages.findLastIndex(
+                    (item) => item.at <= value + 0.00001,
+                  ),
+                );
+                return (
+                  (lang === "zh" ? "步骤" : "Step") +
+                  " " +
+                  (index + 1) +
+                  " / " +
+                  definition.stages.length +
+                  " · " +
+                  definition.stages[index].title[lang]
+                );
+              },
+            })
+          : null,
+      );
+    },
+    [onSceneReady, definition, lang, rootId],
+  );
+  const viewChanged = React.useCallback(
+    (camera) => {
+      cameraRef.current = camera;
+      publishState({ camera });
+    },
+    [publishState],
+  );
   const selectedStep = useRef(null);
   const en = lang === "en",
     t = (zh, english) => (en ? english : zh);
@@ -88,6 +170,38 @@ function ProcessPlayer({
     definition.stages.findLastIndex((stage) => progress + 0.00001 >= stage.at),
   );
   const stage = definition.stages[stageIndex];
+  const conditionNote = getConditionNote(definition.id, parameters, lang);
+  const related = groupProcessStructures(
+    rootId,
+    definition.id,
+    definition.stages,
+    progress,
+    parameters,
+  );
+  const locationButton = (item) => (
+    <button
+      key={item.path.join("/")}
+      disabled={!onExploreStructure}
+      onClick={() => {
+        setPlaying(false);
+        onExploreStructure?.(item.path);
+      }}
+    >
+      <span>
+        <strong>{getNode(item.path.at(-1), lang).name}</strong>
+        {item.path.length > 2 && (
+          <small className="continuity-path">
+            {item.path
+              .slice(1, -1)
+              .map((id) => getNode(id, lang).name)
+              .join(" / ")}
+          </small>
+        )}
+        {item.label && <small>{item.label[lang]}</small>}
+      </span>
+      <ChevronRight size={13} aria-hidden="true" />
+    </button>
+  );
 
   useEffect(() => {
     if (restoreFocus?.current) {
@@ -113,11 +227,13 @@ function ProcessPlayer({
     setPlaying(false);
     progressRef.current = value;
     setProgress(value);
+    publishState({ progress: value }, true);
   }
   function togglePlayback() {
     if (progressRef.current >= 1) {
       progressRef.current = 0;
       setProgress(0);
+      publishState({ progress: 0 }, true);
     }
     setPlaying((value) => !value);
   }
@@ -146,6 +262,7 @@ function ProcessPlayer({
       last = now;
       if (now - published >= 30 || progressRef.current >= 1) {
         setProgress(progressRef.current);
+        publishState({ progress: progressRef.current });
         published = now;
       }
       if (progressRef.current >= 1) setPlaying(false);
@@ -153,7 +270,7 @@ function ProcessPlayer({
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [playing, suspended, definition, speed]);
+  }, [playing, suspended, definition, speed, publishState]);
 
   return (
     <main className="process-workspace" data-process={definition.id}>
@@ -172,6 +289,23 @@ function ProcessPlayer({
         <h1 ref={titleRef} tabIndex={-1}>
           {definition.title[lang]}
         </h1>
+        <button
+          className="process-origin"
+          disabled={!onStructure}
+          onClick={() => {
+            setPlaying(false);
+            onStructure?.();
+          }}
+        >
+          <span>{t("来自结构", "From structure")}</span>
+          <strong>
+            {originPath.map((id) => getNode(id, lang).name).join(" / ")}
+          </strong>
+          <span>
+            {t("返回，保留视角", "Return to saved view")}{" "}
+            <ChevronRight size={12} />
+          </span>
+        </button>
         <nav
           className="process-steps"
           aria-label={t("讲解步骤", "Explanation steps")}
@@ -197,6 +331,15 @@ function ProcessPlayer({
       >
         <div className="process-visual">
           <div className="process-scene-toolbar">
+            <SceneActions
+              lang={lang}
+              ready={ready}
+              onStudio={() => {
+                setPlaying(false);
+                onStudio?.();
+              }}
+              onShare={onShare}
+            />
             {definition.legend && (
               <div
                 className="process-legend"
@@ -211,6 +354,18 @@ function ProcessPlayer({
               </div>
             )}
             <div className="process-view-tools">
+              <button
+                className={"icon-button " + (annotations ? "active" : "")}
+                aria-pressed={annotations}
+                aria-label={t("显示标签", "Show labels")}
+                onClick={() => {
+                  const next = !latest.current.annotations;
+                  setAnnotations(next);
+                  publishState({ annotations: next }, true);
+                }}
+              >
+                <Tag size={17} />
+              </button>
               <button
                 className="icon-button"
                 aria-label={t("放大", "Zoom in")}
@@ -246,6 +401,10 @@ function ProcessPlayer({
             lang={lang}
             resetKey={resetKey}
             zoom={zoom}
+            annotations={annotations}
+            initialView={initial.camera}
+            onViewChange={viewChanged}
+            onSceneReady={sceneReady}
           />
         </div>
         <div className="process-transport">
@@ -290,7 +449,11 @@ function ProcessPlayer({
               {t("播放速度", "Speed")}
               <select
                 value={speed}
-                onChange={(event) => setSpeed(Number(event.target.value))}
+                onChange={(event) => {
+                  const next = Number(event.target.value);
+                  setSpeed(next);
+                  publishState({ speed: next }, true);
+                }}
               >
                 <option value={0.5}>0.5×</option>
                 <option value={1}>1×</option>
@@ -326,9 +489,18 @@ function ProcessPlayer({
         className="process-explanation"
         aria-label={t("过程说明", "Process explanation")}
       >
+        {conditionNote && (
+          <section className="process-condition-note" aria-live="polite">
+            <span>{t("当前条件的响应", "Response to this condition")}</span>
+            <strong>{conditionNote.title}</strong>
+            <p>{conditionNote.body}</p>
+          </section>
+        )}
         <div aria-live="polite" aria-atomic="true">
           <p className="process-eyebrow">
-            {t("当前步骤", "Current step")}{" "}
+            {conditionNote?.kind === "reference"
+              ? t("机制参考", "Mechanism reference")
+              : t("当前步骤", "Current step")}{" "}
             {String(stageIndex + 1).padStart(2, "0")} /{" "}
             {String(definition.stages.length).padStart(2, "0")}
           </p>
@@ -344,11 +516,15 @@ function ProcessPlayer({
                 <select
                   value={parameters[control.id]}
                   onChange={(event) => {
-                    seek(0);
-                    setParameters((current) => ({
-                      ...current,
+                    const next = {
+                      ...latest.current.parameters,
                       [control.id]: event.target.value,
-                    }));
+                    };
+                    setPlaying(false);
+                    progressRef.current = 0;
+                    setProgress(0);
+                    setParameters(next);
+                    publishState({ progress: 0, parameters: next }, true);
                   }}
                 >
                   {control.options.map((option) => (
@@ -361,20 +537,78 @@ function ProcessPlayer({
             ))}
           </fieldset>
         )}
-        {relatedStructures[definition.id]?.[rootId]?.length > 0 && (
-          <nav
-            className="process-related"
-            aria-label={t("相关结构", "Related structures")}
-          >
-            <p>{t("看看相关结构", "Explore the structures")}</p>
-            {(relatedStructures[definition.id]?.[rootId] ?? []).map((path) => (
-              <a key={path.join("/")} href={pathHash([rootId, ...path])}>
-                {getNode(path.at(-1), lang).name}
-                <ChevronRight size={12} />
-              </a>
-            ))}
-          </nav>
-        )}
+        <nav
+          className="process-continuity"
+          aria-label={t("相关结构", "Related structures")}
+        >
+          <div className="continuity-heading">
+            <span>{t("连接结构与过程", "Connect structure & process")}</span>
+            <h3>{t("在结构中观察", "Explore the structures")}</h3>
+          </div>
+          {related.scope?.label && (
+            <p className="continuity-scope">{related.scope.label[lang]}</p>
+          )}
+          {related.current.length > 0 ? (
+            <div className="continuity-current">
+              <p>{t("本步骤的结构入口", "Structure links for this step")}</p>
+              {related.current.map(locationButton)}
+            </div>
+          ) : (
+            <p className="continuity-empty">
+              {related.other.length
+                ? t(
+                    "本步骤暂无单独结构入口。可展开其他步骤的关联结构。",
+                    "No separate structure link for this step. Explore links from other steps below.",
+                  )
+                : t(
+                    "结构目录尚未单独呈现此过程的作用部位。",
+                    "The structure catalogue does not yet show a separate location for this mechanism.",
+                  )}
+            </p>
+          )}
+          {related.other.length > 0 && (
+            <details className="continuity-other">
+              <summary>
+                {t("其他步骤的关联结构", "Structures across other steps")}{" "}
+                <span>
+                  {related.other.reduce(
+                    (count, group) => count + group.entries.length,
+                    0,
+                  )}
+                </span>
+              </summary>
+              {related.other.map((group) => (
+                <div className="continuity-group" key={group.stage.at}>
+                  <p>
+                    {String(group.stageIndex + 1).padStart(2, "0")} ·{" "}
+                    {group.stage.title[lang]}
+                  </p>
+                  {group.entries.map(locationButton)}
+                </div>
+              ))}
+            </details>
+          )}
+          {related.scope && originPath.length > 1 && (
+            <button
+              className="continuity-overview"
+              disabled={!onExploreStructure}
+              onClick={() => {
+                setPlaying(false);
+                onExploreStructure?.(related.scope.path);
+              }}
+            >
+              {t("查看整体结构", "Whole structure")} ·{" "}
+              {getNode(rootId, lang).name}
+              <ChevronRight size={13} aria-hidden="true" />
+            </button>
+          )}
+          <p className="continuity-return">
+            {t(
+              "查看结构后，可从「接着观察过程」回到此处。",
+              "After exploring, use “Resume process” to return here.",
+            )}
+          </p>
+        </nav>
         <p className="process-context">{definition.intro[lang]}</p>
         <p className="process-disclaimer">
           {t(

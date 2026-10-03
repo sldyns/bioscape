@@ -1,0 +1,27 @@
+{
+  "longTasks": [
+    {
+      "duration": 54,
+      "start": 373.7000000476837
+    },
+    {
+      "duration": 212,
+      "start": 2634.7000000476837
+    },
+    {
+      "duration": 208,
+      "start": 215536.90000009537
+    }
+  ],
+  "models": [
+    {
+      "cpuMs": "207.80",
+      "drawCalls": "152",
+      "node": "cell",
+      "prepareMs": "2250.4",
+      "source": "build",
+      "time": 215745
+    }
+  ],
+  "started": 212939.29999995232
+}

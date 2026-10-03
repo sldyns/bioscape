@@ -5,6 +5,12 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { visibleProcessBounds } from "./sceneBounds.js";
 import { placeLabel } from "./labelLayout.js";
 import { prepareAnnotationLabels } from "./annotationDom.js";
+import {
+  applySceneView,
+  normalizeSceneView,
+  readSceneView,
+  createSceneCapture,
+} from "../scene/sceneCapture.js";
 
 const clampProgress = (value) =>
   Number.isFinite(value) ? THREE.MathUtils.clamp(value, 0, 1) : 0;
@@ -40,12 +46,34 @@ export default function ProcessScene({
   resetKey = 0,
   zoom = { direction: null, key: 0 },
   annotations = true,
+  onSceneReady,
+  initialView,
+  onViewChange,
 }) {
   const host = useRef(null);
   const engine = useRef(null);
   const keyHost = useRef(null);
-  const live = useRef({ progress, lang, parameters });
-  live.current = { progress, lang, parameters };
+  const live = useRef();
+  live.current = {
+    progress,
+    lang,
+    parameters,
+    onSceneReady,
+    initialView,
+    onViewChange,
+  };
+  const lastReady = useRef({ callback: null, api: null });
+  const lastReset = useRef(resetKey);
+  const publishReady = (api) => {
+    const callback = live.current.onSceneReady;
+    if (
+      lastReady.current.callback === callback &&
+      lastReady.current.api === api
+    )
+      return;
+    lastReady.current = { callback, api };
+    callback?.(api);
+  };
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(true);
   const [attempt, setAttempt] = useState(0);
@@ -62,6 +90,27 @@ export default function ProcessScene({
     let camera;
     let matricesDirty = true;
     let fittedDistance = 1;
+    let capture,
+      api,
+      suppressViewChange = false;
+    let lastView = null;
+    let appliedProgress = clampProgress(live.current.progress);
+    let appliedParameters = live.current.parameters;
+    const view = () => readSceneView(camera, controls.target, fittedDistance);
+    const orbitChanged = () => {
+      requestRender();
+      if (suppressViewChange || !api?.ready || !live.current.onViewChange)
+        return;
+      const next = view();
+      const values = [...next.direction, ...next.target, next.zoom];
+      if (
+        lastView &&
+        values.every((value, index) => Math.abs(value - lastView[index]) < 1e-6)
+      )
+        return;
+      lastView = values;
+      live.current.onViewChange(next);
+    };
     const labelItems = [];
     setError(null);
     setBusy(true);
@@ -69,6 +118,8 @@ export default function ProcessScene({
     const dispose = () => {
       if (disposed) return;
       disposed = true;
+      publishReady(null);
+      capture?.dispose();
       cancelAnimationFrame(frame);
       observer?.disconnect();
       document.fonts?.removeEventListener("loadingdone", fontsChanged);
@@ -92,7 +143,13 @@ export default function ProcessScene({
       keyHost.current?.replaceChildren();
       if (engine.current?.dispose === dispose) engine.current = null;
     };
-    const fail = () => {
+    const fail = (cause) => {
+      console.error(
+        "Process scene failure",
+        definition.id,
+        appliedProgress,
+        cause,
+      );
       dispose();
       setBusy(false);
       setError("webgl");
@@ -100,6 +157,8 @@ export default function ProcessScene({
     const onContextLost = (event) => {
       event.preventDefault();
       contextLost = true;
+      publishReady(null);
+      capture?.dispose();
       cancelAnimationFrame(frame);
       frame = 0;
       setError("context");
@@ -177,8 +236,8 @@ export default function ProcessScene({
         renderer.render(scene, camera);
         projectLabels();
         element.dataset.renderState = frame ? "active" : "idle";
-      } catch {
-        fail();
+      } catch (cause) {
+        fail(cause);
       }
     };
 
@@ -211,7 +270,7 @@ export default function ProcessScene({
         "(prefers-reduced-motion: reduce)",
       ).matches;
       controls.dampingFactor = 0.18;
-      controls.addEventListener("change", requestRender);
+      controls.addEventListener("change", orbitChanged);
       pmrem = new THREE.PMREMGenerator(renderer);
       room = new RoomEnvironment();
       environment = pmrem.fromScene(room, 0.04);
@@ -273,21 +332,23 @@ export default function ProcessScene({
         for (const y of [bounds.min.y, bounds.max.y])
           for (const z of [bounds.min.z, bounds.max.z])
             corners.push(new THREE.Vector3(x, y, z).sub(target));
-      const fitDistance = () => {
+      const fitDistance = (viewCamera = camera) => {
         const right = new THREE.Vector3().setFromMatrixColumn(
-          camera.matrixWorld,
+          viewCamera.matrixWorld,
           0,
         );
         const up = new THREE.Vector3().setFromMatrixColumn(
-          camera.matrixWorld,
+          viewCamera.matrixWorld,
           1,
         );
         const back = new THREE.Vector3().setFromMatrixColumn(
-          camera.matrixWorld,
+          viewCamera.matrixWorld,
           2,
         );
-        const tanVertical = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-        const tanHorizontal = tanVertical * camera.aspect;
+        const tanVertical = Math.tan(
+          THREE.MathUtils.degToRad(viewCamera.fov / 2),
+        );
+        const tanHorizontal = tanVertical * viewCamera.aspect;
         return Math.max(
           0.5,
           ...corners.map(
@@ -380,19 +441,93 @@ export default function ProcessScene({
       );
       resize(true);
       controls.saveState();
+      const setView = (value) => {
+        if (!api?.ready || !normalizeSceneView(value)) return false;
+        suppressViewChange = true;
+        const damping = controls.enableDamping;
+        try {
+          controls.enableDamping = false;
+          controls.update();
+          const applied = applySceneView(
+            camera,
+            controls.target,
+            fittedDistance,
+            value,
+          );
+          if (applied) {
+            controls.update();
+            const current = view();
+            lastView = [...current.direction, ...current.target, current.zoom];
+            requestRender();
+          }
+          return applied;
+        } finally {
+          controls.enableDamping = damping;
+          suppressViewChange = false;
+        }
+      };
+      capture = createSceneCapture({
+        renderer,
+        scene,
+        camera,
+        target: controls.target,
+        getFittedDistance: () => fittedDistance,
+        fitDistance,
+        getLabels: () =>
+          (model.labels ?? []).map((label) => ({
+            text:
+              label.text[live.current.lang] ??
+              label.text.zh ??
+              label.text.en ??
+              "",
+            position: new THREE.Vector3().fromArray(label.position),
+            active: label.active,
+            priority: label.priority,
+          })),
+      });
+      api = {
+        get ready() {
+          return !disposed && !contextLost && Boolean(model);
+        },
+        getView: view,
+        setView,
+        releaseCapture: () => capture.dispose(),
+        captureFrame(options = {}) {
+          if (!api.ready)
+            throw new Error("The process scene is not ready to capture.");
+          const seek =
+            Number.isFinite(options.progress) &&
+            clampProgress(options.progress) !== appliedProgress;
+          try {
+            if (seek)
+              model.update(clampProgress(options.progress), appliedParameters);
+            if (matricesDirty || seek) scene.updateMatrixWorld();
+            return capture.captureFrame(options);
+          } finally {
+            if (seek) {
+              model.update(appliedProgress, appliedParameters);
+              scene.updateMatrixWorld();
+            }
+          }
+        },
+      };
+      if (live.current.initialView) setView(live.current.initialView);
       observer = new ResizeObserver(() => resize());
       observer.observe(element);
       document.fonts?.addEventListener("loadingdone", fontsChanged);
       engine.current = {
+        api,
         dispose,
         update(value) {
           if (disposed) return;
           try {
-            model.update(clampProgress(value), live.current.parameters);
+            appliedProgress = clampProgress(value);
+            appliedParameters = live.current.parameters;
+            model.update(appliedProgress, appliedParameters);
             matricesDirty = true;
             requestRender();
-          } catch {
-            fail();
+          } catch (cause) {
+            fail(cause);
           }
         },
         requestRender,
@@ -425,16 +560,25 @@ export default function ProcessScene({
       cancelAnimationFrame(frame);
       frame = 0;
       render();
-      if (!disposed) setBusy(false);
-    } catch {
-      fail();
+      if (!disposed) {
+        setBusy(false);
+        publishReady(api);
+      }
+    } catch (cause) {
+      fail(cause);
     }
     return dispose;
   }, [definition, rootId, attempt]);
 
   useEffect(() => engine.current?.update(progress), [progress, parameters]);
   useEffect(() => engine.current?.requestRender(), [lang]);
-  useEffect(() => engine.current?.reset(), [resetKey]);
+  useEffect(() => {
+    if (lastReset.current !== resetKey) engine.current?.reset();
+    lastReset.current = resetKey;
+  }, [resetKey]);
+  useEffect(() => {
+    publishReady(engine.current?.api?.ready ? engine.current.api : null);
+  }, [onSceneReady]);
   useEffect(() => {
     if (zoom.direction) engine.current?.zoom(zoom.direction);
   }, [zoom.key, zoom.direction]);

@@ -1,9 +1,17 @@
 import { plantDefinitions, bacteriaDefinitions } from "../catalog/cellTypes";
+import {
+  specializedSpecimenIds,
+  specializedPartIds,
+} from "../compare/specimens.js";
 import { microbeIds } from "../catalog/microbes";
 const plantIds = new Set(plantDefinitions.map((d) => d[0]));
 const bacteriaIds = new Set(bacteriaDefinitions.map((d) => d[0]));
 import { detailModel } from "./detailModels";
 export async function loadDetailModel(id) {
+  if (specializedSpecimenIds.has(id) || specializedPartIds.has(id)) {
+    const { getSpecimenModel } = await import("../compare/specimenModels.js");
+    return detailModel(id, getSpecimenModel(id));
+  }
   if (microbeIds.has(id)) {
     const make =
       id === "yeast" || id.startsWith("yeast")

@@ -131,7 +131,7 @@ for (const rootId of ["cell", "plant", "yeast"]) {
             .applyMatrix4(tube.matrixWorld);
           if (vertex.y >= -2.12 && vertex.y <= 0.36)
             assert.ok(
-              Math.hypot(vertex.x, vertex.z) < 0.5,
+              Math.hypot(vertex.x, vertex.z) < 0.47,
               "entire peptide remains in axial lumen until exit",
             );
         }
@@ -153,27 +153,53 @@ for (const rootId of ["cell", "plant", "yeast"]) {
   );
   seek(scene, 0.481, { tag: "ubiquitin" });
   assert.equal(link.visible, false);
-  const volumes = [];
-  scene.group.traverse((o) => {
-    if (o.name.startsWith("20S protein volume") && o.visible) volumes.push(o);
-  });
-  // Ray intersection is with rendered triangle surfaces, including between former layer gaps.
-  for (let y = -2.115; y < 0.355; y += 0.037)
-    for (let angle = 3.3; angle < 6.1; angle += 0.17) {
-      const ray = new THREE.Raycaster(
-        new THREE.Vector3(0, y, 0),
-        new THREE.Vector3(Math.cos(angle), 0, Math.sin(angle)),
-      );
-      const hits = ray.intersectObjects(volumes, false);
-      assert.ok(
-        hits.length > 0,
-        `open non-cutaway barrel at y=${y}, angle=${angle}`,
-      );
-      assert.ok(
-        Math.abs(hits[0].distance - 0.5) < 0.012,
-        "bounded axial cavity",
-      );
+  for (const shell of ["cutaway", "whole"]) {
+    seek(scene, 0.481, { tag: "ubiquitin", shell });
+    const volumes = [];
+    // Respect ancestor visibility: removed sectors are groups containing
+    // physically rendered subunit volumes, not invisible material substitutes.
+    scene.group.traverseVisible((o) => {
+      if (o.name.startsWith("20S protein volume")) volumes.push(o);
+    });
+    assert.equal(volumes.length, shell === "whole" ? 28 : 20);
+    // Scan every height, including all former axial gaps. Whole view covers
+    // the full circumference; cutaway retains the original rear-sector scan.
+    for (let y = -2.115; y < 0.355; y += 0.037) {
+      const ring = Math.min(3, Math.floor((0.36 - y) / 0.62));
+      // α gate rings have a narrower lumen than the β catalytic chamber.
+      const innerRadius = ring === 0 || ring === 3 ? 0.47 : 0.66;
+      for (
+        let angle = shell === "whole" ? 0.013 : 3.3;
+        angle < (shell === "whole" ? Math.PI * 2 : 6.1);
+        angle += 0.17
+      ) {
+        const ray = new THREE.Raycaster(
+          new THREE.Vector3(0, y, 0),
+          new THREE.Vector3(Math.cos(angle), 0, Math.sin(angle)),
+        );
+        const hits = ray.intersectObjects(volumes, false);
+        assert.ok(
+          hits.length > 0,
+          `open non-cutaway barrel (${shell}) at y=${y}, angle=${angle}`,
+        );
+        assert.ok(
+          Math.abs(hits[0].distance - innerRadius) < 0.004,
+          `bounded ${ring === 0 || ring === 3 ? "alpha" : "beta"} cavity at y=${y}`,
+        );
+      }
+      if (shell === "cutaway") {
+        const front = new THREE.Raycaster(
+          new THREE.Vector3(0, y, 0),
+          new THREE.Vector3(Math.cos(1.5), 0, Math.sin(1.5)),
+        );
+        assert.equal(
+          front.intersectObjects(volumes, false).length,
+          0,
+          "selected front cutaway really exposes the axial cavity",
+        );
+      }
     }
+  }
 }
 console.log(
   "turnover-03/04: all roots, pore contact, Rpn11 linkage contact, closed core surfaces and axial peptide exit PASS",

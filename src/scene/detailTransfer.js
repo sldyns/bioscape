@@ -53,7 +53,7 @@ export function unpackDetail(payload) {
   if (!payload) return null;
   const root = new Group(),
     loader = new MaterialLoader();
-  root.userData = payload.userData;
+  root.userData = structuredClone(payload.userData);
   for (const data of payload.meshes) {
     const geometry = new BufferGeometry();
     for (const [name, a] of Object.entries(data.attributes))
@@ -62,14 +62,14 @@ export function unpackDetail(payload) {
         new BufferAttribute(a.array, a.itemSize, a.normalized),
       );
     if (data.index) geometry.setIndex(new BufferAttribute(data.index, 1));
-    geometry.groups = data.groups;
+    geometry.groups = data.groups.map((group) => ({ ...group }));
     geometry.setDrawRange(data.drawRange.start, data.drawRange.count);
-    const material = loader.parse(data.material);
+    const material = loader.parse(structuredClone(data.material));
     for (const [key, color] of Object.entries(data.linearColors))
       material[key].fromArray(color);
     if (data.ior !== undefined) material.ior = data.ior;
     const mesh = new Mesh(geometry, material);
-    mesh.userData = data.userData;
+    mesh.userData = structuredClone(data.userData);
     mesh.castShadow = data.castShadow;
     mesh.receiveShadow = data.receiveShadow;
     root.add(mesh);

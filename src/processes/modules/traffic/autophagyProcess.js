@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { membraneSurface, interpolateProfile } from "./membranes.js";
+import { membraneSurface } from "./membranes.js";
+import { smoothFusionProfile, fusionEnvelope } from "./fusionProfiles.js";
 import {
   damagedEnzymeAggregate,
   lysosomalHydrolase,
@@ -27,7 +28,7 @@ function create() {
     9,
   );
   const lysosome = membraneSurface(group, lysMat, 65, 64, "x");
-  const merged = membraneSurface(group, lysMat, 81, 64, "x");
+  const merged = membraneSurface(group, lysMat, 129, 64, "x");
   merged.mesh.name = "autolysosome-outer-membrane";
   const aggregate = damagedEnzymeAggregate(k);
   const fragments = Array.from({ length: 18 }, (_, i) => peptideFragment(k, i));
@@ -87,6 +88,27 @@ function create() {
       1,
     ),
   ];
+  const points = [
+    [-1.92, 0],
+    [-1.75, 0.68],
+    [-1.27, 1.19],
+    [-0.55, 1.42],
+    [0.15, 1.18],
+    [0.6, 0.64],
+    [0.91, 0.56],
+    [1.4, 0.81],
+    [2.05, 0.92],
+    [2.66, 0.64],
+    [2.94, 0],
+  ];
+  const smoothProfile = smoothFusionProfile(points);
+  const envelope = fusionEnvelope(
+    smoothProfile,
+    [-0.5, 1.42],
+    [2.02, 0.92],
+    1.2,
+    0.6,
+  );
   function update(progress) {
     const p = clamp(progress),
       growth = ease(p, 0, 0.44),
@@ -126,22 +148,10 @@ function create() {
       0.92 * Math.sin(Math.PI * t),
     ]);
     merged.mesh.visible = fused;
-    const points = [
-      [-1.92, 0],
-      [-1.75, 0.68],
-      [-1.27, 1.19],
-      [-0.55, 1.42],
-      [0.15, 1.18],
-      [0.6, 0.64],
-      [0.91, 0.56],
-      [1.4, 0.81],
-      [2.05, 0.92],
-      [2.66, 0.64],
-      [2.94, 0],
-    ];
     const rounding = ease(p, 0.82, 0.96);
+    const opening = ease(p, 0.65, 0.73);
     merged.set((t) => {
-      const [x, r] = interpolateProfile(points, t);
+      const [x, r] = envelope(t, opening);
       return [
         x * (1 - rounding) + (0.48 - 2.05 * Math.cos(Math.PI * t)) * rounding,
         r * (1 - rounding) + 1.54 * Math.sin(Math.PI * t) * rounding,
@@ -176,7 +186,7 @@ function create() {
     const pumpT = 0.76;
     let anchorX, anchorR;
     if (fused) {
-      const [x, r] = interpolateProfile(points, pumpT);
+      const [x, r] = envelope(pumpT, opening);
       anchorX =
         x * (1 - rounding) +
         (0.48 - 2.05 * Math.cos(Math.PI * pumpT)) * rounding;
@@ -193,7 +203,7 @@ function create() {
         a = -1.6 + i * 0.49;
       let x, r;
       if (fused) {
-        const values = interpolateProfile(points, t);
+        const values = envelope(t, opening);
         x =
           values[0] * (1 - rounding) +
           (0.48 - 2.05 * Math.cos(Math.PI * t)) * rounding;

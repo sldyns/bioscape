@@ -5,6 +5,11 @@
 - [Contributing](../.github/CONTRIBUTING.md): architecture, changes and validation.
 - [Release guide](RELEASING.md): production checks and GitHub Pages.
 - [Process implementation](PROCESS_IMPLEMENTATION_STANDARD.md): metadata, models, bilingual content and controls.
+- [Exploration, comparison and Studio](EXPLORATION_UPGRADE.md): scene state, export API and implementation scope.
+- [Homepage implementation and acceptance](qa/homepage/README.md): live preview, model gallery, process discovery, navigation and browser evidence.
+- [Studio preview and export acceptance](qa/studio-preview/results.md): preview composition, controls and export evidence.
+- [Loading performance acceptance](qa/loading-speed/README.md): model preparation, cache behavior and geometry fidelity checks.
+- [Project information and export attribution](qa/project-information/README.md): creator credit, full license dialogs and media output checks.
 - [Model refinement](PROCESS_REFINEMENT_STANDARD.md): geometry and visual standards.
 - [Media production](../scripts/media/README.md): the English and Chinese films and screenshots.
 
@@ -22,3 +27,7 @@ Initial audit reports record the issues found at that time. Read them alongside 
 
 - [License](../LICENSE) · [Author notice](legal/NOTICE) · [Third-party notices](legal/THIRD_PARTY_NOTICES.md)
 - [Development archive](archive/README.md): early plans, design studies and past visual checks. These records are retained for traceability and are not bundled into the website.
+
+- [2026-10-03 逐项精修验收：模型、连续播放、条件说明、导出与窄屏](qa/polish/README.md)
+
+- [Second-round usability acceptance · 2026-10-03](qa/round2/README.md)

@@ -1,0 +1,140 @@
+.process-condition-note {
+  margin: 0 0 24px;
+  padding: 15px 16px;
+  background: #edf3f6;
+  border: 1px solid #dce5eb;
+  border-radius: 9px;
+  color: #425b6d;
+}
+.process-condition-note > span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 10px;
+  color: #647b8b;
+}
+.process-condition-note > strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.6;
+}
+.process-condition-note > p {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.85;
+}
+.process-continuity {
+  margin: 25px 0 22px;
+  padding: 20px 0 0;
+  border-top: 1px solid var(--line);
+}
+.continuity-heading > span {
+  font-size: 10px;
+  color: #767984;
+  letter-spacing: 0.5px;
+}
+.continuity-heading h3 {
+  margin: 5px 0 14px;
+  font-size: 14px;
+  font-weight: 550;
+}
+.process-continuity button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+  padding: 10px 12px;
+  text-align: left;
+  color: #365d7d;
+  border-radius: 6px;
+  line-height: 1.65;
+}
+.process-continuity button strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.process-continuity button small {
+  display: block;
+  color: #6b7480;
+  font-size: 10px;
+  line-height: 1.7;
+  margin-top: 3px;
+}
+.process-continuity button svg {
+  flex-shrink: 0;
+}
+.process-continuity button:hover:not(:disabled) {
+  background: #eaf1f7;
+}
+.process-continuity button:disabled,
+.process-origin:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.process-continuity :is(button, summary):focus-visible {
+  outline: 2px solid #527eaa;
+  outline-offset: 3px;
+}
+.continuity-current {
+  padding: 10px 4px 4px;
+  background: #f2f6f9;
+  border-radius: 9px;
+}
+.continuity-current > p {
+  margin: 0 8px 3px;
+  color: #6d7782;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.process-continuity .continuity-scope {
+  padding: 11px 13px;
+  border-left: 2px solid #b7c5d0;
+  background: #f7f8fa;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #596572;
+  margin: 0 0 14px;
+}
+.process-continuity .continuity-empty {
+  color: #737782;
+  font-size: 11px;
+  line-height: 1.8;
+  margin: 0 0 12px;
+}
+.continuity-other {
+  margin-top: 10px;
+}
+.continuity-other summary {
+  padding: 10px 0;
+  font-size: 11px;
+  color: #53677d;
+  cursor: pointer;
+  line-height: 1.7;
+}
+.continuity-other summary > span {
+  margin-left: 4px;
+  color: #868b95;
+  font-variant-numeric: tabular-nums;
+}
+.continuity-group {
+  border-top: 1px solid #edf0f3;
+  padding: 10px 0 4px;
+}
+.continuity-group > p {
+  font-size: 10px;
+  color: #7b818b;
+  line-height: 1.7;
+  margin: 0 10px 4px;
+}
+.process-continuity .continuity-overview {
+  margin-top: 9px;
+  padding-left: 0;
+  font-size: 11px;
+}
+.process-continuity .continuity-return {
+  font-size: 10px;
+  line-height: 1.8;
+  color: #7b818b;
+  margin: 12px 0 0;
+}

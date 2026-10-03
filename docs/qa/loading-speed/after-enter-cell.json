@@ -1,0 +1,38 @@
+[
+  {
+    "enterStart": 35380.09999990463,
+    "ready": {
+      "cpuMs": "209.70",
+      "drawCalls": "152",
+      "node": "cell",
+      "prepareMs": "4.8",
+      "source": "prepared-cache",
+      "time": 35733.89999985695
+    },
+    "readyMs": 353.7999999523163
+  },
+  {
+    "enterStart": 36186,
+    "ready": {
+      "cpuMs": "196.50",
+      "drawCalls": "152",
+      "node": "cell",
+      "prepareMs": "3.7",
+      "source": "prepared-cache",
+      "time": 36532.79999995232
+    },
+    "readyMs": 346.79999995232356
+  },
+  {
+    "enterStart": 36978.79999995232,
+    "ready": {
+      "cpuMs": "194.50",
+      "drawCalls": "152",
+      "node": "cell",
+      "prepareMs": "4.1",
+      "source": "prepared-cache",
+      "time": 37463
+    },
+    "readyMs": 484.20000004767644
+  }
+]

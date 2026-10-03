@@ -1,0 +1,26 @@
+{
+  "metrics": {
+    "full": {
+      "canvases": 1,
+      "frames": 6,
+      "height": 1720,
+      "medianMs": 11.2,
+      "p95Ms": 11.9,
+      "width": 1080
+    },
+    "preview": {
+      "canvases": 1,
+      "frames": 12,
+      "height": 430,
+      "medianMs": 1.8,
+      "p95Ms": 3.7,
+      "width": 270
+    },
+    "previewResources": {
+      "readbackBuffers": 1,
+      "shadowClones": 0,
+      "shadowDraws": 0
+    }
+  },
+  "result": "PASS: pooled transient canvases/readback, preserved detached snapshots, zero static shadow rerenders, reused private shadow maps, and complete cleanup."
+}

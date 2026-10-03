@@ -80,8 +80,8 @@ export default function AboutModel({ t, aboutRef, onClose }) {
         <h3>{t("模型说明", "About the models")}</h3>
         <p>
           {t(
-            "这里有动物细胞、植物细胞、革兰阴性杆菌、酿酒酵母、尾草履虫和T₂噬菌体六类教学模型。噬菌体属于病毒，没有细胞结构。每类选取主要结构，不是某个个体的精确重建。",
-            "Six teaching models represent an animal cell, a plant cell, a Gram-negative rod, Saccharomyces cerevisiae (budding yeast), Paramecium caudatum and a T2 bacteriophage. The phage is a virus without cellular structure. Each is a selected schematic, not an exact individual reconstruction.",
+            "这里展示动物细胞、植物细胞、革兰阴性杆菌、酿酒酵母、尾草履虫和 T₂ 噬菌体，以及成熟人红细胞、有髓多极神经元和人骨骼肌纤维。噬菌体属于病毒，没有细胞结构。各模型选取主要结构；专门化细胞及放大的局部结构会注明各自范围，不代表所有亚型，也不是某个个体的精确重建。",
+            "The teaching models include an animal cell, a plant cell, a Gram-negative rod, Saccharomyces cerevisiae (budding yeast), Paramecium caudatum and a T2 bacteriophage, plus a mature human erythrocyte, a myelinated multipolar neuron and a human skeletal muscle fibre. The phage is a virus without cellular structure. Each model selects major structures; specialized cells and enlarged details state their own scope and do not represent every subtype or an exact individual reconstruction.",
           )}
         </p>
         <p>

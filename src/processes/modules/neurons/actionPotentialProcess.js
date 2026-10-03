@@ -57,6 +57,14 @@ export default {
     "哺乳动物无髓神经元轴突：观察电压门控钠、钾通道如何逐段再生电信号。膜与离子均为示意比例。",
     "Mammalian unmyelinated neuronal axon: see how voltage-gated sodium and potassium channels regenerate an electrical signal along the membrane. Membrane and ions are schematic.",
   ),
+  contexts: {
+    neuron: {
+      intro: b(
+        "从有髓神经元结构转入一个无髓轴突的膜机制示例，观察电压门控钠、钾通道如何逐段再生电信号。此过程展示连续传导；髓鞘、郎飞结与跳跃式传导未模拟。膜与离子均为示意比例。",
+        "From the myelinated neuron structure, explore membrane mechanisms in an unmyelinated axon example: voltage-gated sodium and potassium channels regenerate the signal along the membrane. This process shows continuous conduction; myelin, nodes of Ranvier and saltatory conduction are not modeled. Membrane and ions are schematic.",
+      ),
+    },
+  },
   duration: 32,
   stages,
   controls: [

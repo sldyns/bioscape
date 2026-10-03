@@ -1,0 +1,154 @@
+[
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "erythrocyte",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "erythrocyteMembrane",
+    "mode": "whole",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "erythrocyteCytosol",
+    "mode": "whole",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "neuron",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "neuronSoma",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "neuronNucleus",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "neuronDendrites",
+    "mode": "whole",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "neuronAxon",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "neuronMyelin",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "neuronNodes",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "neuronTerminals",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "muscleFibre",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "muscleFibreSarcolemma",
+    "mode": "whole",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "muscleFibreNuclei",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "muscleFibreMyofibrils",
+    "mode": "whole",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "muscleFibreSarcomere",
+    "mode": "whole",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "muscleFibreSR",
+    "mode": "whole",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "muscleFibreTriads",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  },
+  {
+    "documentWidth": 375,
+    "error": false,
+    "id": "muscleFibreMitochondria",
+    "mode": "section",
+    "render": "active",
+    "width": 390
+  }
+]

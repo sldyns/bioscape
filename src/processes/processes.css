@@ -670,16 +670,18 @@
 }
 .process-scene-toolbar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   padding: 12px 18px 4px;
   flex-shrink: 0;
 }
 .process-scene-toolbar .process-legend {
   position: static;
-  flex: 1;
-  padding-top: 7px;
+  flex: 1 0 100%;
+  order: 3;
+  padding-top: 3px;
   gap: 6px 14px;
 }
 .process-scene-toolbar .process-view-tools {
@@ -717,6 +719,7 @@
   scrollbar-width: thin;
 }
 .process-annotation-key:empty,
+.process-scene-shell[data-annotations="false"] .process-model-labels,
 .process-scene-shell[data-annotations="false"] .process-annotation-key,
 .process-annotation-item[hidden] {
   display: none;
@@ -799,5 +802,45 @@
   }
   .process-annotation-item {
     min-height: 28px;
+  }
+}
+@media (max-height: 480px) and (min-width: 601px) {
+  .process-visual,
+  .process-scene-shell .process-canvas {
+    min-height: 0;
+  }
+  .process-scene-toolbar .process-legend,
+  .process-annotation-key {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: none;
+  }
+  .process-annotation-key {
+    padding: 5px 14px 3px;
+  }
+  .process-annotation-item,
+  .process-scene-toolbar .process-legend span {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .process-transport {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+  .process-playback {
+    gap: 10px;
+  }
+  .process-reading-controls {
+    padding-left: 0;
+    gap: 8px;
+  }
+  .process-reading-controls :is(button, label) {
+    font-size: 0;
+  }
+  .process-reading-controls select {
+    font-size: 11px;
   }
 }

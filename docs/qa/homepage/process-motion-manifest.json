@@ -1,0 +1,67 @@
+[
+  {
+    "id": "transcription",
+    "rootId": "cell",
+    "parameters": {},
+    "path": "/home/processes/transcription.webm",
+    "width": 640,
+    "height": 400,
+    "duration": 6.919869,
+    "bytes": 331486,
+    "sha256": "ef094162dbc0b54a0e9244043da9309d469656149fc36b2204e86b07154e8587",
+    "mimeType": "video/webm;codecs=vp9",
+    "progress": [
+      0,
+      1
+    ],
+    "framesRequested": 168,
+    "fpsRequested": 24,
+    "source": "src/processes/ProcessScene.jsx captureFrame",
+    "background": "#f5f5f7",
+    "labels": false
+  },
+  {
+    "id": "mitosis",
+    "rootId": "cell",
+    "parameters": {
+      "attachment": "normal"
+    },
+    "path": "/home/processes/mitosis.webm",
+    "width": 640,
+    "height": 400,
+    "duration": 6.959976,
+    "bytes": 379237,
+    "sha256": "2936bfe6ffbdffd3cc12bd9a75fb937a518cf0a8a76c44106684a05e1a4d0f27",
+    "mimeType": "video/webm;codecs=vp9",
+    "progress": [
+      0,
+      1
+    ],
+    "framesRequested": 168,
+    "fpsRequested": 24,
+    "source": "src/processes/ProcessScene.jsx captureFrame",
+    "background": "#f5f5f7",
+    "labels": false
+  },
+  {
+    "id": "photosynthesis",
+    "rootId": "plant",
+    "parameters": {},
+    "path": "/home/processes/photosynthesis.webm",
+    "width": 640,
+    "height": 400,
+    "duration": 6.958664,
+    "bytes": 299124,
+    "sha256": "5132910e45be5ded864d277b5df1a95fdd374f32ef86eec55ab96e098c4236be",
+    "mimeType": "video/webm;codecs=vp9",
+    "progress": [
+      0,
+      1
+    ],
+    "framesRequested": 168,
+    "fpsRequested": 24,
+    "source": "src/processes/ProcessScene.jsx captureFrame",
+    "background": "#f5f5f7",
+    "labels": false
+  }
+]

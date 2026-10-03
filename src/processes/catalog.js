@@ -54,6 +54,11 @@ export const processesByRoot = {
   bacterium: [],
   yeast: [],
   paramecium: [],
+  // Selected specialized specimens retain their own navigation roots. These
+  // four existing models are root-independent; no generic-cell redirect is used.
+  neuron: ["actionPotential", "synapse"],
+  muscleFibre: ["muscle"],
+  erythrocyte: ["osmoticBalance"],
 };
 for (const entry of extensionEntries) {
   if (processCatalog[entry.id])

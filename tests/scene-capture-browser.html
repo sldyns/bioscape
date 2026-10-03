@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Scene capture browser checks</title>
+  </head>
+  <body style="font: 16px system-ui; background: #ddd; padding: 20px">
+    <h1>Scene capture browser checks</h1>
+    <p id="result">Running WebGL capture checks…</p>
+    <div
+      id="images"
+      style="display: flex; gap: 16px; align-items: start; flex-wrap: wrap"
+    ></div>
+    <script type="module">
+      import * as THREE from "three";
+      import { createSceneCapture } from "../src/scene/sceneCapture.js";
+      const output = document.querySelector("#result");
+      const check = (condition, message) => {
+        if (!condition) throw new Error(message);
+      };
+      let renderer, capture, failureCapture;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          alpha: true,
+          antialias: true,
+          preserveDrawingBuffer: true,
+        });
+        renderer.setSize(640, 480);
+        renderer.setPixelRatio(1.5);
+        renderer.setClearColor("#f5f5f7", 0.8);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.98;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.autoUpdate = false;
+        renderer.shadowMap.needsUpdate = true;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(36, 4 / 3, 0.1, 100);
+        camera.position.set(0, 0, 10);
+        const target = new THREE.Vector3();
+        camera.lookAt(target);
+        const mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(2, 3, 1),
+          new THREE.MeshStandardMaterial({ color: "#bd6773", roughness: 0.5 }),
+        );
+        mesh.rotation.y = 0.3;
+        mesh.castShadow = true;
+        scene.add(mesh);
+        scene.add(new THREE.HemisphereLight("#fff", "#789", 2));
+        const light = new THREE.DirectionalLight("#fff", 3);
+        light.castShadow = true;
+        light.position.set(-5, 5, 7);
+        light.shadow.mapSize.set(256, 256);
+        scene.add(light);
+        scene.updateMatrixWorld();
+        renderer.render(scene, camera);
+        const shadow = light.shadow;
+        const shadowMap = shadow.map;
+        const before = {
+          camera: camera.position.toArray(),
+          aspect: camera.aspect,
+          size: renderer.getSize(new THREE.Vector2()).toArray(),
+          ratio: renderer.getPixelRatio(),
+          color: renderer.getClearColor(new THREE.Color()).getHex(),
+          alpha: renderer.getClearAlpha(),
+          viewport: renderer.getViewport(new THREE.Vector4()).toArray(),
+        };
+        const source = {
+          renderer,
+          scene,
+          camera,
+          target,
+          getFittedDistance: () => 10,
+          fitDistance: (cam) => 10 / Math.min(cam.aspect, 1),
+          getLabels: () => [
+            {
+              text: "Real model annotation / 模型标注",
+              position: new THREE.Vector3(0, 1.3, 0),
+            },
+          ],
+        };
+        capture = createSceneCapture(source);
+        const transparent = capture.captureFrame({
+          width: 400,
+          height: 600,
+          background: "transparent",
+        });
+        const data = transparent
+          .getContext("2d")
+          .getImageData(0, 0, 400, 600).data;
+        check(data[3] === 0, "Transparent border must have zero alpha");
+        check(
+          data[(300 * 400 + 200) * 4 + 3] === 255,
+          "Rendered model must be opaque at its center",
+        );
+        check(
+          data[(300 * 400 + 200) * 4] > 70,
+          "Tone-mapped model color must be present",
+        );
+        check(
+          transparent.width === 400 &&
+            transparent.height === 600 &&
+            !transparent.isConnected,
+          "Requested size and detached canvas",
+        );
+        const labeled = capture.captureFrame({
+          width: 600,
+          height: 400,
+          background: "#0d1b30",
+          labels: true,
+          turn: 0.5,
+        });
+        const corner = labeled.getContext("2d").getImageData(0, 0, 1, 1).data;
+        check(
+          [...corner].join(",") === "13,27,48,255",
+          "Solid background must preserve CSS color",
+        );
+        const after = {
+          camera: camera.position.toArray(),
+          aspect: camera.aspect,
+          size: renderer.getSize(new THREE.Vector2()).toArray(),
+          ratio: renderer.getPixelRatio(),
+          color: renderer.getClearColor(new THREE.Color()).getHex(),
+          alpha: renderer.getClearAlpha(),
+          viewport: renderer.getViewport(new THREE.Vector4()).toArray(),
+        };
+        check(
+          JSON.stringify(before) === JSON.stringify(after),
+          "Capture must preserve camera and renderer settings",
+        );
+        check(
+          light.shadow === shadow && light.shadow.map === shadowMap,
+          "Live shadow resources must be preserved",
+        );
+        failureCapture = createSceneCapture({
+          ...source,
+          getLabels: () => {
+            throw new Error("Expected annotation failure");
+          },
+        });
+        let failed = false;
+        try {
+          failureCapture.captureFrame({
+            width: 320,
+            height: 240,
+            labels: true,
+          });
+        } catch (error) {
+          failed = error.message === "Expected annotation failure";
+        }
+        check(failed, "Capture errors must propagate");
+        check(
+          light.shadow === shadow &&
+            renderer.getRenderTarget() === null &&
+            renderer.getClearAlpha() === 0.8,
+          "Failure must restore live renderer state",
+        );
+        capture.dispose();
+        failureCapture.dispose();
+        renderer.render(scene, camera);
+        for (const canvas of [transparent, labeled]) {
+          canvas.style.width = "300px";
+          canvas.style.height = "auto";
+          document.querySelector("#images").append(canvas);
+        }
+        output.textContent =
+          "PASS: actual GPU model pixels, transparent alpha, exact CSS background, export dimensions, detached canvas, camera/renderer/shadow preservation, and failure restoration.";
+        document.body.dataset.result = "pass";
+        mesh.geometry.dispose();
+        mesh.material.dispose();
+        shadow.dispose();
+      } catch (error) {
+        output.textContent = `FAIL: ${error.stack}`;
+        document.body.dataset.result = "fail";
+      } finally {
+        capture?.dispose();
+        failureCapture?.dispose();
+        renderer?.dispose();
+      }
+    </script>
+  </body>
+</html>

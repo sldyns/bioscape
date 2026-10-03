@@ -1,7 +1,14 @@
 import { project } from "./project";
 import AboutModel from "./components/AboutModel";
 import ProcessDirectory from "./processes/ProcessDirectory";
-import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 import {
   ArrowLeft,
   ChevronRight,
@@ -14,8 +21,21 @@ import {
 } from "lucide-react";
 const CellScene = lazy(() => import("./CellScene"));
 const ProcessExperience = lazy(() => import("./processes/ProcessExperience"));
+const CompareWorkspace = lazy(() => import("./compare/CompareWorkspace.jsx"));
+const Studio = lazy(() => import("./studio/Studio.jsx"));
+import SceneActions from "./exploration/SceneActions.jsx";
+import ViewerHeading from "./exploration/ViewerHeading.jsx";
+import ShareDialog from "./exploration/ShareDialog.jsx";
+import { createSceneHistorySession } from "./exploration/historySession.js";
+import { isHomeHash } from "./home/routes.js";
+import { readSceneState, sceneHash, sceneUrl } from "./exploration/state.js";
+import { getProcessesForStructure } from "./exploration/relationships.js";
+import { prepareRelatedProcessEntry } from "./exploration/relatedProcessEntry.js";
+import { normalizeComparisonState, isComparisonId } from "./compare/state.js";
+import "./exploration/exploration.css";
 
 import { getNode, modelNotes } from "./hierarchy";
+import { specializedSpecimens } from "./compare/specimens.js";
 import { cellTypes, rootIds, contextNotes } from "./catalog/cellTypes";
 
 import {
@@ -51,8 +71,14 @@ function moveControlFocus(event, vertical = false) {
     buttons[next].focus();
   }
 }
-export default function App() {
+export default function App({ historySession, onHome, onSceneLeave }) {
+  const [sharedState] = useState(
+    () =>
+      historySession?.recall(location.hash, history.state) ||
+      readSceneState(location.hash),
+  );
   const [lang, setLang] = useState(() => {
+    if (sharedState) return sharedState.lang;
     try {
       return localStorage.getItem("cell-atlas-language") === "en" ? "en" : "zh";
     } catch {
@@ -64,25 +90,136 @@ export default function App() {
       parseExperience(location.hash),
     ),
     [processId, setProcessId] = useState(() => parseProcess(location.hash)),
-    [mode, setMode] = useState("section"),
-    [explode, setExplode] = useState(60),
-    [labels, setLabels] = useState(false),
+    [mode, setMode] = useState(
+      sharedState?.origin?.mode || sharedState?.mode || "section",
+    ),
+    [explode, setExplode] = useState(
+      sharedState?.origin?.explode ?? sharedState?.explode ?? 60,
+    ),
+    [labels, setLabels] = useState(
+      sharedState?.origin?.labels ?? sharedState?.labels ?? false,
+    ),
     [rotate, setRotate] = useState(false),
     [resetKey, setResetKey] = useState(0),
     [zoom, setZoom] = useState({ direction: null, key: 0 }),
     [about, setAbout] = useState(false),
     [highlight, setHighlight] = useState(null),
-    [contracted, setContracted] = useState(false),
-    [sceneCapabilities, setCapabilities] = useState({});
+    [contracted, setContracted] = useState(
+      sharedState?.origin?.contracted ?? sharedState?.contracted ?? false,
+    ),
+    [sceneCapabilities, setCapabilities] = useState({}),
+    [initialView, setInitialView] = useState(sharedState?.camera),
+    [sessionKey, setSessionKey] = useState(0),
+    [comparison, setComparison] = useState(
+      sharedState?.compare
+        ? normalizeComparisonState(sharedState.compare)
+        : null,
+    ),
+    [sceneReady, setSceneReady] = useState(false),
+    [studio, setStudio] = useState(null),
+    [share, setShare] = useState(null),
+    [lastProcesses, setLastProcesses] = useState(() =>
+      parseProcess(location.hash)
+        ? {
+            [readPath()[0]]: {
+              path: readPath(),
+              id: parseProcess(location.hash),
+            },
+          }
+        : {},
+    );
+  const entrySession = useRef(historySession || createSceneHistorySession()),
+    studioFocus = useRef(null),
+    sceneActive = useRef(true),
+    sceneUrlTimer = useRef(null);
+  const sceneApi = useRef(null),
+    comparisonState = useRef(comparison),
+    processState = useRef({
+      ...sharedState?.process,
+      camera: sharedState?.camera,
+    }),
+    processStates = useRef(new Map()),
+    structureCamera = useRef(
+      sharedState?.origin?.camera || sharedState?.camera,
+    );
+  const modalOpen = about || Boolean(studio) || Boolean(share);
+  const receiveScene = useCallback((api) => {
+    sceneApi.current = api;
+    setSceneReady(Boolean(api?.ready));
+  }, []);
+  const flushSceneUrl = useCallback(() => {
+    clearTimeout(sceneUrlTimer.current);
+    if (!sceneActive.current || isHomeHash(location.hash)) return;
+    const current = navigation.current;
+    if (!current) return;
+    const state = current.snapshot();
+    const hash = sceneHash(
+      experienceHash(current.path, current.experience, current.processId),
+      state,
+    );
+    entrySession.current.remember(state);
+    if (location.hash !== hash)
+      history.replaceState(entrySession.current.updateHash(hash), "", hash);
+  }, []);
+  const scheduleSceneUrl = useCallback(() => {
+    clearTimeout(sceneUrlTimer.current);
+    if (!sceneActive.current) return;
+    sceneUrlTimer.current = setTimeout(flushSceneUrl, 200);
+  }, [flushSceneUrl]);
+  const receiveView = useCallback(
+    (camera) => {
+      structureCamera.current = camera;
+      scheduleSceneUrl();
+    },
+    [scheduleSceneUrl],
+  );
+  const receiveProcessState = useCallback(
+    (value, { immediate = false } = {}) => {
+      processState.current = value;
+      // A reload can commit its destination before pagehide. Discrete user
+      // controls therefore publish their URL in the input event itself.
+      if (immediate) flushSceneUrl();
+      else scheduleSceneUrl();
+    },
+    [flushSceneUrl, scheduleSceneUrl],
+  );
+  const receiveComparison = useCallback(
+    (value) => {
+      comparisonState.current = value;
+      scheduleSceneUrl();
+    },
+    [scheduleSceneUrl],
+  );
+  useEffect(() => {
+    sceneActive.current = true;
+    // Reload must keep the latest view even while the debounce is still pending.
+    window.addEventListener("pagehide", flushSceneUrl);
+    return () => {
+      sceneActive.current = false;
+      clearTimeout(sceneUrlTimer.current);
+      window.removeEventListener("pagehide", flushSceneUrl);
+    };
+  }, [flushSceneUrl]);
+  useEffect(() => {
+    scheduleSceneUrl();
+  }, [lang, mode, explode, labels, contracted, scheduleSceneUrl]);
+  const closeShare = useCallback(() => setShare(null), []);
   const aboutRef = useRef(),
     selectedType = useRef(),
     catalogTitle = useRef(),
     restoreCatalogFocus = useRef(false),
     previousFocus = useRef(),
-    viewStates = useRef(new Map()),
+    viewStates = useRef(
+      new Map(
+        sharedState
+          ? [[readPath().join("/"), sharedState.origin || sharedState]]
+          : [],
+      ),
+    ),
     navigation = useRef();
   const en = lang === "en",
-    t = (zh, english) => (en ? english : zh);
+    t = (zh, english) => (en ? english : zh),
+    lastProcess = lastProcesses[path[0]];
   const id = path.at(-1),
     node = getNode(id, lang),
     scopePath = node.children.length ? path : path.slice(0, -1),
@@ -90,6 +227,9 @@ export default function App() {
     scope = getNode(scopeId, lang),
     note = (contextNotes[path[0]]?.[id] || modelNotes[id])?.[lang];
   const capabilities = sceneCapabilities.nodeId === id ? sceneCapabilities : {};
+  const labelsAvailable =
+    capabilities.labels &&
+    (!capabilities.labelModes || capabilities.labelModes.includes(mode));
   const viewContext = describeView(path, lang);
   function receiveCapabilities(next) {
     if (next.nodeId !== id) return;
@@ -100,11 +240,60 @@ export default function App() {
     )
       setMode("whole");
   }
+  function structureSnapshot() {
+    return {
+      mode,
+      explode,
+      labels,
+      contracted,
+      camera:
+        experience === "structure" && !comparison
+          ? sceneApi.current?.getView() || structureCamera.current
+          : viewStates.current.get(path.join("/"))?.camera,
+    };
+  }
+  function snapshot() {
+    const structure = structureSnapshot();
+    return {
+      v: 1,
+      lang,
+      ...structure,
+      ...(experience === "process" && processId
+        ? {
+            process: processState.current,
+            camera:
+              (!comparison && sceneApi.current?.getView()) ||
+              processState.current.camera,
+            origin: viewStates.current.get(path.join("/")) || structure,
+          }
+        : {}),
+      ...(comparison ? { compare: comparisonState.current } : {}),
+    };
+  }
+  function saveCurrent() {
+    entrySession.current.remember(snapshot());
+    if (experience === "structure" && !comparison)
+      viewStates.current.set(path.join("/"), structureSnapshot());
+    if (experience === "process" && processId && !comparison)
+      processStates.current.set(`${path[0]}:${processId}`, {
+        ...processState.current,
+        camera: sceneApi.current?.getView() || processState.current.camera,
+      });
+  }
+  function leaveForHome() {
+    saveCurrent();
+    flushSceneUrl();
+    sceneActive.current = false;
+    onHome?.(location.hash);
+  }
   function navigate(
     next,
     push = true,
     nextExperience = "structure",
     nextProcess = null,
+    restored = null,
+    restoreEntry = false,
+    captured = false,
   ) {
     nextProcess =
       nextExperience === "process"
@@ -112,6 +301,9 @@ export default function App() {
         : null;
     if (!processRoots.has(next[0])) nextExperience = "structure";
     if (
+      !restored &&
+      !restoreEntry &&
+      !comparison &&
       next.join("/") === path.join("/") &&
       experience === nextExperience &&
       processId === nextProcess
@@ -119,70 +311,244 @@ export default function App() {
       return;
     restoreCatalogFocus.current =
       document.activeElement?.matches(":focus-visible") ?? false;
-    viewStates.current.set(path.join("/"), { mode, explode, labels });
-    const saved = viewStates.current.get(next.join("/"));
+    if (!captured) saveCurrent();
+    if (push) {
+      const hash = sceneHash(
+        experienceHash(path, experience, processId),
+        snapshot(),
+      );
+      history.replaceState(entrySession.current.updateHash(hash), "", hash);
+    }
+    if (restored?.origin)
+      viewStates.current.set(next.join("/"), restored.origin);
+    const saved =
+      restored && nextExperience === "structure"
+        ? restored
+        : viewStates.current.get(next.join("/"));
+    const nextSession = restored?.process
+      ? { ...restored.process, camera: restored.camera }
+      : processStates.current.get(`${next[0]}:${nextProcess}`) || {};
+    processState.current = nextSession;
+    structureCamera.current = saved?.camera;
+    comparisonState.current = restored?.compare
+      ? normalizeComparisonState(restored.compare)
+      : null;
+    setComparison(comparisonState.current);
+    setStudio(null);
+    setShare(null);
+    setAbout(false);
+    if (restored) setLang(restored.lang);
     setHighlight(null);
-    setContracted(false);
+    setRotate(false);
+    setSceneReady(false);
+    sceneApi.current = null;
     setPath(next);
     setExperience(nextExperience);
     setProcessId(nextProcess);
     setMode(saved?.mode || "section");
     setExplode(saved?.explode ?? 60);
     setLabels(saved?.labels ?? false);
-    setRotate(false);
-    if (push)
-      history.pushState(
-        null,
-        "",
-        experienceHash(next, nextExperience, nextProcess),
-      );
+    setContracted(saved?.contracted ?? false);
+    setInitialView(saved?.camera);
+    if (restoreEntry) setSessionKey((key) => key + 1);
+    if (nextExperience === "process" && nextProcess)
+      setLastProcesses((previous) => ({
+        ...previous,
+        [next[0]]: { path: next, id: nextProcess },
+      }));
+    if (push) {
+      const hash = experienceHash(next, nextExperience, nextProcess);
+      history.pushState(entrySession.current.begin(hash), "", hash);
+    }
   }
-  navigation.current = { navigate, path, about, experience, processId };
+  function openRelatedProcess(item) {
+    const key = `${path[0]}:${item.id}`;
+    processStates.current.set(
+      key,
+      prepareRelatedProcessEntry(processStates.current.get(key), item),
+    );
+    navigate(path, true, "process", item.id);
+  }
+  function openComparison() {
+    saveCurrent();
+    const underlying = snapshot();
+    const previousHash = sceneHash(
+      experienceHash(path, experience, processId),
+      underlying,
+    );
+    history.replaceState(
+      entrySession.current.updateHash(previousHash),
+      "",
+      previousHash,
+    );
+    const next = normalizeComparisonState({
+      left: {
+        id: isComparisonId(id) ? id : path[0],
+        mode,
+        explode,
+        labels,
+        view: sceneApi.current?.getView(),
+      },
+      right: {
+        id:
+          {
+            cell: "plant",
+            plant: "cell",
+            bacterium: "cell",
+            yeast: "plant",
+            paramecium: "cell",
+            phage: "bacterium",
+            erythrocyte: "neuron",
+            neuron: "muscleFibre",
+            muscleFibre: "neuron",
+          }[path[0]] || "plant",
+        mode: "whole",
+        labels: false,
+      },
+    });
+    comparisonState.current = next;
+    setComparison(next);
+    setRotate(false);
+    setSceneReady(false);
+    sceneApi.current = null;
+    const hash = sceneHash(experienceHash(path, experience, processId), {
+      ...underlying,
+      compare: next,
+    });
+    history.pushState(entrySession.current.begin(hash), "", hash);
+  }
+  const createShareUrl = () =>
+    sceneUrl(experienceHash(path, experience, processId), snapshot());
+  function shareScene() {
+    const url = createShareUrl();
+    setShare(url);
+    return url;
+  }
+  function openStudio() {
+    const api = sceneApi.current;
+    if (!api?.ready) return;
+    studioFocus.current = document.activeElement;
+    setRotate(false);
+    setStudio({
+      api,
+      kind: comparison ? "comparison" : experience,
+      title: comparison
+        ? t("结构对比", "Structure comparison")
+        : experience === "process"
+          ? processCatalog[processId].title[lang]
+          : node.name,
+      subtitle: comparison
+        ? [comparisonState.current.left.id, comparisonState.current.right.id]
+            .map((key) => getNode(key, lang).name)
+            .join(" · ")
+        : experience === "process"
+          ? processCatalog[processId].summary?.[lang] || ""
+          : viewContext,
+      processId: experience === "process" && !comparison ? processId : null,
+      rootId: path[0],
+      getFrameCaption: api.getFrameCaption?.bind(api),
+      scientificNote: api.getScientificNote?.(),
+      canExplode:
+        !comparison && experience === "structure" && Boolean(api.canExplode),
+      getSnapshot: snapshot,
+    });
+  }
+  navigation.current = {
+    saveCurrent,
+    snapshot,
+    navigate,
+    path,
+    about: modalOpen,
+    experience,
+    processId,
+    comparison,
+  };
   function enter(next) {
     if (node.children.includes(next)) navigate([...path, next]);
   }
   useEffect(() => {
-    const pop = () => {
-      const next = readPath();
-      const nextExperience = parseExperience(location.hash);
-      const nextProcess = parseProcess(location.hash);
-      if (location.hash !== experienceHash(next, nextExperience, nextProcess))
-        history.replaceState(
-          null,
-          "",
-          experienceHash(next, nextExperience, nextProcess),
-        );
-      navigation.current.navigate(next, false, nextExperience, nextProcess);
-    };
-    if (
-      location.hash !==
-      experienceHash(
-        readPath(),
-        parseExperience(location.hash),
-        parseProcess(location.hash),
-      )
-    )
-      history.replaceState(
-        null,
-        "",
+    const canonical = (state) =>
+      sceneHash(
         experienceHash(
           readPath(),
           parseExperience(location.hash),
           parseProcess(location.hash),
         ),
+        state,
       );
+    const pop = () => {
+      const originalHash = location.hash;
+      clearTimeout(sceneUrlTimer.current);
+      if (isHomeHash(originalHash)) {
+        sceneActive.current = false;
+        const current = navigation.current;
+        current.saveCurrent();
+        onSceneLeave?.(
+          sceneHash(
+            experienceHash(current.path, current.experience, current.processId),
+            current.snapshot(),
+          ),
+        );
+        return;
+      }
+      sceneActive.current = true;
+      if (entrySession.current.isCurrent(originalHash, history.state)) return;
+      navigation.current.saveCurrent();
+      const state =
+        entrySession.current.recall(originalHash, history.state) ||
+        readSceneState(originalHash);
+      const next = readPath(),
+        nextExperience = parseExperience(originalHash),
+        nextProcess = parseProcess(originalHash);
+      const metadata = entrySession.current.activate(
+        originalHash,
+        history.state,
+      );
+      const hash = canonical(state);
+      // Publish the latest local snapshot so a subsequent reload restores it too.
+      history.replaceState(
+        { bioscape: { ...metadata.bioscape, hash } },
+        "",
+        hash,
+      );
+      navigation.current.navigate(
+        next,
+        false,
+        nextExperience,
+        nextProcess,
+        state,
+        true,
+        true,
+      );
+    };
+    const hash = canonical(sharedState);
+    history.replaceState(
+      entrySession.current.activate(hash, history.state),
+      "",
+      hash,
+    );
     const key = (e) => {
       if (
         e.key === "Escape" &&
+        !e.defaultPrevented &&
+        !e.target.closest?.("dialog[open]") &&
         !navigation.current.about &&
-        (navigation.current.path.length > 1 ||
+        (navigation.current.comparison ||
+          navigation.current.path.length > 1 ||
           navigation.current.experience === "process") &&
         !e.target.isContentEditable &&
         !["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)
       ) {
         e.preventDefault();
         const current = navigation.current;
-        if (current.experience === "process")
+        if (current.comparison)
+          current.navigate(
+            current.path,
+            true,
+            current.experience,
+            current.processId,
+          );
+        else if (current.experience === "process")
           current.navigate(
             current.path,
             true,
@@ -223,11 +589,11 @@ export default function App() {
   }, [path[0], lang]);
   useEffect(() => {
     document.documentElement.lang = en ? "en" : "zh-CN";
-    document.title = `${experience === "process" ? (processCatalog[processId]?.title[lang] ?? t("生物学过程", "Biological processes")) : node.name} · ${project.name}`;
+    document.title = `${comparison ? t("结构对比", "Structure comparison") : experience === "process" ? (processCatalog[processId]?.title[lang] ?? t("生物学过程", "Biological processes")) : node.name} · ${project.name}`;
     try {
       localStorage.setItem("cell-atlas-language", lang);
     } catch {}
-  }, [lang, en, node.name, experience, path, processId]);
+  }, [lang, en, node.name, experience, path, processId, comparison]);
   useEffect(() => {
     if (!about) return;
     const previousOverflow = document.body.style.overflow;
@@ -265,6 +631,15 @@ export default function App() {
       focusTarget?.focus({ preventScroll: true });
     };
   }, [about]);
+  useEffect(() => {
+    if (!studio && studioFocus.current) {
+      const target = studioFocus.current;
+      studioFocus.current = null;
+      (target.isConnected ? target : catalogTitle.current)?.focus({
+        preventScroll: true,
+      });
+    }
+  }, [studio]);
   const openAbout = () => {
     previousFocus.current = document.activeElement;
     setAbout(true);
@@ -275,37 +650,47 @@ export default function App() {
   };
   const ProcessView = processId ? ProcessExperience : ProcessDirectory;
   return (
-    <div className="atlas">
-      <header className="app-header" inert={about ? true : undefined}>
-        <button className="wordmark" onClick={() => navigate([path[0]])}>
+    <div className={`atlas${comparison ? " is-comparing" : ""}`}>
+      <header className="app-header" inert={modalOpen ? true : undefined}>
+        <button
+          className="wordmark"
+          onClick={leaveForHome}
+          aria-label={t("返回首页", "Go to homepage")}
+        >
           {project.name}
           <span>{t(project.nameZh, "")}</span>
         </button>
         <nav className="breadcrumbs" aria-label={t("当前位置", "Location")}>
-          {(experience === "process" ? path.slice(0, 1) : path).map(
-            (key, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && <ChevronRight size={13} />}
-                <button
-                  aria-current={
-                    (experience === "structure" && i === path.length - 1) ||
-                    (experience === "process" && !processId)
-                      ? "page"
-                      : undefined
-                  }
-                  onClick={() =>
-                    navigate(path.slice(0, i + 1), true, experience, null)
-                  }
-                >
-                  {i === 0
-                    ? (cellTypes.find((type) => type.id === key)?.[lang] ??
-                      getNode(key, lang).name)
-                    : getNode(key, lang).name}
-                </button>
-              </React.Fragment>
-            ),
+          {comparison ? (
+            <span className="breadcrumb-current" aria-current="page">
+              {t("结构比较", "Structure comparison")}
+            </span>
+          ) : (
+            (experience === "process" ? path.slice(0, 1) : path).map(
+              (key, i) => (
+                <React.Fragment key={i}>
+                  {i > 0 && <ChevronRight size={13} />}
+                  <button
+                    aria-current={
+                      (experience === "structure" && i === path.length - 1) ||
+                      (experience === "process" && !processId)
+                        ? "page"
+                        : undefined
+                    }
+                    onClick={() =>
+                      navigate(path.slice(0, i + 1), true, experience, null)
+                    }
+                  >
+                    {i === 0
+                      ? (cellTypes.find((type) => type.id === key)?.[lang] ??
+                        getNode(key, lang).name)
+                      : getNode(key, lang).name}
+                  </button>
+                </React.Fragment>
+              ),
+            )
           )}
-          {experience === "process" && processId && (
+          {!comparison && experience === "process" && processId && (
             <>
               <ChevronRight size={13} />
               <span className="breadcrumb-current" aria-current="page">
@@ -334,25 +719,27 @@ export default function App() {
           </button>
         </div>
       </header>
-      <nav
-        className="cell-type-switch"
-        aria-label={t("模型类型", "Model type")}
-        inert={about ? true : undefined}
-        onKeyDown={moveControlFocus}
-      >
-        {cellTypes.map((type) => (
-          <button
-            key={type.id}
-            ref={path[0] === type.id ? selectedType : null}
-            aria-pressed={path[0] === type.id}
-            onClick={() => navigate([type.id], true, experience)}
-          >
-            {type[lang]}
-          </button>
-        ))}
-      </nav>
-      {processRoots.has(path[0]) && (
-        <div className="experience-bar" inert={about ? true : undefined}>
+      {!comparison && (
+        <nav
+          className="cell-type-switch"
+          aria-label={t("模型类型", "Model type")}
+          inert={modalOpen ? true : undefined}
+          onKeyDown={moveControlFocus}
+        >
+          {cellTypes.map((type) => (
+            <button
+              key={type.id}
+              ref={path[0] === type.id ? selectedType : null}
+              aria-pressed={path[0] === type.id}
+              onClick={() => navigate([type.id], true, experience)}
+            >
+              {type[lang]}
+            </button>
+          ))}
+        </nav>
+      )}
+      {!comparison && processRoots.has(path[0]) && (
+        <div className="experience-bar" inert={modalOpen ? true : undefined}>
           <div
             className="experience-switch"
             role="group"
@@ -377,8 +764,30 @@ export default function App() {
           </div>
         </div>
       )}
-      {experience === "process" ? (
-        <div inert={about ? true : undefined}>
+      {comparison ? (
+        <div inert={modalOpen ? true : undefined}>
+          <Suspense
+            fallback={
+              <div className="process-loading" role="status">
+                {t("正在准备对比…", "Preparing comparison…")}
+              </div>
+            }
+          >
+            <CompareWorkspace
+              key={sessionKey}
+              lang={lang}
+              initialState={comparison}
+              onStateChange={receiveComparison}
+              onClose={() => navigate(path, true, experience, processId)}
+              onSceneReady={receiveScene}
+              suspended={modalOpen}
+              onShare={shareScene}
+              onStudio={openStudio}
+            />
+          </Suspense>
+        </div>
+      ) : experience === "process" ? (
+        <div inert={modalOpen ? true : undefined}>
           <Suspense
             fallback={
               <div className="process-loading" role="status">
@@ -390,21 +799,31 @@ export default function App() {
             }
           >
             <ProcessView
-              key={`${path[0]}:${processId}`}
+              key={`${path[0]}:${processId}:${sessionKey}`}
               processId={processId}
               rootId={path[0]}
               lang={lang}
-              suspended={about}
+              suspended={modalOpen}
               onSelect={(key) => navigate(path, true, "process", key)}
               onBack={() => navigate(path, true, "process", null)}
               onStructure={() => navigate(path, true, "structure")}
+              originPath={path}
+              onExploreStructure={(next) => navigate(next)}
+              initialState={processState.current}
+              onStateChange={receiveProcessState}
+              onSceneReady={receiveScene}
+              onStudio={openStudio}
+              onShare={shareScene}
               titleRef={catalogTitle}
               restoreFocus={restoreCatalogFocus}
             />
           </Suspense>
         </div>
       ) : (
-        <main className="anatomy-workspace" inert={about ? true : undefined}>
+        <main
+          className="anatomy-workspace"
+          inert={modalOpen ? true : undefined}
+        >
           <aside
             className="catalog"
             aria-label={t("结构目录", "Structure catalog")}
@@ -485,6 +904,7 @@ export default function App() {
               }
             >
               <CellScene
+                key={sessionKey}
                 nodeId={id}
                 viewKey={path.join("/")}
                 highlight={highlight}
@@ -492,27 +912,29 @@ export default function App() {
                 mode={mode}
                 explode={explode}
                 labels={labels}
-                rotate={rotate}
+                rotate={rotate && !modalOpen}
                 resetKey={resetKey}
                 zoom={zoom}
                 lang={lang}
                 contracted={contracted}
                 onCapabilities={receiveCapabilities}
+                onSceneReady={receiveScene}
+                initialView={initialView}
+                onViewChange={receiveView}
               />
             </Suspense>
-            <div className="viewer-title" aria-live="polite">
-              <span>{node.name}</span>
-              {path.length > 1 && (
-                <span className="view-subtitle">
-                  {getNode(path[0], lang).name} ·{" "}
-                  {mode === "explode"
-                    ? t("拆解示意", "Exploded view")
-                    : mode === "section"
-                      ? t("剖面放大", "Cutaway detail")
-                      : t("局部放大", "Magnified detail")}
-                </span>
-              )}
-            </div>
+            <ViewerHeading
+              title={node.name}
+              subtitle={path.length > 1 ? getNode(path[0], lang).name : ""}
+            >
+              <SceneActions
+                lang={lang}
+                ready={sceneReady}
+                onStudio={openStudio}
+                onShare={shareScene}
+                onCompare={openComparison}
+              />
+            </ViewerHeading>
             <div className="zoom-tools">
               <button
                 className="icon-button"
@@ -623,11 +1045,22 @@ export default function App() {
                   </button>
                   {capabilities.labels && (
                     <button
-                      className={"icon-button " + (labels ? "active" : "")}
-                      aria-pressed={labels}
+                      className={
+                        "icon-button " +
+                        (labels && labelsAvailable ? "active" : "")
+                      }
+                      aria-pressed={labels && Boolean(labelsAvailable)}
+                      disabled={!labelsAvailable}
                       onClick={() => setLabels(!labels)}
                       aria-label={t("显示标签", "Show labels")}
-                      title={t("显示标签", "Show labels")}
+                      title={
+                        labelsAvailable
+                          ? t("显示标签", "Show labels")
+                          : t(
+                              "切换到剖面查看内部标签",
+                              "Use Cutaway to see internal labels",
+                            )
+                      }
                     >
                       <Tag size={17} />
                     </button>
@@ -666,6 +1099,18 @@ export default function App() {
             {!en && <p className="latin-name">{node.en}</p>}
             <p className="node-description">{node.desc}</p>
             {note && <p className="model-note">{note}</p>}
+            {lastProcess && lastProcess.path[0] === path[0] && (
+              <button
+                className="resume-process"
+                onClick={() =>
+                  navigate(lastProcess.path, true, "process", lastProcess.id)
+                }
+              >
+                <span>{t("接着观察过程", "Resume process")}</span>
+                <strong>{processCatalog[lastProcess.id].title[lang]}</strong>
+                <ChevronRight size={14} />
+              </button>
+            )}
             {id === "phageTail" && (
               <div className="mechanism-control">
                 <h3>{t("观察尾鞘收缩", "Observe sheath contraction")}</h3>
@@ -697,6 +1142,29 @@ export default function App() {
                 ))}
               </div>
             )}
+            {getProcessesForStructure(path).length > 0 && (
+              <section className="structure-processes">
+                <h3>{t("相关生物学过程", "Explore related processes")}</h3>
+                {getProcessesForStructure(path)
+                  .slice(0, path.length > 1 ? 6 : 3)
+                  .map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => openRelatedProcess(item)}
+                    >
+                      <span>{processCatalog[item.id].title[lang]}</span>
+                      <ChevronRight size={14} />
+                    </button>
+                  ))}
+                <button
+                  className="all-processes"
+                  onClick={() => navigate(path, true, "process", null)}
+                >
+                  {t("浏览全部过程", "Browse all processes")}{" "}
+                  <ChevronRight size={12} />
+                </button>
+              </section>
+            )}
             {rootIds.includes(id) && (
               <div className="root-guide">
                 <h3>{t("从整体，到内部", "From the whole to its parts")}</h3>
@@ -724,6 +1192,27 @@ export default function App() {
                 )}
               </p>
             )}
+            {specializedSpecimens.find(
+              (specimen) => specimen.id === path[0],
+            ) && (
+              <details className="specimen-references">
+                <summary>
+                  {t("此细胞的参考资料", "References for this cell")}
+                </summary>
+                {specializedSpecimens
+                  .find((specimen) => specimen.id === path[0])
+                  .sources.map((source) => (
+                    <a
+                      key={source.url}
+                      href={source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {source.title} ↗
+                    </a>
+                  ))}
+              </details>
+            )}
             <button className="source-link" onClick={openAbout}>
               {t("模型说明与参考", "Model notes & references")}
               <ChevronRight size={12} />
@@ -731,6 +1220,23 @@ export default function App() {
           </aside>
         </main>
       )}
+      {studio && (
+        <Suspense
+          fallback={
+            <div className="share-backdrop" role="status">
+              {t("正在准备工作台…", "Preparing Studio…")}
+            </div>
+          }
+        >
+          <Studio
+            source={studio}
+            lang={lang}
+            onClose={() => setStudio(null)}
+            onShare={async () => createShareUrl()}
+          />
+        </Suspense>
+      )}
+      {share && <ShareDialog url={share} lang={lang} onClose={closeShare} />}
       {about && (
         <AboutModel t={t} aboutRef={aboutRef} onClose={() => setAbout(false)} />
       )}

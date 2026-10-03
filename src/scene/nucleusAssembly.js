@@ -230,7 +230,11 @@ export function nucleusAssembly() {
         cap: !!o.userData.cap,
         geos: [],
       });
-    bins.get(key).geos.push(o.geometry.clone().applyMatrix4(o.matrixWorld));
+    bins
+      .get(key)
+      .geos.push(
+        new THREE.BufferGeometry().copy(o.geometry).applyMatrix4(o.matrixWorld),
+      );
     o.geometry.dispose();
     o.material.dispose();
   });

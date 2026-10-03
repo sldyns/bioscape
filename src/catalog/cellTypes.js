@@ -1,3 +1,4 @@
+import { specializedSpecimens } from "../compare/specimens.js";
 import { microbeDefinitions, microbeNotes } from "./microbes";
 export const cellTypes = [
   { id: "cell", zh: "动物细胞", en: "Animal cell" },
@@ -6,6 +7,7 @@ export const cellTypes = [
   { id: "yeast", zh: "真菌", en: "Fungus" },
   { id: "paramecium", zh: "草履虫", en: "Paramecium" },
   { id: "phage", zh: "噬菌体", en: "Phage" },
+  ...specializedSpecimens.map(({ id, zh, en }) => ({ id, zh, en })),
 ];
 export const rootIds = cellTypes.map((c) => c.id);
 // Additional nodes use independent IDs where animal-specific claims would mislead.

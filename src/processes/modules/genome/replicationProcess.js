@@ -6,8 +6,8 @@ const model = {
   title: b("DNA 复制叉", "DNA replication fork"),
   duration: 36,
   intro: b(
-    "真核细胞核中一个向右推进的复制叉。两条亲本链反向平行；新 DNA 均以 5′→3′ 合成。模型展开局部 DNA，省略染色质和复制起始；长度、速度与酶大小不按比例。可关闭连接酶观察残留切口。",
-    "One rightward-moving replication fork in a eukaryotic nucleus. Parental strands are antiparallel; both new strands grow 5′→3′. Local DNA is spread out; chromatin and initiation are omitted. Lengths, rates and enzyme sizes are schematic. Disable ligase to reveal persistent nicks.",
+    "真核细胞核中一个向右推进的复制叉。两条亲本链反向平行；新 DNA 均以 5′→3′ 合成。模型展开局部 DNA，省略染色质和复制起始；长度、速度与酶大小不按比例。可关闭连接酶观察残留切口。聚合酶淡出与淡入简化表示片段间的解离和再招募，不追踪同一分子的扩散路径。",
+    "One rightward-moving replication fork in a eukaryotic nucleus. Parental strands are antiparallel; both new strands grow 5′→3′. Local DNA is spread out; chromatin and initiation are omitted. Lengths, rates and enzyme sizes are schematic. Disable ligase to reveal persistent nicks. Polymerase fades schematize dissociation and recruitment between fragments, without tracking the diffusion path of one molecule.",
   ),
   controls: [
     {

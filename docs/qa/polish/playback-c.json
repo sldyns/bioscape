@@ -1,0 +1,545 @@
+{
+  "date": "2026-10-03",
+  "scope": "Object.keys(processCatalog).slice(56,84)",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "defaultCompleted": 28,
+  "alternateCompleted": 5,
+  "method": "Real CUA browser actions, uninterrupted playback, screenshot observations during running and at end. No seeking used. Transient screenshots only.",
+  "limits": [
+    "Not every frame inspected; sampled midrun views do not prove absence of frame-level discontinuities.",
+    "All conditional options were read from UI; only five alternate branches fully played; other combinations are not runtime-validated.",
+    "Shared controls such as Studio, Share, rotation, labels and speed 0.5x are outside this playback task.",
+    "27 default runs used frozen baseline 4200, parameciumDivision used fixed source 5174; final 4201 delta replays cover yeastBudding/parameciumDivision and CAM condition note.",
+    "First plantTransport default last sampled timeline was 988/1000 then allowed to finish before condition switch; subsequent no-ATP run explicitly verified 1000.",
+    "First contractileVacuole default terminal screenshot emission was lost when subsequent English-page locator failed; endpoint slider was verified 1000. Weak-hypotonic full replay confirms both mid and terminal rendering.",
+    "One initial 5174 parameciumDivision run reset by source HMR; parent confirmed integration event, then stable full run completed."
+  ],
+  "console": "Final inspected 4201 tab warnings/errors empty; not claimed as per-process historical console audit.",
+  "sourceCandidates": "Source-reported yeastBudding and parameciumDivision jump fixes were visually rechecked at 5174 and 4201. Small transformation/phagePackaging candidates were not visibly misleading at sampled moments; not a full-frame clearance.",
+  "processes": [
+    {
+      "id": "plantTransport",
+      "root": "plant",
+      "durationSeconds": 30,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "ATP outward pumping; coupled movement",
+        "endObservation": "Sucrose inside; two-stage energy explanation",
+        "endTimeline": null,
+        "status": "completed",
+        "lastObservedTimeline": 988,
+        "endEvidence": "Natural remaining playback time elapsed before condition switch; alternate explicit 1000 verified"
+      },
+      "conditionOptionsInspected": "ATP available / no ATP initially no gradient",
+      "alternateFullPlayback": {
+        "condition": "No ATP; initially no gradient",
+        "result": "Sucrose remains outside; no gradient; final 30s/1000"
+      },
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "plasmodesmata",
+      "root": "plant",
+      "durationSeconds": 32,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Small solute enters cytoplasmic sleeve; larger molecule excluded",
+        "endObservation": "Small solute across channel",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Low callose / accumulated callose",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "photorespiration",
+      "root": "plant",
+      "durationSeconds": 36,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "4C split to 3C and 1C at mitochondrion",
+        "endObservation": "3C returned to chloroplast; CO2 released",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "GLYK normal / absent",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "c4cam",
+      "root": "plant",
+      "durationSeconds": 36,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Maize spatial separation and decarboxylation",
+        "endObservation": "Pyruvate return and PEP regeneration",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Maize C4 / Kalanchoe CAM",
+      "alternateFullPlayback": {
+        "condition": "CAM Kalanchoe",
+        "result": "Single cell with vacuolar stored acid and daytime decarboxylation; final 36s/1000"
+      },
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": "http://127.0.0.1:4201 CAM selection and visible condition note",
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "lacOperon",
+      "root": "bacterium",
+      "durationSeconds": 32,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "CAP binding, released LacI, nascent RNA",
+        "endObservation": "Multiple transcripts",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Lactose present/absent; glucose low/high",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "trpOperon",
+      "root": "bacterium",
+      "durationSeconds": 36,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Ribosome stall region 1; 2:3 loop",
+        "endObservation": "Read-through product",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Free Trp severely depleted/sufficient; charging normal/limited",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "yeastGal",
+      "root": "yeast",
+      "durationSeconds": 34,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Gal3-Gal80 complex; activated Gal4",
+        "endObservation": "GAL1 RNA",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Galactose present/absent; glucose low/high",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "yeastOsmoregulation",
+      "root": "yeast",
+      "durationSeconds": 38,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Hog1 signal and nuclear transit stage",
+        "endObservation": "Glycerol accumulation and recovered volume",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Osmotic increase/unchanged; Hog1 normal/nonphosphorylatable",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "bacterialExpression",
+      "root": "bacterium",
+      "durationSeconds": 32,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Transcription bubble and nascent RNA at 16s on repeat run",
+        "endObservation": "Simultaneous elongation with ribosome and nascent peptide",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Sigma70 present/absent",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "bacterialDivision",
+      "root": "bacterium",
+      "durationSeconds": 36,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Separated sister chromosomes",
+        "endObservation": "Two daughter cells",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Septal synthesis normal/blocked",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "conjugation",
+      "root": "bacterium",
+      "durationSeconds": 34,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Single strand entering recipient via contact zone",
+        "endObservation": "Both retain complete F plasmid",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "TraI can nick oriT / nick blocked",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "transformation",
+      "root": "bacterium",
+      "durationSeconds": 35,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Imported strand with protective proteins and RecA",
+        "endObservation": "Heteroduplex incorporated into recipient chromosome",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Homology matched/unmatched",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "chemotaxis",
+      "root": "bacterium",
+      "durationSeconds": 30,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Longer run with bundled flagella",
+        "endObservation": "Continued sampling on schematic trajectory",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Increasing attractant / uniform",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "twoComponent",
+      "root": "bacterium",
+      "durationSeconds": 32,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "NarX to NarL phosphotransfer",
+        "endObservation": "RNA transcription output",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Nitrate present/absent",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "quorumSensing",
+      "root": "bacterium",
+      "durationSeconds": 32,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "LuxR-AHL complexes and local signal",
+        "endObservation": "Lux RNA and conditional luminescent state",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Local accumulation / continuous dilution",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "biofilm",
+      "root": "bacterium",
+      "durationSeconds": 36,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Microcolonies and extracellular matrix",
+        "endObservation": "Local loosening and released cells",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Low-level NO signal / no dispersal signal",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "yeastBudding",
+      "root": "yeast",
+      "durationSeconds": 32,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1,
+        "midObservation": "Nucleus at neck then stretched through neck; final-build sample p=.762",
+        "endObservation": "Separated mother and smaller daughter",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "None",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": "http://127.0.0.1:4201 full continuous run",
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "yeastFermentation",
+      "root": "yeast",
+      "durationSeconds": 30,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Acetaldehyde reduction and NADH transfer",
+        "endObservation": "Ethanol and regenerated NAD+",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Anaerobic high sugar / aerobic high sugar",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "yeastMating",
+      "root": "yeast",
+      "durationSeconds": 32,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Cytoplasmic bridge with two nuclei",
+        "endObservation": "Single diploid zygote nucleus",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Complementary a+alpha / same a+a",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "yeastSporulation",
+      "root": "yeast",
+      "durationSeconds": 36,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Second meiotic division",
+        "endObservation": "Four mature spores inside ascus",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Nitrogen depletion plus acetate / rich nutrients",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "parameciumFeeding",
+      "root": "paramecium",
+      "durationSeconds": 36,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Food vacuole acidification",
+        "endObservation": "Waste outside cytoproct; membrane retained",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "None",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "contractileVacuole",
+      "root": "paramecium",
+      "durationSeconds": 30,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Isolation before discharge",
+        "endObservation": "Discharge and reconnection; weak-hypotonic end visually confirmed",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "Stronger/weaker hypotonicity",
+      "alternateFullPlayback": {
+        "condition": "Weaker hypotonicity",
+        "result": "Central vacuole fills then discharges/reconnects; final 30s/1000"
+      },
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "parameciumDivision",
+      "root": "paramecium",
+      "durationSeconds": 32,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1,
+        "midObservation": "Final-build p=.519/.692 before and after macronuclear partition",
+        "endObservation": "Two cells each with micro/macro nucleus and oral apparatus",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "None",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:5174",
+      "finalBuildDelta": "http://127.0.0.1:4201 full continuous run",
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "parameciumConjugation",
+      "root": "paramecium",
+      "durationSeconds": 40,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Migration pronucleus exchange",
+        "endObservation": "New macronuclear anlagen and retained micronucleus",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "None",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "phageLytic",
+      "root": "phage",
+      "durationSeconds": 36,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "DNA packaging and particle maturation",
+        "endObservation": "Envelope disruption and phage release",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "None",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "phageLysogenic",
+      "root": "phage",
+      "durationSeconds": 38,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Two lysogenic daughters",
+        "endObservation": "Left induced/lysed, right remains lysogenic",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "DNA damage induction / no induction",
+      "alternateFullPlayback": {
+        "condition": "No induction",
+        "result": "Both intact daughter cells retain prophage and CI; final 38s/1000"
+      },
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "phageAssembly",
+      "root": "phage",
+      "durationSeconds": 35,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "Separate head and tail components",
+        "endObservation": "Completed extended-tail T4 particle",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "gp21 active / inactive",
+      "alternateFullPlayback": null,
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    },
+    {
+      "id": "phagePackaging",
+      "root": "phage",
+      "durationSeconds": 34,
+      "defaultPlayback": {
+        "action": "Click Play at zero, allow uninterrupted natural playback to end; no timeline seeking",
+        "speed": 1.5,
+        "midObservation": "DNA filling capsid through motor",
+        "endObservation": "Filled head and neck closure",
+        "endTimeline": 1000,
+        "status": "completed"
+      },
+      "conditionOptionsInspected": "ATP present/absent",
+      "alternateFullPlayback": {
+        "condition": "No ATP",
+        "result": "Docked DNA remains outside; capsid empty; final 34s/1000"
+      },
+      "baseUrl": "http://127.0.0.1:4200",
+      "finalBuildDelta": null,
+      "finding": "No confirmed visual defect in sampled continuous playback"
+    }
+  ]
+}

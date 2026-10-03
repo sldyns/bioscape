@@ -1,0 +1,128 @@
+{
+  "testedAt": "2026-10-03T16:03:24+08:00 build; acceptance immediately afterward",
+  "environment": "Codex in-app Chromium browser, hidden independent tab, desktop viewport 1280x720; not physical mobile hardware",
+  "url": "http://127.0.0.1:4197/",
+  "png": [
+    {
+      "file": "animal-transparent-1440x2560.png",
+      "width": 1440,
+      "height": 2560,
+      "alpha": true,
+      "cornerRGBA": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "centerRGBA": [
+        186,
+        160,
+        197,
+        255
+      ],
+      "repeatedCapturePassed": true
+    },
+    {
+      "file": "comparison-2560x1440.png",
+      "width": 2560,
+      "height": 1440,
+      "bothModelsVisible": true
+    }
+  ],
+  "video": [
+    {
+      "file": "animal-orbit-1920x1080.mp4",
+      "width": 1920,
+      "height": 1080,
+      "durationSeconds": 6.068767,
+      "bytes": 4145633,
+      "readyState": 4,
+      "decoderError": null,
+      "sampleSeconds": [
+        0.6,
+        2.8,
+        5.7
+      ],
+      "frameHashes": [
+        2209213095,
+        601579547,
+        2325141982
+      ]
+    },
+    {
+      "file": "animal-disassemble-1920x1920.mp4",
+      "width": 1920,
+      "height": 1920,
+      "durationSeconds": 6.0878,
+      "bytes": 4387343,
+      "readyState": 4,
+      "decoderError": null,
+      "sampleSeconds": [
+        0.1,
+        3,
+        5.9
+      ],
+      "frameHashes": [
+        2679165556,
+        1006811105,
+        3941306911
+      ]
+    },
+    {
+      "file": "secretion-process-1080x1920.mp4",
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 10.1372,
+      "bytes": 1985605,
+      "readyState": 4,
+      "decoderError": null,
+      "sampleSeconds": [
+        0.1,
+        5,
+        9.8
+      ],
+      "frameHashes": [
+        2737282889,
+        1443076510,
+        2599239015
+      ],
+      "liveProcessTimelineAfterClose": 0
+    },
+    {
+      "file": "comparison-orbit-1920x1080.mp4",
+      "width": 1920,
+      "height": 1080,
+      "durationSeconds": 15.1256,
+      "bytes": 10450453,
+      "readyState": 4,
+      "decoderError": null,
+      "sampleSeconds": [
+        2,
+        8
+      ],
+      "firstHashesLeftRight": [
+        3753751533,
+        3153326258
+      ],
+      "secondHashesLeftRight": [
+        199669789,
+        3171518421
+      ]
+    }
+  ],
+  "behaviors": [
+    "Chinese and English exports",
+    "Landscape, portrait, square compositions",
+    "Light, dark, transparent backgrounds",
+    "Cancel recording restores controls and gives no partial download",
+    "Closing during recording then reopening succeeds and retains rendering preferences",
+    "Share scene generates a visible URL and confirms clipboard copy",
+    "Simulated WEBGL_lose_context makes refreshed preview unavailable and removes download link",
+    "After automatic WebGL restoration, closing and reopening Studio exports again"
+  ],
+  "downloadObservation": "IAB download event APIs timed out, but native anchor clicks saved real files in Downloads. Exact files were copied here; MIME containers and PNG dimensions were checked locally.",
+  "verification": "node --test tests/studio.mjs: 11/11 passed; npm run verify: exit 0 including science 22/22; focused prettier check passed",
+  "finalUiCheck": "Latest source at localhost:5174 visually verified: portrait checkerboard bounded to the actual image; independently scrolling settings preserve the full preview. Shift+Tab from close wraps to download; Tab wraps back; Escape closes and restores Studio trigger without changing route. Final esbuild and focused formatting checks exit 0.",
+  "remaining": "Parent performs consolidated release build and narrow-screen integration acceptance.",
+  "finalIntegration": "npm run check completed with exit 0; final Studio layout verified on 5174 at 320x740 and 390x844. Final production build served on 127.0.0.1:4197. Phone hardware not tested."
+}

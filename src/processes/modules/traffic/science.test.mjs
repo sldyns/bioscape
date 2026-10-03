@@ -123,20 +123,7 @@ for (const definition of [endocytosis, autophagy, secretion]) {
 {
   const s = endocytosis.create(),
     receptors = s.group.children.filter((o) => o.name.startsWith("LDLR"));
-  const profile = [
-    [-0.61, 0],
-    [-0.38, 0.65],
-    [0.1, 0.96],
-    [0.55, 0.91],
-    [0.95, 0.62],
-    [1.6, 0.85],
-    [2.2, 1.05],
-    [2.8, 0.96],
-    [3.2, 0.57],
-    [3.45, 0.23],
-    [4.05, 0.2],
-    [4.32, 0],
-  ];
+  const membrane = s.group.getObjectByName("early-endosome-membrane");
   for (let p = 0.67; p <= 1.001; p += 0.005) {
     s.update(p);
     for (let i = 0; i < 3; i++) {
@@ -146,6 +133,24 @@ for (const definition of [endocytosis, autophagy, secretion]) {
           "receptors collapse",
         );
       const pos = receptors[i].position;
+      // Measure the actual paired leaflets, so this checks attachment to the
+      // rendered wall rather than duplicating the profile implementation.
+      const skins = membrane.children.slice(0, 2);
+      const profile = Array.from(
+        { length: skins[0].geometry.attributes.position.count / 65 },
+        (_, ring) => {
+          const a = new THREE.Vector3().fromBufferAttribute(
+            skins[0].geometry.attributes.position,
+            ring * 65 + 32,
+          );
+          const b = new THREE.Vector3().fromBufferAttribute(
+            skins[1].geometry.attributes.position,
+            ring * 65 + 32,
+          );
+          a.add(b).multiplyScalar(0.5);
+          return [a.x, Math.hypot(a.y, a.z)];
+        },
+      );
       let expected = 0;
       for (let j = 0; j < profile.length - 1; j++) {
         const [x, r] = profile[j],
@@ -154,7 +159,7 @@ for (const definition of [endocytosis, autophagy, secretion]) {
           expected = r + ((rr - r) * (pos.x - x)) / (xx - x);
       }
       assert(
-        Math.abs(Math.hypot(pos.y + 1.25, pos.z) - expected) < 1e-8,
+        Math.abs(Math.hypot(pos.y + 1.25, pos.z) - expected) < 0.00001,
         "anchor leaves membrane profile",
       );
     }
@@ -213,7 +218,9 @@ for (const definition of [endocytosis, autophagy, secretion]) {
     s.update(p);
     s.group.updateMatrixWorld(true);
     const rings = [];
-    for (let r = 0; r < 81; r++) {
+    const ringCount =
+      envelope.children[0].geometry.attributes.position.count / 65;
+    for (let r = 0; r < ringCount; r++) {
       const q = point(envelope.children[0], r * 65 + 32)
         .add(point(envelope.children[1], r * 65 + 32))
         .multiplyScalar(0.5);
@@ -226,7 +233,7 @@ for (const definition of [endocytosis, autophagy, secretion]) {
         for (let i = 0; i < attr.count; i++) {
           vertex.fromBufferAttribute(attr, i).applyMatrix4(mesh.matrixWorld);
           let radius = -1;
-          for (let r = 0; r < 80; r++)
+          for (let r = 0; r < rings.length - 1; r++)
             if (vertex.x >= rings[r][0] && vertex.x <= rings[r + 1][0]) {
               const q =
                 (vertex.x - rings[r][0]) / (rings[r + 1][0] - rings[r][0]);

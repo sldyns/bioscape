@@ -297,18 +297,24 @@ export function divisionKit() {
       kinetochore.rotation.y = direction < 0 ? Math.PI : 0;
       outer.material = unattached ? purple : gold;
     }
-    const raycaster = new THREE.Raycaster();
-    const rayOrigin = new THREE.Vector3(),
-      rayTarget = new THREE.Vector3();
+    // The outer plate is rigid. Anchor to its actual pole-facing surface vertex
+    // in local coordinates, then transform with the plate. A world-space ray
+    // through this vertex can miss shared triangle edges at irregular poses.
+    const platePositions = outer.geometry.attributes.position;
+    let attachmentVertex = 0;
+    for (let i = 1; i < platePositions.count; i++) {
+      if (platePositions.getX(i) > platePositions.getX(attachmentVertex))
+        attachmentVertex = i;
+    }
+    const localAttachment = new THREE.Vector3().fromBufferAttribute(
+      platePositions,
+      attachmentVertex,
+    );
+    const attachment = new THREE.Vector3();
     function attachmentPoint() {
       outer.updateWorldMatrix(true, false);
-      rayOrigin.set(2, 0, 0).applyMatrix4(outer.matrixWorld);
-      rayTarget.set(0, 0, 0).applyMatrix4(outer.matrixWorld);
-      raycaster.set(rayOrigin, rayTarget.sub(rayOrigin).normalize());
-      const hit = raycaster.intersectObject(outer, false)[0];
-      if (!hit)
-        throw new Error("Kinetochore attachment ray missed its outer plate");
-      return k.group.worldToLocal(hit.point);
+      attachment.copy(localAttachment).applyMatrix4(outer.matrixWorld);
+      return k.group.worldToLocal(attachment);
     }
     const matrix = new THREE.Matrix4(),
       a = new THREE.Vector3(),

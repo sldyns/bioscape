@@ -1,0 +1,97 @@
+- banner:
+  - button "返回首页":
+    - text: BioScape
+    - generic: 生物图景
+  - navigation "当前位置":
+    - button "动物细胞"
+  - button "Switch to English":
+    - generic: 中
+    - generic: /
+    - generic: EN
+  - button "关于模型":
+- navigation "模型类型":
+  - button "动物细胞" [pressed]
+  - button "植物细胞"
+  - button "细菌"
+  - button "真菌"
+  - button "草履虫"
+  - button "噬菌体"
+  - button "成熟人红细胞"
+  - button "有髓多极神经元"
+  - button "人骨骼肌纤维"
+- group "学习方式":
+  - button "结构" [pressed]
+  - button "生物学过程"
+- main:
+  - complementary "结构目录":
+    - text: 结构目录
+    - heading "动物细胞" [level=1]
+    - navigation "当前层级结构":
+      - button "总览"
+      - button "细胞膜":
+        - generic: 细胞膜
+      - button "细胞质":
+        - generic: 细胞质
+      - button "细胞核":
+        - generic: 细胞核
+      - button "线粒体":
+        - generic: 线粒体
+      - button "粗面内质网":
+        - generic: 粗面内质网
+      - button "光面内质网":
+        - generic: 光面内质网
+      - button "高尔基体":
+        - generic: 高尔基体
+      - button "核糖体":
+        - generic: 核糖体
+      - button "溶酶体":
+        - generic: 溶酶体
+      - button "过氧化物酶体":
+        - generic: 过氧化物酶体
+      - button "中心体":
+        - generic: 中心体
+      - button "细胞骨架":
+        - generic: 细胞骨架
+  - region "模型视图":
+    - generic "可交互三维模型"
+    - generic: 动物细胞
+    - group "创作与探索":
+      - button "对比":
+        - text: 对比
+      - button "影像工作台":
+        - text: 影像工作台
+      - button "分享":
+        - text: 分享
+    - button "放大":
+    - button "缩小":
+    - group "显示方式":
+      - button "整体"
+      - button "剖面" [pressed]
+      - button "拆解"
+    - button "重置视角":
+    - button "显示标签":
+    - button "自动旋转":
+    - generic: 拖动旋转 · 双指缩放
+    - generic: 教学示意，非真实比例
+  - complementary "结构说明":
+    - heading "动物细胞" [level=2]
+    - paragraph: Animal cell
+    - paragraph: 一个一般化的动物细胞。点击模型或目录中的结构，可逐层查看它的内部。
+    - heading "膜与区室" [level=3]
+    - paragraph: 细胞膜界定细胞边界，内部的膜系统把不同反应组织在各自的空间中。
+    - heading "一个教学范例" [level=3]
+    - paragraph: 不同细胞的结构数量和分布有所不同。这里选取主要结构，并调整颜色与尺寸，便于观察。
+    - heading "相关生物学过程" [level=3]
+    - button "蛋白质分泌":
+      - generic: 蛋白质分泌
+    - button "转录":
+      - generic: 转录
+    - button "DNA 复制叉":
+      - generic: DNA 复制叉
+    - button "浏览全部过程":
+      - text: 浏览全部过程
+    - heading "从整体，到内部" [level=3]
+    - paragraph: 点击结构即可进入。左侧目录会随层级更新；顶部路径可返回任意一级。
+    - paragraph: 从左侧选择内部结构，继续查看。
+    - button "模型说明与参考":
+      - text: 模型说明与参考

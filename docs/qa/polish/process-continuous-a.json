@@ -1,0 +1,3621 @@
+{
+  "title": "First 28 processes: source continuity and control audit",
+  "date": "2026-10-03",
+  "reviewer": "polish_erythrocyte",
+  "requestedBrowser": "http://127.0.0.1:4200/",
+  "browserPlaybackStatus": "delegated to playback_a by root after local CUA browser unavailable even after reset",
+  "actualBrowserPlaybackCount": 0,
+  "sourceProcessCount": 28,
+  "sourceControlCases": 56,
+  "sourceProgressSamplesPerCase": 201,
+  "sourceProgressSamplesTotal": 11256,
+  "preFixBundleSha256": "354e657fdbeda194f17b9a1d3b3a09e1c4cd51d3a6fb9f47cdfa708f4a87ee0f",
+  "limits": [
+    "Source sampling is not rendered continuous playback.",
+    "State metadata is supplementary, not independent anatomical proof.",
+    "The sampled bundle predates replication recruitment fix and the final proteasome shell correction.",
+    "No viewport modification; no production, device or narrow-screen acceptance."
+  ],
+  "replicationFix": {
+    "files": [
+      "src/processes/modules/genome/nuclearModels.js",
+      "src/processes/modules/genome/replicationProcess.js",
+      "tests/replication-recruitment.mjs"
+    ],
+    "status": "implemented; focused and genome science tests passed; final-build browser review pending",
+    "originalDiscontinuities": [0.36, 0.48, 0.6, 0.72],
+    "worldDistanceAcrossEpsilon": 3.2437,
+    "remedy": "fade dissociation after each completed fragment; reset while invisible; fade recruitment on next primer; no DNA computation changes"
+  },
+  "processes": [
+    {
+      "i": 0,
+      "id": "secretion",
+      "title": "蛋白质分泌",
+      "root": "cell",
+      "duration": 24,
+      "controls": [],
+      "stages": [
+        {
+          "at": 0,
+          "title": "进入内质网腔"
+        },
+        {
+          "at": 0.12,
+          "title": "出芽并装载"
+        },
+        {
+          "at": 0.2,
+          "title": "抵达高尔基体"
+        },
+        {
+          "at": 0.42,
+          "title": "由顺面到反面"
+        },
+        {
+          "at": 0.67,
+          "title": "分选并再次出芽"
+        },
+        {
+          "at": 0.78,
+          "title": "运向细胞膜"
+        },
+        {
+          "at": 0.9,
+          "title": "融合与胞吐"
+        }
+      ],
+      "sourceReview": "分段 cargo 路径在内质网、载体、高尔基体与融合孔之间衔接；p=.9 脂质组切换到世界坐标并重算顶点，局部 position 跳变本身不是膜跳位证据。",
+      "scienceScope": "经典可溶性分泌蛋白；前侧剖切、池成熟与回收运输省略，不代表所有分泌途径。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {},
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 2.662731890146186,
+          "largestMovement": {
+            "name": "persistent-carrier-membrane-lipids",
+            "type": "Group",
+            "progress": 0.9
+          },
+          "endpointSignature": "4f142592ddb315a88ff5910962d3286f2ec709b6aed306129849d6f311cf4f8b",
+          "resources": {
+            "nodes": 350,
+            "geometries": 159,
+            "materials": 106
+          },
+          "stateMetadata": {}
+        }
+      ]
+    },
+    {
+      "i": 1,
+      "id": "transcription",
+      "title": "转录",
+      "root": "cell",
+      "duration": 28,
+      "controls": [],
+      "stages": [
+        {
+          "at": 0,
+          "title": "在启动子处组装"
+        },
+        {
+          "at": 0.13,
+          "title": "局部打开 DNA"
+        },
+        {
+          "at": 0.27,
+          "title": "开始合成 RNA"
+        },
+        {
+          "at": 0.43,
+          "title": "沿模板持续延伸"
+        },
+        {
+          "at": 0.68,
+          "title": "前方打开，后方复合"
+        },
+        {
+          "at": 0.86,
+          "title": "RNA 切割与后续终止"
+        }
+      ],
+      "sourceReview": "转录泡随聚合酶移动；释放 RNA 与下游残余分别维护，RNA 切割先于酶离开，末端闭泡。",
+      "scienceScope": "真核 Pol II 编码基因；加工、序列与酶尺寸简化，不是完整转录组。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {},
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.2537703963477616,
+          "largestMovement": {
+            "name": "RNA-polymerase-II-schematic",
+            "type": "Group",
+            "progress": 0.99
+          },
+          "endpointSignature": "16305df2744fa72b98c5d1d083b44eda2e423b432e98d5e9527c41db513fe977",
+          "resources": {
+            "nodes": 34,
+            "geometries": 5,
+            "materials": 14
+          },
+          "stateMetadata": {
+            "progress": 1,
+            "bubbleOpening": 0,
+            "polymeraseX": 2.12,
+            "rnaLength": 3.5700000000000003,
+            "rnaReleased": true,
+            "polymeraseTerminated": true,
+            "synthesisDirection": "5′→3′",
+            "templateReadDirection": "3′→5′"
+          }
+        }
+      ]
+    },
+    {
+      "i": 2,
+      "id": "photosynthesis",
+      "title": "光合作用",
+      "root": "plant",
+      "duration": 24,
+      "controls": [],
+      "stages": [
+        {
+          "at": 0,
+          "title": "两个反应场所"
+        },
+        {
+          "at": 0.14,
+          "title": "捕获光能"
+        },
+        {
+          "at": 0.32,
+          "title": "水提供电子，释放氧"
+        },
+        {
+          "at": 0.5,
+          "title": "把能量送到基质"
+        },
+        {
+          "at": 0.66,
+          "title": "在基质中固定碳"
+        },
+        {
+          "at": 0.88,
+          "title": "两组反应持续协作"
+        }
+      ],
+      "sourceReview": "光反应与碳固定在后段同时活跃；光能/物质代表点循环可能回绕，不能当成追踪单个分子。",
+      "scienceScope": "类囊体膜与基质区室正确表达；讲解顺序不是反应逐项停启，非真实轨迹或数量。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {},
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 1.8419737454937972,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.83
+          },
+          "endpointSignature": "0c296d0142d38e5795194f2460d6ed81e59e7e1a2bfbf200f72ff723b2209fa8",
+          "resources": {
+            "nodes": 650,
+            "geometries": 75,
+            "materials": 39
+          },
+          "stateMetadata": {
+            "progress": 1,
+            "structuralDetail": "paired thylakoid leaflets and lumina; intergranal lamellae; PSII antenna dimer; PSI acceptor face; membrane rotor and stromal ATP synthase head; stromal Rubisco L8S8",
+            "protonDirection": "thylakoid lumen to stroma",
+            "carbonFixationCompartment": "stroma",
+            "lightReactionsActive": true,
+            "carbonFixationActive": true
+          }
+        }
+      ]
+    },
+    {
+      "i": 3,
+      "id": "infection",
+      "title": "噬菌体如何递送 DNA",
+      "root": "phage",
+      "duration": 24,
+      "controls": [],
+      "stages": [
+        {
+          "at": 0,
+          "title": "识别与吸附"
+        },
+        {
+          "at": 0.32,
+          "title": "尾鞘收缩"
+        },
+        {
+          "at": 0.6,
+          "title": "DNA 进入细胞"
+        }
+      ],
+      "sourceReview": "吸附、固定管长的鞘收缩、DNA递送分别推进；p=.6 切换包内DNA与输送DNA表示，需实际观看该交接。",
+      "scienceScope": "T4起始机制，非T2精确结构；不包含复制、组装、裂解。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {},
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.026547128182870416,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.44
+          },
+          "endpointSignature": "adc420453c4a8c6eaf80a58b4fba3dcaae9cd1bfeb4053954510493291c56d7b",
+          "resources": {
+            "nodes": 81,
+            "geometries": 60,
+            "materials": 56
+          },
+          "stateMetadata": {
+            "phage": "T4",
+            "phase": "DNA-transfer",
+            "attachment": 1,
+            "contraction": 1,
+            "transfer": 1,
+            "capsidStaysOutside": true,
+            "tailTubeLengthConstant": true,
+            "innerMembraneBulges": true,
+            "DNAIsDuplex": true
+          }
+        }
+      ]
+    },
+    {
+      "i": 4,
+      "id": "replication",
+      "title": "DNA 复制叉",
+      "root": "cell",
+      "duration": 36,
+      "controls": [
+        {
+          "id": "ligase",
+          "label": {
+            "zh": "DNA 连接酶",
+            "en": "DNA ligase"
+          },
+          "default": "active",
+          "options": [
+            {
+              "value": "active",
+              "label": {
+                "zh": "正常工作",
+                "en": "Active"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "缺失：切口保留",
+                "en": "Absent: nicks remain"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "反向平行模板"
+        },
+        {
+          "at": 0.12,
+          "title": "解开双链"
+        },
+        {
+          "at": 0.28,
+          "title": "连续与分段合成"
+        },
+        {
+          "at": 0.58,
+          "title": "重复引发"
+        },
+        {
+          "at": 0.79,
+          "title": "引物成熟"
+        },
+        {
+          "at": 0.92,
+          "title": "封口与半保留复制"
+        }
+      ],
+      "sourceReview": "发现后随链聚合酶在四个片段边界持续可见瞬移3.2437单位；已改为独立材质短淡出/再招募淡入，DNA计算未改。",
+      "scienceScope": "一个局部真核复制叉；新链均5′→3′、模板反向平行。酶淡入淡出只简化解离/再招募，不追踪同一分子扩散。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "ligase": "active"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 3.245229543479733,
+          "largestMovement": {
+            "name": "DNA-polymerase-functional-domains",
+            "type": "Group",
+            "progress": 0.6
+          },
+          "endpointSignature": "809a6e0d132ccfdffa1395d67ba54698b93804105d562ea3a3bf5f741076533a",
+          "resources": {
+            "nodes": 93,
+            "geometries": 33,
+            "materials": 28
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "compartment": "nucleus",
+            "mechanism": "semiconservative-replication",
+            "parentalAntiparallel": true,
+            "synthesisDirection": "5-prime-to-3-prime",
+            "forkX": 5.300000000000001,
+            "ligaseActive": true,
+            "primerReplaced": true,
+            "remainingNicks": 0,
+            "localSegmentComplete": true,
+            "detail": "instanced-helical-duplex-phosphates-base-pairs-open-protein-clefts"
+          }
+        },
+        {
+          "parameters": {
+            "ligase": "absent"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 3.245229543479733,
+          "largestMovement": {
+            "name": "DNA-polymerase-functional-domains",
+            "type": "Group",
+            "progress": 0.6
+          },
+          "endpointSignature": "e278f51c212629496c018d5107f5a2d2b21c06f8fd85035ff660128861a236b4",
+          "resources": {
+            "nodes": 93,
+            "geometries": 33,
+            "materials": 28
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "compartment": "nucleus",
+            "mechanism": "semiconservative-replication",
+            "parentalAntiparallel": true,
+            "synthesisDirection": "5-prime-to-3-prime",
+            "forkX": 5.300000000000001,
+            "ligaseActive": false,
+            "primerReplaced": true,
+            "remainingNicks": 4,
+            "localSegmentComplete": false,
+            "detail": "instanced-helical-duplex-phosphates-base-pairs-open-protein-clefts"
+          }
+        }
+      ]
+    },
+    {
+      "i": 5,
+      "id": "dnaRepair",
+      "title": "核苷酸切除修复",
+      "root": "cell",
+      "duration": 34,
+      "controls": [
+        {
+          "id": "incision",
+          "label": {
+            "zh": "切除能力",
+            "en": "Incision capacity"
+          },
+          "default": "active",
+          "options": [
+            {
+              "value": "active",
+              "label": {
+                "zh": "双侧切开正常",
+                "en": "Dual incision active"
+              }
+            },
+            {
+              "value": "blocked",
+              "label": {
+                "zh": "切开受阻",
+                "en": "Incision blocked"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "单链上的损伤"
+        },
+        {
+          "at": 0.13,
+          "title": "识别并打开局部双链"
+        },
+        {
+          "at": 0.31,
+          "title": "定位两侧切口"
+        },
+        {
+          "at": 0.48,
+          "title": "移除带损伤的寡核苷酸"
+        },
+        {
+          "at": 0.64,
+          "title": "以完整链为模板填补"
+        },
+        {
+          "at": 0.89,
+          "title": "连接酶封闭切口"
+        }
+      ],
+      "sourceReview": "阻断切除把机制进度限制到.4；正常分支双切口、移除、填补、封口；blocked保留损伤且没有修补产物。",
+      "scienceScope": "核苷酸切除修复的共同步骤；物种识别差异和切除长度未精确重建。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "incision": "active"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.19478610538641292,
+          "largestMovement": {
+            "name": "DNA-polymerase-functional-domains",
+            "type": "Group",
+            "progress": 0.795
+          },
+          "endpointSignature": "653f452d29f23b95038739383243e0423297e29028fe9db37b8af2b7241af215",
+          "resources": {
+            "nodes": 117,
+            "geometries": 58,
+            "materials": 33
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "compartment": "nucleus",
+            "mechanism": "nucleotide-excision-repair",
+            "damagedStrand": "upper-5prime-to-3prime",
+            "intactTemplate": true,
+            "incisionBlocked": false,
+            "incisions": 2,
+            "excised": true,
+            "replacementFraction": 1,
+            "synthesisDirection": "5-prime-to-3-prime",
+            "ligationComplete": true,
+            "lesionRemoved": true,
+            "detail": "double-helix-base-plates-open-repair-bubble-nuclease-clefts"
+          }
+        },
+        {
+          "parameters": {
+            "incision": "blocked"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.12155328557332412,
+          "largestMovement": {
+            "name": "nuclease-functional-domains",
+            "type": "Group",
+            "progress": 0.31
+          },
+          "endpointSignature": "5a73c1de1de1f8be757b23db7fed91c4c749abc7b42d24205a523156498bd229",
+          "resources": {
+            "nodes": 117,
+            "geometries": 58,
+            "materials": 33
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "compartment": "nucleus",
+            "mechanism": "nucleotide-excision-repair",
+            "damagedStrand": "upper-5prime-to-3prime",
+            "intactTemplate": true,
+            "incisionBlocked": true,
+            "incisions": 0,
+            "excised": false,
+            "replacementFraction": 0,
+            "synthesisDirection": "5-prime-to-3-prime",
+            "ligationComplete": false,
+            "lesionRemoved": false,
+            "detail": "double-helix-base-plates-open-repair-bubble-nuclease-clefts"
+          }
+        }
+      ]
+    },
+    {
+      "i": 6,
+      "id": "transduction",
+      "title": "噬菌体介导的转导",
+      "root": "phage",
+      "duration": 36,
+      "controls": [
+        {
+          "id": "route",
+          "label": {
+            "zh": "转导类型",
+            "en": "Transduction route"
+          },
+          "default": "p1",
+          "options": [
+            {
+              "value": "p1",
+              "label": {
+                "zh": "P1 · 广义转导",
+                "en": "P1 · generalized"
+              }
+            },
+            {
+              "value": "lambda",
+              "label": {
+                "zh": "λ · 局限性转导",
+                "en": "λ · specialized"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "两种不同起点"
+        },
+        {
+          "at": 0.16,
+          "title": "供体 DNA 进入转移路径"
+        },
+        {
+          "at": 0.34,
+          "title": "不同的头部内容"
+        },
+        {
+          "at": 0.51,
+          "title": "裂解释放与传播"
+        },
+        {
+          "at": 0.71,
+          "title": "DNA 注入受体"
+        },
+        {
+          "at": 0.9,
+          "title": "进入不等于稳定获得"
+        }
+      ],
+      "sourceReview": "P1/λ改变包装DNA来源、颜色、尾部；转移链段维持连续；材质切换使用已声明19个材质，无新增资源。",
+      "scienceScope": "P1广义与λ局限性转导；终点只到DNA递送，不承诺稳定遗传。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "route": "p1"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.31848502474982127,
+          "largestMovement": {
+            "name": "packaging-and-delivery-virion",
+            "type": "Group",
+            "progress": 0.61
+          },
+          "endpointSignature": "5d024da089273b72b8a6a2d8340e53ff777727d7d70c966e4d07efd3e11ae878",
+          "resources": {
+            "nodes": 255,
+            "geometries": 29,
+            "materials": 18
+          },
+          "stateMetadata": {
+            "rootId": "phage",
+            "organism": "Escherichia coli",
+            "route": "P1-generalized",
+            "integratedProphage": false,
+            "packagedCargo": "bacterial-DNA",
+            "geneScope": "many-chromosomal-loci",
+            "delivered": true,
+            "stableInheritanceShown": false
+          }
+        },
+        {
+          "parameters": {
+            "route": "lambda"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": false,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.31848502474982127,
+          "largestMovement": {
+            "name": "packaging-and-delivery-virion",
+            "type": "Group",
+            "progress": 0.61
+          },
+          "endpointSignature": "e00e16e7c6c209351b1399ca2d9d1fdd3991bdc698c55db69792512a3e4466a4",
+          "resources": {
+            "nodes": 255,
+            "geometries": 29,
+            "materials": 18
+          },
+          "resourceInterpretation": "Only per-mesh material binding changed; current-source targeted check confirms material predeclared in model.materials, all objects/geometries retained.",
+          "stateMetadata": {
+            "rootId": "phage",
+            "organism": "Escherichia coli",
+            "route": "lambda-specialized",
+            "integratedProphage": false,
+            "packagedCargo": "phage-plus-adjacent-bacterial-DNA",
+            "geneScope": "prophage-adjacent-gal-example",
+            "delivered": true,
+            "stableInheritanceShown": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "id": "bacterialSporulation",
+      "title": "枯草芽孢杆菌内生孢子形成",
+      "root": "bacterium",
+      "duration": 38,
+      "controls": [
+        {
+          "id": "engulfment",
+          "label": {
+            "zh": "膜包裹",
+            "en": "Membrane engulfment"
+          },
+          "default": "normal",
+          "options": [
+            {
+              "value": "normal",
+              "label": {
+                "zh": "正常推进",
+                "en": "Normal"
+              }
+            },
+            {
+              "value": "blocked",
+              "label": {
+                "zh": "包裹受阻",
+                "en": "Blocked"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "营养限制与发育启动"
+        },
+        {
+          "at": 0.15,
+          "title": "不对称隔膜"
+        },
+        {
+          "at": 0.32,
+          "title": "母细胞膜包裹前孢子"
+        },
+        {
+          "at": 0.56,
+          "title": "皮层与蛋白外壳"
+        },
+        {
+          "at": 0.73,
+          "title": "孢子核心成熟"
+        },
+        {
+          "at": 0.9,
+          "title": "释放一枚休眠孢子"
+        }
+      ],
+      "sourceReview": "normal完成不对称隔膜、包裹、孢子分层和母细胞裂解；blocked停于包裹中途，不产生成熟孢子。",
+      "scienceScope": "枯草芽孢杆菌，一细胞转一内生孢子；不是增殖，不推广到所有细菌。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "engulfment": "normal"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.10838750000000008,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.945
+          },
+          "endpointSignature": "c4c6c3ad860cefc72cbe742a6e8f250c6043fbdabfec9c05a7a35e264c83b4af",
+          "resources": {
+            "nodes": 123,
+            "geometries": 80,
+            "materials": 32
+          },
+          "stateMetadata": {
+            "rootId": "bacterium",
+            "organism": "Bacillus subtilis",
+            "mechanism": "endospore-development",
+            "engulfmentBlocked": false,
+            "asymmetricSeptum": true,
+            "engulfmentComplete": true,
+            "foresporeMembraneCount": 2,
+            "cortexBetweenMembranes": true,
+            "matureSpore": true,
+            "motherCellLysed": true,
+            "sporesReleased": 1,
+            "reproduction": false
+          }
+        },
+        {
+          "parameters": {
+            "engulfment": "blocked"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.07484276277841044,
+          "largestMovement": {
+            "name": "septal-DNA-translocase-0",
+            "type": "Group",
+            "progress": 0.29
+          },
+          "endpointSignature": "6a06c03b978551c033f4fbec68ea2067ddc43ee2155ea72d35c9f70ba08b6a16",
+          "resources": {
+            "nodes": 123,
+            "geometries": 80,
+            "materials": 32
+          },
+          "stateMetadata": {
+            "rootId": "bacterium",
+            "organism": "Bacillus subtilis",
+            "mechanism": "endospore-development",
+            "engulfmentBlocked": true,
+            "asymmetricSeptum": true,
+            "engulfmentComplete": false,
+            "foresporeMembraneCount": 1,
+            "cortexBetweenMembranes": false,
+            "matureSpore": false,
+            "motherCellLysed": false,
+            "sporesReleased": 0,
+            "reproduction": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 8,
+      "id": "promoterRegulation",
+      "title": "启动子与转录装配",
+      "root": "cell",
+      "duration": 32,
+      "controls": [
+        {
+          "id": "bindingSite",
+          "label": {
+            "zh": "TATA 识别位点",
+            "en": "TATA recognition site"
+          },
+          "default": "intact",
+          "options": [
+            {
+              "value": "intact",
+              "label": {
+                "zh": "完整位点",
+                "en": "Intact site"
+              }
+            },
+            {
+              "value": "altered",
+              "label": {
+                "zh": "改变位点 · 未稳定结合示例",
+                "en": "Altered site · unstable binding example"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "识别启动子"
+        },
+        {
+          "at": 0.17,
+          "title": "TFIID 结合与 DNA 弯曲"
+        },
+        {
+          "at": 0.34,
+          "title": "定位聚合酶"
+        },
+        {
+          "at": 0.52,
+          "title": "完成预起始装配"
+        },
+        {
+          "at": 0.66,
+          "title": "开启转录泡"
+        },
+        {
+          "at": 0.81,
+          "title": "起始与离开启动子"
+        }
+      ],
+      "sourceReview": "完整TATA形成稳定装配和转录；改变位点分支没有稳定结合、开启或RNA产出。",
+      "scienceScope": "哺乳动物含TATA示例；多数人启动子没有典型TATA，单次失败不等于所有突变关闭表达。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "bindingSite": "intact"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.1902685636386535,
+          "largestMovement": {
+            "name": "TFIIE",
+            "type": "Group",
+            "progress": 0.545
+          },
+          "endpointSignature": "56e8413eedf9679dfaf7af5ef53b0c80f0033bd782ad799dfec06c1e0dc010a9",
+          "resources": {
+            "nodes": 80,
+            "geometries": 66,
+            "materials": 22
+          },
+          "stateMetadata": {
+            "species": "mammal",
+            "compartment": "nucleus",
+            "condition": "consensus-TATA",
+            "stablePIC": true,
+            "promoterBound": true,
+            "dnaOpen": true,
+            "rnaSynthesis": true,
+            "rnaDirection": "5′→3′",
+            "templateDirection": "3′→5′",
+            "polymeraseTravel": 1.65,
+            "notQuantitative": true,
+            "structuralDetail": {
+              "dnaBasePairs": 96,
+              "separatedBasesRetained": true,
+              "tbpBetaStrands": 8,
+              "polIIOpenCleft": true,
+              "xpbBilobal": true
+            }
+          }
+        },
+        {
+          "parameters": {
+            "bindingSite": "altered"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.08487530848836304,
+          "largestMovement": {
+            "name": "TFIID — three-lobed TAF architecture and TBP saddle",
+            "type": "Group",
+            "progress": 0.18
+          },
+          "endpointSignature": "a886c2e5929c43b5abc195779d30f30a37d19d617846698a43d87f344d0b7951",
+          "resources": {
+            "nodes": 80,
+            "geometries": 66,
+            "materials": 22
+          },
+          "stateMetadata": {
+            "species": "mammal",
+            "compartment": "nucleus",
+            "condition": "altered-TATA",
+            "stablePIC": false,
+            "promoterBound": false,
+            "dnaOpen": false,
+            "rnaSynthesis": false,
+            "rnaDirection": "5′→3′",
+            "templateDirection": "3′→5′",
+            "polymeraseTravel": 0,
+            "notQuantitative": true,
+            "structuralDetail": {
+              "dnaBasePairs": 96,
+              "separatedBasesRetained": true,
+              "tbpBetaStrands": 8,
+              "polIIOpenCleft": true,
+              "xpbBilobal": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "i": 9,
+      "id": "enhancerRegulation",
+      "title": "增强子与远程调控",
+      "root": "cell",
+      "duration": 34,
+      "controls": [
+        {
+          "id": "coactivator",
+          "label": {
+            "zh": "共激活因子招募",
+            "en": "Coactivator recruitment"
+          },
+          "default": "competent",
+          "options": [
+            {
+              "value": "competent",
+              "label": {
+                "zh": "可招募",
+                "en": "Recruitment competent"
+              }
+            },
+            {
+              "value": "impaired",
+              "label": {
+                "zh": "招募受限",
+                "en": "Recruitment impaired"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "动态染色质上的两个元件"
+        },
+        {
+          "at": 0.17,
+          "title": "激活因子识别增强子"
+        },
+        {
+          "at": 0.35,
+          "title": "共激活因子与启动子装配"
+        },
+        {
+          "at": 0.53,
+          "title": "靠近并非充分条件"
+        },
+        {
+          "at": 0.66,
+          "title": "一个示意转录脉冲"
+        },
+        {
+          "at": 0.8,
+          "title": "停顿与再次启动"
+        }
+      ],
+      "sourceReview": "两分支使用相同染色质构象轨迹，只有可招募分支产生两次示意脉冲；聚合酶回收段在ε邻域连续。",
+      "scienceScope": "靠近不是充分条件；脉冲时间是假设示意，不是测量或所有基因位点通则。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "coactivator": "competent"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.5500487250792298,
+          "largestMovement": {
+            "name": "Pol II — RPB1 clamp, RPB2 lobe, stalk and exposed active cleft",
+            "type": "Group",
+            "progress": 0.805
+          },
+          "endpointSignature": "d9cc4a64ea65aefb4cdc7b1c7fd9c62e2a97e3232ff6ad98da0803b5690bce96",
+          "resources": {
+            "nodes": 326,
+            "geometries": 99,
+            "materials": 22
+          },
+          "stateMetadata": {
+            "species": "mammal",
+            "compartment": "nucleus",
+            "condition": "competent-coactivator",
+            "enhancerBound": true,
+            "coactivatorRecruited": true,
+            "transcriptionBurst": false,
+            "enhancerPromoterDistance": 6.529212647210059,
+            "proximityIsNotOutput": true,
+            "rnaDirection": "5′→3′",
+            "illustrativeBurstTiming": true,
+            "nucleosomeCount": 7,
+            "structuralDetail": {
+              "histoneSubunits": 56,
+              "displayedBasePairs": 1365,
+              "duplexLinkers": 8,
+              "nucleosomeTails": true,
+              "mediatorModules": 3
+            },
+            "nucleosomeSuperhelix": "left-handed"
+          }
+        },
+        {
+          "parameters": {
+            "coactivator": "impaired"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.06514486166687976,
+          "largestMovement": {
+            "name": "Pol II — RPB1 clamp, RPB2 lobe, stalk and exposed active cleft",
+            "type": "Group",
+            "progress": 0.425
+          },
+          "endpointSignature": "bbd87d66a9143040872e8a8e77cb7cd276c1fd87bc9fad1a4dcbd7b7341a31df",
+          "resources": {
+            "nodes": 326,
+            "geometries": 99,
+            "materials": 22
+          },
+          "stateMetadata": {
+            "species": "mammal",
+            "compartment": "nucleus",
+            "condition": "coactivator-recruitment-impaired",
+            "enhancerBound": true,
+            "coactivatorRecruited": false,
+            "transcriptionBurst": false,
+            "enhancerPromoterDistance": 6.529212647210059,
+            "proximityIsNotOutput": true,
+            "rnaDirection": "5′→3′",
+            "illustrativeBurstTiming": true,
+            "nucleosomeCount": 7,
+            "structuralDetail": {
+              "histoneSubunits": 56,
+              "displayedBasePairs": 1365,
+              "duplexLinkers": 8,
+              "nucleosomeTails": true,
+              "mediatorModules": 3
+            },
+            "nucleosomeSuperhelix": "left-handed"
+          }
+        }
+      ]
+    },
+    {
+      "i": 10,
+      "id": "chromatinAccess",
+      "title": "染色质可及性",
+      "root": "cell",
+      "duration": 32,
+      "controls": [
+        {
+          "id": "hydrolysis",
+          "label": {
+            "zh": "ATP 水解",
+            "en": "ATP hydrolysis"
+          },
+          "default": "active",
+          "options": [
+            {
+              "value": "active",
+              "label": {
+                "zh": "正常滑移",
+                "en": "Active sliding"
+              }
+            },
+            {
+              "value": "disabled",
+              "label": {
+                "zh": "水解受阻",
+                "en": "Hydrolysis disabled"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "位点被包裹"
+        },
+        {
+          "at": 0.17,
+          "title": "重塑酶接触核小体"
+        },
+        {
+          "at": 0.34,
+          "title": "DNA 相对核心转位"
+        },
+        {
+          "at": 0.64,
+          "title": "原位点进入连接区"
+        },
+        {
+          "at": 0.84,
+          "title": "可接近，不等于表达"
+        }
+      ],
+      "sourceReview": "ATP可水解时组蛋白核心平移且DNA位点保持序列身份；受阻时滑移为0、位点仍包裹。",
+      "scienceScope": "ISWI类重塑滑移示例；可及性不自动等于表达。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "hydrolysis": "active"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.07915087463556869,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.84
+          },
+          "endpointSignature": "eb0fe2569c11546f31558096728d078165d6384da56962abfc9eb25a42704804",
+          "resources": {
+            "nodes": 169,
+            "geometries": 50,
+            "materials": 17
+          },
+          "stateMetadata": {
+            "process": "chromatinAccess",
+            "rootId": "cell",
+            "condition": "active",
+            "histoneRetained": true,
+            "visualDetail": "histone folds/tails, paired DNA nucleotides, ISWI motor cleft",
+            "nucleosomeDisplacement": 2.15,
+            "siteAccessible": true,
+            "factorBound": true,
+            "sequenceSite": 3.3800000000000003,
+            "transcriptionPredicted": false
+          }
+        },
+        {
+          "parameters": {
+            "hydrolysis": "disabled"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.02330932784636497,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.21
+          },
+          "endpointSignature": "4e65200a5ce8409baf5ccbe9eed90b3826dc6ffe1c24c44312797c2e42e408b3",
+          "resources": {
+            "nodes": 169,
+            "geometries": 50,
+            "materials": 17
+          },
+          "stateMetadata": {
+            "process": "chromatinAccess",
+            "rootId": "cell",
+            "condition": "disabled",
+            "histoneRetained": true,
+            "visualDetail": "histone folds/tails, paired DNA nucleotides, ISWI motor cleft",
+            "nucleosomeDisplacement": 0,
+            "siteAccessible": false,
+            "factorBound": false,
+            "sequenceSite": 3.3800000000000003,
+            "transcriptionPredicted": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 11,
+      "id": "tad",
+      "title": "染色质环与 TAD",
+      "root": "cell",
+      "duration": 36,
+      "controls": [
+        {
+          "id": "condition",
+          "label": {
+            "zh": "染色质条件",
+            "en": "Chromatin condition"
+          },
+          "default": "normal",
+          "options": [
+            {
+              "value": "normal",
+              "label": {
+                "zh": "相向 CTCF 边界",
+                "en": "Convergent CTCF boundaries"
+              }
+            },
+            {
+              "value": "boundaryDeleted",
+              "label": {
+                "zh": "删除右侧边界",
+                "en": "Delete right boundary"
+              }
+            },
+            {
+              "value": "cohesinDepleted",
+              "label": {
+                "zh": "耗竭黏连蛋白",
+                "en": "Deplete cohesin"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "一条连续的染色质"
+        },
+        {
+          "at": 0.16,
+          "title": "黏连蛋白建立小环"
+        },
+        {
+          "at": 0.36,
+          "title": "更长的基因组区间进入环"
+        },
+        {
+          "at": 0.62,
+          "title": "取向相关的边界作用"
+        },
+        {
+          "at": 0.78,
+          "title": "边界删除改变环的范围"
+        },
+        {
+          "at": 0.93,
+          "title": "接触域是统计特征"
+        }
+      ],
+      "sourceReview": "正常/右边界删除/黏连蛋白耗竭分别保留受限环、越界延伸、无持续挤出；连续链与方向性边界区分。",
+      "scienceScope": "哺乳动物间期简化环挤出；TAD为统计接触域，无膜且不是固定环。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "condition": "normal"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.0409045830202861,
+          "largestMovement": {
+            "name": "oriented-CTCF-zinc-finger-chain",
+            "type": "Group",
+            "progress": 0.45
+          },
+          "endpointSignature": "494d0d419f4e1c22b4298e72d4587ba69d8d24ad91f636ba1936cd2156a715a3",
+          "resources": {
+            "nodes": 80,
+            "geometries": 36,
+            "materials": 16
+          },
+          "stateMetadata": {
+            "process": "tad",
+            "condition": "normal",
+            "speciesScope": "mammalian interphase nucleus",
+            "leftGenomicAnchor": 0.22999999999999998,
+            "rightGenomicAnchor": 0.77,
+            "loopSpan": 0.54,
+            "ctcfOrientation": "convergent",
+            "rightBoundaryPresent": true,
+            "cohesinPresent": true,
+            "boundaryCrossed": false,
+            "contactLinkIsSchematic": true,
+            "contactDistance": 2.1118129938523458,
+            "membraneBound": false,
+            "visualDetail": "SMC coiled-coils/hinge/ATPase heads/kleisin, CTCF fingers, DNA nucleotides",
+            "expressionPredicted": false
+          }
+        },
+        {
+          "parameters": {
+            "condition": "boundaryDeleted"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.053267050390369206,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.805
+          },
+          "endpointSignature": "94894637a92649685ae322c745f20e91489e2306a321f8633a6e9270853686c4",
+          "resources": {
+            "nodes": 80,
+            "geometries": 36,
+            "materials": 16
+          },
+          "stateMetadata": {
+            "process": "tad",
+            "condition": "boundaryDeleted",
+            "speciesScope": "mammalian interphase nucleus",
+            "leftGenomicAnchor": 0.22999999999999998,
+            "rightGenomicAnchor": 0.92,
+            "loopSpan": 0.6900000000000001,
+            "ctcfOrientation": "convergent",
+            "rightBoundaryPresent": false,
+            "cohesinPresent": true,
+            "boundaryCrossed": true,
+            "contactLinkIsSchematic": true,
+            "contactDistance": 2.694255539976218,
+            "membraneBound": false,
+            "visualDetail": "SMC coiled-coils/hinge/ATPase heads/kleisin, CTCF fingers, DNA nucleotides",
+            "expressionPredicted": false
+          }
+        },
+        {
+          "parameters": {
+            "condition": "cohesinDepleted"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0,
+          "largestMovement": null,
+          "endpointSignature": "3b11f5d268bde02969f8653dfe7db868edc4a977cac84858a21047ed89a60be5",
+          "resources": {
+            "nodes": 80,
+            "geometries": 36,
+            "materials": 16
+          },
+          "stateMetadata": {
+            "process": "tad",
+            "condition": "cohesinDepleted",
+            "speciesScope": "mammalian interphase nucleus",
+            "leftGenomicAnchor": 0.48,
+            "rightGenomicAnchor": 0.52,
+            "loopSpan": 0.040000000000000036,
+            "ctcfOrientation": "convergent",
+            "rightBoundaryPresent": true,
+            "cohesinPresent": false,
+            "boundaryCrossed": false,
+            "contactLinkIsSchematic": true,
+            "contactDistance": 3.6599999999999993,
+            "membraneBound": false,
+            "visualDetail": "SMC coiled-coils/hinge/ATPase heads/kleisin, CTCF fingers, DNA nucleotides",
+            "expressionPredicted": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 12,
+      "id": "plantGenome",
+      "title": "植物的三套基因组",
+      "root": "plant",
+      "duration": 36,
+      "controls": [
+        {
+          "id": "targeting",
+          "label": {
+            "zh": "前体定位信号",
+            "en": "Precursor targeting signals"
+          },
+          "default": "intact",
+          "options": [
+            {
+              "value": "intact",
+              "label": {
+                "zh": "定位肽完整",
+                "en": "Signals intact"
+              }
+            },
+            {
+              "value": "removed",
+              "label": {
+                "zh": "删除定位肽",
+                "en": "Targeting peptides removed"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "三个遗传区室"
+        },
+        {
+          "at": 0.12,
+          "title": "核内转录，RNA 出核"
+        },
+        {
+          "at": 0.34,
+          "title": "在胞质合成前体蛋白"
+        },
+        {
+          "at": 0.57,
+          "title": "蛋白跨双层包膜导入"
+        },
+        {
+          "at": 0.77,
+          "title": "细胞器保留本地表达"
+        },
+        {
+          "at": 0.91,
+          "title": "基因组协作构建细胞器"
+        }
+      ],
+      "sourceReview": "核mRNA经核孔到胞质，蛋白前体再导入；删除定位肽仅阻止图示前体，不阻止细胞器内部表达。",
+      "scienceScope": "拟南芥叶肉细胞三个遗传区室；不把核RNA画成进入细胞器的导入货物。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "targeting": "intact"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.0688071382106073,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.895
+          },
+          "endpointSignature": "6ebbc2a291a4b96ecbeb89fa4ab4ba157db842e580829975d537156d2bee1215",
+          "resources": {
+            "nodes": 277,
+            "geometries": 128,
+            "materials": 46
+          },
+          "stateMetadata": {
+            "process": "plantGenome",
+            "species": "Arabidopsis mesophyll",
+            "genomeCompartments": 3,
+            "condition": "intact",
+            "nuclearTranslationCompartment": "cytosol",
+            "organelleTranslationCompartment": "stroma / matrix",
+            "cargoType": "protein",
+            "nuclearRNAImportedIntoOrganelles": false,
+            "proteinImported": true,
+            "transitPeptidePresent": false,
+            "organelleLocalProducts": true,
+            "genomeTopologyIsSchematic": true,
+            "visualDetail": "double-envelope cut edges, thylakoid lumina/lamellae, crista sacs, ribosome rRNA channels, nucleotide motifs"
+          }
+        },
+        {
+          "parameters": {
+            "targeting": "removed"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0,
+          "largestMovement": null,
+          "endpointSignature": "155476e787cd9ef96416ef068636c862c52ede4efdd8ad66263235ab5aeddf09",
+          "resources": {
+            "nodes": 277,
+            "geometries": 128,
+            "materials": 46
+          },
+          "stateMetadata": {
+            "process": "plantGenome",
+            "species": "Arabidopsis mesophyll",
+            "genomeCompartments": 3,
+            "condition": "removed",
+            "nuclearTranslationCompartment": "cytosol",
+            "organelleTranslationCompartment": "stroma / matrix",
+            "cargoType": "protein",
+            "nuclearRNAImportedIntoOrganelles": false,
+            "proteinImported": false,
+            "transitPeptidePresent": false,
+            "organelleLocalProducts": true,
+            "genomeTopologyIsSchematic": true,
+            "visualDetail": "double-envelope cut edges, thylakoid lumina/lamellae, crista sacs, ribosome rRNA channels, nucleotide motifs"
+          }
+        }
+      ]
+    },
+    {
+      "i": 13,
+      "id": "plantRdDM",
+      "title": "RNA 引导的 DNA 甲基化",
+      "root": "plant",
+      "duration": 38,
+      "controls": [
+        {
+          "id": "drm2",
+          "label": {
+            "zh": "DRM2 催化活性",
+            "en": "DRM2 catalytic activity"
+          },
+          "default": "active",
+          "options": [
+            {
+              "value": "active",
+              "label": {
+                "zh": "正常催化",
+                "en": "Active catalysis"
+              }
+            },
+            {
+              "value": "inactive",
+              "label": {
+                "zh": "催化失活",
+                "en": "Catalytically inactive"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "Pol IV 产生前体 RNA"
+        },
+        {
+          "at": 0.16,
+          "title": "RDR2 合成互补链"
+        },
+        {
+          "at": 0.33,
+          "title": "DCL3 加工小 RNA"
+        },
+        {
+          "at": 0.46,
+          "title": "AGO4 装载，引导链保留"
+        },
+        {
+          "at": 0.61,
+          "title": "识别 Pol V 支架转录本"
+        },
+        {
+          "at": 0.82,
+          "title": "DRM2 改写 DNA 化学标记"
+        },
+        {
+          "at": 0.95,
+          "title": "沉默倾向，不更改序列"
+        }
+      ],
+      "sourceReview": "两分支都生成/装载引导RNA并招募DRM2；催化失活只阻止新甲基标记，保留其他装配与DNA序列。",
+      "scienceScope": "拟南芥经典Pol IV/RDR2-DCL3-AGO4/Pol V-DRM2支路；不代表全局甲基化或维持途径。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "drm2": "active"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.15167724609375033,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.21
+          },
+          "endpointSignature": "6a3bd5abeddc1ace1b2beaead437e354903e57ed3343bb70872850748a3afd38",
+          "resources": {
+            "nodes": 203,
+            "geometries": 61,
+            "materials": 27
+          },
+          "stateMetadata": {
+            "process": "plantRdDM",
+            "species": "Arabidopsis thaliana",
+            "branch": "canonical Pol IV/RDR2-DCL3-AGO4/Pol V-DRM2",
+            "condition": "active",
+            "guideLengthNt": 24,
+            "guideScaffoldOrientation": "antiparallel",
+            "dsRNAGenerated": true,
+            "guideLoaded": true,
+            "scaffoldPaired": true,
+            "drm2Recruited": true,
+            "newMethylMarks": 1,
+            "methylationTarget": "DNA cytosine",
+            "sequenceChanged": false,
+            "globalMethylationAbolished": false,
+            "targetBaseFlip": 0,
+            "visualDetail": "enzyme clefts/alpha helices, duplex sugar-phosphate/base plates, AGO4 guide groove, DRM2 base flipping"
+          }
+        },
+        {
+          "parameters": {
+            "drm2": "inactive"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.15167724609375033,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.21
+          },
+          "endpointSignature": "ac80c08992991eb245c2344083ff55b770f0f7a4d149521537efb7f20d256557",
+          "resources": {
+            "nodes": 203,
+            "geometries": 61,
+            "materials": 27
+          },
+          "stateMetadata": {
+            "process": "plantRdDM",
+            "species": "Arabidopsis thaliana",
+            "branch": "canonical Pol IV/RDR2-DCL3-AGO4/Pol V-DRM2",
+            "condition": "inactive",
+            "guideLengthNt": 24,
+            "guideScaffoldOrientation": "antiparallel",
+            "dsRNAGenerated": true,
+            "guideLoaded": true,
+            "scaffoldPaired": true,
+            "drm2Recruited": true,
+            "newMethylMarks": 0,
+            "methylationTarget": "DNA cytosine",
+            "sequenceChanged": false,
+            "globalMethylationAbolished": false,
+            "targetBaseFlip": 0,
+            "visualDetail": "enzyme clefts/alpha helices, duplex sugar-phosphate/base plates, AGO4 guide groove, DRM2 base flipping"
+          }
+        }
+      ]
+    },
+    {
+      "i": 14,
+      "id": "rnaProcessing",
+      "title": "RNA 加工：从前体到成熟信使",
+      "root": "cell",
+      "duration": 34,
+      "controls": [],
+      "stages": [
+        {
+          "at": 0,
+          "title": "辨认前体 RNA"
+        },
+        {
+          "at": 0.13,
+          "title": "保护 5′ 端"
+        },
+        {
+          "at": 0.29,
+          "title": "组装剪接体"
+        },
+        {
+          "at": 0.46,
+          "title": "形成套索并连接外显子"
+        },
+        {
+          "at": 0.69,
+          "title": "切割 3′ 端并加尾"
+        },
+        {
+          "at": 0.9,
+          "title": "成熟但仍在细胞核内"
+        }
+      ],
+      "sourceReview": "第一与第二键交换分别.55/.65，套索移动不提前破坏仍连接的内含子—外显子键；终点仍在核内。",
+      "scienceScope": "Pol II含内含子转录本；真实加帽/剪接/3′加工通常与转录重叠。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {},
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.1644500000000002,
+          "largestMovement": {
+            "name": "exon-2",
+            "type": "Group",
+            "progress": 0.605
+          },
+          "endpointSignature": "23a483d2d96d932704e20b69b73904a7c23f941a7afde9f3f20f66451c5e360f",
+          "resources": {
+            "nodes": 463,
+            "geometries": 22,
+            "materials": 8
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "compartment": "nucleus",
+            "rnaOrientation": "5prime-left-to-3prime-right",
+            "capAdded": true,
+            "spliceReaction": "exons-ligated",
+            "exonsJoined": true,
+            "polyATail": true,
+            "translating": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 15,
+      "id": "nuclearTransport",
+      "title": "核孔运输：NLS 蛋白质入核",
+      "root": "cell",
+      "duration": 32,
+      "controls": [
+        {
+          "id": "nls",
+          "label": {
+            "zh": "核定位信号",
+            "en": "Nuclear localization signal"
+          },
+          "default": "exposed",
+          "options": [
+            {
+              "value": "exposed",
+              "label": {
+                "zh": "NLS 暴露",
+                "en": "NLS exposed"
+              }
+            },
+            {
+              "value": "masked",
+              "label": {
+                "zh": "NLS 被遮蔽",
+                "en": "NLS masked"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "核膜两侧"
+        },
+        {
+          "at": 0.16,
+          "title": "识别定位信号"
+        },
+        {
+          "at": 0.34,
+          "title": "进入选择性通道"
+        },
+        {
+          "at": 0.56,
+          "title": "在核侧解离"
+        },
+        {
+          "at": 0.75,
+          "title": "回收 β 受体"
+        },
+        {
+          "at": 0.92,
+          "title": "由 Ran 循环保持方向性"
+        }
+      ],
+      "sourceReview": "NLS暴露时cargo入核、importin β回收、Ran状态改变；masked cargo保留胞质。α另一路输出明确未展示。",
+      "scienceScope": "经典NLS–importin α/β途径；不外推为多数mRNA输出机制。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "nls": "exposed"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.307127941217823,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.835
+          },
+          "endpointSignature": "a4ad17099daffb38cbf0c8f1a658065233a2da42483197ad149a294e3c672973",
+          "resources": {
+            "nodes": 177,
+            "geometries": 167,
+            "materials": 13
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "pathway": "classical-NLS-import",
+            "direction": "cytosol-to-nucleus",
+            "nls": "exposed",
+            "cargoSide": "nucleus",
+            "cargoReleased": true,
+            "receptorRecycled": true,
+            "ranHydrolyzed": true,
+            "mRNAExportShown": false
+          }
+        },
+        {
+          "parameters": {
+            "nls": "masked"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.023406982421875,
+          "largestMovement": {
+            "name": "nls-cargo",
+            "type": "Group",
+            "progress": 0.22
+          },
+          "endpointSignature": "06b899e135ff3ac4d2c5212292f5278eff63792eb0bb82ae83999ca00af2e432",
+          "resources": {
+            "nodes": 177,
+            "geometries": 167,
+            "materials": 13
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "pathway": "classical-NLS-import",
+            "direction": "cytosol-to-nucleus",
+            "nls": "masked",
+            "cargoSide": "cytosol",
+            "cargoReleased": false,
+            "receptorRecycled": false,
+            "ranHydrolyzed": false,
+            "mRNAExportShown": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 16,
+      "id": "motorTransport",
+      "title": "马达运输：沿微管运送货物",
+      "root": "cell",
+      "duration": 32,
+      "controls": [
+        {
+          "id": "motor",
+          "label": {
+            "zh": "运输马达",
+            "en": "Transport motor"
+          },
+          "default": "kinesin",
+          "options": [
+            {
+              "value": "kinesin",
+              "label": {
+                "zh": "Kinesin-1 → 正端",
+                "en": "Kinesin-1 → plus end"
+              }
+            },
+            {
+              "value": "dynein",
+              "label": {
+                "zh": "胞质 Dynein → 负端",
+                "en": "Cytoplasmic dynein → minus end"
+              }
+            }
+          ]
+        },
+        {
+          "id": "atp",
+          "label": {
+            "zh": "ATP 条件",
+            "en": "ATP condition"
+          },
+          "default": "available",
+          "options": [
+            {
+              "value": "available",
+              "label": {
+                "zh": "可用 ATP",
+                "en": "ATP available"
+              }
+            },
+            {
+              "value": "depleted",
+              "label": {
+                "zh": "缺少可用 ATP",
+                "en": "ATP unavailable"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "有极性的轨道"
+        },
+        {
+          "at": 0.15,
+          "title": "连接膜性货物"
+        },
+        {
+          "at": 0.3,
+          "title": "ATP 循环改变构象"
+        },
+        {
+          "at": 0.48,
+          "title": "有偏向的重复步进"
+        },
+        {
+          "at": 0.7,
+          "title": "货物随马达平移"
+        },
+        {
+          "at": 0.9,
+          "title": "方向与能量条件"
+        }
+      ],
+      "sourceReview": "全部4组合扫过；kinesin与dynein足端步进不同、净方向相反，ATP缺失两种货物均不前进。",
+      "scienceScope": "胞质kinesin-1与活化dynein–dynactin适配体示意；不是测得的速度、步长或力。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "motor": "kinesin",
+            "atp": "available"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.09775464104423884,
+          "largestMovement": {
+            "name": "kinesin-head-0",
+            "type": "Group",
+            "progress": 0.555
+          },
+          "endpointSignature": "2fbd99633279a505185e2996696046cb12894c14c0fedb793ddc906997771481",
+          "resources": {
+            "nodes": 57,
+            "geometries": 38,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "motor": "kinesin-1",
+            "atpAvailable": true,
+            "direction": "plus-end",
+            "cargoX": 2.6,
+            "trackStationary": true,
+            "transportCompleted": true
+          }
+        },
+        {
+          "parameters": {
+            "motor": "kinesin",
+            "atp": "depleted"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.026440056991654803,
+          "largestMovement": {
+            "name": "motor-cargo",
+            "type": "Group",
+            "progress": 0.185
+          },
+          "endpointSignature": "a9ad9c07abb11c3b8692441bd64fded4b74b64fb006d9641bd1ea3c678002a32",
+          "resources": {
+            "nodes": 57,
+            "geometries": 38,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "motor": "kinesin-1",
+            "atpAvailable": false,
+            "direction": "plus-end",
+            "cargoX": -2.6,
+            "trackStationary": true,
+            "transportCompleted": false
+          }
+        },
+        {
+          "parameters": {
+            "motor": "dynein",
+            "atp": "available"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.15521416086626244,
+          "largestMovement": {
+            "name": "kinesin-head-0",
+            "type": "Group",
+            "progress": 0.735
+          },
+          "endpointSignature": "dee6a800d56370e60b48b40307155f104948124036d712dfb60cf2712d00a6aa",
+          "resources": {
+            "nodes": 57,
+            "geometries": 38,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "motor": "cytoplasmic-dynein",
+            "atpAvailable": true,
+            "direction": "minus-end",
+            "cargoX": -2.599999999999999,
+            "trackStationary": true,
+            "transportCompleted": true
+          }
+        },
+        {
+          "parameters": {
+            "motor": "dynein",
+            "atp": "depleted"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.026440056991654803,
+          "largestMovement": {
+            "name": "motor-cargo",
+            "type": "Group",
+            "progress": 0.185
+          },
+          "endpointSignature": "9e078d1efd73136741d40d7e3d899b5d54541f5db820c7635ccd5781519853e1",
+          "resources": {
+            "nodes": 57,
+            "geometries": 38,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "rootId": "cell",
+            "motor": "cytoplasmic-dynein",
+            "atpAvailable": false,
+            "direction": "minus-end",
+            "cargoX": 2.6,
+            "trackStationary": true,
+            "transportCompleted": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 17,
+      "id": "organelleImport",
+      "title": "叶绿体导入：跨越 TOC / TIC",
+      "root": "plant",
+      "duration": 35,
+      "controls": [
+        {
+          "id": "transit",
+          "label": {
+            "zh": "N 端转运肽",
+            "en": "N-terminal transit peptide"
+          },
+          "default": "present",
+          "options": [
+            {
+              "value": "present",
+              "label": {
+                "zh": "具有转运肽",
+                "en": "Transit peptide present"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "缺少转运肽",
+                "en": "Transit peptide absent"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "胞质中的前体"
+        },
+        {
+          "at": 0.16,
+          "title": "TOC 识别靶向信息"
+        },
+        {
+          "at": 0.34,
+          "title": "通过外膜与内膜"
+        },
+        {
+          "at": 0.55,
+          "title": "基质侧 ATP 依赖性导入"
+        },
+        {
+          "at": 0.76,
+          "title": "切除转运肽"
+        },
+        {
+          "at": 0.91,
+          "title": "在基质中折叠"
+        }
+      ],
+      "sourceReview": "targeted链先穿双包膜后切转运肽与折叠；absent分支dock/thread/cleave/fold都为0，无假导入。",
+      "scienceScope": "陆生植物叶绿体基质蛋白；TOC/TIC和马达为功能示意，组成并非跨物种统一。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "transit": "present"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.11192443083545502,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.93
+          },
+          "endpointSignature": "1532aa2f04cc57cb37cf036313ba8bdde590bb083f2251840ceccfa24b66aac3",
+          "resources": {
+            "nodes": 172,
+            "geometries": 49,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "rootId": "plant",
+            "destination": "chloroplast-stroma",
+            "transitPeptide": "present",
+            "direction": "cytosol-to-stroma",
+            "outerMembraneCrossed": true,
+            "innerMembraneCrossed": true,
+            "entireChainImported": true,
+            "transitCleaved": true,
+            "folded": true,
+            "channelStructure": "functional-schematic"
+          }
+        },
+        {
+          "parameters": {
+            "transit": "absent"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0,
+          "largestMovement": null,
+          "endpointSignature": "6cc8253000634b578697942b76d9f1e411e09e526f010afa1d5bf864f68b3d81",
+          "resources": {
+            "nodes": 172,
+            "geometries": 49,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "rootId": "plant",
+            "destination": "chloroplast-stroma",
+            "transitPeptide": "absent",
+            "direction": "cytosol-to-stroma",
+            "outerMembraneCrossed": false,
+            "innerMembraneCrossed": false,
+            "entireChainImported": false,
+            "transitCleaved": false,
+            "folded": false,
+            "channelStructure": "functional-schematic"
+          }
+        }
+      ]
+    },
+    {
+      "i": 18,
+      "id": "translation",
+      "title": "核糖体翻译",
+      "root": "cell",
+      "duration": 32,
+      "controls": [],
+      "stages": [
+        {
+          "at": 0,
+          "title": "带肽 tRNA 位于 P 位点"
+        },
+        {
+          "at": 0.13,
+          "title": "密码子与反密码子配对"
+        },
+        {
+          "at": 0.33,
+          "title": "肽链从 P 转移到 A"
+        },
+        {
+          "at": 0.53,
+          "title": "移位一个密码子"
+        },
+        {
+          "at": 0.73,
+          "title": "释放因子识别终止信号"
+        },
+        {
+          "at": 0.88,
+          "title": "肽链水解释放"
+        }
+      ],
+      "sourceReview": "实验80S参考与右侧反应放大分开；tRNA/肽链连接和释放由实际几何测试覆盖，终点已释放。",
+      "scienceScope": "人4UG0作为真核代表；右侧动画未拟合到实验结构，不宣称原子动力学。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {},
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.1546875000000001,
+          "largestMovement": {
+            "name": "peptide-residue-22",
+            "type": "Mesh",
+            "progress": 0.995
+          },
+          "endpointSignature": "f2f8df419de2424ec574ecd4043b66e0b2652e0f7bd40eacda6139b9b6e8c1b8",
+          "resources": {
+            "nodes": 287,
+            "geometries": 9,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "process": "translation",
+            "rootId": "cell",
+            "compartment": "cytosol",
+            "ribosome": "80S",
+            "readingDirection": "5to3",
+            "siteOrder": "E-P-A",
+            "peptideGrowth": "NtoC",
+            "frame": "ribosome-fixed",
+            "peptideSite": "P",
+            "released": true,
+            "representation": "registered human 4UG0 plus separate reaction schematic"
+          }
+        }
+      ]
+    },
+    {
+      "i": 19,
+      "id": "proteinFolding",
+      "title": "新生蛋白质折叠",
+      "root": "cell",
+      "duration": 34,
+      "controls": [
+        {
+          "id": "cycle",
+          "label": {
+            "zh": "Hsp70 循环",
+            "en": "Hsp70 cycle"
+          },
+          "default": "complete",
+          "options": [
+            {
+              "value": "complete",
+              "label": {
+                "zh": "完成核苷酸交换",
+                "en": "Complete nucleotide exchange"
+              }
+            },
+            {
+              "value": "hold",
+              "label": {
+                "zh": "停留在 ADP 结合态",
+                "en": "Hold the ADP-bound state"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "新生链离开出口"
+        },
+        {
+          "at": 0.15,
+          "title": "局部折叠与片段暴露"
+        },
+        {
+          "at": 0.32,
+          "title": "ADP 态暂时夹持"
+        },
+        {
+          "at": 0.48,
+          "title": "合成完成，等待交换"
+        },
+        {
+          "at": 0.62,
+          "title": "核苷酸交换促使释放"
+        },
+        {
+          "at": 0.83,
+          "title": "继续探索稳定构象"
+        }
+      ],
+      "sourceReview": "complete完成交换、伴侣释放与终态折叠；hold保持ADP态夹持且不出现终态折叠。",
+      "scienceScope": "可溶性胞质蛋白的Hsp70示例；一种α/β终态不是所有蛋白或单一路径。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "cycle": "complete"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.1062069001372542,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.82
+          },
+          "endpointSignature": "9a799ed46f21012b9f7903ac970bf549f3e1804679645121f05da42112ec452c",
+          "resources": {
+            "nodes": 218,
+            "geometries": 34,
+            "materials": 20
+          },
+          "stateMetadata": {
+            "process": "proteinFolding",
+            "rootId": "cell",
+            "compartment": "cytosol",
+            "condition": "complete nucleotide cycle",
+            "chainSynthesisDirection": "NtoC",
+            "clientBound": false,
+            "nucleotide": "ATP",
+            "foldFraction": 1,
+            "illustrativeFold": true,
+            "structuralDetail": "Hsp70 beta-sandwich SBD, helical lid, four-subdomain ATPase cleft, nascent peptide sidechain markers",
+            "universalFold": false,
+            "releaseCompleted": true
+          }
+        },
+        {
+          "parameters": {
+            "cycle": "hold"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.0394145098415393,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.29
+          },
+          "endpointSignature": "bc10727396a798ee15a7552268dd640c201952d66e9e92e152e1785c82d073b1",
+          "resources": {
+            "nodes": 218,
+            "geometries": 34,
+            "materials": 20
+          },
+          "stateMetadata": {
+            "process": "proteinFolding",
+            "rootId": "cell",
+            "compartment": "cytosol",
+            "condition": "ADP-bound hold",
+            "chainSynthesisDirection": "NtoC",
+            "clientBound": true,
+            "nucleotide": "ADP",
+            "foldFraction": 0,
+            "illustrativeFold": true,
+            "structuralDetail": "Hsp70 beta-sandwich SBD, helical lid, four-subdomain ATPase cleft, nascent peptide sidechain markers",
+            "universalFold": false,
+            "releaseCompleted": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 20,
+      "id": "alternativeSplicing",
+      "title": "可变剪接：SMN2",
+      "root": "cell",
+      "duration": 32,
+      "controls": [
+        {
+          "id": "isoform",
+          "label": {
+            "zh": "剪接结果",
+            "en": "Splicing outcome"
+          },
+          "default": "include",
+          "options": [
+            {
+              "value": "include",
+              "label": {
+                "zh": "保留外显子 7",
+                "en": "Include exon 7"
+              }
+            },
+            {
+              "value": "skip",
+              "label": {
+                "zh": "跳跃外显子 7",
+                "en": "Skip exon 7"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "同一段前体 RNA"
+        },
+        {
+          "at": 0.17,
+          "title": "选择配对的剪接位点"
+        },
+        {
+          "at": 0.34,
+          "title": "分支点形成套索"
+        },
+        {
+          "at": 0.57,
+          "title": "连接保留的外显子"
+        },
+        {
+          "at": 0.77,
+          "title": "不同 RNA，不同后果"
+        },
+        {
+          "at": 0.92,
+          "title": "套索待解分支与降解"
+        }
+      ],
+      "sourceReview": "include与skip分别产生6–7–8和6–8，套索与保留外显子分离；两者都完成RNA连接。",
+      "scienceScope": "人SMN2外显子6–8局部；不同RNA不等于功能正常的不同蛋白。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "isoform": "include"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.07544134285211156,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.64
+          },
+          "endpointSignature": "7ce7cb8a1a825065860e8ccb211f3da3312f1903dc66a0280ab579f8c61d67eb",
+          "resources": {
+            "nodes": 234,
+            "geometries": 39,
+            "materials": 16
+          },
+          "stateMetadata": {
+            "process": "alternativeSplicing",
+            "rootId": "cell",
+            "species": "Homo sapiens",
+            "gene": "SMN2",
+            "compartment": "nucleus",
+            "condition": "exon7-inclusion",
+            "retainedExons": [6, 7, 8],
+            "excisedExon7": false,
+            "ligationCompleted": true,
+            "proteinFunctionGuaranteed": false,
+            "structuralDetail": "open spliceosomal cleft, U2/U6 RNA helices, U5 loop, Sm ring and nucleotide backbones"
+          }
+        },
+        {
+          "parameters": {
+            "isoform": "skip"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.10267672658111522,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.64
+          },
+          "endpointSignature": "40abe99c291d9f253819aa0c4179421d4eb993a5b601b63e00de31286373b4f9",
+          "resources": {
+            "nodes": 234,
+            "geometries": 39,
+            "materials": 16
+          },
+          "stateMetadata": {
+            "process": "alternativeSplicing",
+            "rootId": "cell",
+            "species": "Homo sapiens",
+            "gene": "SMN2",
+            "compartment": "nucleus",
+            "condition": "exon7-skipping",
+            "retainedExons": [6, 8],
+            "excisedExon7": true,
+            "ligationCompleted": true,
+            "proteinFunctionGuaranteed": false,
+            "structuralDetail": "open spliceosomal cleft, U2/U6 RNA helices, U5 loop, Sm ring and nucleotide backbones"
+          }
+        }
+      ]
+    },
+    {
+      "i": 21,
+      "id": "nitrogenFixation",
+      "title": "氮酶固氮",
+      "root": "bacterium",
+      "duration": 36,
+      "controls": [
+        {
+          "id": "oxygen",
+          "label": {
+            "zh": "酶的氧暴露",
+            "en": "Oxygen at the enzyme"
+          },
+          "default": "protected",
+          "options": [
+            {
+              "value": "protected",
+              "label": {
+                "zh": "受到氧保护",
+                "en": "Oxygen protected"
+              }
+            },
+            {
+              "value": "exposed",
+              "label": {
+                "zh": "无保护氧暴露",
+                "en": "Unprotected oxygen exposure"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "保护氮酶并提供底物"
+        },
+        {
+          "at": 0.16,
+          "title": "Fe 蛋白携 ATP 对接"
+        },
+        {
+          "at": 0.3,
+          "title": "簇间电子转移"
+        },
+        {
+          "at": 0.46,
+          "title": "ATP 水解与多轮回收"
+        },
+        {
+          "at": 0.66,
+          "title": "累积还原当量"
+        },
+        {
+          "at": 0.83,
+          "title": "氨与氢气释放"
+        }
+      ],
+      "sourceReview": "受保护条件完成8轮电子传递和2NH3/H2产物；氧暴露阻断后无产物；循环质子/核苷酸为代表标记。",
+      "scienceScope": "维涅兰德固氮菌Mo氮酶，单催化半部；氧敏感酶须受保护，不意味着宿主必为厌氧菌。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "oxygen": "protected"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 1.3053127706234302,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.325
+          },
+          "endpointSignature": "7f7e4bbaed71936e2a4d2addb79fedba2366da9815c82c04748f25211b73df7a",
+          "resources": {
+            "nodes": 312,
+            "geometries": 38,
+            "materials": 23
+          },
+          "stateMetadata": {
+            "process": "nitrogenFixation",
+            "rootId": "bacterium",
+            "species": "Azotobacter vinelandii",
+            "enzyme": "Mo nitrogenase",
+            "compartment": "cytosol",
+            "condition": "oxygen-protected enzyme",
+            "oxygenSensitive": true,
+            "allBacteriaFixNitrogen": false,
+            "structuralDetail": "alpha/beta MoFe subunits, Fe-protein nucleotide clefts, distinct cubane P-cluster and FeMo cofactor",
+            "electronTransferRounds": 8,
+            "minimumATPperN2": 16,
+            "minimumElectronsPerN2": 8,
+            "productsReleased": true,
+            "ammoniaMolecules": 2,
+            "hydrogenCoproduct": true
+          }
+        },
+        {
+          "parameters": {
+            "oxygen": "exposed"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 1.3053127706234235,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.17
+          },
+          "endpointSignature": "2048f5f3d8c84fa176c88f9a94ff6ccd743827ea1ecc73561a77e19a1d525729",
+          "resources": {
+            "nodes": 312,
+            "geometries": 38,
+            "materials": 23
+          },
+          "stateMetadata": {
+            "process": "nitrogenFixation",
+            "rootId": "bacterium",
+            "species": "Azotobacter vinelandii",
+            "enzyme": "Mo nitrogenase",
+            "compartment": "cytosol",
+            "condition": "unprotected oxygen exposure",
+            "oxygenSensitive": true,
+            "allBacteriaFixNitrogen": false,
+            "structuralDetail": "alpha/beta MoFe subunits, Fe-protein nucleotide clefts, distinct cubane P-cluster and FeMo cofactor",
+            "electronTransferRounds": 0,
+            "minimumATPperN2": 16,
+            "minimumElectronsPerN2": 8,
+            "productsReleased": false,
+            "ammoniaMolecules": 0,
+            "hydrogenCoproduct": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 22,
+      "id": "rnaSilencing",
+      "title": "miRNA 引导的沉默",
+      "root": "cell",
+      "duration": 32,
+      "controls": [
+        {
+          "id": "pairing",
+          "label": {
+            "zh": "靶位点与 Argonaute",
+            "en": "Target site and Argonaute"
+          },
+          "default": "seed",
+          "options": [
+            {
+              "value": "seed",
+              "label": {
+                "zh": "种子区配对 · 常规 miRISC",
+                "en": "Seed pairing · typical miRISC"
+              }
+            },
+            {
+              "value": "slice",
+              "label": {
+                "zh": "充分配对 · 活性 AGO2",
+                "en": "Extensive pairing · active AGO2"
+              }
+            },
+            {
+              "value": "mismatch",
+              "label": {
+                "zh": "种子区不匹配",
+                "en": "Seed mismatch"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "成熟引导链"
+        },
+        {
+          "at": 0.18,
+          "title": "识别 3′ UTR"
+        },
+        {
+          "at": 0.38,
+          "title": "配对决定分支"
+        },
+        {
+          "at": 0.56,
+          "title": "抑制翻译或切割"
+        },
+        {
+          "at": 0.78,
+          "title": "靶 RNA 周转"
+        }
+      ],
+      "sourceReview": "seed分支去腺苷化而不直接切割，slice使用充分配对/AGO2切割，mismatch无稳定结合。",
+      "scienceScope": "动物细胞质成熟miRNA；一般miRNA沉默不要求直接切割。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "pairing": "seed"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.04997106481481506,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.2
+          },
+          "endpointSignature": "483b36da6704a61df7bfdd031e7d74ea68cc58157bc65f2e0b6f0578eb5b6e5a",
+          "resources": {
+            "nodes": 207,
+            "geometries": 12,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "structuralDetail": "N PAZ MID PIWI domains, anchor pockets, sugar phosphate bases, schematic folds",
+            "process": "rnaSilencing",
+            "compartment": "animal cytosol",
+            "pairing": "seed",
+            "guideDirection": "antiparallel to mRNA",
+            "targetBound": true,
+            "mechanism": "TNRC6 repression and deadenylation",
+            "polyATailRemaining": 1,
+            "cleaved": false,
+            "complete": true
+          }
+        },
+        {
+          "parameters": {
+            "pairing": "slice"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.04997106481481506,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.2
+          },
+          "endpointSignature": "a9a774f4a2ff0e647adb654fed6ca2e10abd05b668d10dc280a27d7adef4f9d6",
+          "resources": {
+            "nodes": 207,
+            "geometries": 12,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "structuralDetail": "N PAZ MID PIWI domains, anchor pockets, sugar phosphate bases, schematic folds",
+            "process": "rnaSilencing",
+            "compartment": "animal cytosol",
+            "pairing": "slice",
+            "guideDirection": "antiparallel to mRNA",
+            "targetBound": true,
+            "mechanism": "AGO2 slicing",
+            "polyATailRemaining": 0,
+            "cleaved": true,
+            "complete": true
+          }
+        },
+        {
+          "parameters": {
+            "pairing": "mismatch"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.05084187494477779,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.2
+          },
+          "endpointSignature": "c533cf659863924b638658709394e99700b169d4417c6bbb3e32c329295a18fb",
+          "resources": {
+            "nodes": 207,
+            "geometries": 12,
+            "materials": 9
+          },
+          "stateMetadata": {
+            "structuralDetail": "N PAZ MID PIWI domains, anchor pockets, sugar phosphate bases, schematic folds",
+            "process": "rnaSilencing",
+            "compartment": "animal cytosol",
+            "pairing": "mismatch",
+            "guideDirection": "antiparallel to mRNA",
+            "targetBound": false,
+            "mechanism": "no stable target binding",
+            "polyATailRemaining": 12,
+            "cleaved": false,
+            "complete": true
+          }
+        }
+      ]
+    },
+    {
+      "i": 23,
+      "id": "proteasome",
+      "title": "泛素–蛋白酶体降解",
+      "root": "cell",
+      "duration": 36,
+      "controls": [
+        {
+          "id": "tag",
+          "label": {
+            "zh": "底物标记",
+            "en": "Substrate tag"
+          },
+          "default": "ubiquitin",
+          "options": [
+            {
+              "value": "ubiquitin",
+              "label": {
+                "zh": "K48 多聚泛素标记",
+                "en": "K48 polyubiquitin tag"
+              }
+            },
+            {
+              "value": "untagged",
+              "label": {
+                "zh": "无标记对照",
+                "en": "Untagged comparison"
+              }
+            }
+          ]
+        },
+        {
+          "id": "shell",
+          "label": {
+            "zh": "20S 观察方式",
+            "en": "20S view"
+          },
+          "default": "cutaway",
+          "options": [
+            {
+              "value": "cutaway",
+              "label": {
+                "zh": "前侧剖切 · 显示内腔",
+                "en": "Front cutaway · chamber"
+              }
+            },
+            {
+              "value": "whole",
+              "label": {
+                "zh": "完整四环外观",
+                "en": "Complete four-ring exterior"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "可识别的底物"
+        },
+        {
+          "at": 0.16,
+          "title": "19S 识别与起始"
+        },
+        {
+          "at": 0.34,
+          "title": "展开与移除泛素"
+        },
+        {
+          "at": 0.52,
+          "title": "穿过轴向通道"
+        },
+        {
+          "at": 0.72,
+          "title": "蛋白水解"
+        },
+        {
+          "at": 0.9,
+          "title": "泛素回收"
+        }
+      ],
+      "sourceReview": "4组合含标记/无标记×剖切/完整；无标记无通道进入或肽产物。旧临时bundle桶壁失败已被当前源直接测试否定。",
+      "scienceScope": "单端加帽26S、K48链且可接近起始区的底物；亚基轮廓是示意，不是原子重建。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "tag": "ubiquitin",
+            "shell": "cutaway"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.258311887393304,
+          "largestMovement": {
+            "name": "substrate residue 39",
+            "type": "Mesh",
+            "progress": 0.695
+          },
+          "endpointSignature": "fcf3f97649477abf1c48f39373b716bea3d062a87f71f84c1f2563531ac639b1",
+          "resources": {
+            "nodes": 500,
+            "geometries": 28,
+            "materials": 14
+          },
+          "stateMetadata": {
+            "structuralDetail": "28 folded core subunits, six bilobed ATPases, inward pore loops, schematic secondary structures",
+            "process": "proteasome",
+            "rootId": "cell",
+            "compartment": "cytosol",
+            "substrate": "K48 polyubiquitylated",
+            "cutaway": true,
+            "ringTopology": "alpha7-beta7-beta7-alpha7",
+            "motorSubunits": 6,
+            "tagReleased": true,
+            "gateOpen": true,
+            "translocation": "19S to axial 20S chamber",
+            "peptidesReleased": 7,
+            "ubiquitinRecycled": true,
+            "complete": true
+          }
+        },
+        {
+          "parameters": {
+            "tag": "ubiquitin",
+            "shell": "whole"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.258311887393304,
+          "largestMovement": {
+            "name": "substrate residue 39",
+            "type": "Mesh",
+            "progress": 0.695
+          },
+          "endpointSignature": "67a936a17dba587186679be6545899d52fcfb7befe12481f7b14fd657183c3c7",
+          "resources": {
+            "nodes": 500,
+            "geometries": 28,
+            "materials": 14
+          },
+          "stateMetadata": {
+            "structuralDetail": "28 folded core subunits, six bilobed ATPases, inward pore loops, schematic secondary structures",
+            "process": "proteasome",
+            "rootId": "cell",
+            "compartment": "cytosol",
+            "substrate": "K48 polyubiquitylated",
+            "cutaway": false,
+            "ringTopology": "alpha7-beta7-beta7-alpha7",
+            "motorSubunits": 6,
+            "tagReleased": true,
+            "gateOpen": true,
+            "translocation": "19S to axial 20S chamber",
+            "peptidesReleased": 7,
+            "ubiquitinRecycled": true,
+            "complete": true
+          }
+        },
+        {
+          "parameters": {
+            "tag": "untagged",
+            "shell": "cutaway"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0,
+          "largestMovement": null,
+          "endpointSignature": "84c9407588b74940decb776fb33d82d14e1bcbd6290c14bc98baab2a7e15d782",
+          "resources": {
+            "nodes": 500,
+            "geometries": 28,
+            "materials": 14
+          },
+          "stateMetadata": {
+            "structuralDetail": "28 folded core subunits, six bilobed ATPases, inward pore loops, schematic secondary structures",
+            "process": "proteasome",
+            "rootId": "cell",
+            "compartment": "cytosol",
+            "substrate": "untagged comparison",
+            "cutaway": true,
+            "ringTopology": "alpha7-beta7-beta7-alpha7",
+            "motorSubunits": 6,
+            "tagReleased": false,
+            "gateOpen": false,
+            "translocation": "19S to axial 20S chamber",
+            "peptidesReleased": 0,
+            "ubiquitinRecycled": false,
+            "complete": true
+          }
+        },
+        {
+          "parameters": {
+            "tag": "untagged",
+            "shell": "whole"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0,
+          "largestMovement": null,
+          "endpointSignature": "dfdb759eda1a07d717d2d8a6f8d3041da346a7d767693195f7773a6160073734",
+          "resources": {
+            "nodes": 500,
+            "geometries": 28,
+            "materials": 14
+          },
+          "stateMetadata": {
+            "structuralDetail": "28 folded core subunits, six bilobed ATPases, inward pore loops, schematic secondary structures",
+            "process": "proteasome",
+            "rootId": "cell",
+            "compartment": "cytosol",
+            "substrate": "untagged comparison",
+            "cutaway": false,
+            "ringTopology": "alpha7-beta7-beta7-alpha7",
+            "motorSubunits": 6,
+            "tagReleased": false,
+            "gateOpen": false,
+            "translocation": "19S to axial 20S chamber",
+            "peptidesReleased": 0,
+            "ubiquitinRecycled": false,
+            "complete": true
+          }
+        }
+      ]
+    },
+    {
+      "i": 24,
+      "id": "crispr",
+      "title": "Cas9 · CRISPR 干扰",
+      "root": "bacterium",
+      "duration": 32,
+      "controls": [
+        {
+          "id": "target",
+          "label": {
+            "zh": "外源 DNA 靶位点",
+            "en": "Foreign DNA target"
+          },
+          "default": "matched",
+          "options": [
+            {
+              "value": "matched",
+              "label": {
+                "zh": "NGG PAM + 匹配引导",
+                "en": "NGG PAM + matching guide"
+              }
+            },
+            {
+              "value": "noPam",
+              "label": {
+                "zh": "缺少兼容 PAM",
+                "en": "No compatible PAM"
+              }
+            },
+            {
+              "value": "mismatch",
+              "label": {
+                "zh": "PAM 邻近种子区多处错配",
+                "en": "Multiple PAM-proximal seed mismatches"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "已组装的干扰复合物"
+        },
+        {
+          "at": 0.18,
+          "title": "先识别 PAM"
+        },
+        {
+          "at": 0.36,
+          "title": "局部解链与配对"
+        },
+        {
+          "at": 0.56,
+          "title": "R-loop 触发构象激活"
+        },
+        {
+          "at": 0.76,
+          "title": "分别切开两条 DNA 链"
+        }
+      ],
+      "sourceReview": "matched有R-loop及双链切口；noPam/mismatch无切割。noPam改配色使用已声明12材质，不是分配泄漏。",
+      "scienceScope": "化脓性链球菌II-A Cas9干扰阶段；不包含获取间隔序列或RNA加工。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "target": "matched"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.31320127118323915,
+          "largestMovement": {
+            "name": "Cas9 DNA backbone 1 34",
+            "type": "Mesh",
+            "progress": 0.355
+          },
+          "endpointSignature": "eb6dae4d6aada17d743aeefab5cdde37dc6fb3e01b66c61f098cf8f7287081c1",
+          "resources": {
+            "nodes": 276,
+            "geometries": 13,
+            "materials": 12
+          },
+          "stateMetadata": {
+            "structuralDetail": "REC1 REC2 REC3 NUC PAM HNH RuvC domains, bridge helix, sugar phosphate base detail",
+            "process": "crispr",
+            "organism": "Streptococcus pyogenes",
+            "type": "II-A",
+            "phase": "interference only",
+            "condition": "matched",
+            "pamRecognized": true,
+            "rLoop": true,
+            "guideDirection": "crRNA antiparallel to target DNA",
+            "hnhCuts": "target strand",
+            "ruvcCuts": "non-target strand",
+            "doubleStrandBreak": true,
+            "cas9RetainsProducts": true
+          }
+        },
+        {
+          "parameters": {
+            "target": "noPam"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": false,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.05621126033057866,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.165
+          },
+          "endpointSignature": "e1fadf322aff895ae33932955b0f3ecb4228fd7e4084bebc4f40a6fbc7bc468e",
+          "resources": {
+            "nodes": 276,
+            "geometries": 13,
+            "materials": 12
+          },
+          "resourceInterpretation": "Only per-mesh material binding changed; current-source targeted check confirms material predeclared in model.materials, all objects/geometries retained.",
+          "stateMetadata": {
+            "structuralDetail": "REC1 REC2 REC3 NUC PAM HNH RuvC domains, bridge helix, sugar phosphate base detail",
+            "process": "crispr",
+            "organism": "Streptococcus pyogenes",
+            "type": "II-A",
+            "phase": "interference only",
+            "condition": "noPam",
+            "pamRecognized": false,
+            "rLoop": false,
+            "guideDirection": "crRNA antiparallel to target DNA",
+            "hnhCuts": "target strand",
+            "ruvcCuts": "non-target strand",
+            "doubleStrandBreak": false,
+            "cas9RetainsProducts": true
+          }
+        },
+        {
+          "parameters": {
+            "target": "mismatch"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.28005920037982224,
+          "largestMovement": {
+            "name": "Cas9 DNA backbone 1 34",
+            "type": "Mesh",
+            "progress": 0.335
+          },
+          "endpointSignature": "35ab63d0600ee9b616bbdf819c302bf0893b52e2ac06357acfb32da911c5829f",
+          "resources": {
+            "nodes": 276,
+            "geometries": 13,
+            "materials": 12
+          },
+          "stateMetadata": {
+            "structuralDetail": "REC1 REC2 REC3 NUC PAM HNH RuvC domains, bridge helix, sugar phosphate base detail",
+            "process": "crispr",
+            "organism": "Streptococcus pyogenes",
+            "type": "II-A",
+            "phase": "interference only",
+            "condition": "mismatch",
+            "pamRecognized": true,
+            "rLoop": false,
+            "guideDirection": "crRNA antiparallel to target DNA",
+            "hnhCuts": "target strand",
+            "ruvcCuts": "non-target strand",
+            "doubleStrandBreak": false,
+            "cas9RetainsProducts": true
+          }
+        }
+      ]
+    },
+    {
+      "i": 25,
+      "id": "bacterialRepair",
+      "title": "细菌 DNA 损伤 · SOS 响应",
+      "root": "bacterium",
+      "duration": 34,
+      "controls": [
+        {
+          "id": "lexA",
+          "label": {
+            "zh": "LexA 条件",
+            "en": "LexA condition"
+          },
+          "default": "wildtype",
+          "options": [
+            {
+              "value": "wildtype",
+              "label": {
+                "zh": "可自切割 LexA",
+                "en": "Self-cleavable LexA"
+              }
+            },
+            {
+              "value": "noncleavable",
+              "label": {
+                "zh": "不可切割 LexA 对照",
+                "en": "Noncleavable LexA comparison"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "损伤与单链间隙"
+        },
+        {
+          "at": 0.18,
+          "title": "形成 RecA* 丝状体"
+        },
+        {
+          "at": 0.38,
+          "title": "LexA 接触 RecA*"
+        },
+        {
+          "at": 0.57,
+          "title": "解除转录抑制"
+        },
+        {
+          "at": 0.78,
+          "title": "表达应答基因"
+        }
+      ],
+      "sourceReview": "wildtype LexA自切后出现转录；noncleavable保持抑制。DNA开泡区有快速但ε连续旋转，非确定瞬移。",
+      "scienceScope": "大肠杆菌RecA–LexA SOS；RecA促进自切而非蛋白酶，响应启动不等于修复完成。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "lexA": "wildtype"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.5248748955532261,
+          "largestMovement": {
+            "name": "SOS DNA backbone 0 18",
+            "type": "Mesh",
+            "progress": 0.65
+          },
+          "endpointSignature": "586196f5ef1f49ca874dc0ad25b2566dd2250d82ed2546c0482457e0d4a0e458",
+          "resources": {
+            "nodes": 556,
+            "geometries": 28,
+            "materials": 11
+          },
+          "stateMetadata": {
+            "structuralDetail": "helical RecA ATPase and CTD subunits, LexA DNA-binding and catalytic domains, nucleotide-level DNA and RNA",
+            "process": "bacterialRepair",
+            "organism": "Escherichia coli",
+            "condition": "self-cleavable LexA",
+            "ssDNAExposed": true,
+            "recAFilamentSubunits": 15,
+            "recARole": "promotes LexA autocleavage, not a protease",
+            "lexACleaved": true,
+            "sosDerepressed": true,
+            "transcriptSegments": 28,
+            "rnaSynthesisDirection": "5-prime to 3-prime",
+            "repairCompletionShown": false
+          }
+        },
+        {
+          "parameters": {
+            "lexA": "noncleavable"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.11307840082734565,
+          "largestMovement": {
+            "name": "",
+            "type": "Group",
+            "progress": 0.43
+          },
+          "endpointSignature": "429c028b8199e885176bbd7197a6134815b54e70d7132f0b5379617a8eebf6fe",
+          "resources": {
+            "nodes": 556,
+            "geometries": 28,
+            "materials": 11
+          },
+          "stateMetadata": {
+            "structuralDetail": "helical RecA ATPase and CTD subunits, LexA DNA-binding and catalytic domains, nucleotide-level DNA and RNA",
+            "process": "bacterialRepair",
+            "organism": "Escherichia coli",
+            "condition": "noncleavable LexA",
+            "ssDNAExposed": true,
+            "recAFilamentSubunits": 15,
+            "recARole": "promotes LexA autocleavage, not a protease",
+            "lexACleaved": false,
+            "sosDerepressed": false,
+            "transcriptSegments": 0,
+            "rnaSynthesisDirection": "5-prime to 3-prime",
+            "repairCompletionShown": false
+          }
+        }
+      ]
+    },
+    {
+      "i": 26,
+      "id": "respiration",
+      "title": "呼吸链与 ATP 合成",
+      "root": "cell",
+      "duration": 36,
+      "controls": [
+        {
+          "id": "coupling",
+          "label": {
+            "zh": "内膜耦联",
+            "en": "Inner-membrane coupling"
+          },
+          "default": "coupled",
+          "options": [
+            {
+              "value": "coupled",
+              "label": {
+                "zh": "正常耦联",
+                "en": "Coupled"
+              }
+            },
+            {
+              "value": "leak",
+              "label": {
+                "zh": "质子泄漏",
+                "en": "Proton leak"
+              }
+            }
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "at": 0,
+          "title": "内膜两侧"
+        },
+        {
+          "at": 0.16,
+          "title": "还原当量供电子"
+        },
+        {
+          "at": 0.33,
+          "title": "电子传递与泵出质子"
+        },
+        {
+          "at": 0.5,
+          "title": "氧是末端电子受体"
+        },
+        {
+          "at": 0.67,
+          "title": "回流驱动旋转"
+        },
+        {
+          "at": 0.86,
+          "title": "耦联与解耦"
+        }
+      ],
+      "sourceReview": "coupled维持梯度/ATP合成，leak降低梯度并抑制合成；电子/质子代表点循环回绕需在实际画面评估。",
+      "scienceScope": "经典线粒体内膜呼吸链；复合体II不泵质子，F1朝基质；植物等替代支路未展示。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {
+            "coupling": "coupled"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 4.8081074041664245,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.5
+          },
+          "endpointSignature": "fbf7817f3a95aa8e6da05fdb71373a9b6114f48a9b7a1b78dc5a3e61d79f5ef8",
+          "resources": {
+            "nodes": 636,
+            "geometries": 51,
+            "materials": 20
+          },
+          "stateMetadata": {
+            "process": "respiration",
+            "rootId": "cell",
+            "condition": "coupled",
+            "protonPumpDirection": "matrix-to-intermembrane-space",
+            "atpProtonDirection": "intermembrane-space-to-matrix",
+            "f1Side": "matrix",
+            "nadhEntry": "complex-I",
+            "complexIIPumpsProtons": false,
+            "gradient": 1,
+            "atpSynthesis": 1,
+            "rotorAngle": 16.964600329384883,
+            "electronAcceptor": "oxygen",
+            "progress": 1
+          }
+        },
+        {
+          "parameters": {
+            "coupling": "leak"
+          },
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 4.8081074041664245,
+          "largestMovement": {
+            "name": "",
+            "type": "Mesh",
+            "progress": 0.5
+          },
+          "endpointSignature": "16cbee3d4632d561119769905a6cad338751feef2a87e601d1a70b15bd460c24",
+          "resources": {
+            "nodes": 636,
+            "geometries": 51,
+            "materials": 20
+          },
+          "stateMetadata": {
+            "process": "respiration",
+            "rootId": "cell",
+            "condition": "proton-leak",
+            "protonPumpDirection": "matrix-to-intermembrane-space",
+            "atpProtonDirection": "intermembrane-space-to-matrix",
+            "f1Side": "matrix",
+            "nadhEntry": "complex-I",
+            "complexIIPumpsProtons": false,
+            "gradient": 0.09999999999999998,
+            "atpSynthesis": 0,
+            "rotorAngle": 0.9424765039784397,
+            "electronAcceptor": "oxygen",
+            "progress": 1
+          }
+        }
+      ]
+    },
+    {
+      "i": 27,
+      "id": "glycolysis",
+      "title": "糖酵解：碳与磷酸的去向",
+      "root": "cell",
+      "duration": 34,
+      "controls": [],
+      "stages": [
+        {
+          "at": 0,
+          "title": "六碳底物"
+        },
+        {
+          "at": 0.08,
+          "title": "先投入两个 ATP"
+        },
+        {
+          "at": 0.27,
+          "title": "六碳变为两个三碳"
+        },
+        {
+          "at": 0.44,
+          "title": "氧化并接入无机磷酸"
+        },
+        {
+          "at": 0.58,
+          "title": "第一次底物水平磷酸化"
+        },
+        {
+          "at": 0.78,
+          "title": "再生成两个 ATP"
+        },
+        {
+          "at": 0.93,
+          "title": "净收益与继续运行"
+        }
+      ],
+      "sourceReview": "六碳分成两个三碳，两个ATP投入、四个产出、净2ATP/2NADH/2丙酮酸的连接和转移有实际几何测试。",
+      "scienceScope": "胞质糖酵解碳/磷酸记账；布局不是固定多酶复合体，不是完整原子结构。",
+      "browserReview": "pending separate playback_a evidence",
+      "sourceCases": [
+        {
+          "parameters": {},
+          "samples": 201,
+          "finite": true,
+          "resourceStable": true,
+          "repeatSeek": true,
+          "maxAdjacentPositionDelta": 0.14882109575799599,
+          "largestMovement": {
+            "name": "inherited-phosphate-0",
+            "type": "Group",
+            "progress": 0.73
+          },
+          "endpointSignature": "68c84dd97700c614e04019702ef59d0ea543e9ccce81bd99a608372b356fda10",
+          "resources": {
+            "nodes": 613,
+            "geometries": 11,
+            "materials": 12
+          },
+          "stateMetadata": {
+            "process": "glycolysis",
+            "compartment": "cytosol",
+            "carbonCount": 6,
+            "carbonProducts": [3, 3],
+            "atpInvested": 2,
+            "atpProduced": 4,
+            "netATP": 2,
+            "nadhProduced": 2,
+            "pyruvateProduced": 2,
+            "directOxygenRequirement": false,
+            "phosphateTransfers": [1, 1],
+            "progress": 1
+          }
+        }
+      ]
+    }
+  ]
+}

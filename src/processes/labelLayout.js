@@ -1,7 +1,7 @@
 // Labels are annotations, not opaque panels over the model. Long descriptions
 // live in the key; only short notation and small numbered markers enter canvas.
 export const isShortNotation = (text) =>
-  [...text].length <= 5 && !/\s/.test(text);
+  [...text].length <= 5 && !/[\s\p{Script=Han}]/u.test(text);
 
 // Count displayed annotations, not source slots: symbols and inactive labels
 // must not leave holes in the marker/key sequence.

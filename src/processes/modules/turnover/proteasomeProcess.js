@@ -7,8 +7,8 @@ export default {
   title: b("泛素–蛋白酶体降解", "Ubiquitin–proteasome degradation"),
   duration: 36,
   intro: b(
-    "细胞质中的单端加帽 26S 蛋白酶体示意。选择一种带 K48 型多聚泛素且具有可接近起始区的底物；该通路在动物、植物及酵母中保守。开放的前侧用于观察真实的轴向通道。",
-    "A schematic singly capped 26S proteasome in the cytosol. The selected substrate carries a K48-linked polyubiquitin chain and an accessible initiation region. This pathway is conserved in animals, plants, and yeast. The open front reveals the axial channel.",
+    "细胞质中的单端加帽 26S 蛋白酶体示意。选择一种带 K48 型多聚泛素且具有可接近起始区的底物；该通路在动物、植物及酵母中保守。可切换有限前侧剖切以观察轴向通道。亚基轮廓与二级结构为教学示意，并非原子坐标重建。",
+    "A schematic singly capped 26S proteasome in the cytosol. The selected substrate carries a K48-linked polyubiquitin chain and an accessible initiation region. This pathway is conserved in animals, plants, and yeast. A selectable front cutaway reveals the axial channel. Subunit envelopes and secondary structures are schematic, not an atomic-coordinate reconstruction.",
   ),
   controls: [
     {
@@ -21,6 +21,21 @@ export default {
           label: b("K48 多聚泛素标记", "K48 polyubiquitin tag"),
         },
         { value: "untagged", label: b("无标记对照", "Untagged comparison") },
+      ],
+    },
+    {
+      id: "shell",
+      label: b("20S 观察方式", "20S view"),
+      default: "cutaway",
+      options: [
+        {
+          value: "cutaway",
+          label: b("前侧剖切 · 显示内腔", "Front cutaway · chamber"),
+        },
+        {
+          value: "whole",
+          label: b("完整四环外观", "Complete four-ring exterior"),
+        },
       ],
     },
   ],
@@ -76,6 +91,10 @@ export default {
   ],
   sources: [
     {
+      title: "Dong et al. 2019: substrate-engaged human 26S proteasome",
+      url: "https://www.nature.com/articles/s41586-018-0736-4",
+    },
+    {
       title:
         "de la Pena et al. 2018: Substrate-engaged 26S proteasome structures",
       url: "https://www.lander-lab.com/pdfs/30309908.pdf",
@@ -102,63 +121,135 @@ export default {
       peptide = k.material("#bd999f"),
       active = k.material("#be805c");
     const detail = molecularDetail(k);
-    // Physical annular segments expose the axial cavity. One front sector per ring is cut away.
-    const shell = new THREE.Group();
+    // Four seven-subunit rings. A finite two-subunit front sector can be
+    // removed; opaque remaining subunits retain the actual annular cavity.
+    // Wedge envelopes and secondary structures are teaching geometry, not PDB fits.
+    const shell = new THREE.Group(),
+      cutawayParts = [];
+    shell.name = "20S alpha7 beta7 beta7 alpha7 core";
     group.add(shell);
+    const corePalette = [
+      [k.material("#729ba9"), k.material("#86aeba")],
+      [k.material("#a6bba0"), k.material("#bac9a7")],
+      [k.material("#a0b69a"), k.material("#b4c4a3")],
+      [k.material("#729ba9"), k.material("#86aeba")],
+    ];
+    // Each subunit has closed contact faces. Ring/subunit seams are grooves
+    // in the OUTER surface, never holes communicating with the catalytic lumen.
+    const ringGeometries = [true, false].map((isAlpha) => {
+      const outer = isAlpha ? 1.25 : 1.19;
+      const inner = isAlpha ? 0.47 : 0.66;
+      const half = Math.PI / 7,
+        segments = 12;
+      const levels = [-0.31, -0.23, 0.23, 0.31];
+      const vertices = [],
+        indices = [];
+      const index = (side, y, a) =>
+        side * levels.length * (segments + 1) + y * (segments + 1) + a;
+      for (let side = 0; side < 2; side++)
+        for (let y = 0; y < levels.length; y++)
+          for (let a = 0; a <= segments; a++) {
+            const angle = -half + (2 * half * a) / segments;
+            const r =
+              side === 0
+                ? inner
+                : outer -
+                  (y === 0 || y === levels.length - 1 ? 0.12 : 0) -
+                  0.07 * Math.pow(Math.abs(angle / half), 8);
+            vertices.push(r * Math.cos(angle), levels[y], r * Math.sin(angle));
+          }
+      const quad = (a, b, c, d) => indices.push(a, c, b, a, d, c);
+      for (let y = 0; y < levels.length - 1; y++)
+        for (let a = 0; a < segments; a++) {
+          quad(
+            index(0, y, a),
+            index(0, y + 1, a),
+            index(0, y + 1, a + 1),
+            index(0, y, a + 1),
+          );
+          quad(
+            index(1, y, a + 1),
+            index(1, y + 1, a + 1),
+            index(1, y + 1, a),
+            index(1, y, a),
+          );
+        }
+      for (let a = 0; a < segments; a++) {
+        quad(
+          index(0, 0, a + 1),
+          index(1, 0, a + 1),
+          index(1, 0, a),
+          index(0, 0, a),
+        );
+        const top = levels.length - 1;
+        quad(
+          index(0, top, a),
+          index(1, top, a),
+          index(1, top, a + 1),
+          index(0, top, a + 1),
+        );
+      }
+      for (let y = 0; y < levels.length - 1; y++) {
+        quad(
+          index(0, y, 0),
+          index(1, y, 0),
+          index(1, y + 1, 0),
+          index(0, y + 1, 0),
+        );
+        quad(
+          index(0, y + 1, segments),
+          index(1, y + 1, segments),
+          index(1, y, segments),
+          index(0, y, segments),
+        );
+      }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(vertices, 3),
+      );
+      geometry.setIndex(indices);
+      geometry.computeVertexNormals();
+      return geometry;
+    });
     for (let layer = 0; layer < 4; layer++) {
+      const isAlpha = layer === 0 || layer === 3;
+      const ring = new THREE.Group();
+      ring.name = `20S ${isAlpha ? "alpha" : "beta"} ring ${layer}`;
+      ring.position.y = 0.05 - layer * 0.62;
+      shell.add(ring);
       for (let i = 0; i < 7; i++) {
         const angle = (i * Math.PI * 2) / 7 + 0.18;
-        const front = Math.sin(angle) > 0.62;
-        // Solid protein-subunit volumes meet at their radial and axial faces.
-        // Only the identified front sectors are omitted as an observation cutaway.
-        const half = Math.PI / 7,
-          shape = new THREE.Shape();
-        const begin = angle - half,
-          end = angle + half;
-        shape.moveTo(0.5 * Math.cos(begin), 0.5 * Math.sin(begin));
-        shape.lineTo(1.24 * Math.cos(begin), 1.24 * Math.sin(begin));
-        shape.absarc(0, 0, 1.24, begin, end, false);
-        shape.lineTo(0.5 * Math.cos(end), 0.5 * Math.sin(end));
-        shape.absarc(0, 0, 0.5, end, begin, true);
-        shape.closePath();
+        const unit = new THREE.Group();
+        unit.name = `20S ${isAlpha ? "alpha" : "beta"} subunit ${layer}:${i}`;
+        unit.rotation.y = -angle;
+        ring.add(unit);
         const volume = k.mesh(
-          new THREE.ExtrudeGeometry(shape, {
-            depth: 0.62,
-            bevelEnabled: false,
-            curveSegments: 12,
-          }),
-          layer === 0 || layer === 3 ? alpha : beta,
-          [0, 0.36 - layer * 0.62, 0],
-          shell,
+          ringGeometries[isAlpha ? 0 : 1],
+          corePalette[layer][i % 2],
+          [0, 0, 0],
+          unit,
         );
-        volume.rotation.x = Math.PI / 2;
         volume.name = `20S protein volume ${layer} ${i}`;
-        volume.visible = !front;
-        const subunit = detail.fold(
-          shell,
-          `${layer === 0 || layer === 3 ? "alpha" : "beta"}-${layer}-${i}`,
-          [Math.cos(angle) * 1.11, 0.05 - layer * 0.62, Math.sin(angle) * 1.11],
-          [0.35, 0.34, 0.22],
-          layer === 0 || layer === 3 ? alpha : beta,
-          layer === 0 || layer === 3 ? motorMat : lidMat,
-          { sheetCount: 4, helixCount: 2 },
+        // Outward-facing surface fold: readable subunit articulation, never
+        // filling the axial lumen or continuing across ring interfaces.
+        const fold = detail.fold(
+          unit,
+          "outer protein fold",
+          [isAlpha ? 1.3 : 1.24, 0, 0],
+          [0.29, 0.27, 0.16],
+          corePalette[layer][i % 2],
+          isAlpha ? alpha : beta,
+          { sheetCount: 3, helixCount: 1 },
         );
-        subunit.rotation.y = -angle + Math.PI / 2;
-        subunit.visible = !front;
-        if (front)
-          k.segment(
-            [Math.cos(angle) * 1.1, 0.3 - layer * 0.62, Math.sin(angle) * 1.1],
-            [Math.cos(angle) * 1.1, -0.2 - layer * 0.62, Math.sin(angle) * 1.1],
-            0.025,
-            layer === 0 || layer === 3 ? alpha : beta,
-            shell,
-          );
+        fold.rotation.y = Math.PI / 2;
+        if (Math.sin(angle) > 0.62) cutawayParts.push(unit);
       }
     }
     const catalytic = [];
     for (const y of [-0.57, -1.19])
       for (let i = 0; i < 3; i++) {
-        const a = Math.PI + (i * Math.PI) / 3;
+        const a = ([3, 4, 0][i] * Math.PI * 2) / 7 + 0.18;
         catalytic.push(
           k.ball(
             [Math.cos(a) * 0.65, y, Math.sin(a) * 0.65],
@@ -168,7 +259,7 @@ export default {
         );
       }
     catalytic.forEach((mesh, index) => {
-      mesh.name = `beta catalytic site ${index}`;
+      mesh.name = `beta catalytic site ${index} (beta${[1, 2, 5][index % 3]})`;
     });
     const motor = [],
       poreLoops = [];
@@ -238,6 +329,7 @@ export default {
     k.ball([-1.14, 1.65, -0.16], [0.34, 0.25, 0.28], lidMat);
     k.ball([-0.14, 1.35, 0.1], [0.24, 0.14, 0.22], active); // Rpn11
     const receptor = k.ball([-1.28, 1.88, 0.18], [0.23, 0.19, 0.17], ubMat);
+    receptor.name = "19S ubiquitin receptor docking site";
     detail.fold(
       group,
       "ubiquitin receptor",
@@ -352,6 +444,10 @@ export default {
       k.label([1.7, -2.5, 0], "短肽释放", "Peptide release", 2),
       k.label([-2.65, 2.9, 0.3], "泛素回收", "Ubiquitin recycling", 2),
     ];
+    const engaged = new THREE.Vector3(),
+      atCut = new THREE.Vector3(),
+      attached = new THREE.Vector3(),
+      free = new THREE.Vector3();
     const va = new THREE.Vector3(),
       vb = new THREE.Vector3(),
       up = new THREE.Vector3(0, 1, 0);
@@ -367,15 +463,21 @@ export default {
         dock = tagged ? ease(p, 0.07, 0.3) : 0,
         // Residue 12 reaches the Rpn11 linkage position before chain release.
         travel = tagged
-          ? 0.53 * ease(p, 0.3, 0.48) + 4.7 * ease(p, 0.5, 0.93)
+          ? 0.53 * ease(p, 0.3, 0.48) + 5.97 * ease(p, 0.5, 0.93)
           : 0,
-        feed = travel / 5.23,
+        feed = travel / 6.5,
         release = tagged ? ease(p, 0.48, 0.64) : 0,
-        recycle = tagged ? ease(p, 0.83, 1) : 0;
+        recycle = tagged ? ease(p, 0.83, 1) : 0,
+        motorActivity = tagged
+          ? ease(p, 0.3, 0.36) * (1 - ease(p, 0.85, 0.93))
+          : 0;
+      cutawayParts.forEach((m) => {
+        m.visible = parameters.shell === "whole";
+      });
       residues.forEach((m, i) => {
         const u = i * 0.1 - travel,
           folded = Math.max(0, u - 0.8);
-        const engaged = new THREE.Vector3(
+        engaged.set(
           0.3 * Math.sin(folded * 8),
           0.68 + Math.min(u, 0.8) + folded * 0.45,
           0.22 * Math.sin(folded * 6),
@@ -390,20 +492,18 @@ export default {
       ubiquitin.forEach((m, i) => {
         m.visible = tagged;
         const anchor = residues[12].position;
-        const atCut = new THREE.Vector3(-0.28 - i * 0.22, 1.35 + i * 0.2, 0.1);
-        const attached = new THREE.Vector3(
+        atCut.set(-0.28 - i * 0.22, 1.35 + i * 0.2, 0.1);
+        attached.set(
           anchor.x - 0.28 - i * 0.22,
           anchor.y + i * 0.2,
           anchor.z + 0.1,
         );
-        const free = new THREE.Vector3(
+        free.set(
           -1.98 - i * 0.22 - recycle * i * 0.12,
           3 + i * 0.2 + recycle * Math.sin(i) * 0.3,
           0.2 + recycle * i * 0.15,
         );
-        m.position.copy(
-          p <= 0.48 ? attached : atCut.clone().lerp(free, release),
-        );
+        m.position.copy(p <= 0.48 ? attached : atCut.lerp(free, release));
       });
       ubLinks.forEach((m, i) => {
         connect(m, ubiquitin[i].position, ubiquitin[i + 1].position);
@@ -419,16 +519,15 @@ export default {
         m.rotation.y = -a + dock * 0.7;
       });
       motor.forEach((m, i) => {
-        m.position.y =
-          0.75 +
-          (tagged && p > 0.3 && p < 0.91 ? Math.sin(p * 45 + i) * 0.04 : 0);
+        m.position.y = 0.75 + motorActivity * Math.sin(p * 45 + i) * 0.04;
       });
       poreLoops.forEach((m, i) => {
-        m.position.y =
-          tagged && p > 0.3 && p < 0.91 ? Math.sin(p * 45 + i) * 0.075 : 0;
+        m.position.y = motorActivity * Math.sin(p * 45 + i) * 0.075;
       });
       peptides.forEach((m, j) => {
-        const q = ease(p, 0.65 + j * 0.018, 0.82 + j * 0.023);
+        // Six-residue teaching fragments emerge in the same order as
+        // their source chain crosses the catalytic chamber.
+        const q = clamp((travel - (1.53 + j * 0.6)) / 1.35);
         m.visible = tagged && q > 0;
         const axial = Math.min(q / 0.65, 1),
           outside = Math.max(0, (q - 0.65) / 0.35);
@@ -452,7 +551,15 @@ export default {
             "无标记底物 · 本例不招募",
             "Untagged substrate · not recruited here",
           );
+      labels[0].active = residues[41].visible && residues[41].position.y > 1.45;
+      labels[0].position[0] = residues[41].position.x - 0.42;
+      labels[0].position[1] = residues[41].position.y + 0.23;
+      labels[0].position[2] = residues[41].position.z;
+      labels[1].position[0] = ubiquitin[2].position.x - 0.45;
+      labels[1].position[1] = ubiquitin[2].position.y;
+      labels[1].position[2] = ubiquitin[2].position.z;
       labels[1].active = tagged && release < 0.5;
+      labels[4].active = parameters.shell !== "whole";
       labels[7].active = tagged && release > 0.5;
       labels[6].active = tagged && p > 0.65;
       group.userData = {
@@ -462,6 +569,7 @@ export default {
         rootId,
         compartment: "cytosol",
         substrate: tagged ? "K48 polyubiquitylated" : "untagged comparison",
+        cutaway: parameters.shell !== "whole",
         ringTopology: "alpha7-beta7-beta7-alpha7",
         motorSubunits: 6,
         tagReleased: release === 1,
@@ -478,7 +586,7 @@ export default {
       materials: detail.inventory(group),
       update,
       labels,
-      camera: { position: [4.1, 2.5, 10], target: [-0.35, 0.55, 0] },
+      camera: { position: [3.2, 2.2, 8.4], target: [-0.35, 0.55, 0] },
     };
   },
 };

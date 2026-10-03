@@ -1,0 +1,2822 @@
+{
+  "kind": "source-and-numerical-transition-review",
+  "browserContinuousPlayback": false,
+  "browserBlocker": "CUA returned browsers:[] after js_reset; root takes over actual continuous browser playback.",
+  "date": "2026-10-03",
+  "baseUrl": "http://127.0.0.1:4200/",
+  "catalogRange": [
+    56,
+    84
+  ],
+  "cases": [
+    {
+      "index": 56,
+      "id": "plantTransport",
+      "root": "plant",
+      "title": "质子梯度驱动蔗糖摄取",
+      "module": "./modules/plantConnections/plantTransportProcess.js",
+      "url": "http://127.0.0.1:4200/#/plant?view=process&process=plantTransport",
+      "duration": 30,
+      "stages": [
+        {
+          "at": 0,
+          "title": "两侧与两种蛋白"
+        },
+        {
+          "at": 0.13,
+          "title": "ATP 驱动向外泵送"
+        },
+        {
+          "at": 0.35,
+          "title": "建立电化学梯度"
+        },
+        {
+          "at": 0.48,
+          "title": "外侧结合"
+        },
+        {
+          "at": 0.64,
+          "title": "耦合与交替开放"
+        },
+        {
+          "at": 0.89,
+          "title": "两级供能"
+        }
+      ],
+      "controls": [
+        {
+          "id": "energy",
+          "label": {
+            "zh": "供能条件",
+            "en": "Energy supply"
+          },
+          "default": "available",
+          "options": [
+            {
+              "value": "available",
+              "label": {
+                "zh": "ATP 可用",
+                "en": "ATP available"
+              }
+            },
+            {
+              "value": "depleted",
+              "label": {
+                "zh": "无 ATP · 初始无梯度",
+                "en": "No ATP · initially no gradient"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "energy": "available"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 199,
+          "geometryCount": 96,
+          "materialCount": 21,
+          "maxStepAtOnePercent": 0.3086314780434936,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "energy": "depleted"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 199,
+          "geometryCount": 96,
+          "materialCount": 21,
+          "maxStepAtOnePercent": 0.1617734666484334,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 57,
+      "id": "plasmodesmata",
+      "root": "plant",
+      "title": "胞间连丝的选择性通行",
+      "module": "./modules/plantConnections/plasmodesmataProcess.js",
+      "url": "http://127.0.0.1:4200/#/plant?view=process&process=plasmodesmata",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "穿过细胞壁的胞质连接"
+        },
+        {
+          "at": 0.16,
+          "title": "小溶质进入套筒"
+        },
+        {
+          "at": 0.34,
+          "title": "孔径限制与选择性"
+        },
+        {
+          "at": 0.52,
+          "title": "胼胝质调节颈部"
+        },
+        {
+          "at": 0.74,
+          "title": "内质网连续，通路有别"
+        },
+        {
+          "at": 0.91,
+          "title": "组织间通透性可调"
+        }
+      ],
+      "controls": [
+        {
+          "id": "gate",
+          "label": {
+            "zh": "颈部状态",
+            "en": "Neck state"
+          },
+          "default": "open",
+          "options": [
+            {
+              "value": "open",
+              "label": {
+                "zh": "低胼胝质 · 通行",
+                "en": "Low callose · passage"
+              }
+            },
+            {
+              "value": "callose",
+              "label": {
+                "zh": "胼胝质积累 · 收窄",
+                "en": "Callose accumulation · narrowing"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "gate": "open"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 388,
+          "geometryCount": 322,
+          "materialCount": 23,
+          "maxStepAtOnePercent": 0.38979199999999903,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "gate": "callose"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 388,
+          "geometryCount": 322,
+          "materialCount": 23,
+          "maxStepAtOnePercent": 0.38979199999999903,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 58,
+      "id": "photorespiration",
+      "root": "plant",
+      "title": "光呼吸的三细胞器碳回收",
+      "module": "./modules/plantConnections/photorespirationProcess.js",
+      "url": "http://127.0.0.1:4200/#/plant?view=process&process=photorespiration",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "氧合产生待回收的 2C 产物"
+        },
+        {
+          "at": 0.17,
+          "title": "乙醇酸进入过氧化物酶体"
+        },
+        {
+          "at": 0.36,
+          "title": "两份甘氨酸进入线粒体"
+        },
+        {
+          "at": 0.51,
+          "title": "4C 分为 3C 与 1C"
+        },
+        {
+          "at": 0.65,
+          "title": "丝氨酸返回过氧化物酶体"
+        },
+        {
+          "at": 0.8,
+          "title": "返回叶绿体并消耗 ATP"
+        },
+        {
+          "at": 0.96,
+          "title": "碳守恒与回收代价"
+        }
+      ],
+      "controls": [
+        {
+          "id": "glyk",
+          "label": {
+            "zh": "末步甘油酸激酶",
+            "en": "Final glycerate kinase step"
+          },
+          "default": "active",
+          "options": [
+            {
+              "value": "active",
+              "label": {
+                "zh": "GLYK 正常",
+                "en": "GLYK active"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "GLYK 缺失",
+                "en": "GLYK absent"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "glyk": "active"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 239,
+          "geometryCount": 52,
+          "materialCount": 40,
+          "maxStepAtOnePercent": 0.41296773917583474,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "glyk": "absent"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 239,
+          "geometryCount": 52,
+          "materialCount": 40,
+          "maxStepAtOnePercent": 0.41296773917583474,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 59,
+      "id": "c4cam",
+      "root": "plant",
+      "title": "C₄ 与 CAM 的二氧化碳浓缩",
+      "module": "./modules/plantConnections/c4camProcess.js",
+      "url": "http://127.0.0.1:4200/#/plant?view=process&process=c4cam",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "分隔的位置或时间"
+        },
+        {
+          "at": 0.1,
+          "title": "PEPC 首次固定无机碳"
+        },
+        {
+          "at": 0.26,
+          "title": "苹果酸：转运或储存"
+        },
+        {
+          "at": 0.51,
+          "title": "脱羧在 Rubisco 附近供给 CO₂"
+        },
+        {
+          "at": 0.71,
+          "title": "Rubisco 再固定"
+        },
+        {
+          "at": 0.9,
+          "title": "再生受体与代价"
+        }
+      ],
+      "controls": [
+        {
+          "id": "strategy",
+          "label": {
+            "zh": "特化植物与策略",
+            "en": "Specialized plant and strategy"
+          },
+          "default": "c4",
+          "options": [
+            {
+              "value": "c4",
+              "label": {
+                "zh": "C₄ · 玉米 · 空间分隔",
+                "en": "C₄ · maize · spatial separation"
+              }
+            },
+            {
+              "value": "cam",
+              "label": {
+                "zh": "CAM · 伽蓝菜 · 昼夜分隔",
+                "en": "CAM · Kalanchoë · day/night separation"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "strategy": "c4"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 436,
+          "geometryCount": 216,
+          "materialCount": 43,
+          "maxStepAtOnePercent": 0.44240041397585605,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "strategy": "cam"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 436,
+          "geometryCount": 216,
+          "materialCount": 43,
+          "maxStepAtOnePercent": 0.3073669670142201,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 60,
+      "id": "lacOperon",
+      "root": "bacterium",
+      "title": "乳糖操纵子：双重控制",
+      "module": "./modules/operons/lacOperonProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=lacOperon",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "两个独立信号"
+        },
+        {
+          "at": 0.16,
+          "title": "诱导物是异乳糖"
+        },
+        {
+          "at": 0.36,
+          "title": "葡萄糖调节 CAP"
+        },
+        {
+          "at": 0.53,
+          "title": "启动子整合两个输入"
+        },
+        {
+          "at": 0.72,
+          "title": "转录 lacZYA"
+        },
+        {
+          "at": 0.92,
+          "title": "比较定性输出"
+        }
+      ],
+      "controls": [
+        {
+          "id": "lactose",
+          "label": {
+            "zh": "乳糖",
+            "en": "Lactose"
+          },
+          "default": "present",
+          "options": [
+            {
+              "value": "present",
+              "label": {
+                "zh": "有",
+                "en": "Present"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "无",
+                "en": "Absent"
+              }
+            }
+          ]
+        },
+        {
+          "id": "glucose",
+          "label": {
+            "zh": "葡萄糖",
+            "en": "Glucose"
+          },
+          "default": "low",
+          "options": [
+            {
+              "value": "low",
+              "label": {
+                "zh": "低",
+                "en": "Low"
+              }
+            },
+            {
+              "value": "high",
+              "label": {
+                "zh": "高",
+                "en": "High"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "lactose": "present",
+            "glucose": "low"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 121,
+          "geometryCount": 51,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.3165218716659022,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "lactose": "present",
+            "glucose": "high"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 121,
+          "geometryCount": 51,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.25118054142072155,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "lactose": "absent",
+            "glucose": "low"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 121,
+          "geometryCount": 51,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.07403215957663367,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "lactose": "absent",
+            "glucose": "high"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 121,
+          "geometryCount": 51,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 61,
+      "id": "trpOperon",
+      "root": "bacterium",
+      "title": "色氨酸操纵子：抑制与衰减",
+      "module": "./modules/operons/trpOperonProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=trpOperon",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "两种不同的传感器"
+        },
+        {
+          "at": 0.14,
+          "title": "辅阻遏物与起始"
+        },
+        {
+          "at": 0.31,
+          "title": "翻译两个连续 UGG"
+        },
+        {
+          "at": 0.49,
+          "title": "停滞还是前进"
+        },
+        {
+          "at": 0.66,
+          "title": "互斥的 RNA 发夹"
+        },
+        {
+          "at": 0.87,
+          "title": "读穿或提前终止"
+        }
+      ],
+      "controls": [
+        {
+          "id": "tryptophan",
+          "label": {
+            "zh": "胞内游离色氨酸",
+            "en": "Intracellular free tryptophan"
+          },
+          "default": "low",
+          "options": [
+            {
+              "value": "low",
+              "label": {
+                "zh": "严重匮乏（带 Trp 的 tRNA 不足）",
+                "en": "Severely depleted (charged tRNA limiting)"
+              }
+            },
+            {
+              "value": "high",
+              "label": {
+                "zh": "充足",
+                "en": "High"
+              }
+            }
+          ]
+        },
+        {
+          "id": "charging",
+          "label": {
+            "zh": "tRNAᵀʳᵖ 充电能力",
+            "en": "tRNAᵀʳᵖ charging capacity"
+          },
+          "default": "normal",
+          "options": [
+            {
+              "value": "normal",
+              "label": {
+                "zh": "正常",
+                "en": "Normal"
+              }
+            },
+            {
+              "value": "limited",
+              "label": {
+                "zh": "受限",
+                "en": "Limited"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "tryptophan": "low",
+            "charging": "normal"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 101,
+          "geometryCount": 41,
+          "materialCount": 22,
+          "maxStepAtOnePercent": 0.1962800993413243,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "tryptophan": "low",
+            "charging": "limited"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 101,
+          "geometryCount": 41,
+          "materialCount": 22,
+          "maxStepAtOnePercent": 0.1962800993413243,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "tryptophan": "high",
+            "charging": "normal"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 101,
+          "geometryCount": 41,
+          "materialCount": 22,
+          "maxStepAtOnePercent": 0.11277183889428821,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "tryptophan": "high",
+            "charging": "limited"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 101,
+          "geometryCount": 41,
+          "materialCount": 22,
+          "maxStepAtOnePercent": 0.1962800993413243,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 62,
+      "id": "yeastGal",
+      "root": "yeast",
+      "title": "酵母 GAL：解除激活域抑制",
+      "module": "./modules/operons/yeastGalProcess.js",
+      "url": "http://127.0.0.1:4200/#/yeast?view=process&process=yeastGal",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "DNA 上的待命激活子"
+        },
+        {
+          "at": 0.17,
+          "title": "Gal3 感知半乳糖与 ATP"
+        },
+        {
+          "at": 0.37,
+          "title": "Gal80 抑制被解除"
+        },
+        {
+          "at": 0.56,
+          "title": "葡萄糖提供另一层抑制"
+        },
+        {
+          "at": 0.73,
+          "title": "募集转录机器"
+        },
+        {
+          "at": 0.92,
+          "title": "比较调控结果"
+        }
+      ],
+      "controls": [
+        {
+          "id": "galactose",
+          "label": {
+            "zh": "半乳糖",
+            "en": "Galactose"
+          },
+          "default": "present",
+          "options": [
+            {
+              "value": "present",
+              "label": {
+                "zh": "有",
+                "en": "Present"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "无",
+                "en": "Absent"
+              }
+            }
+          ]
+        },
+        {
+          "id": "glucose",
+          "label": {
+            "zh": "葡萄糖",
+            "en": "Glucose"
+          },
+          "default": "low",
+          "options": [
+            {
+              "value": "low",
+              "label": {
+                "zh": "低",
+                "en": "Low"
+              }
+            },
+            {
+              "value": "high",
+              "label": {
+                "zh": "高",
+                "en": "High"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "galactose": "present",
+            "glucose": "low"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 184,
+          "geometryCount": 66,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.1590060763888892,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "galactose": "present",
+            "glucose": "high"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 184,
+          "geometryCount": 66,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.1818603515625004,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "galactose": "absent",
+            "glucose": "low"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 184,
+          "geometryCount": 66,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "galactose": "absent",
+            "glucose": "high"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 184,
+          "geometryCount": 66,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.1818603515625004,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 63,
+      "id": "yeastOsmoregulation",
+      "root": "yeast",
+      "title": "酵母渗透调节：HOG 与甘油",
+      "module": "./modules/operons/yeastOsmoregulationProcess.js",
+      "url": "http://127.0.0.1:4200/#/yeast?view=process&process=yeastOsmoregulation",
+      "duration": 38,
+      "stages": [
+        {
+          "at": 0,
+          "title": "基础磷酸接力"
+        },
+        {
+          "at": 0.15,
+          "title": "失水与甘油通道关闭"
+        },
+        {
+          "at": 0.32,
+          "title": "降低磷酸接力以激活支路"
+        },
+        {
+          "at": 0.49,
+          "title": "Hog1 的胞质与核内作用"
+        },
+        {
+          "at": 0.68,
+          "title": "增加并保留甘油"
+        },
+        {
+          "at": 0.9,
+          "title": "渗透平衡逐步恢复"
+        }
+      ],
+      "controls": [
+        {
+          "id": "osmolarity",
+          "label": {
+            "zh": "外界渗透变化",
+            "en": "External osmotic step"
+          },
+          "default": "high",
+          "options": [
+            {
+              "value": "high",
+              "label": {
+                "zh": "升高",
+                "en": "Increase"
+              }
+            },
+            {
+              "value": "unchanged",
+              "label": {
+                "zh": "不变",
+                "en": "Unchanged"
+              }
+            }
+          ]
+        },
+        {
+          "id": "hog1",
+          "label": {
+            "zh": "Hog1 激活位点",
+            "en": "Hog1 activation sites"
+          },
+          "default": "active",
+          "options": [
+            {
+              "value": "active",
+              "label": {
+                "zh": "正常",
+                "en": "Normal"
+              }
+            },
+            {
+              "value": "inhibited",
+              "label": {
+                "zh": "不可磷酸化",
+                "en": "Nonphosphorylatable"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "osmolarity": "high",
+            "hog1": "active"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 307,
+          "geometryCount": 58,
+          "materialCount": 21,
+          "maxStepAtOnePercent": 0.3555340789734706,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "osmolarity": "high",
+            "hog1": "inhibited"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 307,
+          "geometryCount": 58,
+          "materialCount": 21,
+          "maxStepAtOnePercent": 0.12010929597834548,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "osmolarity": "unchanged",
+            "hog1": "active"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 307,
+          "geometryCount": 58,
+          "materialCount": 21,
+          "maxStepAtOnePercent": 0,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "osmolarity": "unchanged",
+            "hog1": "inhibited"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 307,
+          "geometryCount": 58,
+          "materialCount": 21,
+          "maxStepAtOnePercent": 0,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 64,
+      "id": "bacterialExpression",
+      "root": "bacterium",
+      "title": "细菌的转录与翻译偶联",
+      "module": "./modules/bacterialCore/bacterialExpressionProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=bacterialExpression",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "识别所需组分"
+        },
+        {
+          "at": 0.18,
+          "title": "全酶结合启动子"
+        },
+        {
+          "at": 0.34,
+          "title": "局部解链与启动"
+        },
+        {
+          "at": 0.5,
+          "title": "启动子逃逸"
+        },
+        {
+          "at": 0.65,
+          "title": "核糖体接入新生 RNA"
+        },
+        {
+          "at": 0.84,
+          "title": "同时延伸"
+        }
+      ],
+      "controls": [
+        {
+          "id": "sigma",
+          "label": {
+            "zh": "启动条件",
+            "en": "Initiation condition"
+          },
+          "default": "present",
+          "options": [
+            {
+              "value": "present",
+              "label": {
+                "zh": "有 σ70",
+                "en": "σ70 available"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "缺少 σ70",
+                "en": "σ70 absent"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "sigma": "present"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 413,
+          "geometryCount": 21,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.22109323927999028,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "sigma": "absent"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 413,
+          "geometryCount": 21,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.0945056299827407,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 65,
+      "id": "bacterialDivision",
+      "root": "bacterium",
+      "title": "大肠杆菌的二分裂",
+      "module": "./modules/bacterialCore/bacterialDivisionProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=bacterialDivision",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "杆状细胞与环形染色体"
+        },
+        {
+          "at": 0.17,
+          "title": "复制并延长"
+        },
+        {
+          "at": 0.43,
+          "title": "姐妹染色体分离"
+        },
+        {
+          "at": 0.52,
+          "title": "中部装配分裂体"
+        },
+        {
+          "at": 0.68,
+          "title": "隔膜生长与包膜内陷"
+        },
+        {
+          "at": 0.9,
+          "title": "形成两个子细胞"
+        }
+      ],
+      "controls": [
+        {
+          "id": "septalSynthesis",
+          "label": {
+            "zh": "隔膜合成条件",
+            "en": "Septal synthesis"
+          },
+          "default": "active",
+          "options": [
+            {
+              "value": "active",
+              "label": {
+                "zh": "正常合成",
+                "en": "Active synthesis"
+              }
+            },
+            {
+              "value": "blocked",
+              "label": {
+                "zh": "隔膜肽聚糖合成受阻",
+                "en": "Septal wall synthesis blocked"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "septalSynthesis": "active"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 1010,
+          "geometryCount": 10,
+          "materialCount": 13,
+          "maxStepAtOnePercent": 0.3866264354889376,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "septalSynthesis": "blocked"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 1010,
+          "geometryCount": 10,
+          "materialCount": 13,
+          "maxStepAtOnePercent": 0.3866264354889376,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 66,
+      "id": "conjugation",
+      "root": "bacterium",
+      "title": "F 质粒接合转移",
+      "module": "./modules/bacterialCore/conjugationProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=conjugation",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "供体与受体"
+        },
+        {
+          "at": 0.16,
+          "title": "菌毛捕获受体"
+        },
+        {
+          "at": 0.34,
+          "title": "稳定接触并准备 DNA"
+        },
+        {
+          "at": 0.49,
+          "title": "单链单向进入受体"
+        },
+        {
+          "at": 0.8,
+          "title": "受体闭环并合成互补链"
+        },
+        {
+          "at": 0.91,
+          "title": "供体保留，受体获得"
+        }
+      ],
+      "controls": [
+        {
+          "id": "oriT",
+          "label": {
+            "zh": "转移起点切口",
+            "en": "Nicking at oriT"
+          },
+          "default": "intact",
+          "options": [
+            {
+              "value": "intact",
+              "label": {
+                "zh": "TraI 可切开 oriT",
+                "en": "TraI can nick oriT"
+              }
+            },
+            {
+              "value": "blocked",
+              "label": {
+                "zh": "oriT 切口受阻",
+                "en": "oriT nicking blocked"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "oriT": "intact"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 519,
+          "geometryCount": 14,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.3315081481481479,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "oriT": "blocked"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 519,
+          "geometryCount": 14,
+          "materialCount": 17,
+          "maxStepAtOnePercent": 0.3315081481481479,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 67,
+      "id": "transformation",
+      "root": "bacterium",
+      "title": "枯草芽孢杆菌的自然转化",
+      "module": "./modules/bacterialCore/transformationProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=transformation",
+      "duration": 35,
+      "stages": [
+        {
+          "at": 0,
+          "title": "感受态细胞与环境 DNA"
+        },
+        {
+          "at": 0.16,
+          "title": "细胞极捕获 DNA"
+        },
+        {
+          "at": 0.33,
+          "title": "一条链通过 ComEC"
+        },
+        {
+          "at": 0.51,
+          "title": "保护单链并装载 RecA"
+        },
+        {
+          "at": 0.69,
+          "title": "同源配对与链交换"
+        },
+        {
+          "at": 0.9,
+          "title": "含输入序列的异源双链"
+        }
+      ],
+      "controls": [
+        {
+          "id": "homology",
+          "label": {
+            "zh": "输入 DNA 与染色体",
+            "en": "Incoming DNA versus chromosome"
+          },
+          "default": "matched",
+          "options": [
+            {
+              "value": "matched",
+              "label": {
+                "zh": "有同源区",
+                "en": "Homologous sequence"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "无可配对的同源区",
+                "en": "No matching homology"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "homology": "matched"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 463,
+          "geometryCount": 9,
+          "materialCount": 19,
+          "maxStepAtOnePercent": 0.3828400068245,
+          "boundaryJumpCandidates": [
+            {
+              "at": 0.87,
+              "displacement": 0.14323677454668468,
+              "object": {
+                "index": 149,
+                "name": "incoming-strand-34"
+              }
+            }
+          ]
+        },
+        {
+          "parameters": {
+            "homology": "absent"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 463,
+          "geometryCount": 9,
+          "materialCount": 19,
+          "maxStepAtOnePercent": 0.13729629629629692,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。",
+        "未修候选：matched分支p=.87，incoming末段最大采样位移.1432；pair>=1时把末端z偏移从.18直接清零。主线程判断连续播放是否需要进一步修。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 68,
+      "id": "chemotaxis",
+      "root": "bacterium",
+      "title": "细菌趋化",
+      "module": "./modules/bacterialSignals/chemotaxisProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=chemotaxis",
+      "duration": 30,
+      "stages": [
+        {
+          "at": 0,
+          "title": "游动与翻滚"
+        },
+        {
+          "at": 0.18,
+          "title": "膜受体感知变化"
+        },
+        {
+          "at": 0.38,
+          "title": "降低翻滚偏向"
+        },
+        {
+          "at": 0.56,
+          "title": "延长游程"
+        },
+        {
+          "at": 0.75,
+          "title": "翻滚重新取向"
+        },
+        {
+          "at": 0.9,
+          "title": "继续取样"
+        }
+      ],
+      "controls": [
+        {
+          "id": "environment",
+          "label": {
+            "zh": "引诱物环境",
+            "en": "Attractant environment"
+          },
+          "default": "gradient",
+          "options": [
+            {
+              "value": "gradient",
+              "label": {
+                "zh": "沿游程增加",
+                "en": "Increasing during a run"
+              }
+            },
+            {
+              "value": "uniform",
+              "label": {
+                "zh": "均匀环境",
+                "en": "Uniform environment"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "environment": "gradient"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 573,
+          "geometryCount": 50,
+          "materialCount": 7,
+          "maxStepAtOnePercent": 1.3744128782865794,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "environment": "uniform"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 573,
+          "geometryCount": 50,
+          "materialCount": 7,
+          "maxStepAtOnePercent": 1.3744128782865799,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 69,
+      "id": "twoComponent",
+      "root": "bacterium",
+      "title": "双组分信号传导",
+      "module": "./modules/bacterialSignals/twoComponentProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=twoComponent",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "内膜两侧"
+        },
+        {
+          "at": 0.16,
+          "title": "配体结合"
+        },
+        {
+          "at": 0.34,
+          "title": "组氨酸自磷酸化"
+        },
+        {
+          "at": 0.51,
+          "title": "转移到响应调节蛋白"
+        },
+        {
+          "at": 0.7,
+          "title": "调节 DNA 上的转录"
+        },
+        {
+          "at": 0.9,
+          "title": "响应取决于环境"
+        }
+      ],
+      "controls": [
+        {
+          "id": "nitrate",
+          "label": {
+            "zh": "周质硝酸盐",
+            "en": "Periplasmic nitrate"
+          },
+          "default": "present",
+          "options": [
+            {
+              "value": "present",
+              "label": {
+                "zh": "存在",
+                "en": "Present"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "缺少",
+                "en": "Absent"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "nitrate": "present"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 71,
+          "geometryCount": 34,
+          "materialCount": 19,
+          "maxStepAtOnePercent": 0.6321687793753464,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "nitrate": "absent"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 71,
+          "geometryCount": 34,
+          "materialCount": 19,
+          "maxStepAtOnePercent": 0,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 70,
+      "id": "quorumSensing",
+      "root": "bacterium",
+      "title": "群体感应",
+      "module": "./modules/bacterialSignals/quorumSensingProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=quorumSensing",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "产生特定 AHL"
+        },
+        {
+          "at": 0.16,
+          "title": "跨膜扩散"
+        },
+        {
+          "at": 0.34,
+          "title": "环境决定信号积累"
+        },
+        {
+          "at": 0.51,
+          "title": "胞质 LuxR 结合 AHL"
+        },
+        {
+          "at": 0.7,
+          "title": "转录与正反馈"
+        },
+        {
+          "at": 0.88,
+          "title": "发光是条件性输出"
+        }
+      ],
+      "controls": [
+        {
+          "id": "exchange",
+          "label": {
+            "zh": "同一群体的信号交换",
+            "en": "Signal exchange for the same population"
+          },
+          "default": "retained",
+          "options": [
+            {
+              "value": "retained",
+              "label": {
+                "zh": "局部积累",
+                "en": "Local accumulation"
+              }
+            },
+            {
+              "value": "diluted",
+              "label": {
+                "zh": "持续稀释",
+                "en": "Continuous dilution"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "exchange": "retained"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 114,
+          "geometryCount": 61,
+          "materialCount": 18,
+          "maxStepAtOnePercent": 3.577949847889854,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "exchange": "diluted"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 114,
+          "geometryCount": 61,
+          "materialCount": 18,
+          "maxStepAtOnePercent": 3.5733940041129335,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 71,
+      "id": "biofilm",
+      "root": "bacterium",
+      "title": "生物膜形成与分散",
+      "module": "./modules/bacterialSignals/biofilmProcess.js",
+      "url": "http://127.0.0.1:4200/#/bacterium?view=process&process=biofilm",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "接近表面"
+        },
+        {
+          "at": 0.17,
+          "title": "黏附与停留"
+        },
+        {
+          "at": 0.34,
+          "title": "形成微菌落"
+        },
+        {
+          "at": 0.51,
+          "title": "胞外基质与空隙"
+        },
+        {
+          "at": 0.7,
+          "title": "条件性分散响应"
+        },
+        {
+          "at": 0.88,
+          "title": "局部松解与释放"
+        }
+      ],
+      "controls": [
+        {
+          "id": "cue",
+          "label": {
+            "zh": "成熟后的环境",
+            "en": "Environment after maturation"
+          },
+          "default": "NO",
+          "options": [
+            {
+              "value": "NO",
+              "label": {
+                "zh": "低水平 NO 分散信号",
+                "en": "Low-level NO dispersal cue"
+              }
+            },
+            {
+              "value": "none",
+              "label": {
+                "zh": "无此次分散信号",
+                "en": "No added dispersal cue"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "cue": "NO"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 781,
+          "geometryCount": 321,
+          "materialCount": 10,
+          "maxStepAtOnePercent": 0.2815408793019649,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "cue": "none"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 781,
+          "geometryCount": 321,
+          "materialCount": 10,
+          "maxStepAtOnePercent": 0.24951131893347725,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 72,
+      "id": "yeastBudding",
+      "root": "yeast",
+      "title": "酵母出芽",
+      "module": "./modules/yeastLife/yeastBuddingProcess.js",
+      "url": "http://127.0.0.1:4200/#/yeast?view=process&process=yeastBudding",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "建立出芽位点"
+        },
+        {
+          "at": 0.14,
+          "title": "芽体极性生长"
+        },
+        {
+          "at": 0.34,
+          "title": "复制后的细胞核定位"
+        },
+        {
+          "at": 0.5,
+          "title": "闭合式有丝分裂"
+        },
+        {
+          "at": 0.73,
+          "title": "收缩与隔膜形成"
+        },
+        {
+          "at": 0.89,
+          "title": "母女细胞分离"
+        }
+      ],
+      "controls": [],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {},
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 145,
+          "geometryCount": 59,
+          "materialCount": 30,
+          "maxStepAtOnePercent": 0.17054446135354331,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。",
+        "已修复循环囊泡可见回跳、p=.75 DNA位置跳变；穿核颈时根据实际核膜局部半径收拢染色质符号，逐顶点检查全阶段核膜内包容通过。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 73,
+      "id": "yeastFermentation",
+      "root": "yeast",
+      "title": "酵母酒精发酵",
+      "module": "./modules/yeastLife/yeastFermentationProcess.js",
+      "url": "http://127.0.0.1:4200/#/yeast?view=process&process=yeastFermentation",
+      "duration": 30,
+      "stages": [
+        {
+          "at": 0,
+          "title": "胞质中的葡萄糖"
+        },
+        {
+          "at": 0.19,
+          "title": "糖酵解提供 ATP 与 NADH"
+        },
+        {
+          "at": 0.4,
+          "title": "脱羧：三碳变两碳"
+        },
+        {
+          "at": 0.6,
+          "title": "乙醛还原为乙醇"
+        },
+        {
+          "at": 0.8,
+          "title": "NAD⁺ 使糖酵解可继续"
+        },
+        {
+          "at": 0.93,
+          "title": "氧气不是唯一开关"
+        }
+      ],
+      "controls": [
+        {
+          "id": "condition",
+          "label": {
+            "zh": "高糖条件下的氧气",
+            "en": "Oxygen under high glucose"
+          },
+          "default": "anaerobic",
+          "options": [
+            {
+              "value": "anaerobic",
+              "label": {
+                "zh": "无氧 · 高糖",
+                "en": "Anaerobic · high glucose"
+              }
+            },
+            {
+              "value": "aerobic",
+              "label": {
+                "zh": "有氧 · 高糖",
+                "en": "Aerobic · high glucose"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "condition": "anaerobic"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 152,
+          "geometryCount": 33,
+          "materialCount": 23,
+          "maxStepAtOnePercent": 0.410509993479825,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "condition": "aerobic"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 152,
+          "geometryCount": 33,
+          "materialCount": 23,
+          "maxStepAtOnePercent": 0.410509993479825,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 74,
+      "id": "yeastMating",
+      "root": "yeast",
+      "title": "酵母配对与融合",
+      "module": "./modules/yeastLife/yeastMatingProcess.js",
+      "url": "http://127.0.0.1:4200/#/yeast?view=process&process=yeastMating",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "互补交配型彼此识别"
+        },
+        {
+          "at": 0.17,
+          "title": "定向形成交配突起"
+        },
+        {
+          "at": 0.43,
+          "title": "接触与细胞壁局部重塑"
+        },
+        {
+          "at": 0.55,
+          "title": "胞质融合"
+        },
+        {
+          "at": 0.69,
+          "title": "核靠近并发生核融合"
+        },
+        {
+          "at": 0.91,
+          "title": "形成二倍体合子"
+        }
+      ],
+      "controls": [
+        {
+          "id": "partner",
+          "label": {
+            "zh": "交配型组合",
+            "en": "Mating-type pair"
+          },
+          "default": "compatible",
+          "options": [
+            {
+              "value": "compatible",
+              "label": {
+                "zh": "互补 a + α",
+                "en": "Compatible a + α"
+              }
+            },
+            {
+              "value": "same",
+              "label": {
+                "zh": "同型 a + a",
+                "en": "Same type a + a"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "partner": "compatible"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 160,
+          "geometryCount": 57,
+          "materialCount": 29,
+          "maxStepAtOnePercent": 1.9796896217439865,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "partner": "same"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 160,
+          "geometryCount": 57,
+          "materialCount": 29,
+          "maxStepAtOnePercent": 0,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 75,
+      "id": "yeastSporulation",
+      "root": "yeast",
+      "title": "酵母减数分裂与产孢",
+      "module": "./modules/yeastLife/yeastSporulationProcess.js",
+      "url": "http://127.0.0.1:4200/#/yeast?view=process&process=yeastSporulation",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "二倍体响应营养信号"
+        },
+        {
+          "at": 0.14,
+          "title": "一次 DNA 复制与同源重组"
+        },
+        {
+          "at": 0.31,
+          "title": "第一次分裂分开同源染色体"
+        },
+        {
+          "at": 0.51,
+          "title": "第二次分裂分开姐妹染色单体"
+        },
+        {
+          "at": 0.66,
+          "title": "前孢子膜包围核与胞质"
+        },
+        {
+          "at": 0.87,
+          "title": "孢子壁成熟，形成子囊"
+        }
+      ],
+      "controls": [
+        {
+          "id": "nutrients",
+          "label": {
+            "zh": "二倍体的营养条件",
+            "en": "Diploid nutrient condition"
+          },
+          "default": "starved",
+          "options": [
+            {
+              "value": "starved",
+              "label": {
+                "zh": "缺氮 + 乙酸",
+                "en": "Nitrogen starvation + acetate"
+              }
+            },
+            {
+              "value": "rich",
+              "label": {
+                "zh": "营养充足对照",
+                "en": "Nutrient-rich control"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "nutrients": "starved"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 293,
+          "geometryCount": 114,
+          "materialCount": 37,
+          "maxStepAtOnePercent": 0.8213896760977706,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "nutrients": "rich"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 293,
+          "geometryCount": 114,
+          "materialCount": 37,
+          "maxStepAtOnePercent": 0,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 76,
+      "id": "parameciumFeeding",
+      "root": "paramecium",
+      "title": "草履虫：摄食与消化",
+      "module": "./modules/parameciumLife/parameciumFeedingProcess.js",
+      "url": "http://127.0.0.1:4200/#/paramecium?view=process&process=parameciumFeeding",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "纤毛汇集食物"
+        },
+        {
+          "at": 0.18,
+          "title": "食物泡形成"
+        },
+        {
+          "at": 0.34,
+          "title": "酸化与浓缩"
+        },
+        {
+          "at": 0.51,
+          "title": "溶酶体融合与消化"
+        },
+        {
+          "at": 0.73,
+          "title": "残余食物泡靠近胞肛"
+        },
+        {
+          "at": 0.88,
+          "title": "排渣与膜回收"
+        }
+      ],
+      "controls": [],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {},
+          "finite": true,
+          "resourceStable": false,
+          "deterministicEndpoint": true,
+          "meshCount": 369,
+          "geometryCount": 49,
+          "materialCount": 40,
+          "maxStepAtOnePercent": 0.45179062102465,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。",
+        "资源集合变化已追溯到预建酸化/溶酶体材质替换；非逐帧创建，专门science测试资源稳定通过。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ],
+      "resourceReview": "Raw resourceStable=false is an intentional swap between two preallocated materials; scientificGeometry.js acidMat/lysoMat are both created once and included in materials inventory. Dedicated science test passes resource checks."
+    },
+    {
+      "index": 77,
+      "id": "contractileVacuole",
+      "root": "paramecium",
+      "title": "伸缩泡：集水与排水",
+      "module": "./modules/parameciumLife/contractileVacuoleProcess.js",
+      "url": "http://127.0.0.1:4200/#/paramecium?view=process&process=contractileVacuole",
+      "duration": 30,
+      "stages": [
+        {
+          "at": 0,
+          "title": "渗透进入与分隔"
+        },
+        {
+          "at": 0.18,
+          "title": "集水管与壶腹"
+        },
+        {
+          "at": 0.42,
+          "title": "中央泡充盈"
+        },
+        {
+          "at": 0.63,
+          "title": "排水前的隔离"
+        },
+        {
+          "at": 0.8,
+          "title": "排水与重新连接"
+        }
+      ],
+      "controls": [
+        {
+          "id": "osmotic",
+          "label": {
+            "zh": "外界低渗程度",
+            "en": "External hypotonicity"
+          },
+          "default": "freshwater",
+          "options": [
+            {
+              "value": "freshwater",
+              "label": {
+                "zh": "较强低渗",
+                "en": "More hypotonic"
+              }
+            },
+            {
+              "value": "mild",
+              "label": {
+                "zh": "较弱低渗",
+                "en": "Less hypotonic"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "osmotic": "freshwater"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 264,
+          "geometryCount": 192,
+          "materialCount": 23,
+          "maxStepAtOnePercent": 2.024058896701339,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "osmotic": "mild"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 264,
+          "geometryCount": 192,
+          "materialCount": 23,
+          "maxStepAtOnePercent": 2.0416557334242227,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 78,
+      "id": "parameciumDivision",
+      "root": "paramecium",
+      "title": "草履虫横裂",
+      "module": "./modules/parameciumLife/parameciumDivisionProcess.js",
+      "url": "http://127.0.0.1:4200/#/paramecium?view=process&process=parameciumDivision",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "两类核，一套细胞"
+        },
+        {
+          "at": 0.16,
+          "title": "复制与口器重建"
+        },
+        {
+          "at": 0.33,
+          "title": "小核的封闭式有丝分裂"
+        },
+        {
+          "at": 0.53,
+          "title": "大核伸长与分配"
+        },
+        {
+          "at": 0.73,
+          "title": "横向分裂沟"
+        },
+        {
+          "at": 0.91,
+          "title": "两个营养期子细胞"
+        }
+      ],
+      "controls": [],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {},
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 308,
+          "geometryCount": 67,
+          "materialCount": 29,
+          "maxStepAtOnePercent": 0.12943491650516814,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。",
+        "已修复p=.59大核颗粒轨迹切换跳变，连续分配到两侧；逐顶点核膜包容及末态双侧分配通过。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 79,
+      "id": "parameciumConjugation",
+      "root": "paramecium",
+      "title": "草履虫接合与核更新",
+      "module": "./modules/parameciumLife/parameciumConjugationProcess.js",
+      "url": "http://127.0.0.1:4200/#/paramecium?view=process&process=parameciumConjugation",
+      "duration": 40,
+      "stages": [
+        {
+          "at": 0,
+          "title": "相容配偶暂时连接"
+        },
+        {
+          "at": 0.14,
+          "title": "小核减数分裂"
+        },
+        {
+          "at": 0.32,
+          "title": "选择保留核"
+        },
+        {
+          "at": 0.44,
+          "title": "形成两个原核"
+        },
+        {
+          "at": 0.55,
+          "title": "双向交换迁移原核"
+        },
+        {
+          "at": 0.68,
+          "title": "各自融合成二倍体合核"
+        },
+        {
+          "at": 0.8,
+          "title": "核分化与大核更新"
+        }
+      ],
+      "controls": [],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {},
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 650,
+          "geometryCount": 223,
+          "materialCount": 33,
+          "maxStepAtOnePercent": 0.2026950891848397,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 80,
+      "id": "phageLytic",
+      "root": "phage",
+      "title": "T4 噬菌体裂解周期",
+      "module": "./modules/phageLife/phageLyticProcess.js",
+      "url": "http://127.0.0.1:4200/#/phage?view=process&process=phageLytic",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "吸附与 DNA 进入"
+        },
+        {
+          "at": 0.17,
+          "title": "早期表达"
+        },
+        {
+          "at": 0.34,
+          "title": "基因组扩增"
+        },
+        {
+          "at": 0.52,
+          "title": "分别装配头与尾"
+        },
+        {
+          "at": 0.67,
+          "title": "DNA 包装与成熟"
+        },
+        {
+          "at": 0.85,
+          "title": "包膜破坏与释放"
+        }
+      ],
+      "controls": [],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {},
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 463,
+          "geometryCount": 195,
+          "materialCount": 47,
+          "maxStepAtOnePercent": 0.6320159937122473,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 81,
+      "id": "phageLysogenic",
+      "root": "phage",
+      "title": "λ 噬菌体溶原与诱导",
+      "module": "./modules/phageLife/phageLysogenicProcess.js",
+      "url": "http://127.0.0.1:4200/#/phage?view=process&process=phageLysogenic",
+      "duration": 38,
+      "stages": [
+        {
+          "at": 0,
+          "title": "λ DNA 进入并环化"
+        },
+        {
+          "at": 0.18,
+          "title": "位点特异性整合"
+        },
+        {
+          "at": 0.35,
+          "title": "CI 维持溶原状态"
+        },
+        {
+          "at": 0.49,
+          "title": "随细胞分裂传递"
+        },
+        {
+          "at": 0.67,
+          "title": "保持溶原或解除抑制"
+        },
+        {
+          "at": 0.78,
+          "title": "切除与裂解发育"
+        },
+        {
+          "at": 0.92,
+          "title": "两种条件的结局"
+        }
+      ],
+      "controls": [
+        {
+          "id": "fate",
+          "label": {
+            "zh": "子细胞的后续条件",
+            "en": "Daughter-cell condition"
+          },
+          "default": "induce",
+          "options": [
+            {
+              "value": "induce",
+              "label": {
+                "zh": "DNA 损伤：诱导裂解",
+                "en": "DNA damage: induction"
+              }
+            },
+            {
+              "value": "maintain",
+              "label": {
+                "zh": "无诱导：保持溶原",
+                "en": "No induction: maintain lysogeny"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "fate": "induce"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 244,
+          "geometryCount": 154,
+          "materialCount": 38,
+          "maxStepAtOnePercent": 0.6035391814148318,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "fate": "maintain"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 244,
+          "geometryCount": 154,
+          "materialCount": 38,
+          "maxStepAtOnePercent": 0.30477929905406187,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 82,
+      "id": "phageAssembly",
+      "root": "phage",
+      "title": "T4 头尾装配与成熟",
+      "module": "./modules/phageLife/phageAssemblyProcess.js",
+      "url": "http://127.0.0.1:4200/#/phage?view=process&process=phageAssembly",
+      "duration": 35,
+      "stages": [
+        {
+          "at": 0,
+          "title": "两条装配路线"
+        },
+        {
+          "at": 0.15,
+          "title": "支架指导前头形成"
+        },
+        {
+          "at": 0.33,
+          "title": "蛋白水解成熟"
+        },
+        {
+          "at": 0.5,
+          "title": "包装与壳体扩张"
+        },
+        {
+          "at": 0.69,
+          "title": "封口与组件完成"
+        },
+        {
+          "at": 0.83,
+          "title": "头尾结合与尾纤维安装"
+        }
+      ],
+      "controls": [
+        {
+          "id": "protease",
+          "label": {
+            "zh": "gp21 成熟蛋白酶",
+            "en": "gp21 maturation protease"
+          },
+          "default": "active",
+          "options": [
+            {
+              "value": "active",
+              "label": {
+                "zh": "有活性：正常成熟",
+                "en": "Active: maturation"
+              }
+            },
+            {
+              "value": "inactive",
+              "label": {
+                "zh": "无活性：支架保留",
+                "en": "Inactive: scaffold retained"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "protease": "active"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 438,
+          "geometryCount": 136,
+          "materialCount": 38,
+          "maxStepAtOnePercent": 0.2806793203512814,
+          "boundaryJumpCandidates": []
+        },
+        {
+          "parameters": {
+            "protease": "inactive"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 438,
+          "geometryCount": 136,
+          "materialCount": 38,
+          "maxStepAtOnePercent": 0.06796846723533112,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    },
+    {
+      "index": 83,
+      "id": "phagePackaging",
+      "root": "phage",
+      "title": "T4 DNA 包装马达",
+      "module": "./modules/phageLife/phagePackagingProcess.js",
+      "url": "http://127.0.0.1:4200/#/phage?view=process&process=phagePackaging",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "DNA 与包装系统对接"
+        },
+        {
+          "at": 0.16,
+          "title": "门户与马达各司其职"
+        },
+        {
+          "at": 0.3,
+          "title": "ATP 驱动 DNA 转位"
+        },
+        {
+          "at": 0.51,
+          "title": "壳体扩张与持续装填"
+        },
+        {
+          "at": 0.78,
+          "title": "头满终止与切割"
+        },
+        {
+          "at": 0.92,
+          "title": "颈部封口"
+        }
+      ],
+      "controls": [
+        {
+          "id": "atp",
+          "label": {
+            "zh": "可水解的 ATP",
+            "en": "Hydrolysable ATP"
+          },
+          "default": "present",
+          "options": [
+            {
+              "value": "present",
+              "label": {
+                "zh": "有 ATP：包装推进",
+                "en": "ATP present: packaging"
+              }
+            },
+            {
+              "value": "absent",
+              "label": {
+                "zh": "无 ATP：转位停滞",
+                "en": "No ATP: translocation stalled"
+              }
+            }
+          ]
+        }
+      ],
+      "continuousPlayback": "not-performed-browser-unavailable",
+      "numericalBranches": [
+        {
+          "parameters": {
+            "atp": "present"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 542,
+          "geometryCount": 137,
+          "materialCount": 35,
+          "maxStepAtOnePercent": 0.34040000000000026,
+          "boundaryJumpCandidates": [
+            {
+              "at": 0.25,
+              "displacement": 0.0885132082723567,
+              "object": {
+                "index": 343,
+                "name": ""
+              }
+            },
+            {
+              "at": 0.78,
+              "displacement": 0.0872429650659717,
+              "object": {
+                "index": 286,
+                "name": ""
+              }
+            }
+          ]
+        },
+        {
+          "parameters": {
+            "atp": "absent"
+          },
+          "finite": true,
+          "resourceStable": true,
+          "deterministicEndpoint": true,
+          "meshCount": 542,
+          "geometryCount": 137,
+          "materialCount": 35,
+          "maxStepAtOnePercent": 0.05728679014858562,
+          "boundaryJumpCandidates": []
+        }
+      ],
+      "sourceNotes": [
+        "源码提取阶段/条件/显隐/ease边界；每个参数组合扫描101个进度点及边界前后1e-6。",
+        "有限坐标、端点seek可重复检查通过；边界候选只针对两侧都可见的网格。",
+        "未修候选：ATP present分支p=.25/.78，马达cycle正弦进入/退出开关约.0885/.0872位移。主线程判断连续播放是否需要进一步修。"
+      ],
+      "browserChecks": [
+        "完整连续播放，观察速度、载体接力、结构变化及末态停留。",
+        "切换全部条件分支并回看；确认中英标签、遮挡、相机范围及暂停/重播。"
+      ]
+    }
+  ],
+  "verification": {
+    "focused": "tests/process-continuity-c.mjs: 7/7 passed",
+    "science": [
+      "yeastLife/science.test.mjs: PASS",
+      "parameciumLife/science.test.mjs: PASS"
+    ],
+    "limits": "Numerical and source review only. No continuous browser playback or rendered screenshot captured by this worker.",
+    "allScience": "node tests/science-regressions.mjs: 22/22 groups passed"
+  }
+}

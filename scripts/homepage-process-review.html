@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Process motion playback review</title>
+  </head>
+  <body>
+    <h1>Recorded process motion · playback review</h1>
+    <p id="status">Loading metadata…</p>
+    <main></main>
+    <style>
+      body {
+        font: 14px system-ui;
+        background: #f5f5f7;
+        color: #24343d;
+        margin: 24px;
+      }
+      section {
+        margin-bottom: 30px;
+      }
+      video {
+        width: 640px;
+        height: 400px;
+        display: block;
+      }
+      .samples {
+        display: flex;
+        gap: 8px;
+      }
+      .samples img {
+        width: 320px;
+        height: 200px;
+      }
+      button {
+        margin: 12px 8px 12px 0;
+      }
+    </style>
+    <script type="module">
+      const ids = ["transcription", "mitosis", "photosynthesis"];
+      const records = [];
+      for (const id of ids) {
+        const section = document.createElement("section");
+        const heading = document.createElement("h2");
+        heading.textContent = id;
+        section.append(heading);
+        const video = document.createElement("video");
+        video.src = `/home/processes/${id}.webm`;
+        video.muted = true;
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = "auto";
+        section.append(video);
+        document.querySelector("main").append(section);
+        await new Promise((resolve, reject) => {
+          video.onloadedmetadata = resolve;
+          video.onerror = reject;
+        });
+        if (!Number.isFinite(video.duration)) {
+          video.currentTime = 1e6;
+          await new Promise((resolve) =>
+            video.addEventListener("seeked", resolve, { once: true }),
+          );
+        }
+        records.push({
+          id,
+          duration: video.duration,
+          width: video.videoWidth,
+          height: video.videoHeight,
+          error: video.error,
+        });
+        video.currentTime = 0;
+        for (const [name, fraction] of [
+          ["Start", 0],
+          ["Middle", 0.5],
+          ["End", 0.985],
+        ]) {
+          const button = document.createElement("button");
+          button.textContent = `${id}: ${name}`;
+          button.onclick = () => {
+            video.pause();
+            video.currentTime = video.duration * fraction;
+          };
+          section.append(button);
+        }
+        const samples = document.createElement("div");
+        samples.className = "samples";
+        for (const phase of ["start", "middle", "end"]) {
+          const img = document.createElement("img");
+          img.src = `/docs/qa/homepage/process-motion-frames/${id}-${phase}.webp`;
+          img.alt = `${id} decoded ${phase}`;
+          samples.append(img);
+        }
+        section.append(samples);
+      }
+      document.querySelector("#status").textContent = JSON.stringify(records);
+    </script>
+  </body>
+</html>

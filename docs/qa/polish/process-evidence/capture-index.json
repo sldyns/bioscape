@@ -1,0 +1,2500 @@
+[
+  {
+    "id": "secretion",
+    "root": "cell",
+    "stageCount": 7,
+    "stageNames": [
+      "01进入内质网腔",
+      "02出芽并装载",
+      "03抵达高尔基体",
+      "04由顺面到反面",
+      "05分选并再次出芽",
+      "06运向细胞膜",
+      "07融合与胞吐"
+    ],
+    "screenshots": [
+      "secretion-01.jpg",
+      "secretion-02.jpg",
+      "secretion-03.jpg",
+      "secretion-04.jpg",
+      "secretion-05.jpg",
+      "secretion-06.jpg",
+      "secretion-07.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=secretion",
+    "base": "http://127.0.0.1:5174"
+  },
+  {
+    "id": "transcription",
+    "root": "cell",
+    "stageCount": 6,
+    "stageNames": [
+      "01在启动子处组装",
+      "02局部打开 DNA",
+      "03开始合成 RNA",
+      "04沿模板持续延伸",
+      "05前方打开，后方复合",
+      "06RNA 切割与后续终止"
+    ],
+    "screenshots": [
+      "transcription-01.jpg",
+      "transcription-02.jpg",
+      "transcription-03.jpg",
+      "transcription-04.jpg",
+      "transcription-05.jpg",
+      "transcription-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=transcription",
+    "base": "http://127.0.0.1:5174"
+  },
+  {
+    "id": "photosynthesis",
+    "root": "plant",
+    "stageCount": 6,
+    "stageNames": [
+      "01两个反应场所",
+      "02捕获光能",
+      "03水提供电子，释放氧",
+      "04把能量送到基质",
+      "05在基质中固定碳",
+      "06两组反应持续协作"
+    ],
+    "screenshots": [
+      "photosynthesis-01.jpg",
+      "photosynthesis-02.jpg",
+      "photosynthesis-03.jpg",
+      "photosynthesis-04.jpg",
+      "photosynthesis-05.jpg",
+      "photosynthesis-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=photosynthesis",
+    "base": "http://127.0.0.1:5174"
+  },
+  {
+    "id": "infection",
+    "root": "phage",
+    "stageCount": 3,
+    "stageNames": [
+      "01识别与吸附",
+      "02尾鞘收缩",
+      "03DNA 进入细胞"
+    ],
+    "screenshots": [
+      "infection-01.jpg",
+      "infection-02.jpg",
+      "infection-03.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/phage?view=process&process=infection",
+    "base": "http://127.0.0.1:5174"
+  },
+  {
+    "id": "replication",
+    "root": "cell",
+    "stageCount": 6,
+    "stageNames": [
+      "01反向平行模板",
+      "02解开双链",
+      "03连续与分段合成",
+      "04重复引发",
+      "05引物成熟",
+      "06封口与半保留复制"
+    ],
+    "screenshots": [
+      "replication-01.jpg",
+      "replication-02.jpg",
+      "replication-03.jpg",
+      "replication-04.jpg",
+      "replication-05.jpg",
+      "replication-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=replication",
+    "base": "http://127.0.0.1:5174"
+  },
+  {
+    "id": "dnaRepair",
+    "root": "cell",
+    "stageCount": 6,
+    "stageNames": [
+      "01单链上的损伤",
+      "02识别并打开局部双链",
+      "03定位两侧切口",
+      "04移除带损伤的寡核苷酸",
+      "05以完整链为模板填补",
+      "06连接酶封闭切口"
+    ],
+    "screenshots": [
+      "dnaRepair-01.jpg",
+      "dnaRepair-02.jpg",
+      "dnaRepair-03.jpg",
+      "dnaRepair-04.jpg",
+      "dnaRepair-05.jpg",
+      "dnaRepair-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=dnaRepair",
+    "base": "http://127.0.0.1:5174"
+  },
+  {
+    "id": "transduction",
+    "root": "phage",
+    "stageCount": 6,
+    "stageNames": [
+      "01两种不同起点",
+      "02供体 DNA 进入转移路径",
+      "03不同的头部内容",
+      "04裂解释放与传播",
+      "05DNA 注入受体",
+      "06进入不等于稳定获得"
+    ],
+    "screenshots": [
+      "transduction-01.jpg",
+      "transduction-02.jpg",
+      "transduction-03.jpg",
+      "transduction-04.jpg",
+      "transduction-05.jpg",
+      "transduction-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/phage?view=process&process=transduction",
+    "base": "http://127.0.0.1:5174"
+  },
+  {
+    "id": "bacterialSporulation",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01营养限制与发育启动",
+      "02不对称隔膜",
+      "03母细胞膜包裹前孢子",
+      "04皮层与蛋白外壳",
+      "05孢子核心成熟",
+      "06释放一枚休眠孢子"
+    ],
+    "screenshots": [
+      "bacterialSporulation-01.jpg",
+      "bacterialSporulation-02.jpg",
+      "bacterialSporulation-03.jpg",
+      "bacterialSporulation-04.jpg",
+      "bacterialSporulation-05.jpg",
+      "bacterialSporulation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=bacterialSporulation"
+  },
+  {
+    "id": "promoterRegulation",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01识别启动子",
+      "02TFIID 结合与 DNA 弯曲",
+      "03定位聚合酶",
+      "04完成预起始装配",
+      "05开启转录泡",
+      "06起始与离开启动子"
+    ],
+    "screenshots": [
+      "promoterRegulation-01.jpg",
+      "promoterRegulation-02.jpg",
+      "promoterRegulation-03.jpg",
+      "promoterRegulation-04.jpg",
+      "promoterRegulation-05.jpg",
+      "promoterRegulation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=promoterRegulation"
+  },
+  {
+    "id": "enhancerRegulation",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01动态染色质上的两个元件",
+      "02激活因子识别增强子",
+      "03共激活因子与启动子装配",
+      "04靠近并非充分条件",
+      "05一个示意转录脉冲",
+      "06停顿与再次启动"
+    ],
+    "screenshots": [
+      "enhancerRegulation-01.jpg",
+      "enhancerRegulation-02.jpg",
+      "enhancerRegulation-03.jpg",
+      "enhancerRegulation-04.jpg",
+      "enhancerRegulation-05.jpg",
+      "enhancerRegulation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=enhancerRegulation"
+  },
+  {
+    "id": "chromatinAccess",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 5,
+    "stageNames": [
+      "01位点被包裹",
+      "02重塑酶接触核小体",
+      "03DNA 相对核心转位",
+      "04原位点进入连接区",
+      "05可接近，不等于表达"
+    ],
+    "screenshots": [
+      "chromatinAccess-01.jpg",
+      "chromatinAccess-02.jpg",
+      "chromatinAccess-03.jpg",
+      "chromatinAccess-04.jpg",
+      "chromatinAccess-05.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=chromatinAccess"
+  },
+  {
+    "id": "tad",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01一条连续的染色质",
+      "02黏连蛋白建立小环",
+      "03更长的基因组区间进入环",
+      "04取向相关的边界作用",
+      "05边界删除改变环的范围",
+      "06接触域是统计特征"
+    ],
+    "screenshots": [
+      "tad-01.jpg",
+      "tad-02.jpg",
+      "tad-03.jpg",
+      "tad-04.jpg",
+      "tad-05.jpg",
+      "tad-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=tad"
+  },
+  {
+    "id": "plantGenome",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01三个遗传区室",
+      "02核内转录，RNA 出核",
+      "03在胞质合成前体蛋白",
+      "04蛋白跨双层包膜导入",
+      "05细胞器保留本地表达",
+      "06基因组协作构建细胞器"
+    ],
+    "screenshots": [
+      "plantGenome-01.jpg",
+      "plantGenome-02.jpg",
+      "plantGenome-03.jpg",
+      "plantGenome-04.jpg",
+      "plantGenome-05.jpg",
+      "plantGenome-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=plantGenome"
+  },
+  {
+    "id": "plantRdDM",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 7,
+    "stageNames": [
+      "01Pol IV 产生前体 RNA",
+      "02RDR2 合成互补链",
+      "03DCL3 加工小 RNA",
+      "04AGO4 装载，引导链保留",
+      "05识别 Pol V 支架转录本",
+      "06DRM2 改写 DNA 化学标记",
+      "07沉默倾向，不更改序列"
+    ],
+    "screenshots": [
+      "plantRdDM-01.jpg",
+      "plantRdDM-02.jpg",
+      "plantRdDM-03.jpg",
+      "plantRdDM-04.jpg",
+      "plantRdDM-05.jpg",
+      "plantRdDM-06.jpg",
+      "plantRdDM-07.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=plantRdDM"
+  },
+  {
+    "id": "rnaProcessing",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01辨认前体 RNA",
+      "02保护 5′ 端",
+      "03组装剪接体",
+      "04形成套索并连接外显子",
+      "05切割 3′ 端并加尾",
+      "06成熟但仍在细胞核内"
+    ],
+    "screenshots": [
+      "rnaProcessing-01.jpg",
+      "rnaProcessing-02.jpg",
+      "rnaProcessing-03.jpg",
+      "rnaProcessing-04.jpg",
+      "rnaProcessing-05.jpg",
+      "rnaProcessing-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=rnaProcessing"
+  },
+  {
+    "id": "nuclearTransport",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01核膜两侧",
+      "02识别定位信号",
+      "03进入选择性通道",
+      "04在核侧解离",
+      "05回收 β 受体",
+      "06由 Ran 循环保持方向性"
+    ],
+    "screenshots": [
+      "nuclearTransport-01.jpg",
+      "nuclearTransport-02.jpg",
+      "nuclearTransport-03.jpg",
+      "nuclearTransport-04.jpg",
+      "nuclearTransport-05.jpg",
+      "nuclearTransport-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=nuclearTransport"
+  },
+  {
+    "id": "motorTransport",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01有极性的轨道",
+      "02连接膜性货物",
+      "03ATP 循环改变构象",
+      "04有偏向的重复步进",
+      "05货物随马达平移",
+      "06方向与能量条件"
+    ],
+    "screenshots": [
+      "motorTransport-01.jpg",
+      "motorTransport-02.jpg",
+      "motorTransport-03.jpg",
+      "motorTransport-04.jpg",
+      "motorTransport-05.jpg",
+      "motorTransport-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=motorTransport"
+  },
+  {
+    "id": "organelleImport",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01胞质中的前体",
+      "02TOC 识别靶向信息",
+      "03通过外膜与内膜",
+      "04基质侧 ATP 依赖性导入",
+      "05切除转运肽",
+      "06在基质中折叠"
+    ],
+    "screenshots": [
+      "organelleImport-01.jpg",
+      "organelleImport-02.jpg",
+      "organelleImport-03.jpg",
+      "organelleImport-04.jpg",
+      "organelleImport-05.jpg",
+      "organelleImport-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=organelleImport"
+  },
+  {
+    "id": "translation",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01带肽 tRNA 位于 P 位点",
+      "02密码子与反密码子配对",
+      "03肽链从 P 转移到 A",
+      "04移位一个密码子",
+      "05释放因子识别终止信号",
+      "06肽链水解释放"
+    ],
+    "screenshots": [
+      "translation-01.jpg",
+      "translation-02.jpg",
+      "translation-03.jpg",
+      "translation-04.jpg",
+      "translation-05.jpg",
+      "translation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=translation"
+  },
+  {
+    "id": "proteinFolding",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01新生链离开出口",
+      "02局部折叠与片段暴露",
+      "03ADP 态暂时夹持",
+      "04合成完成，等待交换",
+      "05核苷酸交换促使释放",
+      "06继续探索稳定构象"
+    ],
+    "screenshots": [
+      "proteinFolding-01.jpg",
+      "proteinFolding-02.jpg",
+      "proteinFolding-03.jpg",
+      "proteinFolding-04.jpg",
+      "proteinFolding-05.jpg",
+      "proteinFolding-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=proteinFolding"
+  },
+  {
+    "id": "alternativeSplicing",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01同一段前体 RNA",
+      "02选择配对的剪接位点",
+      "03分支点形成套索",
+      "04连接保留的外显子",
+      "05不同 RNA，不同后果",
+      "06套索待解分支与降解"
+    ],
+    "screenshots": [
+      "alternativeSplicing-01.jpg",
+      "alternativeSplicing-02.jpg",
+      "alternativeSplicing-03.jpg",
+      "alternativeSplicing-04.jpg",
+      "alternativeSplicing-05.jpg",
+      "alternativeSplicing-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=alternativeSplicing"
+  },
+  {
+    "id": "nitrogenFixation",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01保护氮酶并提供底物",
+      "02Fe 蛋白携 ATP 对接",
+      "03簇间电子转移",
+      "04ATP 水解与多轮回收",
+      "05累积还原当量",
+      "06氨与氢气释放"
+    ],
+    "screenshots": [
+      "nitrogenFixation-01.jpg",
+      "nitrogenFixation-02.jpg",
+      "nitrogenFixation-03.jpg",
+      "nitrogenFixation-04.jpg",
+      "nitrogenFixation-05.jpg",
+      "nitrogenFixation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=nitrogenFixation"
+  },
+  {
+    "id": "rnaSilencing",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 5,
+    "stageNames": [
+      "01成熟引导链",
+      "02识别 3′ UTR",
+      "03配对决定分支",
+      "04抑制翻译或切割",
+      "05靶 RNA 周转"
+    ],
+    "screenshots": [
+      "rnaSilencing-01.jpg",
+      "rnaSilencing-02.jpg",
+      "rnaSilencing-03.jpg",
+      "rnaSilencing-04.jpg",
+      "rnaSilencing-05.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=rnaSilencing"
+  },
+  {
+    "id": "proteasome",
+    "title": "泛素–蛋白酶体降解",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageNames": null,
+    "stageCount": 6,
+    "screenshots": [
+      "proteasome-01.jpg",
+      "proteasome-02.jpg",
+      "proteasome-03.jpg",
+      "proteasome-04.jpg",
+      "proteasome-05.jpg",
+      "proteasome-06.jpg"
+    ],
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "status": "finding",
+    "findings": [
+      "F01"
+    ],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=proteasome"
+  },
+  {
+    "id": "crispr",
+    "title": "Cas9 · CRISPR 干扰",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageNames": null,
+    "stageCount": 5,
+    "screenshots": [
+      "crispr-01.jpg",
+      "crispr-02.jpg",
+      "crispr-03.jpg",
+      "crispr-04.jpg",
+      "crispr-05.jpg"
+    ],
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "status": "reviewed",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=crispr"
+  },
+  {
+    "id": "bacterialRepair",
+    "title": "细菌 DNA 损伤 · SOS 响应",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageNames": null,
+    "stageCount": 5,
+    "screenshots": [
+      "bacterialRepair-01.jpg",
+      "bacterialRepair-02.jpg",
+      "bacterialRepair-03.jpg",
+      "bacterialRepair-04.jpg",
+      "bacterialRepair-05.jpg"
+    ],
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "status": "reviewed",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=bacterialRepair"
+  },
+  {
+    "id": "respiration",
+    "title": "呼吸链与 ATP 合成",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageNames": null,
+    "stageCount": 6,
+    "screenshots": [
+      "respiration-01.jpg",
+      "respiration-02.jpg",
+      "respiration-03.jpg",
+      "respiration-04.jpg",
+      "respiration-05.jpg",
+      "respiration-06.jpg"
+    ],
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "status": "reviewed",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=respiration"
+  },
+  {
+    "id": "glycolysis",
+    "title": "糖酵解：碳与磷酸的去向",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageNames": null,
+    "stageCount": 7,
+    "screenshots": [
+      "glycolysis-01.jpg",
+      "glycolysis-02.jpg",
+      "glycolysis-03.jpg",
+      "glycolysis-04.jpg",
+      "glycolysis-05.jpg",
+      "glycolysis-06.jpg",
+      "glycolysis-07.jpg"
+    ],
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "status": "reviewed",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=glycolysis"
+  },
+  {
+    "id": "bacterialEnergetics",
+    "title": "细菌质膜上的呼吸",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageNames": null,
+    "stageCount": 6,
+    "screenshots": [
+      "bacterialEnergetics-01.jpg",
+      "bacterialEnergetics-02.jpg",
+      "bacterialEnergetics-03.jpg",
+      "bacterialEnergetics-04.jpg",
+      "bacterialEnergetics-05.jpg",
+      "bacterialEnergetics-06.jpg"
+    ],
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "status": "reviewed",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=bacterialEnergetics"
+  },
+  {
+    "id": "bacterialPhotosynthesis",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 7,
+    "stageNames": [
+      "01类囊体形成独立腔室",
+      "02藻胆体收集光能",
+      "03水提供电子并释放氧",
+      "04电子传递增加腔内质子",
+      "05PSI 再次激发并生成 NADPH",
+      "06腔内质子回流驱动 ATP",
+      "07光反应与其他代谢的边界"
+    ],
+    "screenshots": [
+      "bacterialPhotosynthesis-01.jpg",
+      "bacterialPhotosynthesis-02.jpg",
+      "bacterialPhotosynthesis-03.jpg",
+      "bacterialPhotosynthesis-04.jpg",
+      "bacterialPhotosynthesis-05.jpg",
+      "bacterialPhotosynthesis-06.jpg",
+      "bacterialPhotosynthesis-07.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=bacterialPhotosynthesis"
+  },
+  {
+    "id": "diffusion",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 5,
+    "stageNames": [
+      "01两侧水相",
+      "02随机碰撞",
+      "03沿通路穿膜",
+      "04双向运动与净通量",
+      "05趋向动态平衡"
+    ],
+    "screenshots": [
+      "diffusion-01.jpg",
+      "diffusion-02.jpg",
+      "diffusion-03.jpg",
+      "diffusion-04.jpg",
+      "diffusion-05.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=diffusion"
+  },
+  {
+    "id": "activeTransport",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01E1：朝向细胞质",
+      "02ATP 与磷酸化",
+      "03E2P：向外释钠",
+      "04从外侧结合钾",
+      "05去磷酸化与封闭",
+      "06向内释钾"
+    ],
+    "screenshots": [
+      "activeTransport-01.jpg",
+      "activeTransport-02.jpg",
+      "activeTransport-03.jpg",
+      "activeTransport-04.jpg",
+      "activeTransport-05.jpg",
+      "activeTransport-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=activeTransport"
+  },
+  {
+    "id": "osmoticBalance",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 5,
+    "stageNames": [
+      "01初始双凹形",
+      "02水持续双向交换",
+      "03张力决定净水流",
+      "04膜轮廓与体积响应",
+      "05比较三个条件"
+    ],
+    "screenshots": [
+      "osmoticBalance-01.jpg",
+      "osmoticBalance-02.jpg",
+      "osmoticBalance-03.jpg",
+      "osmoticBalance-04.jpg",
+      "osmoticBalance-05.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=osmoticBalance"
+  },
+  {
+    "id": "bacterialCellWall",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01内膜与周质",
+      "02脂质 II 进入 RodA",
+      "03糖链延长",
+      "04PBP2 催化转肽",
+      "05有或无交联",
+      "06网架连接结果"
+    ],
+    "screenshots": [
+      "bacterialCellWall-01.jpg",
+      "bacterialCellWall-02.jpg",
+      "bacterialCellWall-03.jpg",
+      "bacterialCellWall-04.jpg",
+      "bacterialCellWall-05.jpg",
+      "bacterialCellWall-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=bacterialCellWall"
+  },
+  {
+    "id": "endocytosis",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01配体结合",
+      "02包被窝内陷",
+      "03颈部收缩与断裂",
+      "04脱去包被",
+      "05膜融合",
+      "06酸性内体分选"
+    ],
+    "screenshots": [
+      "endocytosis-01.jpg",
+      "endocytosis-02.jpg",
+      "endocytosis-03.jpg",
+      "endocytosis-04.jpg",
+      "endocytosis-05.jpg",
+      "endocytosis-06.jpg"
+    ],
+    "status": "finding",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [
+      "F02"
+    ],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=endocytosis"
+  },
+  {
+    "id": "autophagy",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 7,
+    "stageNames": [
+      "01隔离膜起始",
+      "02杯状膜延伸",
+      "03闭合形成双膜自噬体",
+      "04接近溶酶体",
+      "05外膜融合",
+      "06先降解内膜屏障",
+      "07货物水解"
+    ],
+    "screenshots": [
+      "autophagy-01.jpg",
+      "autophagy-02.jpg",
+      "autophagy-03.jpg",
+      "autophagy-04.jpg",
+      "autophagy-05.jpg",
+      "autophagy-06.jpg",
+      "autophagy-07.jpg"
+    ],
+    "status": "finding",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [
+      "F02"
+    ],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=autophagy"
+  },
+  {
+    "id": "mitosis",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01复制完成后的染色体",
+      "02动粒捕获微管",
+      "03中期与检查点",
+      "04姐妹分离",
+      "05分裂沟内陷",
+      "06形成两个子细胞"
+    ],
+    "screenshots": [
+      "mitosis-01.jpg",
+      "mitosis-02.jpg",
+      "mitosis-03.jpg",
+      "mitosis-04.jpg",
+      "mitosis-05.jpg",
+      "mitosis-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=mitosis"
+  },
+  {
+    "id": "meiosis",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 7,
+    "stageNames": [
+      "01已复制的同源染色体",
+      "02联会与交换",
+      "03第一次分裂中期",
+      "04同源染色体分离",
+      "05第二次分裂准备",
+      "06姐妹染色单体分离",
+      "07四个单倍体产物"
+    ],
+    "screenshots": [
+      "meiosis-01.jpg",
+      "meiosis-02.jpg",
+      "meiosis-03.jpg",
+      "meiosis-04.jpg",
+      "meiosis-05.jpg",
+      "meiosis-06.jpg",
+      "meiosis-07.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=meiosis"
+  },
+  {
+    "id": "signalTransduction",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01胞外识别",
+      "02二聚与磷酸化",
+      "03连接到膜上的 Ras",
+      "04Raf → MEK → ERK",
+      "05ERK 进入细胞核",
+      "06调节基因表达"
+    ],
+    "screenshots": [
+      "signalTransduction-01.jpg",
+      "signalTransduction-02.jpg",
+      "signalTransduction-03.jpg",
+      "signalTransduction-04.jpg",
+      "signalTransduction-05.jpg",
+      "signalTransduction-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=signalTransduction"
+  },
+  {
+    "id": "apoptosis",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01完整细胞与线粒体",
+      "02线粒体外膜通透化",
+      "03细胞色素 c 释放",
+      "04组装凋亡小体",
+      "05蛋白水解执行",
+      "06收缩、出泡与包裹"
+    ],
+    "screenshots": [
+      "apoptosis-01.jpg",
+      "apoptosis-02.jpg",
+      "apoptosis-03.jpg",
+      "apoptosis-04.jpg",
+      "apoptosis-05.jpg",
+      "apoptosis-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=apoptosis"
+  },
+  {
+    "id": "differentiation",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01已承诺的红细胞谱系",
+      "02执行红系基因程序",
+      "03血红蛋白积累",
+      "04细胞缩小与染色质凝聚",
+      "05极化并排出细胞核",
+      "06网织红细胞与排出核"
+    ],
+    "screenshots": [
+      "differentiation-01.jpg",
+      "differentiation-02.jpg",
+      "differentiation-03.jpg",
+      "differentiation-04.jpg",
+      "differentiation-05.jpg",
+      "differentiation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=differentiation"
+  },
+  {
+    "id": "immuneResponse",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01胞质蛋白切割",
+      "02TAP 转运进入内质网",
+      "03装载肽–MHC-I",
+      "04经分泌通路到达表面",
+      "05两个细胞接触",
+      "06特异识别与极化"
+    ],
+    "screenshots": [
+      "immuneResponse-01.jpg",
+      "immuneResponse-02.jpg",
+      "immuneResponse-03.jpg",
+      "immuneResponse-04.jpg",
+      "immuneResponse-05.jpg",
+      "immuneResponse-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=immuneResponse"
+  },
+  {
+    "id": "actionPotential",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01静息膜",
+      "02局部刺激",
+      "03钠通道开放",
+      "04邻近膜依次激活",
+      "05钾外流与不应期",
+      "06恢复可兴奋状态"
+    ],
+    "screenshots": [
+      "actionPotential-01.jpg",
+      "actionPotential-02.jpg",
+      "actionPotential-03.jpg",
+      "actionPotential-04.jpg",
+      "actionPotential-05.jpg",
+      "actionPotential-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=actionPotential"
+  },
+  {
+    "id": "synapse",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01已停靠的囊泡",
+      "02动作电位到达",
+      "03局部钙内流",
+      "04膜融合与释放",
+      "05受体开放",
+      "06递质清除"
+    ],
+    "screenshots": [
+      "synapse-01.jpg",
+      "synapse-02.jpg",
+      "synapse-03.jpg",
+      "synapse-04.jpg",
+      "synapse-05.jpg",
+      "synapse-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=synapse"
+  },
+  {
+    "id": "muscle",
+    "root": "cell",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01静息肌节",
+      "02钙解除抑制",
+      "03横桥结合",
+      "04动力冲程",
+      "05ATP 解离并重置头部",
+      "06停止主动缩短"
+    ],
+    "screenshots": [
+      "muscle-01.jpg",
+      "muscle-02.jpg",
+      "muscle-03.jpg",
+      "muscle-04.jpg",
+      "muscle-05.jpg",
+      "muscle-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/cell?view=process&process=muscle"
+  },
+  {
+    "id": "ciliaryMotion",
+    "root": "paramecium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "019 + 2 轴丝",
+      "02动力蛋白消耗 ATP",
+      "03受约束的相对滑动",
+      "04滑动转为弯曲",
+      "05活动侧交替",
+      "06拍动推动流体"
+    ],
+    "screenshots": [
+      "ciliaryMotion-01.jpg",
+      "ciliaryMotion-02.jpg",
+      "ciliaryMotion-03.jpg",
+      "ciliaryMotion-04.jpg",
+      "ciliaryMotion-05.jpg",
+      "ciliaryMotion-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/paramecium?view=process&process=ciliaryMotion"
+  },
+  {
+    "id": "plasmolysis",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01膨压支撑",
+      "02更换高渗外液",
+      "03净失水、膨压下降",
+      "04质膜与壁分离",
+      "05选择外液条件",
+      "06可逆恢复"
+    ],
+    "screenshots": [
+      "plasmolysis-01.jpg",
+      "plasmolysis-02.jpg",
+      "plasmolysis-03.jpg",
+      "plasmolysis-04.jpg",
+      "plasmolysis-05.jpg",
+      "plasmolysis-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=plasmolysis"
+  },
+  {
+    "id": "stomata",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01低膨压、窄孔隙",
+      "02蓝光启动质子泵",
+      "03离子积累与吸水",
+      "04膨压驱动开孔",
+      "05ABA 改变离子通量",
+      "06失水闭孔或保持开放"
+    ],
+    "screenshots": [
+      "stomata-01.jpg",
+      "stomata-02.jpg",
+      "stomata-03.jpg",
+      "stomata-04.jpg",
+      "stomata-05.jpg",
+      "stomata-06.jpg"
+    ],
+    "status": "finding",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [
+      "F03"
+    ],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=stomata"
+  },
+  {
+    "id": "plantLongDistanceTransport",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01根—茎—叶的连续通路",
+      "02湿叶肉细胞壁蒸发",
+      "03张力牵引水柱",
+      "04根吸水补充",
+      "05气孔改变蒸腾通量",
+      "06连续水柱仍然存在"
+    ],
+    "screenshots": [
+      "plantLongDistanceTransport-01.jpg",
+      "plantLongDistanceTransport-02.jpg",
+      "plantLongDistanceTransport-03.jpg",
+      "plantLongDistanceTransport-04.jpg",
+      "plantLongDistanceTransport-05.jpg",
+      "plantLongDistanceTransport-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=plantLongDistanceTransport"
+  },
+  {
+    "id": "chloroplastMovement",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01叶肉细胞的皮层",
+      "02弱蓝光积聚",
+      "03平周壁上的叶绿体",
+      "04强蓝光与 phot2",
+      "05沿皮层重新定位",
+      "06避让减少截光"
+    ],
+    "screenshots": [
+      "chloroplastMovement-01.jpg",
+      "chloroplastMovement-02.jpg",
+      "chloroplastMovement-03.jpg",
+      "chloroplastMovement-04.jpg",
+      "chloroplastMovement-05.jpg",
+      "chloroplastMovement-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=chloroplastMovement"
+  },
+  {
+    "id": "plantDivision",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01分裂前的复制已完成",
+      "02姐妹染色单体分离",
+      "03成膜体组织运输",
+      "04囊泡融合成板",
+      "05从中央向外扩展",
+      "06连接并分隔"
+    ],
+    "screenshots": [
+      "plantDivision-01.jpg",
+      "plantDivision-02.jpg",
+      "plantDivision-03.jpg",
+      "plantDivision-04.jpg",
+      "plantDivision-05.jpg",
+      "plantDivision-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=plantDivision"
+  },
+  {
+    "id": "cellWallGrowth",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01壁在膜外，微管在膜内",
+      "02膜内合酶移动",
+      "03在胞外沉积微纤丝",
+      "04膨压提供机械负载",
+      "05可伸展性决定响应",
+      "06合成与伸展相互配合"
+    ],
+    "screenshots": [
+      "cellWallGrowth-01.jpg",
+      "cellWallGrowth-02.jpg",
+      "cellWallGrowth-03.jpg",
+      "cellWallGrowth-04.jpg",
+      "cellWallGrowth-05.jpg",
+      "cellWallGrowth-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=cellWallGrowth"
+  },
+  {
+    "id": "doubleFertilization",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01胚珠中的雌配子",
+      "02花粉管送达",
+      "03释放到配子交界",
+      "04分别融合",
+      "05建立两种倍性",
+      "06胚与胚乳分别发育"
+    ],
+    "screenshots": [
+      "doubleFertilization-01.jpg",
+      "doubleFertilization-02.jpg",
+      "doubleFertilization-03.jpg",
+      "doubleFertilization-04.jpg",
+      "doubleFertilization-05.jpg",
+      "doubleFertilization-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=doubleFertilization"
+  },
+  {
+    "id": "fungalHyphae",
+    "root": "yeast",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01有方向的菌丝",
+      "02囊泡运向顶端",
+      "03顶体暂时组织囊泡",
+      "04膜融合与新壁沉积",
+      "05顶端伸展",
+      "06新壁逐渐成为侧壁"
+    ],
+    "screenshots": [
+      "fungalHyphae-01.jpg",
+      "fungalHyphae-02.jpg",
+      "fungalHyphae-03.jpg",
+      "fungalHyphae-04.jpg",
+      "fungalHyphae-05.jpg",
+      "fungalHyphae-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/yeast?view=process&process=fungalHyphae"
+  },
+  {
+    "id": "auxin",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01抑制状态",
+      "02生长素作为分子胶",
+      "03标记抑制蛋白",
+      "04蛋白酶体移除 Aux/IAA",
+      "05靶基因转录",
+      "06组织尺度的后续效应"
+    ],
+    "screenshots": [
+      "auxin-01.jpg",
+      "auxin-02.jpg",
+      "auxin-03.jpg",
+      "auxin-04.jpg",
+      "auxin-05.jpg",
+      "auxin-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=auxin"
+  },
+  {
+    "id": "plantDefense",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01受体跨越质膜",
+      "02识别鞭毛蛋白片段",
+      "03招募共受体",
+      "04BIK1 调节氧化酶",
+      "05跨膜电子传递",
+      "06局部活性氧输出"
+    ],
+    "screenshots": [
+      "plantDefense-01.jpg",
+      "plantDefense-02.jpg",
+      "plantDefense-03.jpg",
+      "plantDefense-04.jpg",
+      "plantDefense-05.jpg",
+      "plantDefense-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=plantDefense"
+  },
+  {
+    "id": "plantTransport",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01两侧与两种蛋白",
+      "02ATP 驱动向外泵送",
+      "03建立电化学梯度",
+      "04外侧结合",
+      "05耦合与交替开放",
+      "06两级供能"
+    ],
+    "screenshots": [
+      "plantTransport-01.jpg",
+      "plantTransport-02.jpg",
+      "plantTransport-03.jpg",
+      "plantTransport-04.jpg",
+      "plantTransport-05.jpg",
+      "plantTransport-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=plantTransport"
+  },
+  {
+    "id": "plasmodesmata",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01穿过细胞壁的胞质连接",
+      "02小溶质进入套筒",
+      "03孔径限制与选择性",
+      "04胼胝质调节颈部",
+      "05内质网连续，通路有别",
+      "06组织间通透性可调"
+    ],
+    "screenshots": [
+      "plasmodesmata-01.jpg",
+      "plasmodesmata-02.jpg",
+      "plasmodesmata-03.jpg",
+      "plasmodesmata-04.jpg",
+      "plasmodesmata-05.jpg",
+      "plasmodesmata-06.jpg"
+    ],
+    "status": "finding",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [
+      "F03"
+    ],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=plasmodesmata"
+  },
+  {
+    "id": "photorespiration",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 7,
+    "stageNames": [
+      "01氧合产生待回收的 2C 产物",
+      "02乙醇酸进入过氧化物酶体",
+      "03两份甘氨酸进入线粒体",
+      "044C 分为 3C 与 1C",
+      "05丝氨酸返回过氧化物酶体",
+      "06返回叶绿体并消耗 ATP",
+      "07碳守恒与回收代价"
+    ],
+    "screenshots": [
+      "photorespiration-01.jpg",
+      "photorespiration-02.jpg",
+      "photorespiration-03.jpg",
+      "photorespiration-04.jpg",
+      "photorespiration-05.jpg",
+      "photorespiration-06.jpg",
+      "photorespiration-07.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=photorespiration"
+  },
+  {
+    "id": "c4cam",
+    "root": "plant",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01分隔的位置或时间",
+      "02PEPC 首次固定无机碳",
+      "03苹果酸：转运或储存",
+      "04脱羧在 Rubisco 附近供给 CO₂",
+      "05Rubisco 再固定",
+      "06再生受体与代价"
+    ],
+    "screenshots": [
+      "c4cam-01.jpg",
+      "c4cam-02.jpg",
+      "c4cam-03.jpg",
+      "c4cam-04.jpg",
+      "c4cam-05.jpg",
+      "c4cam-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/plant?view=process&process=c4cam"
+  },
+  {
+    "id": "lacOperon",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01两个独立信号",
+      "02诱导物是异乳糖",
+      "03葡萄糖调节 CAP",
+      "04启动子整合两个输入",
+      "05转录 lacZYA",
+      "06比较定性输出"
+    ],
+    "screenshots": [
+      "lacOperon-01.jpg",
+      "lacOperon-02.jpg",
+      "lacOperon-03.jpg",
+      "lacOperon-04.jpg",
+      "lacOperon-05.jpg",
+      "lacOperon-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=lacOperon"
+  },
+  {
+    "id": "trpOperon",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01两种不同的传感器",
+      "02辅阻遏物与起始",
+      "03翻译两个连续 UGG",
+      "04停滞还是前进",
+      "05互斥的 RNA 发夹",
+      "06读穿或提前终止"
+    ],
+    "screenshots": [
+      "trpOperon-01.jpg",
+      "trpOperon-02.jpg",
+      "trpOperon-03.jpg",
+      "trpOperon-04.jpg",
+      "trpOperon-05.jpg",
+      "trpOperon-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=trpOperon"
+  },
+  {
+    "id": "yeastGal",
+    "root": "yeast",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01DNA 上的待命激活子",
+      "02Gal3 感知半乳糖与 ATP",
+      "03Gal80 抑制被解除",
+      "04葡萄糖提供另一层抑制",
+      "05募集转录机器",
+      "06比较调控结果"
+    ],
+    "screenshots": [
+      "yeastGal-01.jpg",
+      "yeastGal-02.jpg",
+      "yeastGal-03.jpg",
+      "yeastGal-04.jpg",
+      "yeastGal-05.jpg",
+      "yeastGal-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/yeast?view=process&process=yeastGal"
+  },
+  {
+    "id": "yeastOsmoregulation",
+    "root": "yeast",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01基础磷酸接力",
+      "02失水与甘油通道关闭",
+      "03降低磷酸接力以激活支路",
+      "04Hog1 的胞质与核内作用",
+      "05增加并保留甘油",
+      "06渗透平衡逐步恢复"
+    ],
+    "screenshots": [
+      "yeastOsmoregulation-01.jpg",
+      "yeastOsmoregulation-02.jpg",
+      "yeastOsmoregulation-03.jpg",
+      "yeastOsmoregulation-04.jpg",
+      "yeastOsmoregulation-05.jpg",
+      "yeastOsmoregulation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/yeast?view=process&process=yeastOsmoregulation"
+  },
+  {
+    "id": "bacterialExpression",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01识别所需组分",
+      "02全酶结合启动子",
+      "03局部解链与启动",
+      "04启动子逃逸",
+      "05核糖体接入新生 RNA",
+      "06同时延伸"
+    ],
+    "screenshots": [
+      "bacterialExpression-01.jpg",
+      "bacterialExpression-02.jpg",
+      "bacterialExpression-03.jpg",
+      "bacterialExpression-04.jpg",
+      "bacterialExpression-05.jpg",
+      "bacterialExpression-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=bacterialExpression"
+  },
+  {
+    "id": "bacterialDivision",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01杆状细胞与环形染色体",
+      "02复制并延长",
+      "03姐妹染色体分离",
+      "04中部装配分裂体",
+      "05隔膜生长与包膜内陷",
+      "06形成两个子细胞"
+    ],
+    "screenshots": [
+      "bacterialDivision-01.jpg",
+      "bacterialDivision-02.jpg",
+      "bacterialDivision-03.jpg",
+      "bacterialDivision-04.jpg",
+      "bacterialDivision-05.jpg",
+      "bacterialDivision-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=bacterialDivision"
+  },
+  {
+    "id": "conjugation",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01供体与受体",
+      "02菌毛捕获受体",
+      "03稳定接触并准备 DNA",
+      "04单链单向进入受体",
+      "05受体闭环并合成互补链",
+      "06供体保留，受体获得"
+    ],
+    "screenshots": [
+      "conjugation-01.jpg",
+      "conjugation-02.jpg",
+      "conjugation-03.jpg",
+      "conjugation-04.jpg",
+      "conjugation-05.jpg",
+      "conjugation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=conjugation"
+  },
+  {
+    "id": "transformation",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01感受态细胞与环境 DNA",
+      "02细胞极捕获 DNA",
+      "03一条链通过 ComEC",
+      "04保护单链并装载 RecA",
+      "05同源配对与链交换",
+      "06含输入序列的异源双链"
+    ],
+    "screenshots": [
+      "transformation-01.jpg",
+      "transformation-02.jpg",
+      "transformation-03.jpg",
+      "transformation-04.jpg",
+      "transformation-05.jpg",
+      "transformation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=transformation"
+  },
+  {
+    "id": "chemotaxis",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01游动与翻滚",
+      "02膜受体感知变化",
+      "03降低翻滚偏向",
+      "04延长游程",
+      "05翻滚重新取向",
+      "06继续取样"
+    ],
+    "screenshots": [
+      "chemotaxis-01.jpg",
+      "chemotaxis-02.jpg",
+      "chemotaxis-03.jpg",
+      "chemotaxis-04.jpg",
+      "chemotaxis-05.jpg",
+      "chemotaxis-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=chemotaxis"
+  },
+  {
+    "id": "twoComponent",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01内膜两侧",
+      "02配体结合",
+      "03组氨酸自磷酸化",
+      "04转移到响应调节蛋白",
+      "05调节 DNA 上的转录",
+      "06响应取决于环境"
+    ],
+    "screenshots": [
+      "twoComponent-01.jpg",
+      "twoComponent-02.jpg",
+      "twoComponent-03.jpg",
+      "twoComponent-04.jpg",
+      "twoComponent-05.jpg",
+      "twoComponent-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=twoComponent"
+  },
+  {
+    "id": "quorumSensing",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01产生特定 AHL",
+      "02跨膜扩散",
+      "03环境决定信号积累",
+      "04胞质 LuxR 结合 AHL",
+      "05转录与正反馈",
+      "06发光是条件性输出"
+    ],
+    "screenshots": [
+      "quorumSensing-01.jpg",
+      "quorumSensing-02.jpg",
+      "quorumSensing-03.jpg",
+      "quorumSensing-04.jpg",
+      "quorumSensing-05.jpg",
+      "quorumSensing-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=quorumSensing"
+  },
+  {
+    "id": "biofilm",
+    "root": "bacterium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01接近表面",
+      "02黏附与停留",
+      "03形成微菌落",
+      "04胞外基质与空隙",
+      "05条件性分散响应",
+      "06局部松解与释放"
+    ],
+    "screenshots": [
+      "biofilm-01.jpg",
+      "biofilm-02.jpg",
+      "biofilm-03.jpg",
+      "biofilm-04.jpg",
+      "biofilm-05.jpg",
+      "biofilm-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/bacterium?view=process&process=biofilm"
+  },
+  {
+    "id": "yeastBudding",
+    "root": "yeast",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01建立出芽位点",
+      "02芽体极性生长",
+      "03复制后的细胞核定位",
+      "04闭合式有丝分裂",
+      "05收缩与隔膜形成",
+      "06母女细胞分离"
+    ],
+    "screenshots": [
+      "yeastBudding-01.jpg",
+      "yeastBudding-02.jpg",
+      "yeastBudding-03.jpg",
+      "yeastBudding-04.jpg",
+      "yeastBudding-05.jpg",
+      "yeastBudding-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/yeast?view=process&process=yeastBudding"
+  },
+  {
+    "id": "yeastFermentation",
+    "root": "yeast",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01胞质中的葡萄糖",
+      "02糖酵解提供 ATP 与 NADH",
+      "03脱羧：三碳变两碳",
+      "04乙醛还原为乙醇",
+      "05NAD⁺ 使糖酵解可继续",
+      "06氧气不是唯一开关"
+    ],
+    "screenshots": [
+      "yeastFermentation-01.jpg",
+      "yeastFermentation-02.jpg",
+      "yeastFermentation-03.jpg",
+      "yeastFermentation-04.jpg",
+      "yeastFermentation-05.jpg",
+      "yeastFermentation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/yeast?view=process&process=yeastFermentation"
+  },
+  {
+    "id": "yeastMating",
+    "root": "yeast",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01互补交配型彼此识别",
+      "02定向形成交配突起",
+      "03接触与细胞壁局部重塑",
+      "04胞质融合",
+      "05核靠近并发生核融合",
+      "06形成二倍体合子"
+    ],
+    "screenshots": [
+      "yeastMating-01.jpg",
+      "yeastMating-02.jpg",
+      "yeastMating-03.jpg",
+      "yeastMating-04.jpg",
+      "yeastMating-05.jpg",
+      "yeastMating-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/yeast?view=process&process=yeastMating"
+  },
+  {
+    "id": "yeastSporulation",
+    "root": "yeast",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01二倍体响应营养信号",
+      "02一次 DNA 复制与同源重组",
+      "03第一次分裂分开同源染色体",
+      "04第二次分裂分开姐妹染色单体",
+      "05前孢子膜包围核与胞质",
+      "06孢子壁成熟，形成子囊"
+    ],
+    "screenshots": [
+      "yeastSporulation-01.jpg",
+      "yeastSporulation-02.jpg",
+      "yeastSporulation-03.jpg",
+      "yeastSporulation-04.jpg",
+      "yeastSporulation-05.jpg",
+      "yeastSporulation-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/yeast?view=process&process=yeastSporulation"
+  },
+  {
+    "id": "parameciumFeeding",
+    "root": "paramecium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01纤毛汇集食物",
+      "02食物泡形成",
+      "03酸化与浓缩",
+      "04溶酶体融合与消化",
+      "05残余食物泡靠近胞肛",
+      "06排渣与膜回收"
+    ],
+    "screenshots": [
+      "parameciumFeeding-01.jpg",
+      "parameciumFeeding-02.jpg",
+      "parameciumFeeding-03.jpg",
+      "parameciumFeeding-04.jpg",
+      "parameciumFeeding-05.jpg",
+      "parameciumFeeding-06.jpg"
+    ],
+    "status": "finding",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [
+      "F03"
+    ],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/paramecium?view=process&process=parameciumFeeding"
+  },
+  {
+    "id": "contractileVacuole",
+    "root": "paramecium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 5,
+    "stageNames": [
+      "01渗透进入与分隔",
+      "02集水管与壶腹",
+      "03中央泡充盈",
+      "04排水前的隔离",
+      "05排水与重新连接"
+    ],
+    "screenshots": [
+      "contractileVacuole-01.jpg",
+      "contractileVacuole-02.jpg",
+      "contractileVacuole-03.jpg",
+      "contractileVacuole-04.jpg",
+      "contractileVacuole-05.jpg"
+    ],
+    "status": "finding",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [
+      "F03",
+      "F04"
+    ],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/paramecium?view=process&process=contractileVacuole"
+  },
+  {
+    "id": "parameciumDivision",
+    "root": "paramecium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01两类核，一套细胞",
+      "02复制与口器重建",
+      "03小核的封闭式有丝分裂",
+      "04大核伸长与分配",
+      "05横向分裂沟",
+      "06两个营养期子细胞"
+    ],
+    "screenshots": [
+      "parameciumDivision-01.jpg",
+      "parameciumDivision-02.jpg",
+      "parameciumDivision-03.jpg",
+      "parameciumDivision-04.jpg",
+      "parameciumDivision-05.jpg",
+      "parameciumDivision-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/paramecium?view=process&process=parameciumDivision"
+  },
+  {
+    "id": "parameciumConjugation",
+    "root": "paramecium",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 7,
+    "stageNames": [
+      "01相容配偶暂时连接",
+      "02小核减数分裂",
+      "03选择保留核",
+      "04形成两个原核",
+      "05双向交换迁移原核",
+      "06各自融合成二倍体合核",
+      "07核分化与大核更新"
+    ],
+    "screenshots": [
+      "parameciumConjugation-01.jpg",
+      "parameciumConjugation-02.jpg",
+      "parameciumConjugation-03.jpg",
+      "parameciumConjugation-04.jpg",
+      "parameciumConjugation-05.jpg",
+      "parameciumConjugation-06.jpg",
+      "parameciumConjugation-07.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/paramecium?view=process&process=parameciumConjugation"
+  },
+  {
+    "id": "phageLytic",
+    "root": "phage",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01吸附与 DNA 进入",
+      "02早期表达",
+      "03基因组扩增",
+      "04分别装配头与尾",
+      "05DNA 包装与成熟",
+      "06包膜破坏与释放"
+    ],
+    "screenshots": [
+      "phageLytic-01.jpg",
+      "phageLytic-02.jpg",
+      "phageLytic-03.jpg",
+      "phageLytic-04.jpg",
+      "phageLytic-05.jpg",
+      "phageLytic-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/phage?view=process&process=phageLytic"
+  },
+  {
+    "id": "phageLysogenic",
+    "root": "phage",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 7,
+    "stageNames": [
+      "01λ DNA 进入并环化",
+      "02位点特异性整合",
+      "03CI 维持溶原状态",
+      "04随细胞分裂传递",
+      "05保持溶原或解除抑制",
+      "06切除与裂解发育",
+      "07两种条件的结局"
+    ],
+    "screenshots": [
+      "phageLysogenic-01.jpg",
+      "phageLysogenic-02.jpg",
+      "phageLysogenic-03.jpg",
+      "phageLysogenic-04.jpg",
+      "phageLysogenic-05.jpg",
+      "phageLysogenic-06.jpg",
+      "phageLysogenic-07.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/phage?view=process&process=phageLysogenic"
+  },
+  {
+    "id": "phageAssembly",
+    "root": "phage",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01两条装配路线",
+      "02支架指导前头形成",
+      "03蛋白水解成熟",
+      "04包装与壳体扩张",
+      "05封口与组件完成",
+      "06头尾结合与尾纤维安装"
+    ],
+    "screenshots": [
+      "phageAssembly-01.jpg",
+      "phageAssembly-02.jpg",
+      "phageAssembly-03.jpg",
+      "phageAssembly-04.jpg",
+      "phageAssembly-05.jpg",
+      "phageAssembly-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/phage?view=process&process=phageAssembly"
+  },
+  {
+    "id": "phagePackaging",
+    "root": "phage",
+    "base": "http://127.0.0.1:4197",
+    "stageCount": 6,
+    "stageNames": [
+      "01DNA 与包装系统对接",
+      "02门户与马达各司其职",
+      "03ATP 驱动 DNA 转位",
+      "04壳体扩张与持续装填",
+      "05头满终止与切割",
+      "06颈部封口"
+    ],
+    "screenshots": [
+      "phagePackaging-01.jpg",
+      "phagePackaging-02.jpg",
+      "phagePackaging-03.jpg",
+      "phagePackaging-04.jpg",
+      "phagePackaging-05.jpg",
+      "phagePackaging-06.jpg"
+    ],
+    "status": "reviewed",
+    "baselineVisualReviewed": true,
+    "baselineReviewScope": "Each default-condition teaching-stage entry frame manually inspected from actual render contact sheet; full-frame images reopened for suspected defects.",
+    "findings": [],
+    "continuousMotion": "pending",
+    "conditionVariants": "pending",
+    "finalLabelRegression": "pending",
+    "route": "#/phage?view=process&process=phagePackaging"
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "metrics": {
+    "full": {
+      "canvases": 6,
+      "frames": 6,
+      "height": 1720,
+      "medianMs": 92.7,
+      "p95Ms": 93.8,
+      "width": 1080
+    },
+    "preview": {
+      "canvases": 12,
+      "frames": 12,
+      "height": 430,
+      "medianMs": 38.5,
+      "p95Ms": 70.1,
+      "width": 270
+    },
+    "previewResources": {
+      "readbackBuffers": 14,
+      "shadowClones": 14,
+      "shadowDraws": 1344
+    }
+  },
+  "result": "FAIL: Error: Transient captures must reuse one canvas\n    at check (http://127.0.0.1:5174/tests/scene-capture-performance.html?html-proxy&index=0.js:7:31)\n    at http://127.0.0.1:5174/tests/scene-capture-performance.html?html-proxy&index=0.js:150:9"
+}

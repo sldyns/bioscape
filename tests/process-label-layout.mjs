@@ -38,6 +38,13 @@ for (const lang of ["zh", "en"]) {
 }
 assert(isShortNotation("5′"));
 assert(isShortNotation("ATP"));
+for (const symbol of ["Na⁺", "Ca²⁺", "CO₂", "α", "Rpn11"])
+  assert(isShortNotation(symbol));
+for (const name of ["气孔孔隙", "连续的质膜", "胞质套筒", "蓝光", "细胞核"])
+  assert(
+    !isShortNotation(name),
+    `${name} is anatomical prose, not inline symbolic notation`,
+  );
 assert(!isShortNotation("RNA 聚合酶 II"));
 assert(!isShortNotation("Large-subunit rRNA"));
 for (const viewport of [

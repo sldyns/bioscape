@@ -1,0 +1,512 @@
+[
+  {
+    "label": "cold-cell-1",
+    "injection": {
+      "alreadyReady": false,
+      "probeAt": 144.5
+    },
+    "navigation": {
+      "activationStart": 0,
+      "confidence": {},
+      "connectEnd": 1.5,
+      "connectStart": 1.5,
+      "contentEncoding": "",
+      "contentType": "text/html",
+      "criticalCHRestart": 0,
+      "decodedBodySize": 795,
+      "deliveryType": "",
+      "domComplete": 139.70000004768372,
+      "domContentLoadedEventEnd": 131.30000019073486,
+      "domContentLoadedEventStart": 125.70000004768372,
+      "domInteractive": 122,
+      "domainLookupEnd": 1.5,
+      "domainLookupStart": 1.5,
+      "duration": 139.80000019073486,
+      "encodedBodySize": 795,
+      "entryType": "navigation",
+      "fetchStart": 1.5,
+      "finalResponseHeadersStart": 8,
+      "firstInterimResponseStart": 0,
+      "initiatorType": "navigation",
+      "loadEventEnd": 139.80000019073486,
+      "loadEventStart": 139.70000004768372,
+      "name": "http://127.0.0.1:4201/#/cell?s=%7B%22v%22%3A1%2C%22lang%22%3A%22zh%22%2C%22mode%22%3A%22section%22%2C%22explode%22%3A60%2C%22labels%22%3Afalse%2C%22contracted%22%3Afalse%7D",
+      "navigationId": 5044,
+      "nextHopProtocol": "http/1.1",
+      "notRestoredReasons": null,
+      "redirectCount": 0,
+      "redirectEnd": 0,
+      "redirectStart": 0,
+      "renderBlockingStatus": "non-blocking",
+      "requestStart": 5.200000047683716,
+      "responseEnd": 8.700000047683716,
+      "responseStart": 8,
+      "responseStatus": 200,
+      "secureConnectionStart": 0,
+      "serverTiming": [],
+      "startTime": 0,
+      "transferSize": 1095,
+      "type": "reload",
+      "unloadEventEnd": 20.200000047683716,
+      "unloadEventStart": 20.200000047683716,
+      "workerCacheLookupStart": 0,
+      "workerFinalSourceType": "",
+      "workerMatchedSourceType": "",
+      "workerRouterEvaluationStart": 0,
+      "workerStart": 0
+    },
+    "probe": {
+      "longTasks": [
+        {
+          "duration": 67,
+          "start": 449
+        },
+        {
+          "duration": 209,
+          "start": 2383.5
+        }
+      ],
+      "models": [
+        {
+          "cpuMs": "208.90",
+          "drawCalls": "152",
+          "node": "cell",
+          "prepareMs": "1834.4",
+          "source": "build",
+          "time": 2592.600000143051
+        }
+      ],
+      "started": 144.5
+    },
+    "resources": [
+      {
+        "bytes": 84954,
+        "duration": 19.899999856948853,
+        "encoded": 84654,
+        "end": 111.70000004768372,
+        "start": 91.80000019073486,
+        "url": "index-B9UKXNDK.js"
+      },
+      {
+        "bytes": 8644,
+        "duration": 10.200000047683716,
+        "encoded": 8344,
+        "end": 102.10000014305116,
+        "start": 91.90000009536745,
+        "url": "index-CuVZ0Fub.css"
+      },
+      {
+        "bytes": 69291,
+        "duration": 20.5,
+        "encoded": 68991,
+        "end": 112.40000009536745,
+        "start": 91.90000009536745,
+        "url": "react-T4PvWwgm.js"
+      },
+      {
+        "bytes": 24366,
+        "duration": 8.799999952316284,
+        "encoded": 24066,
+        "end": 142.40000009536743,
+        "start": 133.60000014305115,
+        "url": "App-SzHUbhIw.js"
+      },
+      {
+        "bytes": 4526,
+        "duration": 5.3999998569488525,
+        "encoded": 4226,
+        "end": 139.20000004768372,
+        "start": 133.80000019073486,
+        "url": "App-D2afDjRc.css"
+      },
+      {
+        "bytes": 30229,
+        "duration": 10.099999904632568,
+        "encoded": 29929,
+        "end": 157.20000004768372,
+        "start": 147.10000014305115,
+        "url": "CellScene-BTq11BtH.js"
+      },
+      {
+        "bytes": 3663,
+        "duration": 4.900000095367432,
+        "encoded": 3363,
+        "end": 152.10000014305115,
+        "start": 147.20000004768372,
+        "url": "sceneCapture-BSvlVS3u.js"
+      },
+      {
+        "bytes": 69786,
+        "duration": 20.200000047683716,
+        "encoded": 69486,
+        "end": 167.40000009536743,
+        "start": 147.20000004768372,
+        "url": "three-core-Cf9Z7u1y.js"
+      },
+      {
+        "bytes": 92429,
+        "duration": 23.5,
+        "encoded": 92129,
+        "end": 170.70000004768372,
+        "start": 147.20000004768372,
+        "url": "three-renderer-Cyo_UMtF.js"
+      },
+      {
+        "bytes": 39688,
+        "duration": 1.7999999523162842,
+        "encoded": 39388,
+        "end": 535.7000000476837,
+        "start": 533.9000000953674,
+        "url": "picking.worker-CFjdGBNc.js"
+      },
+      {
+        "bytes": 85529,
+        "duration": 10.400000095367432,
+        "encoded": 85229,
+        "end": 544.3000001907349,
+        "start": 533.9000000953674,
+        "url": "cell.worker-DKnPmTKz.js"
+      }
+    ]
+  },
+  {
+    "label": "cold-cell-2",
+    "injection": {
+      "alreadyReady": false,
+      "probeAt": 62.29999995231629
+    },
+    "navigation": {
+      "activationStart": 0,
+      "confidence": {},
+      "connectEnd": 0.5,
+      "connectStart": 0.5,
+      "contentEncoding": "",
+      "contentType": "text/html",
+      "criticalCHRestart": 0,
+      "decodedBodySize": 795,
+      "deliveryType": "",
+      "domComplete": 56,
+      "domContentLoadedEventEnd": 47.5,
+      "domContentLoadedEventStart": 45.5,
+      "domInteractive": 34.09999990463257,
+      "domainLookupEnd": 0.5,
+      "domainLookupStart": 0.5,
+      "duration": 56.09999990463257,
+      "encodedBodySize": 795,
+      "entryType": "navigation",
+      "fetchStart": 0.5,
+      "finalResponseHeadersStart": 3.0999999046325684,
+      "firstInterimResponseStart": 0,
+      "initiatorType": "navigation",
+      "loadEventEnd": 56.09999990463257,
+      "loadEventStart": 56,
+      "name": "http://127.0.0.1:4201/#/cell?s=%7B%22v%22%3A1%2C%22lang%22%3A%22zh%22%2C%22mode%22%3A%22section%22%2C%22explode%22%3A60%2C%22labels%22%3Afalse%2C%22contracted%22%3Afalse%7D",
+      "navigationId": 4005,
+      "nextHopProtocol": "http/1.1",
+      "notRestoredReasons": null,
+      "redirectCount": 0,
+      "redirectEnd": 0,
+      "redirectStart": 0,
+      "renderBlockingStatus": "non-blocking",
+      "requestStart": 2.200000047683716,
+      "responseEnd": 3.4000000953674316,
+      "responseStart": 3.0999999046325684,
+      "responseStatus": 200,
+      "secureConnectionStart": 0,
+      "serverTiming": [],
+      "startTime": 0,
+      "transferSize": 1095,
+      "type": "reload",
+      "unloadEventEnd": 8.099999904632568,
+      "unloadEventStart": 8.099999904632568,
+      "workerCacheLookupStart": 0,
+      "workerFinalSourceType": "",
+      "workerMatchedSourceType": "",
+      "workerRouterEvaluationStart": 0,
+      "workerStart": 0
+    },
+    "probe": {
+      "longTasks": [
+        {
+          "duration": 60,
+          "start": 362.2000000476837
+        },
+        {
+          "duration": 198,
+          "start": 2244.099999904633
+        }
+      ],
+      "models": [
+        {
+          "cpuMs": "197.00",
+          "drawCalls": "152",
+          "node": "cell",
+          "prepareMs": "1788.7",
+          "source": "build",
+          "time": 2441.2000000476837
+        }
+      ],
+      "started": 62.29999995231629
+    },
+    "resources": [
+      {
+        "bytes": 84954,
+        "duration": 27.40000009536743,
+        "encoded": 84654,
+        "end": 42,
+        "start": 14.599999904632568,
+        "url": "index-B9UKXNDK.js"
+      },
+      {
+        "bytes": 8644,
+        "duration": 14.700000047683716,
+        "encoded": 8344,
+        "end": 29.40000009536743,
+        "start": 14.700000047683716,
+        "url": "index-CuVZ0Fub.css"
+      },
+      {
+        "bytes": 69291,
+        "duration": 27.399999856948853,
+        "encoded": 68991,
+        "end": 42.09999990463257,
+        "start": 14.700000047683716,
+        "url": "react-T4PvWwgm.js"
+      },
+      {
+        "bytes": 24366,
+        "duration": 12.100000143051147,
+        "encoded": 24066,
+        "end": 60.20000004768371,
+        "start": 48.09999990463257,
+        "url": "App-SzHUbhIw.js"
+      },
+      {
+        "bytes": 4526,
+        "duration": 7.200000047683716,
+        "encoded": 4226,
+        "end": 55.40000009536743,
+        "start": 48.20000004768371,
+        "url": "App-D2afDjRc.css"
+      },
+      {
+        "bytes": 30229,
+        "duration": 9.5,
+        "encoded": 29929,
+        "end": 73.20000004768372,
+        "start": 63.70000004768371,
+        "url": "CellScene-BTq11BtH.js"
+      },
+      {
+        "bytes": 69786,
+        "duration": 22.200000047683716,
+        "encoded": 69486,
+        "end": 86,
+        "start": 63.79999995231629,
+        "url": "three-core-Cf9Z7u1y.js"
+      },
+      {
+        "bytes": 92429,
+        "duration": 25.200000047683716,
+        "encoded": 92129,
+        "end": 89,
+        "start": 63.79999995231629,
+        "url": "three-renderer-Cyo_UMtF.js"
+      },
+      {
+        "bytes": 3663,
+        "duration": 4.699999809265137,
+        "encoded": 3363,
+        "end": 68.59999990463257,
+        "start": 63.90000009536743,
+        "url": "sceneCapture-BSvlVS3u.js"
+      },
+      {
+        "bytes": 39688,
+        "duration": 1.2999999523162842,
+        "encoded": 39388,
+        "end": 433.5,
+        "start": 432.2000000476837,
+        "url": "picking.worker-CFjdGBNc.js"
+      },
+      {
+        "bytes": 85529,
+        "duration": 3.799999952316284,
+        "encoded": 85229,
+        "end": 445.59999990463257,
+        "start": 441.7999999523163,
+        "url": "cell.worker-DKnPmTKz.js"
+      }
+    ]
+  },
+  {
+    "label": "cold-cell-3",
+    "injection": {
+      "alreadyReady": false,
+      "probeAt": 67.29999995231628
+    },
+    "navigation": {
+      "activationStart": 0,
+      "confidence": {},
+      "connectEnd": 0.5999999046325684,
+      "connectStart": 0.5999999046325684,
+      "contentEncoding": "",
+      "contentType": "text/html",
+      "criticalCHRestart": 0,
+      "decodedBodySize": 795,
+      "deliveryType": "",
+      "domComplete": 56.20000004768371,
+      "domContentLoadedEventEnd": 48.29999995231629,
+      "domContentLoadedEventStart": 46.20000004768371,
+      "domInteractive": 33.200000047683716,
+      "domainLookupEnd": 0.5999999046325684,
+      "domainLookupStart": 0.5999999046325684,
+      "duration": 56.20000004768371,
+      "encodedBodySize": 795,
+      "entryType": "navigation",
+      "fetchStart": 0.5999999046325684,
+      "finalResponseHeadersStart": 4.200000047683716,
+      "firstInterimResponseStart": 0,
+      "initiatorType": "navigation",
+      "loadEventEnd": 56.20000004768371,
+      "loadEventStart": 56.20000004768371,
+      "name": "http://127.0.0.1:4201/#/cell?s=%7B%22v%22%3A1%2C%22lang%22%3A%22zh%22%2C%22mode%22%3A%22section%22%2C%22explode%22%3A60%2C%22labels%22%3Afalse%2C%22contracted%22%3Afalse%7D",
+      "navigationId": 6575,
+      "nextHopProtocol": "http/1.1",
+      "notRestoredReasons": null,
+      "redirectCount": 0,
+      "redirectEnd": 0,
+      "redirectStart": 0,
+      "renderBlockingStatus": "non-blocking",
+      "requestStart": 3.3999998569488525,
+      "responseEnd": 4.599999904632568,
+      "responseStart": 4.200000047683716,
+      "responseStatus": 200,
+      "secureConnectionStart": 0,
+      "serverTiming": [],
+      "startTime": 0,
+      "transferSize": 1095,
+      "type": "reload",
+      "unloadEventEnd": 9.5,
+      "unloadEventStart": 9.5,
+      "workerCacheLookupStart": 0,
+      "workerFinalSourceType": "",
+      "workerMatchedSourceType": "",
+      "workerRouterEvaluationStart": 0,
+      "workerStart": 0
+    },
+    "probe": {
+      "longTasks": [
+        {
+          "duration": 68,
+          "start": 362.7000000476837
+        },
+        {
+          "duration": 210,
+          "start": 2243.899999856949
+        }
+      ],
+      "models": [
+        {
+          "cpuMs": "209.80",
+          "drawCalls": "152",
+          "node": "cell",
+          "prepareMs": "1782.6",
+          "source": "build",
+          "time": 2453.899999856949
+        }
+      ],
+      "started": 67.29999995231628
+    },
+    "resources": [
+      {
+        "bytes": 84954,
+        "duration": 26.799999952316284,
+        "encoded": 84654,
+        "end": 41.89999985694885,
+        "start": 15.099999904632568,
+        "url": "index-B9UKXNDK.js"
+      },
+      {
+        "bytes": 69291,
+        "duration": 27.700000047683716,
+        "encoded": 68991,
+        "end": 42.79999995231629,
+        "start": 15.099999904632568,
+        "url": "react-T4PvWwgm.js"
+      },
+      {
+        "bytes": 8644,
+        "duration": 15.299999952316284,
+        "encoded": 8344,
+        "end": 30.5,
+        "start": 15.200000047683716,
+        "url": "index-CuVZ0Fub.css"
+      },
+      {
+        "bytes": 24366,
+        "duration": 11,
+        "encoded": 24066,
+        "end": 60.39999985694885,
+        "start": 49.39999985694885,
+        "url": "App-SzHUbhIw.js"
+      },
+      {
+        "bytes": 4526,
+        "duration": 6.200000047683716,
+        "encoded": 4226,
+        "end": 55.70000004768371,
+        "start": 49.5,
+        "url": "App-D2afDjRc.css"
+      },
+      {
+        "bytes": 30229,
+        "duration": 11.700000047683716,
+        "encoded": 29929,
+        "end": 75.59999990463257,
+        "start": 63.89999985694885,
+        "url": "CellScene-BTq11BtH.js"
+      },
+      {
+        "bytes": 69786,
+        "duration": 24,
+        "encoded": 69486,
+        "end": 88,
+        "start": 64,
+        "url": "three-core-Cf9Z7u1y.js"
+      },
+      {
+        "bytes": 92429,
+        "duration": 28.200000047683716,
+        "encoded": 92129,
+        "end": 92.20000004768372,
+        "start": 64,
+        "url": "three-renderer-Cyo_UMtF.js"
+      },
+      {
+        "bytes": 3663,
+        "duration": 5.400000095367432,
+        "encoded": 3363,
+        "end": 69.5,
+        "start": 64.09999990463257,
+        "url": "sceneCapture-BSvlVS3u.js"
+      },
+      {
+        "bytes": 39688,
+        "duration": 2.200000047683716,
+        "encoded": 39388,
+        "end": 442.2999999523163,
+        "start": 440.09999990463257,
+        "url": "picking.worker-CFjdGBNc.js"
+      },
+      {
+        "bytes": 85529,
+        "duration": 7.700000047683716,
+        "encoded": 85229,
+        "end": 454.2999999523163,
+        "start": 446.59999990463257,
+        "url": "cell.worker-DKnPmTKz.js"
+      }
+    ]
+  }
+]

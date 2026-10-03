@@ -107,6 +107,7 @@ export default {
       k.ball([0, 0, 0], [0.34, 0.54, 0.26], macroMat),
       k.ball([0, 0, 0], [0.34, 0.54, 0.26], macroMat),
     ];
+    macro.name = "division-mother-macronucleus";
     const bridge = macronuclearBridge(
       k,
       group,
@@ -256,12 +257,12 @@ export default {
         const side = i < 9 ? -1 : 1,
           a = i * 2.4;
         o.position.set(
-          0.25 + Math.cos(a) * 0.22,
-          p < 0.59
-            ? 0.25 + Math.sin(a) * 0.48
-            : side * (0.44 + partition * 1.06 + separation * 0.55) +
-                Math.sin(a) * 0.31,
-          0.49,
+          0.25 + Math.cos(a) * 0.16,
+          (0.25 + Math.sin(a) * 0.48) * (1 - partition) +
+            (side * (0.44 + partition * 1.06 + separation * 0.55) +
+              Math.sin(a) * 0.31) *
+              partition,
+          0.38,
         );
       });
       oral[0].position.y = 0.4 + ease(p, 0.35, 0.89) * 1.1 + separation * 0.55;

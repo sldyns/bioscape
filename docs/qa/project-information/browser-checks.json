@@ -1,0 +1,36 @@
+{
+  "desktop": {
+    "horizontalOverflow": false,
+    "licenseAtEnd": true,
+    "modalOpen": true,
+    "overflowLocked": true
+  },
+  "closed": {
+    "bodyOverflow": "",
+    "focus": "关于项目"
+  },
+  "sourceText": {
+    "licenseExact": true,
+    "licenseChars": 4743,
+    "thirdPartyExact": true,
+    "thirdPartyChars": 5764
+  },
+  "mobile": {
+    "width": 390,
+    "height": 844,
+    "dialogWidth": 366,
+    "horizontalOverflow": false,
+    "zh": true,
+    "en": true
+  },
+  "keyboard": {
+    "backwardTabWrap": true,
+    "forwardTabWrap": true,
+    "escapeClose": true,
+    "focusRestored": true
+  },
+  "console": {
+    "homepage": [],
+    "studio": []
+  }
+}

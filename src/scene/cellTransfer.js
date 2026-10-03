@@ -159,12 +159,12 @@ export function unpackCell(data) {
     for (const [key, a] of Object.entries(d.attributes))
       g.setAttribute(key, attr(a));
     if (d.index) g.setIndex(attr(d.index));
-    g.groups = d.groups;
+    g.groups = d.groups.map((group) => ({ ...group }));
     g.setDrawRange(d.drawRange.start, d.drawRange.count);
     return g;
   });
   const materials = data.materials.map((d) => {
-    const m = loader.parse(d.json);
+    const m = loader.parse(structuredClone(d.json));
     for (const [k, v] of Object.entries(d.colors)) m[k].fromArray(v);
     if (d.ior !== undefined) m.ior = d.ior;
     return m;
@@ -187,7 +187,7 @@ export function unpackCell(data) {
     o.position.fromArray(d.position);
     o.quaternion.fromArray(d.quaternion);
     o.scale.fromArray(d.scale);
-    o.userData = d.userData;
+    o.userData = structuredClone(d.userData);
     o.visible = d.visible;
     o.renderOrder = d.renderOrder;
     if (o.isMesh) {

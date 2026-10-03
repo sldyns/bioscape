@@ -102,6 +102,29 @@ export function makePresentation(model, id, special = null) {
     if (direction.length() < 0.2)
       direction.set(Math.cos(i * 2.4), Math.sin(i * 2.4), 0.35);
     direction.normalize().multiplyScalar(0.95);
+    if (["erythrocyte", "neuron", "muscleFibre"].includes(id)) {
+      // Nested anatomical layers have nearly identical centroids. Explicit
+      // directions reveal them while keeping continuous neurites attached.
+      const offsets = {
+        erythrocyteMembrane: [-3, 0, 0],
+        erythrocyteCytosol: [3, 0, 0],
+        neuronSoma: [-0.6, 0, 0],
+        neuronDendrites: [-0.6, 0, 0],
+        neuronNucleus: [-0.6, 1, 0.5],
+        neuronAxon: [0.45, 0, 0],
+        neuronMyelin: [0.45, 1, 0.6],
+        neuronNodes: [0.45, 0, 0],
+        neuronTerminals: [0.45, 0, 0],
+        muscleFibreSarcolemma: [0, 1.1, 0.5],
+        muscleFibreNuclei: [0, -1.15, 0.25],
+        muscleFibreMyofibrils: [0, 0, 0],
+        muscleFibreSarcomere: [0, 0.5, 1.2],
+        muscleFibreSR: [-0.3, 0.7, 0.6],
+        muscleFibreTriads: [0.2, -0.5, 1],
+        muscleFibreMitochondria: [0, -0.8, 0.8],
+      };
+      direction.set(...(offsets[p.userData.hitId] || [0, 0, 0]));
+    }
     if (["yeast", "paramecium", "phage"].includes(id)) {
       const offsets = {
         yeastWall: [-4.6, 0, 0],
@@ -375,6 +398,8 @@ export function makePresentation(model, id, special = null) {
       ? contextAnchor.clone()
       : p.worldToLocal(center.clone());
     const anchor = special?.userData.partAnchors?.[p.userData.hitId];
+    p.userData.visibleModes =
+      special?.userData.partLabelModes?.[p.userData.hitId];
     if (anchor)
       p.userData.labelAnchor = p.worldToLocal(
         new THREE.Vector3(...anchor)

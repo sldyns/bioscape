@@ -1,0 +1,43 @@
+{
+  "cell-after.png": {
+    "sameSize": true,
+    "size": [
+      762,
+      402
+    ],
+    "identical": true,
+    "meanAbsoluteChannelDifference": 0.0
+  },
+  "cell-warm.png": {
+    "sameSize": true,
+    "size": [
+      762,
+      402
+    ],
+    "identical": false,
+    "meanAbsoluteChannelDifference": 1.1250995677779083,
+    "note": "Intermediate UI transition; hover/camera not controlled. Not used for acceptance."
+  },
+  "cell-warm-clear.png": {
+    "sameSize": true,
+    "size": [
+      762,
+      402
+    ],
+    "identical": false,
+    "meanAbsoluteChannelDifference": 26.234995190277832,
+    "note": "Screenshot clip returned the top-left page region; invalid comparison. Not used for acceptance."
+  },
+  "cell-warm-matched-full.png": {
+    "sameSize": true,
+    "identical": true,
+    "meanAbsoluteChannelDifference": 0.0,
+    "source": "prepared-cache",
+    "rect": {
+      "height": 402,
+      "width": 762,
+      "x": 222,
+      "y": 225
+    }
+  }
+}

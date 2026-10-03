@@ -1,4 +1,5 @@
 import { extraDefinitions, extraNotes } from "./catalog/cellTypes";
+import { specializedSpecimens } from "./compare/specimens.js";
 import { structures } from "./data";
 import { english } from "./data-en";
 
@@ -463,6 +464,27 @@ export const children = {
   cytoskeleton: ["microtubules", "actin", "intermediate"],
 };
 definitions.push(...extraDefinitions);
+for (const specimen of specializedSpecimens) {
+  definitions.push([
+    specimen.id,
+    specimen.zh,
+    specimen.en,
+    specimen.summary.zh,
+    specimen.summary.en,
+    specimen.color,
+    specimen.parts.map((part) => part.id),
+  ]);
+  for (const part of specimen.parts)
+    definitions.push([
+      part.id,
+      part.zh,
+      part.en,
+      part.desc.zh,
+      part.desc.en,
+      part.color,
+      [],
+    ]);
+}
 for (const d of definitions) children[d[0]] = d[6];
 const definitionIndex = new Map(definitions.map((d) => [d[0], d]));
 const structureIndex = new Map(structures.map((s, i) => [s.id, i]));
@@ -528,6 +550,9 @@ export function getNode(id, lang = "zh") {
 
 export const modelNotes = {
   ...extraNotes,
+  ...Object.fromEntries(
+    specializedSpecimens.map((specimen) => [specimen.id, specimen.scope]),
+  ),
   cytoplasm: {
     zh: "细胞质包括细胞质基质、细胞器和细胞骨架。此视图保留这些结构在整体细胞中的位置，移去细胞膜与细胞核以便观察；核原本占据的区域不是基质空腔。细小颗粒仅提示基质的分布，不表示分子的真实大小、数量或浓度。",
     en: "Cytoplasm includes cytosol, organelles, and cytoskeleton. This view preserves their positions in the whole cell while omitting the plasma membrane and nucleus. The former nuclear region is not a cytosolic cavity. Small markers indicate distribution, not molecular sizes, counts, or concentrations.",

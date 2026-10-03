@@ -69,6 +69,8 @@ function create() {
   nucleus.mesh.name = "budding-continuous-nuclear-envelope";
   const nMother = k.ball([-1.1, 0, 0], [0.58, 0.55, 0.55], envelope),
     nBud = k.ball([1.15, 0, 0], [0.5, 0.49, 0.49], envelope);
+  nMother.name = "budding-mother-nucleus";
+  nBud.name = "budding-daughter-nucleus";
   const motherLayers = layeredCutaway(k, mother.mesh),
     budLayers = layeredCutaway(k, bud.mesh);
   const nuclearLayers = layeredCutaway(k, nucleus.mesh, 40, 48, true),
@@ -236,17 +238,49 @@ function create() {
       const side = i < 4 ? 0 : 1,
         j = i % 4;
       dna[i].visible = i < 4 || p > 0.24;
+      const handoff = ease(p, 0.68, 0.75);
+      const origin = (side ? right : left) + (j - 1.5) * 0.075;
+      const destination = (side ? 1.07 + shift : -1.1) + (j - 1.5) * 0.09;
       dna[i].position.set(
-        p >= 0.75
-          ? (side ? 1.07 + shift : -1.1) + (j - 1.5) * 0.09
-          : (side ? right : left) + (j - 1.5) * 0.075,
+        origin + (destination - origin) * handoff,
         0.18 * Math.sin(j * 1.7),
         0.17,
       );
+      // Chromatin symbols narrow while traversing the intact nuclear neck.
+      let fit = 1 - 0.55 * ease(p, 0.68, 0.75) + 0.55 * ease(p, 0.75, 0.85);
+      if (p < 0.75) {
+        const vertices = nucleus.mesh.geometry.attributes.position;
+        const xMin = dna[i].position.x - 0.075;
+        const xMax = dna[i].position.x + 0.075;
+        for (let row = 0; row < 40; row++) {
+          const a = row * 49,
+            b = a + 49;
+          const x0 = vertices.getX(a),
+            x1 = vertices.getX(b);
+          if (x1 < xMin || x0 > xMax || x1 <= x0) continue;
+          const r0 = Math.hypot(vertices.getY(a), vertices.getZ(a));
+          const r1 = Math.hypot(vertices.getY(b), vertices.getZ(b));
+          for (const x of [Math.max(xMin, x0), Math.min(xMax, x1)]) {
+            const radius = r0 + ((r1 - r0) * (x - x0)) / (x1 - x0);
+            fit = Math.min(fit, radius / 0.55);
+          }
+        }
+      }
+      dna[i].scale.set(0.075, 0.13 * fit, 0.065 * fit);
+      dna[i].position.y *= fit;
+      dna[i].position.z *= fit;
     }
     for (let i = 0; i < 8; i++) {
       const u = (p * 3 + i / 8) % 1;
       secretion[i].visible = p > 0.07 && p < 0.68;
+      // Recycle carriers only while fully shrunk at either endpoint.
+      secretion[i].scale.setScalar(
+        0.065 *
+          ease(u, 0.02, 0.12) *
+          (1 - ease(u, 0.88, 0.98)) *
+          ease(p, 0.07, 0.09) *
+          (1 - ease(p, 0.66, 0.68)),
+      );
       secretion[i].position.set(
         -1.9 + (2.05 + budLength * 0.75) * u,
         0.35 * Math.sin(u * Math.PI),

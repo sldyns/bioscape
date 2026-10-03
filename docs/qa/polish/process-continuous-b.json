@@ -1,0 +1,1400 @@
+{
+  "scope": "Object.keys(processCatalog).slice(28,56)",
+  "baseUrl": "http://127.0.0.1:4200/",
+  "viewport": "1280x720 shared; no override by this agent",
+  "method": "UI-driven uninterrupted playback; intermediate rendered observations. Not a scientific literature audit.",
+  "build": "awaiting root final-build notice",
+  "entries": [
+    {
+      "id": "bacterialEnergetics",
+      "title": "细菌质膜上的呼吸",
+      "root": "bacterium",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "质膜形成能量边界"
+        },
+        {
+          "at": 0.16,
+          "title": "从 NADH 到泛醌"
+        },
+        {
+          "at": 0.33,
+          "title": "末端氧化酶有不同机制"
+        },
+        {
+          "at": 0.5,
+          "title": "氧还原生成水"
+        },
+        {
+          "at": 0.66,
+          "title": "质子回流与 ATP"
+        },
+        {
+          "at": 0.86,
+          "title": "产量依赖所用支路"
+        }
+      ],
+      "controls": [
+        {
+          "id": "route",
+          "label": "电子传递支路",
+          "default": "ndh1-bo",
+          "options": [
+            {
+              "value": "ndh1-bo",
+              "label": "NDH-I → bo₃"
+            },
+            {
+              "value": "ndh2-bd",
+              "label": "NDH-II → bd-I"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "bacterialPhotosynthesis",
+      "title": "蓝细菌的产氧光合作用",
+      "root": "bacterium",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "类囊体形成独立腔室"
+        },
+        {
+          "at": 0.12,
+          "title": "藻胆体收集光能"
+        },
+        {
+          "at": 0.26,
+          "title": "水提供电子并释放氧"
+        },
+        {
+          "at": 0.42,
+          "title": "电子传递增加腔内质子"
+        },
+        {
+          "at": 0.59,
+          "title": "PSI 再次激发并生成 NADPH"
+        },
+        {
+          "at": 0.74,
+          "title": "腔内质子回流驱动 ATP"
+        },
+        {
+          "at": 0.9,
+          "title": "光反应与其他代谢的边界"
+        }
+      ],
+      "controls": [
+        {
+          "id": "light",
+          "label": "光条件",
+          "default": "light",
+          "options": [
+            {
+              "value": "light",
+              "label": "有光"
+            },
+            {
+              "value": "dark",
+              "label": "暗 · 无光驱动流"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "diffusion",
+      "title": "跨膜扩散",
+      "root": "cell",
+      "duration": 30,
+      "stages": [
+        {
+          "at": 0,
+          "title": "两侧水相"
+        },
+        {
+          "at": 0.16,
+          "title": "随机碰撞"
+        },
+        {
+          "at": 0.38,
+          "title": "沿通路穿膜"
+        },
+        {
+          "at": 0.6,
+          "title": "双向运动与净通量"
+        },
+        {
+          "at": 0.86,
+          "title": "趋向动态平衡"
+        }
+      ],
+      "controls": [
+        {
+          "id": "route",
+          "label": "分子与通路",
+          "default": "water",
+          "options": [
+            {
+              "value": "water",
+              "label": "水 · 水通道蛋白"
+            },
+            {
+              "value": "oxygen",
+              "label": "氧 · 脂双层"
+            }
+          ]
+        },
+        {
+          "id": "gradient",
+          "label": "初始梯度 · 水选项指水活度",
+          "default": "outside",
+          "options": [
+            {
+              "value": "outside",
+              "label": "外侧较高"
+            },
+            {
+              "value": "equal",
+              "label": "两侧相等"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "activeTransport",
+      "title": "钠钾泵的主动运输",
+      "root": "cell",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "E1：朝向细胞质"
+        },
+        {
+          "at": 0.2,
+          "title": "ATP 与磷酸化"
+        },
+        {
+          "at": 0.38,
+          "title": "E2P：向外释钠"
+        },
+        {
+          "at": 0.56,
+          "title": "从外侧结合钾"
+        },
+        {
+          "at": 0.71,
+          "title": "去磷酸化与封闭"
+        },
+        {
+          "at": 0.86,
+          "title": "向内释钾"
+        }
+      ],
+      "controls": [
+        {
+          "id": "energy",
+          "label": "能量条件",
+          "default": "atp",
+          "options": [
+            {
+              "value": "atp",
+              "label": "有 ATP"
+            },
+            {
+              "value": "none",
+              "label": "无 ATP"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "osmoticBalance",
+      "title": "红细胞的渗透响应",
+      "root": "cell",
+      "duration": 28,
+      "stages": [
+        {
+          "at": 0,
+          "title": "初始双凹形"
+        },
+        {
+          "at": 0.18,
+          "title": "水持续双向交换"
+        },
+        {
+          "at": 0.38,
+          "title": "张力决定净水流"
+        },
+        {
+          "at": 0.63,
+          "title": "膜轮廓与体积响应"
+        },
+        {
+          "at": 0.86,
+          "title": "比较三个条件"
+        }
+      ],
+      "controls": [
+        {
+          "id": "tonicity",
+          "label": "外液张力",
+          "default": "hypotonic",
+          "options": [
+            {
+              "value": "hypotonic",
+              "label": "低渗 · 吸水"
+            },
+            {
+              "value": "isotonic",
+              "label": "等渗 · 净水流为零"
+            },
+            {
+              "value": "hypertonic",
+              "label": "高渗 · 失水"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "bacterialCellWall",
+      "title": "大肠杆菌肽聚糖装配",
+      "root": "bacterium",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "内膜与周质"
+        },
+        {
+          "at": 0.17,
+          "title": "脂质 II 进入 RodA"
+        },
+        {
+          "at": 0.35,
+          "title": "糖链延长"
+        },
+        {
+          "at": 0.64,
+          "title": "PBP2 催化转肽"
+        },
+        {
+          "at": 0.77,
+          "title": "有或无交联"
+        },
+        {
+          "at": 0.9,
+          "title": "网架连接结果"
+        }
+      ],
+      "controls": [
+        {
+          "id": "antibiotic",
+          "label": "PBP2 条件",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "无抗生素"
+            },
+            {
+              "value": "betaLactam",
+              "label": "β-内酰胺占据活性位点"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "endocytosis",
+      "title": "受体介导内吞",
+      "root": "cell",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "配体结合"
+        },
+        {
+          "at": 0.14,
+          "title": "包被窝内陷"
+        },
+        {
+          "at": 0.34,
+          "title": "颈部收缩与断裂"
+        },
+        {
+          "at": 0.47,
+          "title": "脱去包被"
+        },
+        {
+          "at": 0.67,
+          "title": "膜融合"
+        },
+        {
+          "at": 0.8,
+          "title": "酸性内体分选"
+        }
+      ],
+      "controls": [],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "autophagy",
+      "title": "宏自噬",
+      "root": "cell",
+      "duration": 33,
+      "stages": [
+        {
+          "at": 0,
+          "title": "隔离膜起始"
+        },
+        {
+          "at": 0.16,
+          "title": "杯状膜延伸"
+        },
+        {
+          "at": 0.44,
+          "title": "闭合形成双膜自噬体"
+        },
+        {
+          "at": 0.54,
+          "title": "接近溶酶体"
+        },
+        {
+          "at": 0.65,
+          "title": "外膜融合"
+        },
+        {
+          "at": 0.73,
+          "title": "先降解内膜屏障"
+        },
+        {
+          "at": 0.9,
+          "title": "货物水解"
+        }
+      ],
+      "controls": [],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "mitosis",
+      "title": "有丝分裂",
+      "root": "cell",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "复制完成后的染色体"
+        },
+        {
+          "at": 0.19,
+          "title": "动粒捕获微管"
+        },
+        {
+          "at": 0.37,
+          "title": "中期与检查点"
+        },
+        {
+          "at": 0.49,
+          "title": "姐妹分离"
+        },
+        {
+          "at": 0.71,
+          "title": "分裂沟内陷"
+        },
+        {
+          "at": 0.94,
+          "title": "形成两个子细胞"
+        }
+      ],
+      "controls": [
+        {
+          "id": "attachment",
+          "label": "动粒附着",
+          "default": "normal",
+          "options": [
+            {
+              "value": "normal",
+              "label": "完成双向附着"
+            },
+            {
+              "value": "unattached",
+              "label": "一个动粒未附着"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "meiosis",
+      "title": "减数分裂",
+      "root": "cell",
+      "duration": 38,
+      "stages": [
+        {
+          "at": 0,
+          "title": "已复制的同源染色体"
+        },
+        {
+          "at": 0.14,
+          "title": "联会与交换"
+        },
+        {
+          "at": 0.28,
+          "title": "第一次分裂中期"
+        },
+        {
+          "at": 0.36,
+          "title": "同源染色体分离"
+        },
+        {
+          "at": 0.58,
+          "title": "第二次分裂准备"
+        },
+        {
+          "at": 0.71,
+          "title": "姐妹染色单体分离"
+        },
+        {
+          "at": 0.94,
+          "title": "四个单倍体产物"
+        }
+      ],
+      "controls": [],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "signalTransduction",
+      "title": "RTK–Ras–MAPK 信号",
+      "root": "cell",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "胞外识别"
+        },
+        {
+          "at": 0.23,
+          "title": "二聚与磷酸化"
+        },
+        {
+          "at": 0.36,
+          "title": "连接到膜上的 Ras"
+        },
+        {
+          "at": 0.51,
+          "title": "Raf → MEK → ERK"
+        },
+        {
+          "at": 0.78,
+          "title": "ERK 进入细胞核"
+        },
+        {
+          "at": 0.93,
+          "title": "调节基因表达"
+        }
+      ],
+      "controls": [
+        {
+          "id": "condition",
+          "label": "受体条件",
+          "default": "ligand",
+          "options": [
+            {
+              "value": "ligand",
+              "label": "PDGF + 功能受体"
+            },
+            {
+              "value": "noLigand",
+              "label": "无 PDGF"
+            },
+            {
+              "value": "kinaseInactive",
+              "label": "受体激酶失活"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "apoptosis",
+      "title": "线粒体内源性凋亡",
+      "root": "cell",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "完整细胞与线粒体"
+        },
+        {
+          "at": 0.16,
+          "title": "线粒体外膜通透化"
+        },
+        {
+          "at": 0.29,
+          "title": "细胞色素 c 释放"
+        },
+        {
+          "at": 0.43,
+          "title": "组装凋亡小体"
+        },
+        {
+          "at": 0.59,
+          "title": "蛋白水解执行"
+        },
+        {
+          "at": 0.81,
+          "title": "收缩、出泡与包裹"
+        }
+      ],
+      "controls": [
+        {
+          "id": "condition",
+          "label": "内源性触发",
+          "default": "stress",
+          "options": [
+            {
+              "value": "stress",
+              "label": "不可恢复应激"
+            },
+            {
+              "value": "noStress",
+              "label": "无触发应激"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "differentiation",
+      "title": "红系终末分化",
+      "root": "cell",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "已承诺的红细胞谱系"
+        },
+        {
+          "at": 0.17,
+          "title": "执行红系基因程序"
+        },
+        {
+          "at": 0.32,
+          "title": "血红蛋白积累"
+        },
+        {
+          "at": 0.5,
+          "title": "细胞缩小与染色质凝聚"
+        },
+        {
+          "at": 0.68,
+          "title": "极化并排出细胞核"
+        },
+        {
+          "at": 0.93,
+          "title": "网织红细胞与排出核"
+        }
+      ],
+      "controls": [
+        {
+          "id": "program",
+          "label": "红系调控程序",
+          "default": "competent",
+          "options": [
+            {
+              "value": "competent",
+              "label": "GATA1 功能完整"
+            },
+            {
+              "value": "impaired",
+              "label": "GATA1 功能不足"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "immuneResponse",
+      "title": "MHC-I 呈递与 T 细胞识别",
+      "root": "cell",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "胞质蛋白切割"
+        },
+        {
+          "at": 0.19,
+          "title": "TAP 转运进入内质网"
+        },
+        {
+          "at": 0.35,
+          "title": "装载肽–MHC-I"
+        },
+        {
+          "at": 0.5,
+          "title": "经分泌通路到达表面"
+        },
+        {
+          "at": 0.81,
+          "title": "两个细胞接触"
+        },
+        {
+          "at": 0.94,
+          "title": "特异识别与极化"
+        }
+      ],
+      "controls": [
+        {
+          "id": "epitope",
+          "label": "呈递肽与该 TCR",
+          "default": "matched",
+          "options": [
+            {
+              "value": "matched",
+              "label": "可被该 TCR 识别"
+            },
+            {
+              "value": "unmatched",
+              "label": "该 TCR 不识别"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "actionPotential",
+      "title": "动作电位传播",
+      "root": "cell",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "静息膜"
+        },
+        {
+          "at": 0.12,
+          "title": "局部刺激"
+        },
+        {
+          "at": 0.24,
+          "title": "钠通道开放"
+        },
+        {
+          "at": 0.42,
+          "title": "邻近膜依次激活"
+        },
+        {
+          "at": 0.64,
+          "title": "钾外流与不应期"
+        },
+        {
+          "at": 0.9,
+          "title": "恢复可兴奋状态"
+        }
+      ],
+      "controls": [
+        {
+          "id": "stimulus",
+          "label": "起始刺激",
+          "default": "on",
+          "options": [
+            {
+              "value": "on",
+              "label": "足够强的刺激"
+            },
+            {
+              "value": "off",
+              "label": "无刺激"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "synapse",
+      "title": "谷氨酸突触传递",
+      "root": "cell",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "已停靠的囊泡"
+        },
+        {
+          "at": 0.14,
+          "title": "动作电位到达"
+        },
+        {
+          "at": 0.26,
+          "title": "局部钙内流"
+        },
+        {
+          "at": 0.38,
+          "title": "膜融合与释放"
+        },
+        {
+          "at": 0.56,
+          "title": "受体开放"
+        },
+        {
+          "at": 0.78,
+          "title": "递质清除"
+        }
+      ],
+      "controls": [
+        {
+          "id": "calcium",
+          "label": "突触前 Ca²⁺ 通道",
+          "default": "available",
+          "options": [
+            {
+              "value": "available",
+              "label": "可开放"
+            },
+            {
+              "value": "blocked",
+              "label": "阻断"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "muscle",
+      "title": "骨骼肌滑动肌丝",
+      "root": "cell",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "静息肌节"
+        },
+        {
+          "at": 0.15,
+          "title": "钙解除抑制"
+        },
+        {
+          "at": 0.31,
+          "title": "横桥结合"
+        },
+        {
+          "at": 0.43,
+          "title": "动力冲程"
+        },
+        {
+          "at": 0.65,
+          "title": "ATP 解离并重置头部"
+        },
+        {
+          "at": 0.85,
+          "title": "停止主动缩短"
+        }
+      ],
+      "controls": [
+        {
+          "id": "calcium",
+          "label": "肌浆 Ca²⁺",
+          "default": "released",
+          "options": [
+            {
+              "value": "released",
+              "label": "短暂释放"
+            },
+            {
+              "value": "low",
+              "label": "保持低水平"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "ciliaryMotion",
+      "title": "纤毛的滑动与弯曲",
+      "root": "paramecium",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "9 + 2 轴丝"
+        },
+        {
+          "at": 0.17,
+          "title": "动力蛋白消耗 ATP"
+        },
+        {
+          "at": 0.34,
+          "title": "受约束的相对滑动"
+        },
+        {
+          "at": 0.51,
+          "title": "滑动转为弯曲"
+        },
+        {
+          "at": 0.7,
+          "title": "活动侧交替"
+        },
+        {
+          "at": 0.89,
+          "title": "拍动推动流体"
+        }
+      ],
+      "controls": [
+        {
+          "id": "atp",
+          "label": "ATP 供应",
+          "default": "available",
+          "options": [
+            {
+              "value": "available",
+              "label": "可用"
+            },
+            {
+              "value": "absent",
+              "label": "无 ATP（停动示意）"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "plasmolysis",
+      "title": "质壁分离与复原",
+      "root": "plant",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "膨压支撑"
+        },
+        {
+          "at": 0.14,
+          "title": "更换高渗外液"
+        },
+        {
+          "at": 0.3,
+          "title": "净失水、膨压下降"
+        },
+        {
+          "at": 0.49,
+          "title": "质膜与壁分离"
+        },
+        {
+          "at": 0.66,
+          "title": "选择外液条件"
+        },
+        {
+          "at": 0.9,
+          "title": "可逆恢复"
+        }
+      ],
+      "controls": [
+        {
+          "id": "bath",
+          "label": "外液处理",
+          "default": "recover",
+          "options": [
+            {
+              "value": "recover",
+              "label": "高渗后换稀外液"
+            },
+            {
+              "value": "hold",
+              "label": "持续高渗"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "stomata",
+      "title": "气孔开闭",
+      "root": "plant",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "低膨压、窄孔隙"
+        },
+        {
+          "at": 0.12,
+          "title": "蓝光启动质子泵"
+        },
+        {
+          "at": 0.26,
+          "title": "离子积累与吸水"
+        },
+        {
+          "at": 0.46,
+          "title": "膨压驱动开孔"
+        },
+        {
+          "at": 0.62,
+          "title": "ABA 改变离子通量"
+        },
+        {
+          "at": 0.86,
+          "title": "失水闭孔或保持开放"
+        }
+      ],
+      "controls": [
+        {
+          "id": "signal",
+          "label": "后半程信号",
+          "default": "aba",
+          "options": [
+            {
+              "value": "aba",
+              "label": "蓝光后加入 ABA"
+            },
+            {
+              "value": "light",
+              "label": "持续蓝光"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "plantLongDistanceTransport",
+      "title": "木质部运输与蒸腾",
+      "root": "plant",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "根—茎—叶的连续通路"
+        },
+        {
+          "at": 0.15,
+          "title": "湿叶肉细胞壁蒸发"
+        },
+        {
+          "at": 0.31,
+          "title": "张力牵引水柱"
+        },
+        {
+          "at": 0.47,
+          "title": "根吸水补充"
+        },
+        {
+          "at": 0.65,
+          "title": "气孔改变蒸腾通量"
+        },
+        {
+          "at": 0.88,
+          "title": "连续水柱仍然存在"
+        }
+      ],
+      "controls": [
+        {
+          "id": "stomata",
+          "label": "叶片气孔",
+          "default": "close",
+          "options": [
+            {
+              "value": "close",
+              "label": "中途收窄气孔"
+            },
+            {
+              "value": "open",
+              "label": "保持开放"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "chloroplastMovement",
+      "title": "叶绿体光定位运动",
+      "root": "plant",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "叶肉细胞的皮层"
+        },
+        {
+          "at": 0.13,
+          "title": "弱蓝光积聚"
+        },
+        {
+          "at": 0.36,
+          "title": "平周壁上的叶绿体"
+        },
+        {
+          "at": 0.51,
+          "title": "强蓝光与 phot2"
+        },
+        {
+          "at": 0.69,
+          "title": "沿皮层重新定位"
+        },
+        {
+          "at": 0.9,
+          "title": "避让减少截光"
+        }
+      ],
+      "controls": [
+        {
+          "id": "genotype",
+          "label": "蓝光响应",
+          "default": "wild",
+          "options": [
+            {
+              "value": "wild",
+              "label": "野生型"
+            },
+            {
+              "value": "phot2",
+              "label": "phot2 缺失"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "plantDivision",
+      "title": "植物细胞分裂",
+      "root": "plant",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "分裂前的复制已完成"
+        },
+        {
+          "at": 0.16,
+          "title": "姐妹染色单体分离"
+        },
+        {
+          "at": 0.32,
+          "title": "成膜体组织运输"
+        },
+        {
+          "at": 0.43,
+          "title": "囊泡融合成板"
+        },
+        {
+          "at": 0.62,
+          "title": "从中央向外扩展"
+        },
+        {
+          "at": 0.9,
+          "title": "连接并分隔"
+        }
+      ],
+      "controls": [],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "cellWallGrowth",
+      "title": "纤维素沉积与细胞壁伸展",
+      "root": "plant",
+      "duration": 30,
+      "stages": [
+        {
+          "at": 0,
+          "title": "壁在膜外，微管在膜内"
+        },
+        {
+          "at": 0.15,
+          "title": "膜内合酶移动"
+        },
+        {
+          "at": 0.32,
+          "title": "在胞外沉积微纤丝"
+        },
+        {
+          "at": 0.5,
+          "title": "膨压提供机械负载"
+        },
+        {
+          "at": 0.68,
+          "title": "可伸展性决定响应"
+        },
+        {
+          "at": 0.88,
+          "title": "合成与伸展相互配合"
+        }
+      ],
+      "controls": [
+        {
+          "id": "extensibility",
+          "label": "壁的可伸展性",
+          "default": "yielding",
+          "options": [
+            {
+              "value": "yielding",
+              "label": "可松弛的壁"
+            },
+            {
+              "value": "restrained",
+              "label": "伸展受限的壁"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "doubleFertilization",
+      "title": "被子植物双受精",
+      "root": "plant",
+      "duration": 36,
+      "stages": [
+        {
+          "at": 0,
+          "title": "胚珠中的雌配子"
+        },
+        {
+          "at": 0.17,
+          "title": "花粉管送达"
+        },
+        {
+          "at": 0.33,
+          "title": "释放到配子交界"
+        },
+        {
+          "at": 0.5,
+          "title": "分别融合"
+        },
+        {
+          "at": 0.73,
+          "title": "建立两种倍性"
+        },
+        {
+          "at": 0.88,
+          "title": "胚与胚乳分别发育"
+        }
+      ],
+      "controls": [
+        {
+          "id": "assignment",
+          "label": "等价精细胞的去向示例",
+          "default": "frontEgg",
+          "options": [
+            {
+              "value": "frontEgg",
+              "label": "前方精细胞进入卵"
+            },
+            {
+              "value": "frontCentral",
+              "label": "前方精细胞进入中央细胞"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "fungalHyphae",
+      "title": "丝状真菌的菌丝顶端生长",
+      "root": "yeast",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "有方向的菌丝"
+        },
+        {
+          "at": 0.16,
+          "title": "囊泡运向顶端"
+        },
+        {
+          "at": 0.32,
+          "title": "顶体暂时组织囊泡"
+        },
+        {
+          "at": 0.49,
+          "title": "膜融合与新壁沉积"
+        },
+        {
+          "at": 0.67,
+          "title": "顶端伸展"
+        },
+        {
+          "at": 0.87,
+          "title": "新壁逐渐成为侧壁"
+        }
+      ],
+      "controls": [
+        {
+          "id": "delivery",
+          "label": "顶端囊泡供应",
+          "default": "normal",
+          "options": [
+            {
+              "value": "normal",
+              "label": "供应充分"
+            },
+            {
+              "value": "reduced",
+              "label": "供应减少"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "auxin",
+      "title": "生长素：解除转录抑制",
+      "root": "plant",
+      "duration": 34,
+      "stages": [
+        {
+          "at": 0,
+          "title": "抑制状态"
+        },
+        {
+          "at": 0.16,
+          "title": "生长素作为分子胶"
+        },
+        {
+          "at": 0.34,
+          "title": "标记抑制蛋白"
+        },
+        {
+          "at": 0.52,
+          "title": "蛋白酶体移除 Aux/IAA"
+        },
+        {
+          "at": 0.71,
+          "title": "靶基因转录"
+        },
+        {
+          "at": 0.88,
+          "title": "组织尺度的后续效应"
+        }
+      ],
+      "controls": [
+        {
+          "id": "auxin",
+          "label": "核内生长素",
+          "default": "present",
+          "options": [
+            {
+              "value": "present",
+              "label": "有生长素"
+            },
+            {
+              "value": "low",
+              "label": "低生长素对照"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    },
+    {
+      "id": "plantDefense",
+      "title": "植物防御：识别 flg22",
+      "root": "plant",
+      "duration": 32,
+      "stages": [
+        {
+          "at": 0,
+          "title": "受体跨越质膜"
+        },
+        {
+          "at": 0.16,
+          "title": "识别鞭毛蛋白片段"
+        },
+        {
+          "at": 0.34,
+          "title": "招募共受体"
+        },
+        {
+          "at": 0.51,
+          "title": "BIK1 调节氧化酶"
+        },
+        {
+          "at": 0.7,
+          "title": "跨膜电子传递"
+        },
+        {
+          "at": 0.87,
+          "title": "局部活性氧输出"
+        }
+      ],
+      "controls": [
+        {
+          "id": "ligand",
+          "label": "外界信号",
+          "default": "flg22",
+          "options": [
+            {
+              "value": "flg22",
+              "label": "有 flg22"
+            },
+            {
+              "value": "absent",
+              "label": "无配体对照"
+            }
+          ]
+        }
+      ],
+      "runs": [],
+      "status": "pending"
+    }
+  ]
+}

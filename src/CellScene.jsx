@@ -11,6 +11,16 @@ import { createPresentationAppearance } from "./scene/presentationAppearance";
 import { explodedFitDistance } from "./scene/viewFraming";
 import { supportsExplosion } from "./scene/viewCapabilities";
 import { getNode } from "./hierarchy";
+import {
+  isStructureLabelVisible,
+  structureCaptureMode,
+} from "./scene/structureLabelModes.js";
+import {
+  applySceneView,
+  normalizeSceneView,
+  readSceneView,
+  createSceneCapture,
+} from "./scene/sceneCapture.js";
 
 export default function CellScene({
   nodeId,
@@ -26,6 +36,11 @@ export default function CellScene({
   lang,
   onCapabilities,
   contracted = false,
+  onSceneReady,
+  initialView,
+  onViewChange,
+  allowZoom = true,
+  autoRotateLimit = 0,
 }) {
   const host = useRef(),
     engine = useRef(),
@@ -44,9 +59,25 @@ export default function CellScene({
     lang,
     onCapabilities,
     contracted,
+    onSceneReady,
+    initialView,
+    onViewChange,
+    autoRotateLimit,
+  };
+  const lastReady = useRef({ callback: null, api: null });
+  const publishReady = (api) => {
+    const callback = live.current.onSceneReady;
+    if (
+      lastReady.current.callback === callback &&
+      lastReady.current.api === api
+    )
+      return;
+    lastReady.current = { callback, api };
+    callback?.(api);
   };
   useEffect(() => {
     const el = host.current;
+    const layoutParent = el.parentElement;
     const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let renderer,
       contextLost = false;
@@ -63,6 +94,8 @@ export default function CellScene({
     const loseContext = (event) => {
       event.preventDefault();
       contextLost = true;
+      publishReady(null);
+      capture?.dispose();
       setError("context");
     };
     const restoreContext = () => {
@@ -91,6 +124,7 @@ export default function CellScene({
     scene.matrixWorldAutoUpdate = false;
     camera.position.set(0.5, 0.65, 11.4);
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = allowZoom;
     controls.enableDamping = !reduceMotion;
     controls.enablePan = false;
     controls.dampingFactor = 0.18;
@@ -184,14 +218,18 @@ export default function CellScene({
       new THREE.Vector3(),
       new THREE.Vector3(),
     ];
-    const distance = (preserveOrientation = false) => {
-      const base =
+    const distance = (
+      preserveOrientation = false,
+      viewCamera = camera,
+      separation = null,
+    ) => {
+      let base =
         Math.max(
           9.8,
-          (camera.aspect < 1 ? 6.3 : 5.8) /
+          (viewCamera.aspect < 1 ? 6.3 : 5.8) /
             (2 *
-              Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) *
-              Math.min(camera.aspect, 1)),
+              Math.tan(THREE.MathUtils.degToRad(viewCamera.fov / 2)) *
+              Math.min(viewCamera.aspect, 1)),
         ) *
         ([
           "lysosomalMembrane",
@@ -202,31 +240,93 @@ export default function CellScene({
         ].includes(live.current.nodeId)
           ? 1.12
           : 1);
+      // The whole neuron is elongated: a spherical-cell minimum leaves half
+      // the stage empty. Reuse the bounds fit for its assembled silhouette,
+      // including export orientation/depth, without changing other views.
+      if (live.current.nodeId === "neuron" && current) {
+        if (preserveOrientation) {
+          viewCamera.updateMatrixWorld();
+          framingAxes.forEach((axis, i) =>
+            axis.setFromMatrixColumn(viewCamera.matrixWorld, i),
+          );
+        }
+        base = Math.max(
+          controls.minDistance,
+          explodedFitDistance(
+            current.parts,
+            0,
+            viewCamera.aspect,
+            viewCamera.fov,
+            preserveOrientation ? framingAxes : null,
+          ),
+        );
+      }
       if (
-        live.current.mode !== "explode" ||
+        (separation === null && live.current.mode !== "explode") ||
         !current ||
         current.parts.length < 2
       )
         return base;
       if (preserveOrientation) {
-        camera.updateMatrixWorld();
+        viewCamera.updateMatrixWorld();
         framingAxes.forEach((axis, i) =>
-          axis.setFromMatrixColumn(camera.matrixWorld, i),
+          axis.setFromMatrixColumn(viewCamera.matrixWorld, i),
         );
       }
       return Math.max(
         base,
         explodedFitDistance(
           current.parts,
-          live.current.explode / 100,
-          camera.aspect,
-          camera.fov,
+          separation ?? live.current.explode / 100,
+          viewCamera.aspect,
+          viewCamera.fov,
           preserveOrientation ? framingAxes : null,
         ),
       );
     };
     const desiredCamera = new THREE.Vector3(0.5, 0.65, 11.4);
     let fitting = false;
+    let suppressViewChange = false;
+    let lastView = null;
+    let captureSeparation = null;
+    let capture, api;
+    const readView = () => readSceneView(camera, controls.target, distance());
+    const orbitChanged = () => {
+      if (suppressViewChange || !api?.ready || !live.current.onViewChange)
+        return;
+      const view = readView();
+      const values = [...view.direction, ...view.target, view.zoom];
+      if (
+        lastView &&
+        values.every((value, index) => Math.abs(value - lastView[index]) < 1e-6)
+      )
+        return;
+      lastView = values;
+      live.current.onViewChange(view);
+    };
+    controls.addEventListener("change", orbitChanged);
+    const setView = (value) => {
+      const view = normalizeSceneView(value);
+      if (!api?.ready || !view) return false;
+      suppressViewChange = true;
+      const damping = controls.enableDamping;
+      const autoRotate = controls.autoRotate;
+      try {
+        settleControls();
+        fitting = false;
+        applySceneView(camera, controls.target, distance(), view);
+        controls.enableDamping = false;
+        controls.update();
+        const next = readView();
+        lastView = [...next.direction, ...next.target, next.zoom];
+        invalidate();
+        return true;
+      } finally {
+        controls.enableDamping = damping;
+        controls.autoRotate = autoRotate;
+        suppressViewChange = false;
+      }
+    };
     const loadingLabel = document.createElement("div");
     loadingLabel.className = "model-loading";
     loadingLabel.setAttribute("role", "status");
@@ -416,12 +516,26 @@ export default function CellScene({
         cutaway: capCount > 0,
         explode: supportsExplosion(id, current.parts.length),
         labels: labelElements.size > 0 || landmarkElements.length > 0,
+        labelModes: ["whole", "section", "explode"].filter(
+          (mode) =>
+            current.parts.some(
+              (part) =>
+                labelElements.has(part.userData.hitId) &&
+                isStructureLabelVisible(part.userData, mode),
+            ) ||
+            (mode !== "explode" &&
+              current.landmarks.some((landmark) =>
+                isStructureLabelVisible(landmark, mode),
+              )),
+        ),
       });
       renderer.shadowMap.needsUpdate = true;
+      if (live.current.initialView) setView(live.current.initialView);
     }
     function requestNode(id) {
       const key = live.current.viewKey;
       if (requestedKey === key) return;
+      publishReady(null);
       // A navigation can interrupt a gesture before its pointer-up reaches us.
       activePointers.clear();
       down = null;
@@ -489,6 +603,9 @@ export default function CellScene({
           loadingLabel.hidden = true;
           el.setAttribute("aria-busy", "false");
           el.dataset.prepareMs = (performance.now() - started).toFixed(1);
+          el.dataset.prepareSource = special
+            ? detailLoader.sourceFor(id)
+            : cellLoader.source;
           switchNode(id, special);
           invalidate();
         })
@@ -696,6 +813,13 @@ export default function CellScene({
         }
       }
       controls.autoRotate = p.rotate;
+      if (p.rotate && p.autoRotateLimit > 0) {
+        // A preview gently returns before the cutaway turns away from visitors.
+        // Manual orbit stays unrestricted; ordinary exploration keeps full turns.
+        const angle = controls.getAzimuthalAngle();
+        if (angle <= -p.autoRotateLimit) controls.autoRotateSpeed = -0.24;
+        else if (angle >= p.autoRotateLimit) controls.autoRotateSpeed = 0.24;
+      }
       const cameraChanged = controls.update(dt);
       if (
         !dirty &&
@@ -785,8 +909,11 @@ export default function CellScene({
         if (label) {
           const text = getNode(part.userData.hitId, p.lang).name;
           if (label.textContent !== text) label.textContent = text;
-          label.style.display = p.labels ? "block" : "none";
-          if (p.labels) {
+          const visible =
+            p.labels && isStructureLabelVisible(part.userData, p.mode);
+          label.style.display = visible ? "block" : "none";
+          label.leader.style.display = label.style.display;
+          if (visible) {
             const v = tempProjected
               .copy(part.userData.labelAnchor)
               .applyMatrix4(part.matrixWorld)
@@ -801,10 +928,13 @@ export default function CellScene({
         }
       }
       for (const label of landmarkElements) {
-        label.style.display =
-          p.labels && p.mode !== "explode" ? "block" : "none";
+        const visible =
+          p.labels &&
+          p.mode !== "explode" &&
+          isStructureLabelVisible(label.landmark, p.mode);
+        label.style.display = visible ? "block" : "none";
         label.leader.style.display = label.style.display;
-        if (p.labels && p.mode !== "explode") {
+        if (visible) {
           const text = label.landmark[p.lang === "en" ? "en" : "zh"];
           if (label.textContent !== text) label.textContent = text;
           const v = tempProjected
@@ -875,10 +1005,10 @@ export default function CellScene({
           ? labelList.offsetHeight + 12
           : 0;
       if (
-        el.parentElement.style.getPropertyValue("--label-rail") !==
+        layoutParent.style.getPropertyValue("--label-rail") !==
         `${railHeight}px`
       )
-        el.parentElement.style.setProperty("--label-rail", `${railHeight}px`);
+        layoutParent.style.setProperty("--label-rail", `${railHeight}px`);
       const appearance = updateAppearance(
         p.mode,
         p.highlight || hoverId,
@@ -908,13 +1038,125 @@ export default function CellScene({
         .map((n) => n.toFixed(3))
         .join(",");
       el.dataset.drawCalls = renderer.info.render.calls;
+      publishReady(api);
     }
     loadingLabel.textContent =
       live.current.lang === "en" ? "Preparing model…" : "正在准备模型…";
     loadingLabel.hidden = false;
     el.setAttribute("aria-busy", "true");
+    capture = createSceneCapture({
+      renderer,
+      scene,
+      camera,
+      target: controls.target,
+      getFittedDistance: () => distance(),
+      canReuseLiveShadows: () => captureSeparation === null,
+      fitDistance: (exportCamera) =>
+        distance(true, exportCamera, captureSeparation),
+      getLabels: () => {
+        const items = [];
+        const seen = new Set();
+        const mode = structureCaptureMode(live.current.mode, captureSeparation);
+        for (const part of current.parts) {
+          const id = part.userData.hitId;
+          if (
+            !labelElements.has(id) ||
+            seen.has(id) ||
+            !isStructureLabelVisible(part.userData, mode)
+          )
+            continue;
+          seen.add(id);
+          items.push({
+            text: getNode(id, live.current.lang).name,
+            position: part.userData.labelAnchor
+              .clone()
+              .applyMatrix4(part.matrixWorld),
+          });
+        }
+        if (mode !== "explode")
+          for (const label of landmarkElements) {
+            if (!isStructureLabelVisible(label.landmark, mode)) continue;
+            items.push({
+              text: label.landmark[live.current.lang === "en" ? "en" : "zh"],
+              position: label.landmark.position
+                .clone()
+                .multiplyScalar(transition),
+              priority: -1,
+            });
+          }
+        return items;
+      },
+    });
+    api = {
+      get ready() {
+        return (
+          !destroyed &&
+          !contextLost &&
+          !loading &&
+          Boolean(current) &&
+          currentKey === live.current.viewKey
+        );
+      },
+      get canExplode() {
+        return (
+          Boolean(current) &&
+          supportsExplosion(live.current.nodeId, current.parts.length)
+        );
+      },
+      getView: readView,
+      setView,
+      releaseCapture: () => capture.dispose(),
+      captureFrame(options = {}) {
+        if (!api.ready)
+          throw new Error("The structure scene is not ready to capture.");
+        const separation =
+          Number.isFinite(options.separation) && api.canExplode
+            ? THREE.MathUtils.clamp(options.separation, 0, 1)
+            : null;
+        const poses = [];
+        const visibility = [];
+        try {
+          captureSeparation = separation;
+          if (!options.background || options.background === "transparent") {
+            visibility.push([floor, floor.visible]);
+            floor.visible = false;
+          }
+          if (separation !== null) {
+            for (const part of current.parts) {
+              poses.push([part, part.position.clone(), part.scale.clone()]);
+              part.position
+                .copy(part.userData.home)
+                .addScaledVector(part.userData.offset, separation);
+              part.scale.copy(part.userData.restScale);
+            }
+            const mode = structureCaptureMode(live.current.mode, separation);
+            current.root.traverse((object) => {
+              const data = object.userData;
+              if (!data.assembledOnly && !data.cap && !data.cutOnly) return;
+              visibility.push([object, object.visible]);
+              object.visible = data.cap
+                ? mode === "whole"
+                : data.cutOnly
+                  ? mode !== "whole"
+                  : mode !== "explode";
+            });
+          }
+          if (matricesDirty || separation !== null) scene.updateMatrixWorld();
+          return capture.captureFrame(options);
+        } finally {
+          captureSeparation = null;
+          for (const [part, position, scale] of poses) {
+            part.position.copy(position);
+            part.scale.copy(scale);
+          }
+          for (const [object, visible] of visibility) object.visible = visible;
+          if (separation !== null) scene.updateMatrixWorld();
+        }
+      },
+    };
     frame = requestAnimationFrame(animate);
     engine.current = {
+      api,
       renderer,
       camera,
       controls,
@@ -928,6 +1170,8 @@ export default function CellScene({
     };
     return () => {
       destroyed = true;
+      publishReady(null);
+      capture.dispose();
       generation++;
       cellLoader?.dispose();
       detailLoader.dispose();
@@ -966,10 +1210,13 @@ export default function CellScene({
         l.pin.remove();
         l.remove();
       });
-      el.parentElement.style.removeProperty("--label-rail");
+      layoutParent.style.removeProperty("--label-rail");
       engine.current = null;
     };
   }, [attempt]);
+  useEffect(() => {
+    publishReady(engine.current?.api?.ready ? engine.current.api : null);
+  }, [onSceneReady]);
   useEffect(() => {
     engine.current?.invalidate();
   }, [viewKey, highlight, mode, explode, labels, rotate, lang, contracted]);

@@ -187,6 +187,8 @@ assembledEnvelope.traverse((o) => {
   o.material?.dispose();
 });
 const canceledLoader = createDetailLoader();
+assert.equal(await loadDetailModel("cell"), null);
+assert.equal(await loadDetailModel("cytoplasm"), null);
 canceledLoader.dispose();
 assert.equal(
   await canceledLoader.load("plant"),

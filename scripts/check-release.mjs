@@ -3,10 +3,80 @@ import fs from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { build } from "esbuild";
 import { processCatalog } from "../src/processes/catalog.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const dist = path.join(root, "dist");
+// Bundle metadata in memory because its shared source uses Vite-style imports.
+const homepageMetadata = await build({
+  stdin: {
+    contents: "export { homeModels } from './src/home/catalog.js';",
+    resolveDir: root,
+  },
+  bundle: true,
+  write: false,
+  platform: "node",
+  format: "esm",
+  logLevel: "silent",
+});
+const { homeModels } = await import(
+  `data:text/javascript;base64,${Buffer.from(homepageMetadata.outputFiles[0].contents).toString("base64")}`
+);
+const homeModelsManifest = JSON.parse(
+  fs.readFileSync(
+    path.join(root, "docs/qa/homepage/model-capture-manifest.json"),
+    "utf8",
+  ),
+);
+assert(homeModels.length > 0, "Homepage model catalog must not be empty");
+assert.deepEqual(
+  homeModelsManifest.map(({ id }) => id).sort(),
+  homeModels.map(({ id }) => id).sort(),
+  "Homepage model captures must cover every catalog model exactly once",
+);
+function checkHomeAsset(entry, asset) {
+  assert(
+    Number.isSafeInteger(entry.bytes) && entry.bytes > 0,
+    `Invalid size: ${asset}`,
+  );
+  assert.match(entry.sha256, /^[a-f0-9]{64}$/, `Invalid SHA-256: ${asset}`);
+  const bytes = fs.readFileSync(path.join(dist, asset));
+  assert.equal(
+    bytes.length,
+    entry.bytes,
+    `Homepage asset size mismatch: ${asset}`,
+  );
+  assert.equal(
+    createHash("sha256").update(bytes).digest("hex"),
+    entry.sha256,
+    `Homepage asset hash mismatch: ${asset}`,
+  );
+}
+for (const entry of homeModelsManifest) {
+  const asset = homeModels.find(({ id }) => id === entry.id).image;
+  assert.equal(asset, `home/models/${entry.id}.webp`);
+  checkHomeAsset(entry, asset);
+}
+const homeMotionManifest = JSON.parse(
+  fs.readFileSync(
+    path.join(root, "docs/qa/homepage/process-motion-manifest.json"),
+    "utf8",
+  ),
+);
+assert.deepEqual(
+  homeMotionManifest.map(({ id }) => id).sort(),
+  ["mitosis", "photosynthesis", "transcription"],
+  "Homepage motion captures must cover the three delivered previews exactly once",
+);
+for (const entry of homeMotionManifest) {
+  assert(
+    Object.hasOwn(processCatalog, entry.id),
+    `Unknown homepage process: ${entry.id}`,
+  );
+  assert.equal(entry.path, `/home/processes/${entry.id}.webm`);
+  checkHomeAsset(entry, entry.path.slice(1));
+}
 for (const [built, source] of Object.entries({
   "LICENSE.txt": "LICENSE",
   "NOTICE.txt": "docs/legal/NOTICE",
@@ -83,11 +153,11 @@ for (const name of files) {
   if (/\.(?:html|css)$/.test(name)) {
     const content = fs.readFileSync(path.join(dist, name), "utf8");
     assert(
-      !/(?:["'=])\/(?:assets|process-thumbnails)\//.test(content),
+      !/(?:["'=])\/(?:assets|process-thumbnails|home)\//.test(content),
       `Root-only asset path in ${name}`,
     );
   }
 }
 console.log(
-  `Release assets: ${Object.keys(processCatalog).length} processes, ${files.length} built files; subdirectory paths and development-file exclusions PASS`,
+  `Release assets: ${Object.keys(processCatalog).length} processes, ${homeModelsManifest.length} homepage models, ${homeMotionManifest.length} homepage motion previews, ${files.length} built files; subdirectory paths and development-file exclusions PASS`,
 );

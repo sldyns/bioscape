@@ -1,5 +1,10 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { membraneSurface, interpolateProfile } from "./membranes.js";
+import { membraneSurface } from "./membranes.js";
+import {
+  smoothFusionProfile,
+  fusionEnvelope,
+  profileAtX,
+} from "./fusionProfiles.js";
 import {
   clathrinLattice,
   ldlReceptor,
@@ -20,7 +25,8 @@ function create() {
   const plane = membraneSurface(group, membrane, 82);
   plane.mesh.position.x = -1.5;
   const carrier = membraneSurface(group, membrane);
-  const endosome = membraneSurface(group, membrane, 65, 64, "x");
+  const endosome = membraneSurface(group, membrane, 129, 64, "x");
+  endosome.mesh.name = "early-endosome-membrane";
   const neck = k.ring([-1.5, 1.45, 0], 0.22, 0.035, k.material("#9c799b"));
   neck.rotation.x = Math.PI / 2;
   const coat = clathrinLattice(k, coatMat);
@@ -59,6 +65,28 @@ function create() {
     k.label([3.7, -0.5, 0.4], "受体回收分选", "Receptor recycling domain", 1),
     k.label([-1.4, 1.9, 0.3], "动力蛋白颈环", "Dynamin neck collar", 1),
   ];
+  const fusedShape = [
+    [-0.61, 0],
+    [-0.38, 0.65],
+    [0.1, 0.96],
+    [0.55, 0.91],
+    [0.95, 0.62],
+    [1.6, 0.85],
+    [2.2, 1.05],
+    [2.8, 0.96],
+    [3.2, 0.57],
+    [3.45, 0.23],
+    [4.05, 0.2],
+    [4.32, 0],
+  ];
+  const smoothProfile = smoothFusionProfile(fusedShape);
+  const envelope = fusionEnvelope(
+    smoothProfile,
+    [0.35, 0.96],
+    [2.35, 1.05],
+    0.16,
+    4 / 11,
+  );
   function update(progress) {
     const p = clamp(progress),
       bend = ease(p, 0.1, 0.39),
@@ -105,24 +133,12 @@ function create() {
       uncoat: ease(p, 0.45, 0.54),
       visible: p > 0.12 && p < 0.54,
     });
-    const fusedShape = [
-      [-0.61, 0],
-      [-0.38, 0.65],
-      [0.1, 0.96],
-      [0.55, 0.91],
-      [0.95, 0.62],
-      [1.6, 0.85],
-      [2.2, 1.05],
-      [2.8, 0.96],
-      [3.2, 0.57],
-      [3.45, 0.23],
-      [4.05, 0.2],
-      [4.32, 0],
-    ];
+    const opening = ease(p, 0.67, 0.76);
+    const activeProfile = (t) => envelope(t, opening);
     endosome.mesh.position.y = -1.25;
     endosome.set((t) =>
       fused
-        ? interpolateProfile(fusedShape, t)
+        ? activeProfile(t)
         : [2.35 - 1.05 * Math.cos(Math.PI * t), 1.05 * Math.sin(Math.PI * t)],
     );
     for (let i = 0; i < 3; i++) {
@@ -160,16 +176,7 @@ function create() {
         // on its own side of the carrier and sorts along a distinct path.
         const initialX = 0.35 + r * Math.sin(theta) * Math.sin(az);
         const xx = initialX * (1 - q) + (2.05 + i * 0.18) * q + sort * 1.24;
-        let rr = 0.2,
-          slope = 0;
-        for (let j = 0; j < fusedShape.length - 1; j++) {
-          const [ax, ar] = fusedShape[j],
-            [bx, br] = fusedShape[j + 1];
-          if (xx >= ax && xx <= bx) {
-            slope = (br - ar) / (bx - ax);
-            rr = ar + (xx - ax) * slope;
-          }
-        }
+        const [rr, slope] = profileAtX(activeProfile, xx, 129);
         const initialAngle = Math.atan2(
           -r * Math.cos(theta),
           r * Math.sin(theta) * Math.cos(az),
@@ -198,7 +205,7 @@ function create() {
         );
       }
     }
-    const pumpRadius = fused ? 1.005 : 1.05;
+    const pumpRadius = fused ? profileAtX(activeProfile, 2.5, 129)[0] : 1.05;
     pump.position.set(
       fused ? 2.5 : 2.35,
       -1.25 + pumpRadius * 0.96,

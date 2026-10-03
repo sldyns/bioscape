@@ -1,0 +1,14 @@
+{
+  "beforeUnmount": {
+    "drawCalls": "18",
+    "node": "mitochondria",
+    "prepareMs": "155.0",
+    "source": "build"
+  },
+  "afterReentry": {
+    "drawCalls": "18",
+    "node": "mitochondria",
+    "prepareMs": "0.8",
+    "source": "prepared-cache"
+  }
+}

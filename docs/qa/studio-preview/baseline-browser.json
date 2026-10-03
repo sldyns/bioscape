@@ -1,0 +1,25 @@
+{
+  "elapsedMs": 244681,
+  "metrics": {
+    "TaskDuration": {
+      "before": 2.936709,
+      "after": 157.109157
+    },
+    "ScriptDuration": {
+      "before": 2.563299,
+      "after": 139.893741
+    },
+    "LayoutDuration": {
+      "before": 0.007815,
+      "after": 0.282803
+    },
+    "RecalcStyleDuration": {
+      "before": 0.004292,
+      "after": 0.274683
+    },
+    "JSHeapUsedSize": {
+      "before": 16281176,
+      "after": 17073480
+    }
+  }
+}

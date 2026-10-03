@@ -2,6 +2,70 @@ import { getNode } from "./hierarchy";
 
 // Keep a visible link between the magnified object and the cell it belongs to.
 const contexts = {
+  erythrocyteMembrane: [
+    "红细胞表面的一小块 · 膜与膜骨架",
+    "A red-cell surface patch · Membrane and skeleton",
+  ],
+  erythrocyteCytosol: [
+    "胞质中的血红蛋白 · 2HHB 实验主链",
+    "Cytosolic haemoglobin · Experimental backbone, 2HHB",
+  ],
+  neuronSoma: [
+    "神经元胞体 · 核周细胞器的局部放大",
+    "Neuronal soma · Enlarged perinuclear anatomy",
+  ],
+  neuronNucleus: [
+    "胞体内的细胞核 · 局部放大",
+    "Nucleus within the soma · Enlarged view",
+  ],
+  neuronDendrites: [
+    "从胞体伸出的树突分支",
+    "Dendritic branches extending from the soma",
+  ],
+  neuronAxon: [
+    "轴丘与初始段 · 轴突内部放大",
+    "Hillock and initial segment · Enlarged axonal anatomy",
+  ],
+  neuronMyelin: [
+    "一段髓鞘 · 膜层与旁结区放大",
+    "One internode · Enlarged lamellae and paranodes",
+  ],
+  neuronNodes: [
+    "两段髓鞘之间 · 郎飞结局部放大",
+    "Between adjacent internodes · Enlarged node of Ranvier",
+  ],
+  neuronTerminals: [
+    "一个突触前终扣 · 不含突触后靶细胞",
+    "One presynaptic bouton · Postsynaptic target omitted",
+  ],
+  muscleFibreSarcolemma: [
+    "单个肌细胞表面的一小块膜",
+    "A small membrane patch from one muscle cell",
+  ],
+  muscleFibreNuclei: [
+    "肌膜内侧的一个肌核 · 局部放大",
+    "One myonucleus beneath the sarcolemma · Enlarged view",
+  ],
+  muscleFibreMyofibrils: [
+    "同一肌细胞内的肌原纤维片段",
+    "Myofibril segments within the same muscle cell",
+  ],
+  muscleFibreSarcomere: [
+    "一个 Z 盘到 Z 盘的肌节 · 肌丝放大",
+    "One Z-to-Z sarcomere · Enlarged filaments",
+  ],
+  muscleFibreSR: [
+    "围绕肌原纤维的肌浆网 · 局部截段",
+    "Sarcoplasmic reticulum around a myofibril · Cropped detail",
+  ],
+  muscleFibreTriads: [
+    "T 小管与两侧肌浆网终池 · 连接处放大",
+    "T tubule with flanking SR cisternae · Enlarged junction",
+  ],
+  muscleFibreMitochondria: [
+    "肌原纤维之间的一个线粒体",
+    "One mitochondrion between myofibrils",
+  ],
   yeastWall: ["酵母细胞壁的一小块", "A patch of the yeast cell wall"],
   yeastMembrane: [
     "酵母细胞壁内侧的膜 · 局部放大",

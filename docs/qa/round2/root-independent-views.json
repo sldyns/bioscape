@@ -1,0 +1,242 @@
+{
+  "independentBefore": {
+    "left": {
+      "id": "neuron",
+      "mode": "section",
+      "explode": 60,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.75524,
+          -0.1824,
+          0.62956
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.83507
+      }
+    },
+    "right": {
+      "id": "muscleFibre",
+      "mode": "whole",
+      "explode": 55,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.75524,
+          -0.1824,
+          0.62956
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.83507
+      }
+    }
+  },
+  "afterLeftOrbit": {
+    "left": {
+      "id": "neuron",
+      "mode": "section",
+      "explode": 60,
+      "labels": false,
+      "view": {
+        "direction": [
+          -0.72347,
+          0.5865,
+          0.36416
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.83507
+      }
+    },
+    "right": {
+      "id": "muscleFibre",
+      "mode": "whole",
+      "explode": 55,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.75524,
+          -0.1824,
+          0.62956
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.83507
+      }
+    }
+  },
+  "afterRightZoom": {
+    "left": {
+      "id": "neuron",
+      "mode": "section",
+      "explode": 60,
+      "labels": false,
+      "view": {
+        "direction": [
+          -0.72347,
+          0.5865,
+          0.36416
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.83507
+      }
+    },
+    "right": {
+      "id": "muscleFibre",
+      "mode": "whole",
+      "explode": 55,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.75524,
+          -0.1824,
+          0.62956
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.73081
+      }
+    }
+  },
+  "afterLeftReset": {
+    "left": {
+      "id": "neuron",
+      "mode": "section",
+      "explode": 60,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.07719,
+          0.10035,
+          0.99195
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 1.00811
+      }
+    },
+    "right": {
+      "id": "muscleFibre",
+      "mode": "whole",
+      "explode": 55,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.75524,
+          -0.1824,
+          0.62956
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.73081
+      }
+    }
+  },
+  "afterSwap": {
+    "left": {
+      "id": "muscleFibre",
+      "mode": "whole",
+      "explode": 55,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.75524,
+          -0.1824,
+          0.62956
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.73081
+      }
+    },
+    "right": {
+      "id": "neuron",
+      "mode": "section",
+      "explode": 60,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.07719,
+          0.10035,
+          0.99195
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 1.00811
+      }
+    }
+  },
+  "afterReloadCompare": {
+    "left": {
+      "id": "muscleFibre",
+      "mode": "whole",
+      "explode": 55,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.75524,
+          -0.1824,
+          0.62956
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 0.73081
+      }
+    },
+    "right": {
+      "id": "neuron",
+      "mode": "section",
+      "explode": 60,
+      "labels": false,
+      "view": {
+        "direction": [
+          0.07719,
+          0.10035,
+          0.99195
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "zoom": 1.00811
+      }
+    }
+  }
+}

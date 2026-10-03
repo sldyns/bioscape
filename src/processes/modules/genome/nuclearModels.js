@@ -55,6 +55,19 @@ export function createReplication({ rootId = "cell" } = {}) {
     g.position.set(-0.3, 0, -0.03);
     clamps.push(g);
   }
+  // Polymerase identities are not tracked between Okazaki fragments. Fade
+  // dissociation/recruitment instead of displaying a molecule teleporting;
+  // while visible, the enzyme stays on the existing synthesis-tip calculation.
+  lag.name = "lagging-DNA-polymerase-recruitment";
+  const lagMaterials = new Map();
+  lag.traverse((object) => {
+    if (object.material && !lagMaterials.has(object.material))
+      lagMaterials.set(object.material, {
+        opacity: object.material.opacity,
+        transparent: object.material.transparent,
+        depthWrite: object.material.depthWrite,
+      });
+  });
   const labels = [
     label([-4.2, 1.65, 0], "亲本 3′", "Parental 3′"),
     label([4.2, 0.75, 0], "5′", "5′"),
@@ -181,7 +194,20 @@ export function createReplication({ rootId = "cell" } = {}) {
     point(tip, 3, a);
     lag.position.copy(a);
     lag.rotation.z = Math.PI;
-    lag.visible = progress > 0.24 && progress < 0.82;
+    const fragmentStart = 0.24 + j * 0.12;
+    const recruitment = ease(progress, fragmentStart, fragmentStart + 0.014);
+    const release = ease(
+      progress,
+      fragmentStart + 0.09,
+      fragmentStart + (j < 4 ? 0.106 : 0.1),
+    );
+    const occupancy = recruitment * (1 - release);
+    lag.visible = progress > 0.24 && progress < 0.82 && occupancy > 1e-6;
+    for (const [material, rest] of lagMaterials) {
+      material.opacity = rest.opacity * occupancy;
+      material.transparent = rest.transparent || occupancy < 1;
+      material.depthWrite = occupancy < 1 ? false : rest.depthWrite;
+    }
     point(fork - 0.45, 1, a);
     primase.position.copy(a).add(new THREE.Vector3(0, -0.18, -0.1));
     primase.visible = progress > 0.13 && progress < 0.75;

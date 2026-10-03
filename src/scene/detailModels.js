@@ -96,10 +96,14 @@ export function detailModel(id, reference = null) {
       });
     bins
       .get(key)
-      .geometries.push(o.geometry.clone().applyMatrix4(o.matrixWorld));
+      .geometries.push(
+        new THREE.BufferGeometry().copy(o.geometry).applyMatrix4(o.matrixWorld),
+      );
   });
   const result = new THREE.Group();
   result.userData.ownedGeometry = true;
+  if (g.userData.partLabelModes)
+    result.userData.partLabelModes = structuredClone(g.userData.partLabelModes);
   result.userData.landmarks = (g.userData.landmarks || []).map((a) => ({
     ...a,
     position: new THREE.Vector3(...a.position)

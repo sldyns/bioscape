@@ -215,7 +215,11 @@ export function mergeER(g) {
         cap: !!o.userData.cap,
         geos: [],
       });
-    bins.get(key).geos.push(o.geometry.clone().applyMatrix4(o.matrixWorld));
+    bins
+      .get(key)
+      .geos.push(
+        new THREE.BufferGeometry().copy(o.geometry).applyMatrix4(o.matrixWorld),
+      );
   });
   const result = new THREE.Group();
   for (const b of bins.values()) {

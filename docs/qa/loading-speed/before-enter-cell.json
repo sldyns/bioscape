@@ -1,0 +1,44 @@
+{
+  "enterStart": 259430,
+  "longTasks": [
+    {
+      "duration": 54,
+      "start": 373.7000000476837
+    },
+    {
+      "duration": 212,
+      "start": 2634.7000000476837
+    },
+    {
+      "duration": 208,
+      "start": 215536.90000009537
+    },
+    {
+      "duration": 56,
+      "start": 259483.59999990463
+    },
+    {
+      "duration": 230,
+      "start": 261854.5
+    }
+  ],
+  "models": [
+    {
+      "cpuMs": "207.80",
+      "drawCalls": "152",
+      "node": "cell",
+      "prepareMs": "2250.4",
+      "source": "build",
+      "time": 215745
+    },
+    {
+      "cpuMs": "229.10",
+      "drawCalls": "152",
+      "node": "cell",
+      "prepareMs": "2283.6",
+      "source": "build",
+      "time": 262083.79999995232
+    }
+  ],
+  "started": 212939.29999995232
+}

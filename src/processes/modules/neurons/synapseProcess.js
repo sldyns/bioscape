@@ -8,6 +8,14 @@ export default {
     "哺乳动物中枢兴奋性突触的剖面示例：突触前末梢、突触后树突与邻近星形胶质细胞。展示 Ca²⁺ 依赖的释放和 AMPA 受体响应；并非所有突触均使用谷氨酸。受体为放大的结构拓扑示意，非原子坐标。",
     "Cutaway of a mammalian central excitatory synapse: a presynaptic terminal, postsynaptic dendrite and nearby astrocyte. Shows Ca²⁺-dependent release and an AMPA receptor response; not all synapses use glutamate. Receptors are enlarged topology schematics, not atomic coordinates.",
   ),
+  contexts: {
+    neuron: {
+      intro: b(
+        "从神经元末端或树突转入哺乳动物中枢谷氨酸突触的剖面示例。过程补入另一个神经元的突触膜及邻近星形胶质细胞，展示 Ca²⁺ 依赖的释放和 AMPA 受体响应；不是同一神经元与自己的末端相接，也不代表所有突触都使用谷氨酸。受体为放大的结构拓扑示意，非原子坐标。",
+        "From a neuronal terminal or dendrite, explore a mammalian central glutamatergic synapse. The process adds the synaptic partner neuron and a nearby astrocyte to show Ca²⁺-dependent release and AMPA-receptor responses. It does not depict the selected neuron's terminal synapsing onto itself, and not all synapses use glutamate. Receptors are enlarged topology schematics, not atomic coordinates.",
+      ),
+    },
+  },
   duration: 34,
   controls: [
     {

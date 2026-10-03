@@ -1,8 +1,20 @@
-import { unpackCell } from "./cellTransfer";
-export function createCellLoader() {
+import { unpackCell } from "./cellTransfer.js";
+import { preparedModelCache } from "./preparedModelCache.js";
+export function createCellLoader({ cache = preparedModelCache } = {}) {
   let worker = null,
     disposed = false,
     finish;
+  const cached = cache.get("cell");
+  if (cached !== undefined)
+    return {
+      source: "prepared-cache",
+      promise: Promise.resolve().then(() =>
+        disposed ? null : unpackCell(cached),
+      ),
+      dispose() {
+        disposed = true;
+      },
+    };
   const fallback = () =>
     import("./buildCell").then(({ buildCell }) =>
       disposed ? null : buildCell(),
@@ -20,12 +32,15 @@ export function createCellLoader() {
       });
       worker.onerror = fail;
       worker.onmessage = ({ data }) => {
+        if (disposed) return;
         if (data.error) {
           fail();
           return;
         }
         try {
-          resolve(unpackCell(data.payload));
+          const model = unpackCell(data.payload);
+          cache.set("cell", data.payload);
+          resolve(model);
           worker.terminate();
           worker = null;
         } catch {
@@ -38,6 +53,7 @@ export function createCellLoader() {
     }
   });
   return {
+    source: "build",
     promise,
     dispose() {
       disposed = true;

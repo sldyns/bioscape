@@ -1,0 +1,38 @@
+{
+  "cold": {
+    "beforeMs": [
+      2856,
+      2858,
+      2846.7000000476837
+    ],
+    "afterMs": [
+      2592.600000143051,
+      2441.2000000476837,
+      2453.899999856949
+    ],
+    "beforeMedianMs": 2856,
+    "afterMedianMs": 2453.899999856949,
+    "reductionPercent": 14.079131657669864
+  },
+  "homeToCell": {
+    "beforeMs": [
+      2653.7999999523163
+    ],
+    "afterMs": [
+      353.7999999523163,
+      346.79999995232356,
+      484.20000004767644
+    ],
+    "beforeMedianMs": 2653.7999999523163,
+    "afterMedianMs": 353.7999999523163,
+    "reductionPercent": 86.66817394081417
+  },
+  "validation": {
+    "fullCheck": "PASS",
+    "modelMeshes": 190,
+    "modelFingerprintEqual": true,
+    "coldSettledPixelEqual": true,
+    "browserErrors": 0,
+    "warmSettledPixelEqual": true
+  }
+}

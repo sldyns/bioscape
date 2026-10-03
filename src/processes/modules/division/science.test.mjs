@@ -320,3 +320,37 @@ for (const mesh of membranes) {
 console.log(
   "Division scientific geometry: triangle-surface contacts, arrest, antiparallel overlap, telocentric arms, matched reciprocal junctions, chromosome allocation and open continuous bilayer channels passed.",
 );
+
+// Reproduce the actual playback pose that missed the world-space attachment ray.
+for (const attachment of ["normal", "unattached"]) {
+  assert.doesNotThrow(() => m.update(0.1603687500000001, { attachment }));
+}
+// Frame times are irregular; stage-only and uniform sampling missed this fault.
+let seed = 1791019146;
+const playbackPoses = [0, 0.1603687500000001, 0.43, 0.5, 0.94, 1];
+for (let frame = 0; frame < 180; frame++) {
+  seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+  playbackPoses.push(seed / 4294967296);
+}
+playbackPoses.sort((a, b) => a - b);
+for (const definition of [mitosis, meiosis]) {
+  const model = definition.create();
+  for (const parameters of definition === mitosis
+    ? [{}, { attachment: "unattached" }]
+    : [{}]) {
+    for (let playback = 0; playback < 2; playback++) {
+      for (const progress of playbackPoses) {
+        assert.doesNotThrow(
+          () => model.update(progress, parameters),
+          `${definition.id} playback ${playback} at ${progress}`,
+        );
+        if (
+          (progress > 0.36 && progress < 0.54) ||
+          (progress > 0.64 && progress < 0.73)
+        )
+          contacts(model, parameters.attachment === "unattached" ? 7 : 8);
+      }
+    }
+  }
+}
+console.log("Division irregular playback and replay regression PASS");
