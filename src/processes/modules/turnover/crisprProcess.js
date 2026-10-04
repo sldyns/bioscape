@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { molecularDetail } from "./molecularDetail.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 export default {
   id: "crispr",
@@ -287,27 +288,23 @@ export default {
           0.12,
         ]),
       );
+    pam.forEach((base, i) => {
+      base.name = `DNA PAM nucleotide ${i}`;
+    });
     const labels = [
-      k.label(
-        [-0.7, 2.0, 0],
-        "SpCas9 · 干扰阶段",
-        "SpCas9 · interference stage",
-        3,
-      ),
-      k.label([-4, -0.6, 0], "非靶链 5′ → 3′", "Non-target 5′ → 3′", 2),
-      k.label([-4, -1.1, 0], "靶链 3′ → 5′", "Target 3′ → 5′", 2),
-      k.label([2.1, 0.94, 0.2], "PAM · 5′-NGG-3′", "PAM · 5′-NGG-3′", 3),
-      k.label([-1.1, -0.55, 0.6], "crRNA · 5′ → 3′", "crRNA · 5′ → 3′", 2),
-      k.label([1.65, -2.45, 0.2], "tracrRNA", "tracrRNA", 2),
-      k.label([0.65, -1.25, 0.4], "HNH · 靶链", "HNH · target", 2),
-      k.label([0.75, 1.0, 0.4], "RuvC · 非靶链", "RuvC · non-target", 2),
-      k.label(
-        [-0.3, 1.45, 0.5],
-        "置换的非靶链",
-        "Displaced non-target strand",
-        2,
-      ),
+      k.label([0, 0, 0], "SpCas9 · 干扰阶段", "SpCas9 · interference stage", 3),
+      k.label([0, 0, 0], "非靶链 5′ → 3′", "Non-target 5′ → 3′", 2),
+      k.label([0, 0, 0], "靶链 3′ → 5′", "Target 3′ → 5′", 2),
+      k.label([0, 0, 0], "PAM · 5′-NGG-3′", "PAM · 5′-NGG-3′", 3),
+      k.label([0, 0, 0], "crRNA · 5′ → 3′", "crRNA · 5′ → 3′", 2),
+      k.label([0, 0, 0], "tracrRNA", "tracrRNA", 2),
+      k.label([0, 0, 0], "HNH · 靶链", "HNH · target", 2),
+      k.label([0, 0, 0], "RuvC · 非靶链", "RuvC · non-target", 2),
+      k.label([0, 0, 0], "置换的非靶链", "Displaced non-target strand", 2),
     ];
+    const anchor = labelAnchors(labels),
+      casAnchor = cas.getObjectByName("REC3 proofreading domain").children[0],
+      trAnchor = trScaffold.geometry.parameters.path.getPoint(0.9);
     const delta = new THREE.Vector3(),
       up = new THREE.Vector3(0, 1, 0);
     const connect = (m, a, z, r) => {
@@ -517,9 +514,15 @@ export default {
         0.68 + open * 0.1,
         -0.06 + open * 0.24,
       );
-      labels[0].position[1] = 2 + cas.position.y;
-      labels[4].position[1] = -0.65 + cas.position.y;
-      labels[5].position[1] = -2.4 + cas.position.y;
+      anchor[0](casAnchor);
+      anchor[1](rows[0][0], 0, -0.5, 0);
+      anchor[2](rows[1][0], 0, -0.5, 0);
+      anchor[3](pam[1]);
+      anchor[4](guide[4]);
+      anchor[5](trScaffold, trAnchor.x, trAnchor.y, trAnchor.z);
+      anchor[6](hnh.children[0]);
+      anchor[7](ruvc.children[0]);
+      anchor[8](rows[0][24]);
       labels[3].text = hasPam
         ? b("PAM · 5′-NGG-3′", "PAM · 5′-NGG-3′")
         : b("无兼容 PAM", "No compatible PAM");

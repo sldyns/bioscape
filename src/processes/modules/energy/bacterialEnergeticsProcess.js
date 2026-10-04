@@ -1,5 +1,5 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { energyDetails } from "./detailKit.js";
+import { energyDetails, carrierPhase, flowScale } from "./detailKit.js";
 
 function create() {
   const k = sceneKit(),
@@ -17,7 +17,7 @@ function create() {
     electron = material("#74aebd"),
     atp = material("#ac94b7");
   const curve = (x) => -0.075 * x * x;
-  details.bilayer({
+  const membrane = details.bilayer({
     length: 8.5,
     depth: 1.55,
     curve,
@@ -41,16 +41,18 @@ function create() {
     opacity: 0.35,
     depthWrite: false,
   });
+  let wallLabelTarget;
   for (let j = 0; j < 3; j++)
     for (let i = 0; i < 32; i++) {
       const x = -4 + i * 0.25,
         y = curve(x) + 1.32;
-      segment(
+      const wallSegment = segment(
         [x, y, -1 + j * 0.45],
         [x + 0.19, curve(x + 0.19) + 1.32, -1 + j * 0.45],
         0.034,
         wallMat,
       );
+      if (i === 12 && j === 2) wallLabelTarget = wallSegment;
     }
   for (let i = 0; i < 16; i++) {
     const x = -3.9 + i * 0.5;
@@ -70,22 +72,46 @@ function create() {
   ndh1.name = "transmembrane-NDH-I";
   ndh2.name = "cytoplasmic-peripheral-NDH-II";
   details.bundle(ndh1, [-0.25, 0, 0], [1.2, 0.9, 1.1], blue, 7);
-  details.bundle(ndh1, [0.28, 0, 0], [0.9, 0.85, 0.9], green, 5);
+  details.bundle(ndh1, [0.28, 0, 0], [0.9, 0.85, 0.9], green, 5).name =
+    "NDH-I-proton-transfer-domain";
   details.fold(ndh1, [-0.28, -0.64, 0], [0.9, 1.15, 0.8], blue);
-  details.fold(ndh1, [-0.4, -1.02, 0.03], [0.85, 0.55, 0.8], green);
-  details.fold(ndh2, [0, -0.4, 0], [0.95, 0.65, 0.8], green);
+  const ndh1LabelTarget = details.fold(
+    ndh1,
+    [-0.4, -1.02, 0.03],
+    [0.85, 0.55, 0.8],
+    green,
+  ).children[0];
+  const ndh2LabelTarget = details.fold(
+    ndh2,
+    [0, -0.4, 0],
+    [0.95, 0.65, 0.8],
+    green,
+  ).children[0];
+  ndh1LabelTarget.name = "NDH-I-label-surface";
+  ndh2LabelTarget.name = "NDH-II-label-surface";
   const oxidase = new THREE.Group();
   oxidase.position.set(0.65, curve(0.65), 0);
   group.add(oxidase);
   const bo = new THREE.Group(),
     bd = new THREE.Group();
   oxidase.add(bo, bd);
-  details.bundle(bo, [-0.13, 0, 0], [1.25, 1.1, 1.05], rust, 9);
+  details.bundle(bo, [-0.13, 0, 0], [1.25, 1.1, 1.05], rust, 9).name =
+    "bo3-proton-transfer-domain";
   details.bundle(bo, [0.34, 0, -0.05], [0.62, 0.9, 0.7], blue, 4);
-  details.fold(bo, [-0.1, 0.42, -0.05], [0.7, 0.45, 0.7], rust);
+  const boPeriplasm = details.fold(
+    bo,
+    [-0.1, 0.42, -0.05],
+    [0.7, 0.45, 0.7],
+    rust,
+  );
   for (const x of [-0.27, 0.27])
     details.bundle(bd, [x, 0.01, 0], [0.96, 1.13, 1.1], green, 7);
-  details.fold(bd, [0, 0.45, -0.07], [1.2, 0.45, 0.8], green);
+  const bdPeriplasm = details.fold(
+    bd,
+    [0, 0.45, -0.07],
+    [1.2, 0.45, 0.8],
+    green,
+  );
   // Three exposed heme-like rings distinguish the bd branch; positions schematic.
   for (let i = 0; i < 3; i++) {
     const r = k.ring(
@@ -115,19 +141,28 @@ function create() {
   ball([0.12, -1.03, 0.07], [0.15, 0.18, 0.1], atp, rotor);
   details.synthase(synthase, rotor, [0, 0, 0], -1.28, 10);
   const quinone = ball([-1, curve(-1), 0.47], [0.18, 0.11, 0.13], electron);
+  quinone.name = "ubiquinone-carrier";
   const eflow = Array.from({ length: 7 }, () =>
     ball([0, 0, 0], 0.065, electron),
   );
-  const pumped = Array.from({ length: 6 }, () =>
-    ball([0, 0, 0], 0.087, proton),
-  );
+  const pumped = Array.from({ length: 6 }, (_, i) => {
+    const o = ball([0, 0, 0], 0.087, proton);
+    o.name = `pumped-proton-${i}`;
+    return o;
+  });
   const released = Array.from({ length: 3 }, () =>
     ball([0, 0, 0], 0.087, proton),
   );
-  const consumed = Array.from({ length: 3 }, () =>
-    ball([0, 0, 0], 0.087, proton),
-  );
-  const back = Array.from({ length: 4 }, () => ball([0, 0, 0], 0.087, proton));
+  const consumed = Array.from({ length: 3 }, (_, i) => {
+    const o = ball([0, 0, 0], 0.087, proton);
+    o.name = `chemical-proton-${i}`;
+    return o;
+  });
+  const back = Array.from({ length: 4 }, (_, i) => {
+    const o = ball([0, 0, 0], 0.087, proton);
+    o.name = `Fo-return-proton-${i}`;
+    return o;
+  });
   const products = Array.from({ length: 3 }, () =>
     details.adenylate(group, [0, 0, 0], 0.46),
   );
@@ -146,13 +181,13 @@ function create() {
   const water = ball([0.9, -0.5, 0.58], 0.13, material("#9bbaca"));
   const pumpArrows = new THREE.Group();
   group.add(pumpArrows);
-  for (const x of [-2.08, 1.02]) {
+  for (const x of [-2.07, 0.52]) {
     const y = curve(x);
-    segment([x, y - 0.6, 0.5], [x, y + 0.72, 0.5], 0.015, proton, pumpArrows);
+    segment([x, y - 0.6, 0], [x, y + 0.72, 0], 0.015, proton, pumpArrows);
     const a = k.mesh(
       new THREE.ConeGeometry(0.09, 0.18, 16),
       proton,
-      [x, y + 0.72, 0.5],
+      [x, y + 0.72, 0],
       pumpArrows,
     );
   }
@@ -171,17 +206,17 @@ function create() {
     label([-1, 0.35, 0.55], "Q / QH₂", "Q / QH₂", 1),
     label(
       [1.4, 0.6, 0.4],
-      "QH₂ 向周质释放 H⁺",
-      "QH₂ releases H⁺ to periplasm",
+      "QH₂ 氧化 · 向周质释放 H⁺",
+      "QH₂ oxidation · H⁺ release to periplasm",
       1,
     ),
     label(
       [0.3, -1.55, 0.4],
-      "胞质 H⁺ 用于生成水",
-      "Cytoplasmic H⁺ used to make water",
+      "氧还原 · 消耗胞质 H⁺",
+      "O₂ reduction · cytoplasmic H⁺",
       1,
     ),
-    label([3.2, 0.25, 0.4], "H⁺ 回流", "H⁺ return", 1),
+    label([3.2, 0.25, 0.4], "Fₒ · H⁺ 回流", "Fₒ · H⁺ return", 1),
     label(
       [-3.65, 0.95, -0.2],
       "肽聚糖 · 背景定位",
@@ -189,6 +224,19 @@ function create() {
       0,
     ),
   ];
+  details.anchorNearestInstance(
+    labels[2],
+    membrane.getObjectByName("upper-leaflet-heads"),
+    [-4, curve(-4) + 0.205, 0.4],
+  );
+  const ndhAnchor = details.anchor(labels[3], ndh1LabelTarget);
+  const oxidaseAnchor = details.anchor(labels[4], bo.children[0].children[2]);
+  details.anchor(labels[5], group.getObjectByName("F1-label-surface"));
+  details.anchor(labels[6], quinone);
+  const releaseAnchor = details.anchor(labels[7], boPeriplasm.children[1]);
+  const chemicalAnchor = details.anchor(labels[8], bo.children[0].children[1]);
+  details.anchor(labels[9], group.getObjectByName("Fo-label-surface"));
+  details.anchor(labels[10], wallLabelTarget);
   const update = (progress, parameters = {}) => {
     const p = clamp(progress),
       alternative = parameters.route === "ndh2-bd",
@@ -205,40 +253,48 @@ function create() {
     labels[4].text = alternative
       ? b("bd-I · 电荷分离，不泵 H⁺", "bd-I · charge separation, no pump")
       : b("bo₃ · 泵 H⁺ 并还原氧", "bo₃ · proton pump and O₂ reduction");
-    const qx = -1.6 + 1.85 * ((p * 2) % 1);
+    const qx = -1.6 + 1.85 * carrierPhase(p, 2);
     quinone.position.set(qx, curve(qx), 0.48);
     eflow.forEach((o, i) => {
       const t = (p * 2 + i / 7) % 1,
         x = -2.4 + 3.1 * t;
       o.position.set(x, curve(x) - 0.48 * (1 - ease(t, 0, 0.25)), 0.49);
+      o.scale.setScalar(0.065 * flowScale(t) * ease(p, 0.14, 0.18));
       o.visible = on;
     });
     pumped.forEach((o, i) => {
-      const x = i < 3 ? -2.08 : 1.02,
+      const x = i < 3 ? -2.07 : 0.52,
         t = (p * 3 + (i % 3) / 3) % 1;
-      o.position.set(x, curve(x) - 0.65 + 1.45 * t, 0.52);
+      o.position.set(x, curve(x) - 0.65 + 1.45 * t, 0);
+      o.scale.setScalar(0.087 * flowScale(t) * ease(p, 0.32, 0.36));
       o.visible = !alternative && p > 0.32;
     });
     released.forEach((o, i) => {
       const t = (p * 3 + i / 3) % 1;
-      o.position.set(0.45 + 0.55 * t, 0.13 + 0.65 * t, 0.44);
+      o.position.set(0.52 + 0.55 * t, curve(0.52) + 0.24 + 0.65 * t, 0.08);
+      o.scale.setScalar(0.087 * flowScale(t) * ease(p, 0.36, 0.4));
       o.visible = p > 0.36;
     });
     consumed.forEach((o, i) => {
       const t = (p * 3 + i / 3) % 1;
-      o.position.set(0.5, -1.25 + 1.32 * t, 0.57);
+      // Cytoplasmic substrate protons enter the oxidase, ending inside its
+      // catalytic core; this is not a bd proton-pumping route to periplasm.
+      o.position.set(0.52, -1.25 + 1.32 * t, 0.08);
+      o.scale.setScalar(0.087 * flowScale(t) * ease(p, 0.43, 0.47));
       o.visible = p > 0.43;
     });
     const activity = ease(p, 0.5, 0.78),
       factor = alternative ? 0.48 : 1;
     back.forEach((o, i) => {
       const t = (p * 2 + i / 4) % 1;
-      o.position.set(3.08, curve(3.1) + 0.65 - 1.65 * t, 0.38);
+      o.position.set(3.44, curve(3.1) + 0.65 - 1.65 * t, 0);
+      o.scale.setScalar(0.087 * flowScale(t) * ease(p, 0.58, 0.63));
       o.visible = p > 0.58 && (i < 2 || !alternative);
     });
     products.forEach((o, i) => {
       const t = (p * (alternative ? 1 : 2) + i / 3) % 1;
       o.position.set(3.12 - 0.9 * t, curve(3.1) - 1.55 - 0.25 * t, 0.35);
+      o.scale.setScalar(0.46 * flowScale(t) * ease(p, 0.68, 0.72));
       o.visible = p > 0.68;
     });
     reservoir.forEach((o, i) => {
@@ -248,6 +304,17 @@ function create() {
     oxygen.position.set(1.6 - 0.8 * ease(p, 0.35, 0.6), -0.4, 0.68);
     oxygen.visible = p > 0.24 && p < 0.62;
     water.visible = p > 0.57;
+    ndhAnchor.target = alternative ? ndh2LabelTarget : ndh1LabelTarget;
+    oxidaseAnchor.target = alternative
+      ? bd.children[0].children[2]
+      : bo.children[0].children[2];
+    releaseAnchor.target = alternative
+      ? bdPeriplasm.children[1]
+      : boPeriplasm.children[1];
+    chemicalAnchor.target = alternative
+      ? bd.children[0].children[1]
+      : bo.children[0].children[1];
+    details.syncLabelAnchors();
     group.userData = {
       process: "bacterialEnergetics",
       species: "Escherichia coli",
@@ -356,6 +423,10 @@ export default {
     },
   ],
   sources: [
+    {
+      title: "E. coli bd-I oxidase structure and proton-access mechanism",
+      url: "https://www.nature.com/articles/s41467-019-13122-4",
+    },
     {
       title: "E. coli NDH-II is peripheral membrane-bound · PMID 23089137",
       url: "https://pubmed.ncbi.nlm.nih.gov/23089137/",

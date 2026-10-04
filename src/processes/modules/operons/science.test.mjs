@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import "./duplexGeometry.test.mjs";
+import "./playback.test.mjs";
+import "./labelAnchors.test.mjs";
 import * as THREE from "three";
 import { build } from "esbuild";
 import lac from "./lacOperonProcess.js";

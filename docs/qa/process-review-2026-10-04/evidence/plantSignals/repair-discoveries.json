@@ -1,0 +1,48 @@
+{
+  "group": "plantSignals",
+  "phase": "integrated-stage-image-review",
+  "galleryIndex": "docs/qa/process-review-2026-10-04/evidence/browser/gallery-index.json",
+  "issues": [
+    {
+      "issueId": "20261004-plantSignals-06",
+      "model": "auxin",
+      "severity": "P2",
+      "kind": "rendered_annotation_anchor",
+      "status": "confirmed",
+      "file": "src/processes/modules/plantSignals/auxinProcess.js",
+      "evidence": [
+        "Reviewed all seven stage frames in full-a-stable-034-auxin-plant sheet; opened native stage-3 and stage-6 images.",
+        "At p=0.355 the Auxin and TIR1 leaders end in empty space above the bound pocket; their positions are static [-3.1,2.85,0.1] and [-2.4,2.3,0].",
+        "At p=0.895 the RNA leader ends near the proteasome/inset rather than the visible strand because its anchor stays [-0.06,-0.05,0.2]. DNA/ARF and repressor use layout offsets instead of partner surfaces.",
+        "ProcessScene.jsx projects label.position directly to leader x1/y1, confirming these coordinates are semantic anchors rather than label-box offsets."
+      ],
+      "fix": "Bind named labels to actual mesh/instance surface points and update dynamic transforms after geometry updates. Anchor the tissue outcome to the visible inset. Treat the nucleus caption as an interior-region annotation, not a molecular pointer. Gate transient labels to represented-object activity.",
+      "verification": "Triangle-surface distances, actual moved-instance coordinates, both conditions and irregular seeks; verify inactive ligand/RNA/degraded repressor labels stay inactive.",
+      "images": [
+        "full-a-stable-034-auxin-plant-stage-3.webp",
+        "full-a-stable-034-auxin-plant-stage-6.webp"
+      ]
+    },
+    {
+      "issueId": "20261004-plantSignals-07",
+      "model": "plantDefense",
+      "severity": "P2",
+      "kind": "rendered_annotation_anchor",
+      "status": "confirmed",
+      "file": "src/processes/modules/plantSignals/plantDefenseProcess.js",
+      "evidence": [
+        "Reviewed all seven stage frames in full-a-stable-035-plantDefense-plant sheet; opened native stage-4 and end images.",
+        "At p=0.525 and p=1, FLS2, BIK1 and RBOHD leaders visibly stop outside their domains; BIK1 anchor is deliberately y-0.47 and RBOHD anchor is below its catalytic domain.",
+        "BAK1 updates only label x despite its new z trajectory; flg22 uses +[0.27,0.9] and fixed z instead of following the peptide transform.",
+        "Terminal ROS and NADPH leaders stop in nearby empty space, with static anchor coordinates while particles/donor move."
+      ],
+      "fix": "Use actual receptor/catalytic/ligand/particle mesh surfaces and complete world transforms; attach the membrane caption to a persistent lipid-head instance. Keep Apoplast and Cytosol as explicit empty-compartment region annotations. Tie ROS/ligand/donor activity to their represented targets.",
+      "verification": "Measure named-label surface attachment across recruitment, BIK1 motion, ROS output and both ligand controls; assert static region anchors remain in their intended compartment.",
+      "images": [
+        "full-a-stable-035-plantDefense-plant-stage-4.webp",
+        "full-a-stable-035-plantDefense-plant-end.webp"
+      ]
+    }
+  ],
+  "note": "Append-only discovery record for this additional review. Original Phase A reports remain unchanged. Source biological mechanisms were reviewed previously; these new defects are directly observed annotation/geometry mismatches."
+}

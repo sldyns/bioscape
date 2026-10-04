@@ -4,6 +4,7 @@ import {
   materialInventory,
   alphaHelix,
   foldedDomain,
+  bindSurfaceLabel,
   mix,
 } from "./membraneGeometry.js";
 
@@ -244,6 +245,14 @@ export default {
       k.label([-2.6, -2.57, 0.45], "ATP", "ATP", 2),
       k.label([0.24, -1.18, 0.45], "磷酸基", "Phosphate"),
     ];
+    const anchorN = bindSurfaceLabel(labels[4], nDomain.children[0], k.group);
+    const anchorP = bindSurfaceLabel(labels[5], pDomain.children[1], k.group);
+    const anchorPump = bindSurfaceLabel(
+      labels[6],
+      helices[2].object,
+      k.group,
+      [0, 0.3, 0.1],
+    );
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         powered = parameters.energy !== "none";
@@ -288,19 +297,24 @@ export default {
         );
       });
       const dock = ease(q, 0.08, 0.2),
+        alignPhosphate = ease(q, 0.2, 0.29),
         leave = ease(q, 0.3, 0.42);
       nucleotide.visible = powered;
+      // ATP docks as one intact nucleotide. Its gamma phosphate approaches
+      // the P-domain pocket during gate closure, then transfers only when
+      // sodium is occluded. The identity handoff has identical geometry.
       nucleotide.position.set(
-        mix(-2.72, -1.17, dock) - leave * 1.25,
-        mix(-2.64, -1.59, dock) - leave * 0.95,
-        0.45,
+        mix(-2.72, -1.17, dock) + alignPhosphate * 0.53 - leave * 1.25,
+        mix(-2.64, -1.59, dock) - alignPhosphate * 0.02 - leave * 0.95,
+        0.45 - alignPhosphate * 0.06,
       );
       terminalPhosphate.visible = powered && q < 0.29;
       terminalPhosphate.position.set(
         nucleotide.position.x + 0.76,
         nucleotide.position.y,
-        0.45,
+        nucleotide.position.z,
       );
+      terminalPhosphate.scale.setScalar(mix(0.115, 0.15, alignPhosphate));
       phosphate.visible = powered && q >= 0.29;
       // Conservative teaching synchronization: the represented phosphotransfer
       // waits for Na occlusion; K occlusion precedes dephosphorylation/Pi exit.
@@ -312,8 +326,13 @@ export default {
         0.39,
       );
       labels[8].active = phosphate.visible;
-      labels[8].position[0] = phosphate.position.x;
-      labels[8].position[1] = phosphate.position.y + 0.27;
+      phosphate.position.toArray(labels[8].position);
+      (powered ? nucleotide : internalGate).position.toArray(
+        labels[7].position,
+      );
+      anchorN();
+      anchorP();
+      anchorPump();
       labels[7].text = !powered
         ? b("无 ATP · 周期停滞", "No ATP · cycle stalled")
         : q < 0.29

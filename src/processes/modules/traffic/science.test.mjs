@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 import endocytosis from "./endocytosisProcess.js";
 import autophagy from "./autophagyProcess.js";
 import secretion from "../../secretionProcess.js";
+import "./review20261004.test.mjs";
+import "./membranes.perf.test.mjs";
 const point = (mesh, index) =>
   new THREE.Vector3()
     .fromBufferAttribute(mesh.geometry.attributes.position, index)

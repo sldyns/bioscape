@@ -1,0 +1,1201 @@
+{
+  "baseline": "/tmp/bioscape-performance-20261004-baseline/src",
+  "scope": "No timings or browser actions. Full numeric/binary snapshot equality of current and root-frozen source; internal GPU dirty version counters are intentionally excluded.",
+  "sourceHashes": {
+    "divisionShapes.js": {
+      "baseline": "07006c20a7235b7ebca66fbfffd909b8680d19298916f24e6b02970090efccb7",
+      "current": "642a24b88e4f7ba69e210147f698a3073d41c27a97feeb9437daf2262a180556"
+    },
+    "germCellMembrane.js": {
+      "baseline": "edc58c5edd90aad9e5beac5b23ad77da379f1bb2c644eb684f99e494c37a7d71",
+      "current": "ab3c520603a6ed05ce1371c450156d582b9b657b0c1ffb2931dbf34a8fa30f41"
+    },
+    "meiosisProcess.js": {
+      "baseline": "b9d024468f8073dc801df46c95e03f9eb06c5a33fc1bc6389ab8a2ab610dd420",
+      "current": "ddca511ed617e3b767a3cce604c4db1cd398d3bdc46a070e8b8192f423984f98"
+    },
+    "mitosisProcess.js": {
+      "baseline": "48ed0fc1ad10afa64ad76cae0ca78256a357b9633b74350b85157882fbe6fda7",
+      "current": "48ed0fc1ad10afa64ad76cae0ca78256a357b9633b74350b85157882fbe6fda7"
+    }
+  },
+  "cases": [
+    {
+      "id": "meiosis",
+      "parameters": {},
+      "transformed": false,
+      "states": [
+        {
+          "progress": 0,
+          "sha256": "6804729d4da67e448d44feeb2703eaf57be6489f914f9b5c20a45071d5299de7",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.169999,
+          "sha256": "f773195639b44d97181d3a8a67b74bbba6c8f2af77233b8d8a5ef478fb3ea3ab",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.170001,
+          "sha256": "e151c44d2d3970fcf0bcee69b610bf392aac1d9f36fee4faaf194400142f8fcf",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.219999,
+          "sha256": "978f3df1d0cad7f83da057785217fe5ddc7baecd7913b6a9c73fde2eb6cc69ae",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.220001,
+          "sha256": "77696728a5ff219d29d9d40aeb4a2a36419ffdce5704b0bd4ec06c1cf50b28ff",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.269999,
+          "sha256": "1fa00cd515e5967d09b409cd69c27791b31c38af70e74c1fc4b6939ff6e9928d",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.270001,
+          "sha256": "64b3ec6c3af0d66deb5697345bff2cfccbac203815ddf7319f10331c19b38a51",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.3,
+          "sha256": "6f89395933ef2fc933d70faaba718e5212ec013110443f2dda08764f6c80c78f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.3119,
+          "sha256": "6f89395933ef2fc933d70faaba718e5212ec013110443f2dda08764f6c80c78f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.3371,
+          "sha256": "6f89395933ef2fc933d70faaba718e5212ec013110443f2dda08764f6c80c78f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.349999,
+          "sha256": "6f89395933ef2fc933d70faaba718e5212ec013110443f2dda08764f6c80c78f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.350001,
+          "sha256": "5b26baef02659bb73761e4c03207af08331fda992b9ec04f12081f11fa0cb1af",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.429999,
+          "sha256": "3c53701222680205e17f0fea1a40f851cde9c8dfe64fdcbb79749dec9d893d8f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.430001,
+          "sha256": "c1be57afb8bedd878fe3ebbfac6b85b18a472fd80bfdc8b787fd6dce49c7da08",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.495,
+          "sha256": "008f0440dff6b0272676a32fdd4603ed2dc3ede07bc02ac14f1b2f0989293a96",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.509999,
+          "sha256": "12e35631df87bc73e0b37b1cb7dd849d41ad3276c7828ac4e11c69b9a236407b",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.510001,
+          "sha256": "88591f70a490ef8a424988edfc82df3795a4188d16783b65a6ba011e2b40a96c",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.559999,
+          "sha256": "a632738ac1a0c7a442d59eb1e1fbe147bef1df879d9fdc8667b2ca3c4c31c639",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.560001,
+          "sha256": "958b521c22fc6c41a9dd190ccc2007761e593120dd6667874bb0ee3b695955db",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.595,
+          "sha256": "001020bafb41b878f89494a46d0a942b002ce0397042ec0b84ffcf2326e07444",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.639999,
+          "sha256": "c834ed877cadd9e9a794689b99a020f4fa6fdf03f36ceb6d0caed0c6535ba607",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.640001,
+          "sha256": "a39bf96e172322b66e559b7d8a3ce6415f22ed80c93a9ccd57fdf0cd3a88c1a9",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.699999,
+          "sha256": "a39bf96e172322b66e559b7d8a3ce6415f22ed80c93a9ccd57fdf0cd3a88c1a9",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.700001,
+          "sha256": "1ff12b593009fa178f60c5942031db3eb10d7c27a60ff11ded771ab878c2228c",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.799999,
+          "sha256": "90463000458b61cd409e5c5a979deff54011e1675dc12a3a8d7eadb53adec091",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.800001,
+          "sha256": "dd038eb0aa59abd4a9c69bcb94bd56578f21427904772e9c3a8807db76c797d1",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.865,
+          "sha256": "3a35fc4341ef6523c5ce4f989e68951aae54b6310364a63ea9a4768aea94380e",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.879999,
+          "sha256": "5bcdd0bd0b6a2c11b3635de0bae44bc54eae6279d6d4d8d01f3c62a568670ba1",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.880001,
+          "sha256": "07edb293b694e7a7edb0f102c30e6ccccad9a8223d9d5fdc02d3c5d23d2fb939",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.929999,
+          "sha256": "526e000123ee04360be9f199f7767c1f0370d2c3668ceaa342bbd808ee951f48",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.930001,
+          "sha256": "179f0ed505588808591b1bd24cc2c2f437ffddb721d72971539d959e0e69d009",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.94,
+          "sha256": "8b8bb8e932e61b2d1f6a0fccdc05c17d4a7cf042904fdd3e0f741f296300a1e9",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.955,
+          "sha256": "d7a25b48558f713325758d1c18849a0ffec79d0710ef14b98ee35889844f056c",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 1,
+          "sha256": "a2606d04a1df417f1054b0c22998d2267d986f0bd833c62cb013c2c8d651e274",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        }
+      ]
+    },
+    {
+      "id": "meiosis",
+      "parameters": {},
+      "transformed": true,
+      "states": [
+        {
+          "progress": 0,
+          "sha256": "b6e437fe2d777e195a49d9f0b5f689f9cd185171fbb5617e04b18d6657be8040",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.169999,
+          "sha256": "7e10bc62a615241908f7f76732f9dc62023ce28c159f7e19998c2e733ce18c88",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.170001,
+          "sha256": "b9b7041c13cd5dfb4b6211f7c5cecd61117cac604aa71aafd944158231a0b022",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.219999,
+          "sha256": "90254dac4de1c0f6da8ffc5359a0076beb98bec7f027b052b5cc70003250114f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.220001,
+          "sha256": "66e504e91bc0f4ab6e506e3f4fc00680a0d0b3c2201c7c08953adae999ca10a0",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.269999,
+          "sha256": "5021858394b121e4bc334d815387f880da9c194acafd988930bd58b1e1cc5e55",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.270001,
+          "sha256": "71e2ea90aeb31ae1f6fb966a3fad02d4feeeb6d661e9d3f93aaf2b6b14451f7e",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.3,
+          "sha256": "f4a0da72893c09d062a31e8132f683f9bbdd94db0478a664c2e6d7584afbfc9f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.3119,
+          "sha256": "f4a0da72893c09d062a31e8132f683f9bbdd94db0478a664c2e6d7584afbfc9f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.3371,
+          "sha256": "f4a0da72893c09d062a31e8132f683f9bbdd94db0478a664c2e6d7584afbfc9f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.349999,
+          "sha256": "f4a0da72893c09d062a31e8132f683f9bbdd94db0478a664c2e6d7584afbfc9f",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.350001,
+          "sha256": "4100d9837a43511deabc5ed66e25a9f4a23c54342959be43d215dc05dc2ac869",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.429999,
+          "sha256": "934f0ae090674dfc20ed2053e6565ee21df772d11fd755f68fbdd2654f0f9ae5",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.430001,
+          "sha256": "c948f2decc3a9a58d9960af5de93767502be0ceaf5a5864fd304feaae11d000c",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.495,
+          "sha256": "4abcf1f0ac6dcfdf9280bb985897101abc83139299ed3fc5cf6f97490e7ff012",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.509999,
+          "sha256": "d786fa18a1be2911e2db0d5d840bcbfedfabdf6a773180aa0729217dc6868a0e",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.510001,
+          "sha256": "104dcc5ae5e58aad5d4ff92c6f1e4b61d498112f2f34462125bca8eee69039e3",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.559999,
+          "sha256": "a20973731d3478c4bb70f592dabef6697ad5996d589dd048aabce72c353eff27",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.560001,
+          "sha256": "c371f0f3583f1d88765e4861aeb266ae685b72f1c7a57d02f7f73a62df9528cf",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.595,
+          "sha256": "5ac01e66a9ab640af7475d9dbed6a6524b6f96e2cab7f4876b2d26113e7bbb70",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.639999,
+          "sha256": "3e9ad04d9f21d13a865792e875fe9746bf07256eba7af9a071f5b4fa30bb69a6",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.640001,
+          "sha256": "47083ac110b2c420d2c4c84138490bde1115eb7462bb0ed67539094308b49689",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.699999,
+          "sha256": "47083ac110b2c420d2c4c84138490bde1115eb7462bb0ed67539094308b49689",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.700001,
+          "sha256": "79674f5dab0d5f50bf1d1c90b51dda4a61364790cc8aa4ad20b9b0aa6c19bbbf",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.799999,
+          "sha256": "ce09769d05ded55fae9dcf1bd8eaaae3cd10f2e70b4e73622a36336ec8bd6ede",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.800001,
+          "sha256": "cd5e1824f6eb031c1b7b6799025f8aa6a34e8a6b0a90705f278ddc0bc90a9d50",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.865,
+          "sha256": "d55f20ace3e3d13cc1bc9797d4f8bae34087efad1427947a6bec7b7b4b7407fc",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.879999,
+          "sha256": "b359fab44940d6597b74d67b8e9ddabbe774de3d308bca25c4bd43ace0b1e1cf",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.880001,
+          "sha256": "70e7822aad86adef35ca6b3d47a657e98b36e9c76e7042ee3ba8a07c79168088",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.929999,
+          "sha256": "d35ef338e982f1e9c8a12c7bc6d2d92e6e739c52da180801e61f3e22bac49639",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.930001,
+          "sha256": "ee439e9f850b06d5b310356b7d2ff5d24600988927d2e4ecae976ec36bb44292",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.94,
+          "sha256": "9260962b2fef17cbd3ca0186d7629a67c023bab081b30170e951a334c11203a8",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 0.955,
+          "sha256": "ec56e37e3cdcf1aa7d6207d691bfcebf696a9a03a77fc6d35adfb79d9688dd61",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        },
+        {
+          "progress": 1,
+          "sha256": "d1ab295670bb64e2250a875995ffafae11c548901e4fc81367b4b9ef99696a4a",
+          "nodes": 325,
+          "geometries": 124,
+          "materials": 20,
+          "positionValues": 784992,
+          "normalValues": 784992,
+          "instanceValues": 102912
+        }
+      ]
+    },
+    {
+      "id": "mitosis",
+      "parameters": {
+        "attachment": "normal"
+      },
+      "transformed": false,
+      "states": [
+        {
+          "progress": 0,
+          "sha256": "c3fd6d80cb529629136067265dcb16187964b6bad060e015631121b7f2a1f7f9",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.1603687500000001,
+          "sha256": "6ca66552b3bc8b7c291d576921e8729fd9b6470ed07b5592a557c834c1f4eeec",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.205,
+          "sha256": "69832ff963220e48ffdd6adf3d05f95d96252218b7e4edd89f8f27b3d302909a",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.385,
+          "sha256": "639064a29ce55204e1037357754cb7025da90e3c956523f19ba755b914df2537",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.43,
+          "sha256": "fecfd81da355739fadc2aca8d3d04a4fb1e977bb08c95c6d87e642b1bf4f3671",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.505,
+          "sha256": "41ce1c76d0616ec0477afcd58dd8bd6c6e101c5bd23ad6ddcd8d6515efe23cf5",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.725,
+          "sha256": "b405deb48d7466872d4fcd89777fd1b7fa6c0b01c1084f7424e8f47eb500f9e2",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.83,
+          "sha256": "118d1ced01e793b563936cf6715bb4da5f8b3c8e8296d20d681f2d3c81c0824b",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.94,
+          "sha256": "29385e7ca9007b9219b87f5eb6cbd32be2ddb1a5cad3eae117071781f8b45f29",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.955,
+          "sha256": "8447af386f61e7f95911fa559fea01c3dcc3ac3e51a6c01e2ac4fc074c2ec9b2",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 1,
+          "sha256": "be324fd5b8334ad67edb65ac991ef0098cff2afb748889d4351d2d505246bee7",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        }
+      ]
+    },
+    {
+      "id": "mitosis",
+      "parameters": {
+        "attachment": "normal"
+      },
+      "transformed": true,
+      "states": [
+        {
+          "progress": 0,
+          "sha256": "72385dd1c5d00fb839810d8a12b44790779927ae17165a75926d8828885f4e5b",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.1603687500000001,
+          "sha256": "0cd63e5c99d582c1c728ca23922849671a6bd172b101cf482f9de2c426b1c760",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.205,
+          "sha256": "06afabb096c868b6d55cacb2dde75411430103a09e38a4400963ad43519d7c86",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.385,
+          "sha256": "4f5e34ef1de2ad9f891c1b92e4d627e383a272a7aa959729f7524e698468b0d3",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.43,
+          "sha256": "dd7e6fef6123604f80d4ca40effa3b92a61ad227332f713ff136f310780322ce",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.505,
+          "sha256": "ae8769acc9a6d7b7e721edc0ba56a6d108ccf14376eb407afa7b63a4ac7af373",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.725,
+          "sha256": "3bf710989d7e1ec27b74440bc1c2950575d7c465ebd9a1bd31bd58793ed14a83",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.83,
+          "sha256": "9771e7ff4dc6376520b92adcc02e0f661e5237be976b77d95dee74ac471097ca",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.94,
+          "sha256": "1e8cb88ca8726f949276624e80ace37dd18a87901a9bca9ef4a0e3f8e4b44198",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.955,
+          "sha256": "7a695a7c2bfedd47bae87bc12c691a5928f7108bfbda6ac6bed718fe9988a253",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 1,
+          "sha256": "79487840419852a2e893a162f5dfda01b4e3e3f0a48a0eba132c92b1172b317c",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        }
+      ]
+    },
+    {
+      "id": "mitosis",
+      "parameters": {
+        "attachment": "unattached"
+      },
+      "transformed": false,
+      "states": [
+        {
+          "progress": 0,
+          "sha256": "b7799c9656ec0f9592dd21390e143487704425427147c9a182e01913c52cc7c0",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.1603687500000001,
+          "sha256": "f11053f4bdaedc6db754fdbcef58be77eb352825b795390a6471ff50cc0bd931",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.205,
+          "sha256": "a1fe758512141bbf84ff365ed55aa78ff59d198835283298d90f50022291dde0",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.385,
+          "sha256": "f428468cec855e5b5f621dd217d4d321d778ba7fafaf3421cba212fba92bf2b5",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.43,
+          "sha256": "4bd5d13f3e9d9e0b665d08f90bf7852e33b4c36fa5dc73931a65cc5440956d8f",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.505,
+          "sha256": "4bd5d13f3e9d9e0b665d08f90bf7852e33b4c36fa5dc73931a65cc5440956d8f",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.725,
+          "sha256": "4bd5d13f3e9d9e0b665d08f90bf7852e33b4c36fa5dc73931a65cc5440956d8f",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.83,
+          "sha256": "4bd5d13f3e9d9e0b665d08f90bf7852e33b4c36fa5dc73931a65cc5440956d8f",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.94,
+          "sha256": "4bd5d13f3e9d9e0b665d08f90bf7852e33b4c36fa5dc73931a65cc5440956d8f",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.955,
+          "sha256": "4bd5d13f3e9d9e0b665d08f90bf7852e33b4c36fa5dc73931a65cc5440956d8f",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 1,
+          "sha256": "4bd5d13f3e9d9e0b665d08f90bf7852e33b4c36fa5dc73931a65cc5440956d8f",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        }
+      ]
+    },
+    {
+      "id": "mitosis",
+      "parameters": {
+        "attachment": "unattached"
+      },
+      "transformed": true,
+      "states": [
+        {
+          "progress": 0,
+          "sha256": "4d0c923cfb9dd19b8fc2b2d39181e6bd3a5df50bc05efecee3d30a6745bff150",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.1603687500000001,
+          "sha256": "e9321c2f091dccd011be519220c9760037606f907a7d51d1f21b05d2ce2d1060",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.205,
+          "sha256": "173a498cfbf2f28fd46c0e4eff7060d86ef178f3bf63a7c1e1edeeacaf76ef58",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.385,
+          "sha256": "24cf7f4665bee21d936de8b6f375e5d9cc80cb5df49f0533b20752e5768a0e50",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.43,
+          "sha256": "99c557cd67544f124765da301bdb29099fca44b14c0a018003153139c59d22f8",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.505,
+          "sha256": "99c557cd67544f124765da301bdb29099fca44b14c0a018003153139c59d22f8",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.725,
+          "sha256": "99c557cd67544f124765da301bdb29099fca44b14c0a018003153139c59d22f8",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.83,
+          "sha256": "99c557cd67544f124765da301bdb29099fca44b14c0a018003153139c59d22f8",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.94,
+          "sha256": "99c557cd67544f124765da301bdb29099fca44b14c0a018003153139c59d22f8",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 0.955,
+          "sha256": "99c557cd67544f124765da301bdb29099fca44b14c0a018003153139c59d22f8",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        },
+        {
+          "progress": 1,
+          "sha256": "99c557cd67544f124765da301bdb29099fca44b14c0a018003153139c59d22f8",
+          "nodes": 254,
+          "geometries": 80,
+          "materials": 23,
+          "positionValues": 185718,
+          "normalValues": 185718,
+          "instanceValues": 113920
+        }
+      ]
+    }
+  ],
+  "plateau": {
+    "baselineChangedArmAttributes": 24,
+    "optimizedChangedArmAttributes": 0,
+    "optimizedEvidence": "geometry-equivalence.test.mjs plateau assertion"
+  },
+  "totalComparedStates": 112,
+  "totalRepeatedComparisons": 112
+}

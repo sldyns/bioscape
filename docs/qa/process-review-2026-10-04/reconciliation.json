@@ -1,0 +1,353 @@
+{
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": 84,
+  "registeredRoots": 114,
+  "rootConditionCases": 235,
+  "auditVerdicts": {
+    "qualified_pass": 24,
+    "confirmed_issue": 60
+  },
+  "phaseAIssues": 88,
+  "repairTimeIssues": 76,
+  "totalIssues": 164,
+  "severities": {
+    "P1": 48,
+    "P2": 116
+  },
+  "resolutions": 164,
+  "pending": [],
+  "errors": [],
+  "modelsByGroup": [
+    {
+      "group": "bacterialCore",
+      "models": [
+        "bacterialExpression",
+        "bacterialDivision",
+        "conjugation",
+        "transformation"
+      ],
+      "issues": [
+        "20261004-bacterialCore-01",
+        "20261004-bacterialCore-02"
+      ]
+    },
+    {
+      "group": "bacterialSignals",
+      "models": [
+        "chemotaxis",
+        "twoComponent",
+        "quorumSensing",
+        "biofilm"
+      ],
+      "issues": [
+        "20261004-bacterialSignals-01",
+        "20261004-bacterialSignals-02",
+        "20261004-bacterialSignals-03",
+        "20261004-bacterialSignals-04",
+        "20261004-bacterialSignals-05"
+      ]
+    },
+    {
+      "group": "chromatin",
+      "models": [
+        "chromatinAccess",
+        "tad",
+        "plantGenome",
+        "plantRdDM"
+      ],
+      "issues": [
+        "20261004-chromatin-01"
+      ]
+    },
+    {
+      "group": "division",
+      "models": [
+        "mitosis",
+        "meiosis"
+      ],
+      "issues": [
+        "20261004-division-01",
+        "20261004-division-02"
+      ]
+    },
+    {
+      "group": "energy",
+      "models": [
+        "respiration",
+        "glycolysis",
+        "bacterialEnergetics",
+        "bacterialPhotosynthesis"
+      ],
+      "issues": [
+        "20261004-energy-01",
+        "20261004-energy-02",
+        "20261004-energy-03",
+        "20261004-energy-04",
+        "20261004-energy-05",
+        "20261004-energy-06"
+      ]
+    },
+    {
+      "group": "genome",
+      "models": [
+        "replication",
+        "dnaRepair",
+        "transduction",
+        "bacterialSporulation"
+      ],
+      "issues": [
+        "20261004-genome-01",
+        "20261004-genome-02",
+        "20261004-genome-03"
+      ]
+    },
+    {
+      "group": "membrane",
+      "models": [
+        "diffusion",
+        "activeTransport",
+        "osmoticBalance",
+        "bacterialCellWall"
+      ],
+      "issues": [
+        "20261004-membrane-01",
+        "20261004-membrane-05",
+        "20261004-membrane-02",
+        "20261004-membrane-03",
+        "20261004-membrane-04",
+        "20261004-membrane-06"
+      ]
+    },
+    {
+      "group": "neurons",
+      "models": [
+        "actionPotential",
+        "synapse",
+        "muscle",
+        "ciliaryMotion"
+      ],
+      "issues": [
+        "20261004-neurons-03",
+        "20261004-neurons-02",
+        "20261004-neurons-01"
+      ]
+    },
+    {
+      "group": "operons",
+      "models": [
+        "lacOperon",
+        "trpOperon",
+        "yeastGal",
+        "yeastOsmoregulation"
+      ],
+      "issues": [
+        "20261004-operons-01",
+        "20261004-operons-02",
+        "20261004-operons-03",
+        "20261004-operons-04",
+        "20261004-operons-05",
+        "20261004-operons-06"
+      ]
+    },
+    {
+      "group": "original",
+      "models": [
+        "secretion",
+        "transcription",
+        "photosynthesis",
+        "infection"
+      ],
+      "issues": [
+        "20261004-original-01",
+        "20261004-original-02",
+        "20261004-original-03",
+        "20261004-original-04",
+        "20261004-original-06",
+        "20261004-original-05"
+      ]
+    },
+    {
+      "group": "parameciumLife",
+      "models": [
+        "parameciumFeeding",
+        "contractileVacuole",
+        "parameciumDivision",
+        "parameciumConjugation"
+      ],
+      "issues": [
+        "20261004-parameciumLife-01",
+        "20261004-parameciumLife-02",
+        "20261004-parameciumLife-03",
+        "20261004-parameciumLife-04",
+        "20261004-parameciumLife-05",
+        "20261004-parameciumLife-06"
+      ]
+    },
+    {
+      "group": "phageLife",
+      "models": [
+        "phageLytic",
+        "phageLysogenic",
+        "phageAssembly",
+        "phagePackaging"
+      ],
+      "issues": [
+        "20261004-phageLife-01",
+        "20261004-phageLife-02",
+        "20261004-phageLife-03"
+      ]
+    },
+    {
+      "group": "plantConnections",
+      "models": [
+        "plantTransport",
+        "plasmodesmata",
+        "photorespiration",
+        "c4cam"
+      ],
+      "issues": [
+        "20261004-plantConnections-01",
+        "20261004-plantConnections-02",
+        "20261004-plantConnections-03"
+      ]
+    },
+    {
+      "group": "plantGrowth",
+      "models": [
+        "plantDivision",
+        "cellWallGrowth",
+        "doubleFertilization",
+        "fungalHyphae"
+      ],
+      "issues": [
+        "20261004-plantGrowth-01",
+        "20261004-plantGrowth-02",
+        "20261004-plantGrowth-03",
+        "20261004-plantGrowth-04",
+        "20261004-plantGrowth-05"
+      ]
+    },
+    {
+      "group": "plantSignals",
+      "models": [
+        "auxin",
+        "plantDefense"
+      ],
+      "issues": [
+        "20261004-plantSignals-01",
+        "20261004-plantSignals-02",
+        "20261004-plantSignals-03",
+        "20261004-plantSignals-04",
+        "20261004-plantSignals-05"
+      ]
+    },
+    {
+      "group": "plantWater",
+      "models": [
+        "plasmolysis",
+        "stomata",
+        "plantLongDistanceTransport",
+        "chloroplastMovement"
+      ],
+      "issues": [
+        "20261004-plantWater-01",
+        "20261004-plantWater-02",
+        "20261004-plantWater-03",
+        "20261004-plantWater-04"
+      ]
+    },
+    {
+      "group": "regulation",
+      "models": [
+        "promoterRegulation",
+        "enhancerRegulation"
+      ],
+      "issues": []
+    },
+    {
+      "group": "rna",
+      "models": [
+        "rnaProcessing",
+        "nuclearTransport",
+        "motorTransport",
+        "organelleImport"
+      ],
+      "issues": [
+        "20261004-rna-01"
+      ]
+    },
+    {
+      "group": "signals",
+      "models": [
+        "signalTransduction",
+        "apoptosis",
+        "differentiation",
+        "immuneResponse"
+      ],
+      "issues": [
+        "20261004-signals-01",
+        "20261004-signals-02",
+        "20261004-signals-03"
+      ]
+    },
+    {
+      "group": "traffic",
+      "models": [
+        "endocytosis",
+        "autophagy"
+      ],
+      "issues": [
+        "20261004-traffic-01",
+        "20261004-traffic-02"
+      ]
+    },
+    {
+      "group": "translation",
+      "models": [
+        "translation",
+        "proteinFolding",
+        "alternativeSplicing",
+        "nitrogenFixation"
+      ],
+      "issues": [
+        "20261004-translation-01",
+        "20261004-translation-02",
+        "20261004-translation-03",
+        "20261004-translation-04"
+      ]
+    },
+    {
+      "group": "turnover",
+      "models": [
+        "rnaSilencing",
+        "proteasome",
+        "crispr",
+        "bacterialRepair"
+      ],
+      "issues": [
+        "20261004-turnover-01",
+        "20261004-turnover-02",
+        "20261004-turnover-03"
+      ]
+    },
+    {
+      "group": "yeastLife",
+      "models": [
+        "yeastBudding",
+        "yeastFermentation",
+        "yeastMating",
+        "yeastSporulation"
+      ],
+      "issues": [
+        "20261004-yeastLife-01",
+        "20261004-yeastLife-02",
+        "20261004-yeastLife-03",
+        "20261004-yeastLife-04",
+        "20261004-yeastLife-05",
+        "20261004-yeastLife-06",
+        "20261004-yeastLife-07",
+        "20261004-yeastLife-08"
+      ]
+    }
+  ]
+}

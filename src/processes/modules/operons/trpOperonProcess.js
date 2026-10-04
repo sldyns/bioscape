@@ -9,6 +9,7 @@ import {
   materialInventory,
 } from "./structuralDetails.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 const model = {
   id: "trpOperon",
@@ -100,6 +101,11 @@ const model = {
   sources: [
     {
       title:
+        "Oxender et al. (1979): Attenuation in the E. coli tryptophan operon and leader RNA secondary structure",
+      url: "https://pubmed.ncbi.nlm.nih.gov/118451/",
+    },
+    {
+      title:
         "Yanofsky et al. (1984): Repression is relieved before attenuation as tryptophan starvation becomes increasingly severe",
       url: "https://pubmed.ncbi.nlm.nih.gov/6233264/",
     },
@@ -137,6 +143,7 @@ const model = {
     k.ball([-0.2, 0, 0], [0.3, 0.33, 0.27], rep, repressor);
     k.ball([0.2, 0, 0], [0.3, 0.33, 0.27], rep, repressor);
     regulatorDomains(k, repressor, rep, "trpR");
+    repressor.children[0].name = "TrpR protein surface";
     const freeTrp = [
       k.ball([-0.22, 0.2, 0.26], 0.09, trp, repressor),
       k.ball([0.22, 0.2, 0.26], 0.09, trp, repressor),
@@ -146,6 +153,7 @@ const model = {
     k.ball([0, 0.16, 0.1], [0.48, 0.27, 0.29], rib, ribosome);
     k.ball([0, -0.12, 0.1], [0.37, 0.2, 0.25], rib, ribosome);
     ribosomeDetail(k, ribosome, rib);
+    ribosome.children[0].name = "Leader ribosome large subunit";
     const tRNA = new THREE.Group();
     group.add(tRNA);
     k.segment([0, 0, 0], [0, 0.48, 0], 0.045, trp, tRNA);
@@ -174,6 +182,8 @@ const model = {
     const polymerase = new THREE.Group();
     group.add(polymerase);
     polymeraseBody(k, polymerase, polmat, 0.76);
+    polymerase.children[0].children[0].name =
+      "Initiated bacterial RNAP surface";
     // Two mutually exclusive complete fold geometries. Region identity is conserved by color.
     const branches = {};
     const paths = {
@@ -233,6 +243,9 @@ const model = {
       const strands = paths[name].map((points, i) =>
         k.tube(points, 0.052, colors[i], g, 44),
       );
+      strands.forEach(
+        (mesh, i) => (mesh.name = `trp ${name} RNA region ${i + 1}`),
+      );
       const pairs = [];
       for (let j = 0; j < 6; j++) {
         const x = name === "antiterminator" ? -1.65 : 0.35;
@@ -249,6 +262,7 @@ const model = {
       const nucleotideDetails = strands.map((m) =>
         nucleotideDetail(k, m, { spacing: 0.1 }),
       );
+      pairs.forEach((mesh, i) => (mesh.name = `trp ${name} base pair ${i}`));
       branches[name] = { group: g, strands, pairs, nucleotideDetails };
     }
     const extension = k.tube(
@@ -266,11 +280,17 @@ const model = {
     const urich = [];
     for (let i = 0; i < 6; i++)
       urich.push(k.ball([1.55 + i * 0.14, -1.18, 0.035], 0.065, trp));
+    urich.forEach(
+      (mesh, i) => (mesh.name = `Leader U-rich tract nucleotide ${i}`),
+    );
     const codons = [
       k.mesh(box, trp, [-3.65, -1.18, 0.03]),
       k.mesh(box, trp, [-3.33, -1.18, 0.03]),
     ];
-    codons.forEach((m) => m.scale.set(0.21, 0.16, 0.1));
+    codons.forEach((m, i) => {
+      m.scale.set(0.21, 0.16, 0.1);
+      m.name = `Leader UGG codon ${i}`;
+    });
     const labels = [
       k.label([-3.1, 2.6, 0], "TrpR", "TrpR", 2),
       k.label([-3.1, 0.65, 0], "启动子 / 操纵序列", "Promoter / operator", 2),
@@ -294,6 +314,10 @@ const model = {
       k.label([-4.4, 1.68, 0], "5′ / 3′", "5′ / 3′", 1),
       k.label([4.4, 1.68, 0], "3′ / 5′", "3′ / 5′", 1),
     ];
+    const anchors = labelAnchors(labels),
+      dnaPhosphates = detailedDNA.group.getObjectByName("DNA phosphates 0"),
+      operatorSite = anchors.nearestX(dnaPhosphates, -3.1),
+      structuralSite = anchors.nearestX(dnaPhosphates, 3.2);
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         high = parameters.tryptophan === "high",
@@ -301,6 +325,7 @@ const model = {
         charged = high && charging,
         stall = !charged,
         fold = p >= 0.63;
+      labels.forEach((label) => (label.active = true));
       const binding = high ? ease(p, 0.07, 0.27) : 0;
       repressor.position.set(-3.1, 2.13 - 0.57 * binding, 0);
       repressor.rotation.z = (1 - binding) * 0.15;
@@ -319,7 +344,9 @@ const model = {
       for (const [name, branch] of Object.entries(branches)) {
         branch.group.visible = name === selected && p > 0.22;
         branch.strands.forEach((m, i) => {
-          const t = ease(p, 0.22 + i * 0.095, 0.34 + i * 0.095);
+          // One connected 5' -> 3' prefix: the next colored region starts
+          // only when the preceding region has reached their shared junction.
+          const t = ease(p, 0.22 + i * 0.095, 0.22 + (i + 1) * 0.095);
           m.geometry.setDrawRange(
             0,
             Math.floor((m.geometry.index.count * t) / 6) * 6,
@@ -346,22 +373,22 @@ const model = {
         0.14,
       );
       polymerase.visible = stall || p < 0.96;
-      detailedDNA.update(polX, polymerase.visible && p > 0.2 ? 1 : 0);
+      detailedDNA.update(
+        polX,
+        ease(p, 0.17, 0.22) * (stall ? 1 : 1 - ease(p, 0.81, 0.96)),
+      );
       Object.values(branches).forEach((branch) =>
         branch.nucleotideDetails.forEach((d) => d.update()),
       );
       extensionDetail.update();
-      labels[0].position[1] = repressor.position.y + 0.6;
       labels[3].active = p > 0.26;
       labels[4].active = p > 0.35;
       labels[5].active = p > 0.45;
       labels[6].active = p > 0.56;
       labels[7].active = fold;
-      labels[7].position[0] = stall ? -1.4 : 0.65;
       labels[7].text = stall
         ? b("2:3 反终止发夹", "2:3 antiterminator")
         : b("3:4 终止发夹", "3:4 terminator");
-      labels[8].position[0] = ribX;
       labels[8].active = p >= 0.3;
       labels[8].text =
         p < 0.49
@@ -370,17 +397,40 @@ const model = {
             ? b("区域 1 停滞", "Stalled in region 1")
             : b("遮挡区域 2", "Region 2 occluded");
       labels[9].active = !stall && p >= 0.61;
-      labels[10].position[0] = polX;
       labels[10].active = polymerase.visible;
       labels[11].active = p > 0.22;
       labels[12].active = p >= 0.78;
-      labels[12].position[0] = stall ? 4.2 : 2.5;
       labels[12].text = stall
         ? b("读穿 → 3′", "Readthrough → 3′")
-        : b("先导 RNA 释放", "Leader RNA released");
+        : polymerase.visible
+          ? b("衰减子 3′ 端", "Attenuator 3′ end")
+          : b("先导 RNA 释放", "Leader RNA released");
       labels[13].text = high
         ? b("TrpR：减少起始", "TrpR: reduced initiation")
         : b("TrpR：抑制解除", "TrpR: repression relieved");
+      group.updateMatrixWorld(true);
+      anchors.surface(0, repressor.children[0]);
+      anchors.instance(1, dnaPhosphates, operatorSite);
+      anchors.instance(2, dnaPhosphates, structuralSite);
+      anchors.surface(3, codons[0]);
+      const branch = branches[selected];
+      for (let i = 1; i < 4; i++) anchors.tube(i + 3, branch.strands[i]);
+      anchors.surface(7, branch.pairs[3]);
+      anchors.surface(8, ribosome.children[0]);
+      anchors.surface(9, urich[2]);
+      anchors.surface(10, polymerase.children[0].children[0]);
+      anchors.tube(11, branch.strands[0], "start", "notation");
+      anchors.tube(
+        12,
+        extension.visible && extension.geometry.drawRange.count > 0
+          ? extension
+          : branch.strands[3],
+        true,
+        "notation",
+      );
+      anchors.instance(13, dnaPhosphates, operatorSite, "state");
+      anchors.instance(14, dnaPhosphates, 0, "notation");
+      anchors.instance(15, dnaPhosphates, dnaPhosphates.count - 1, "notation");
       group.userData = {
         rootId,
         species: "Escherichia coli",

@@ -1,0 +1,184 @@
+{
+  "group": "plantSignals",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "auxin",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis shoot-cell nuclear TIR1/AFB-Aux/IAA-ARF signaling; present/low controls; p in [0,1], stage and visibility boundaries; later qualitative differential-elongation inset.",
+      "checks": [
+        "Read current workplan, contribution guide, science review/correction standards and implementation/refinement contracts. Product and test files remained unchanged.",
+        "Imported actual processesByRoot: both IDs map only to plant; no specialized root route or context override exists.",
+        "Reviewed all Chinese/English entries, intro, stages, controls and labels; neither model defines a legend. Checked all declared condition combinations (one binary control per model).",
+        "Ran node src/processes/modules/plantSignals/science.test.mjs: all existing local regressions and browser bundles passed; this does not cover the newly measured defects.",
+        "Additional diagnostics sampled 101 progress states per each of four condition branches and 11 irregular seek targets each; finite instance data, stable node/resource inventory and deterministic transforms/labels passed.",
+        "Verified all 288 selected heavy atoms against newly downloaded 2P1Q: 161 TIR1, 13 IAA, 114 IAA7; all atom identities and coordinates match exactly. Existing actual triangle-surface contacts pass under the single deposited-coordinate transform.",
+        "Checked ordered recognition, ubiquitylation, transport, recycling, degradation, transcription and later growth. Same four represented ubiquitins retain size and identity; no duplicate recycling chain; low control suppresses induced transitions.",
+        "DNA is a two-backbone right-handed schematic; nascent RNA remains single-stranded and attached at the moving polymerase. Literal sugars/polarity, transcription initiation details and energy stoichiometry are not resolved by these cartoons."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/2P1Q",
+          "title": "2P1Q and Tan et al. (2007), Mechanism of auxin perception by the TIR1 ubiquitin ligase",
+          "supports": "Arabidopsis TIR1 chain B, IAA7 degron chain C, IAC ligand; one shared pocket with auxin beneath the degron. Experimental 1.91-A coordinates and class-1 alpha-helix records support the source-coordinate and handedness diagnostics."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3986151/",
+          "title": "Korasick et al. (2014), Molecular basis for AUXIN RESPONSE FACTOR protein interaction and the control of auxin response repression",
+          "supports": "Abstract and Results: ARF/Aux-IAA PB1 interaction uses complementary exposed interfaces; the paper describes directional front-to-back domain association and auxin-dependent SCF targeting and derepression."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4079373/",
+          "title": "Spartz et al. (2014), SAUR inhibition of PP2C-D phosphatases activates plasma membrane H+-ATPases",
+          "supports": "Abstract and introduction: SAUR proteins inhibit PP2C-D phosphatases, promote proton-pump activity and contribute to shoot cell expansion. Supports the explicitly later qualitative tissue inset."
+        },
+        {
+          "url": "https://www.lander-lab.com/pdfs/30309908.pdf",
+          "title": "de la Peña et al. (2018), Substrate-engaged 26S proteasome structures reveal mechanisms for ATP-hydrolysis-driven translocation",
+          "supports": "Primary cryo-EM study, pages 0-1: the ATPase motor engages, unfolds and translocates substrate through the core while Rpn11 removes ubiquitin. Supports a continuous thread depiction without treating cartoon timing as real kinetics."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantSignals-01",
+          "severity": "P1",
+          "kind": "protein_secondary_structure_handedness",
+          "file": "src/processes/modules/plantSignals/structures.js",
+          "location": "helix, lines 23-30; consumers auxinProcess.js, plantDefenseProcess.js and root-owned photosynthesisProcess.js",
+          "evidence": "The actual TubeGeometry path is [r*cos(theta), y, +r*sin(theta)]. Its consecutive tangent triple products are negative (first: -4.09006684e-6 for FLS2 TM), whereas downloaded 2P1Q chain A HELIX 1 class-1 CA points give +45.2551, +43.5270, +40.0061. Proper quaternion rotations preserve the sign. All consumers use positive scales.",
+          "whyWrong": "This constructs left-handed protein alpha-helix cartoons throughout both processes, opposite the deposited ordinary right-handed alpha helices. The error also propagates through domain and lrr decorative helices and root photosynthesis.",
+          "fix": "Reverse the transverse sine orientation in the owned helix helper, preserving radius, turn count, center, endpoints and all call-site transforms. Root will cross-reference this issue for photosynthesis.",
+          "verification": "Compare signed torsion of generated path to class-1 deposited CA helices; assert positive handedness under representative non-axis-aligned calls and positive scales, unchanged endpoint locations/radius/axial extent, and rerun owned scientific regression.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/2P1Q",
+            "https://www.rcsb.org/structure/4MN8"
+          ]
+        },
+        {
+          "issueId": "20261004-plantSignals-02",
+          "severity": "P1",
+          "kind": "protein_partner_interpenetration",
+          "file": "src/processes/modules/plantSignals/auxinProcess.js",
+          "location": "ARF PB1 at lines 177-182; Aux/IAA body at 202-210; update position lines 429-437",
+          "evidence": "At p=0, and for the entire low-auxin branch, ARF PB1 and the Aux/IAA compact body have identical world centers [-1.44,-1.29,0.02]. Their scales are [0.47,0.45,0.5] and [0.58,0.54,0.6]. All 1700 actual sampled PB1 lobe vertices lie inside one of the rendered Aux/IAA ellipsoid lobes.",
+          "whyWrong": "The smaller ARF domain is swallowed by the repressor volume rather than meeting it at a protein-protein interface; this hides the molecular identities exactly where repression is introduced.",
+          "fix": "Place the free Aux/IAA body at a distinct touching PB1 surface and interpolate to the existing experimental TIR1 docking pose; preserve the exact common 2P1Q bound transform and the later proteasome trajectory.",
+          "verification": "Assert distinct initial centers, small actual surface contact gap, and bounded shallow intersection rather than whole-domain containment at p=0 and all low-auxin states; check departing intermediate states and existing 2P1Q contact test.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC3986151/"
+          ]
+        },
+        {
+          "issueId": "20261004-plantSignals-03",
+          "severity": "P2",
+          "kind": "visible_substrate_discontinuity",
+          "file": "src/processes/modules/plantSignals/auxinProcess.js",
+          "location": "unfoldedSubstrate creation lines 316-326 and update lines 471-473",
+          "evidence": "At p=0.63588264 (loss=0.02), a prebuilt substrate thread switches from invisible to visible at world length 1.167386. At p=0.69411736 (loss=0.98), it switches off while still 0.951505 long. Only 20% y scaling is applied, so the entire strand pops rather than being fed through the proteasome. Samples +/-1e-7 confirm finite visible-size jumps, not a small terminal visibility threshold.",
+          "whyWrong": "The dominant degradation strand appears and disappears at near full size during continuous playback, weakening the intended causal continuity from Aux/IAA to unfolded substrate and fragments.",
+          "fix": "Use an allocation-free progressively revealed/consumed prebuilt thread with an end anchored to the substrate/entry path; make end visibility changes occur only after represented length or opacity tends to zero while preserving ubiquitin recycling and peptide outputs.",
+          "verification": "Sample immediately around both thresholds and throughout degradation; visible length or opacity must approach zero at appearance/disappearance, and substrate-to-thread attachment must remain continuous. Keep deterministic irregular seeks and stable geometry/material/node inventories.",
+          "sourceUrls": [
+            "https://www.lander-lab.com/pdfs/30309908.pdf"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-plantSignals-03: near-full-length substrate thread visibility jumps; no rendered acceptance yet."
+        ],
+        "limits": [
+          "Polypeptide shape and folding/unfolding motions are schematic, not atomistic trajectories.",
+          "Root must inspect normal-camera playback, labels and all stage switches in both languages."
+        ]
+      },
+      "limitations": [
+        "Actual 2P1Q pocket is only a selected contact-residue view; surrounding SCF, ARF, proteasome and motion are cartoons.",
+        "Winkler publisher/PMC and some PubMed pages returned access or incomplete-content failures; core mechanism was independently opened via primary RCSB paper abstract, Korasick, Spartz and de la Peña.",
+        "No browser, full workspace tests, physical-device or performance claims."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "plantDefense",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis plasma-membrane FLS2-BAK1-BIK1-RBOHD branch; flg22/absent controls; p in [0,1], including kinase-activation boundaries, receptor approach and all active electron wraps.",
+      "checks": [
+        "Read current workplan, contribution guide, science review/correction standards and implementation/refinement contracts. Product and test files remained unchanged.",
+        "Imported actual processesByRoot: both IDs map only to plant; no specialized root route or context override exists.",
+        "Reviewed all Chinese/English entries, intro, stages, controls and labels; neither model defines a legend. Checked all declared condition combinations (one binary control per model).",
+        "Ran node src/processes/modules/plantSignals/science.test.mjs: all existing local regressions and browser bundles passed; this does not cover the newly measured defects.",
+        "Additional diagnostics sampled 101 progress states per each of four condition branches and 11 irregular seek targets each; finite instance data, stable node/resource inventory and deterministic transforms/labels passed.",
+        "Shared protein-helix handedness defect is 20261004-plantSignals-01, recorded once in auxin findings; it also affects this model and root-owned photosynthesis.",
+        "Reviewed apoplast/cytosol separation, receptor single-pass topology, six-span RBOHD cartoon, two heme markers, cytosolic regulatory/catalytic domains and outward electron path.",
+        "Existing actual kinase triangle contacts pass for FLS2-BAK1, FLS2-BIK1 and BIK1-RBOHD; activation markers wait for those steps. BAK1 stays inside membrane patch and vacated lipid sites refill.",
+        "Absent-ligand branch suppresses recruitment, phosphorylation and induced ROS. Calcium/cooperating pathways and basal output are explicitly omitted in both languages. Peptide beads/phosphorylation/electron/ROS marker counts are illustrative, not stoichiometry."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/4MN8",
+          "title": "4MN8 and Sun et al. (2013), Structural basis for flg22-induced activation of the Arabidopsis FLS2-BAK1 immune complex",
+          "supports": "Experimental FLS2/BAK1 ectodomain/flg22 complex. flg22 lies along the FLS2 inner surface; BAK1 contacts FLS2 and the flg22 C terminus. Supports distinct interacting ectodomains rather than overlapping solids."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/24629339/",
+          "title": "Li et al. (2014), The FLS2-associated kinase BIK1 directly phosphorylates the NADPH oxidase RbohD to control plant immunity",
+          "supports": "Abstract: BIK1 is part of the FLS2 complex, directly phosphorylates RbohD at specific sites and promotes induced ROS; also regulates calcium influx. Supports this branch and its stated omission of cooperating inputs."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantSignals-04",
+          "severity": "P1",
+          "kind": "receptor_ectodomain_interpenetration",
+          "file": "src/processes/modules/plantSignals/plantDefenseProcess.js",
+          "location": "FLS2/BAK1 ectodomain construction lines 159-217 and BAK1 trajectory lines 411-414",
+          "evidence": "For p>=0.48 BAK1 is at [-3.3,0,0]. A common world z-ray at x=-3.02,y=0.71 crosses FLS2 main closed solid over [-0.224632,0.224632] and BAK1 main closed solid over [-0.155000,0.195000]. Thus 0.350000 scene units of BAK1 solid are inside FLS2, spanning its entire local depth. Restricting the test to the two main ExtrudeGeometry meshes reproduces it; it is not AABB or decorative-helix evidence. Overlap is already 0.253126 at p=0.45.",
+          "whyWrong": "FLS2 and BAK1 should meet at an exposed ligand-dependent interface. The current two ectodomains pass into and occupy the same solid volume, despite a passing regression that tests only their cytosolic kinases.",
+          "fix": "Adjust the BAK1 approach/final pose and any necessary cytosolic flexible tether transforms so the ectodomains contact without bulk overlap and BAK1 still touches the FLS2-bound peptide. Retain membrane containment and existing kinase/BIK1 contacts.",
+          "verification": "Measure actual triangle-surface contact and solid intersection of main ectodomains over approach and docked frames; separately assert FLS2-flg22 and BAK1-flg22 contact, membrane footprint/refill, and kinase/BIK1/RBOHD contact.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/4MN8"
+          ]
+        },
+        {
+          "issueId": "20261004-plantSignals-05",
+          "severity": "P2",
+          "kind": "visible_electron_loop_discontinuity",
+          "file": "src/processes/modules/plantSignals/plantDefenseProcess.js",
+          "location": "electron update lines 476-483",
+          "evidence": "Each marker uses t=(p*2.6+i/5)%1 and remains visible whenever output>0.03. At active wrap samples p +/-1e-7 the same visible 0.033-radius sphere jumps 1.239999 scene units from y~0.54 to y~-0.7. Multiple wraps occur during the ROS stage; no size/opacity envelope conceals the reset.",
+          "whyWrong": "The visible electron teleport spans almost 19 marker diameters across the membrane. This breaks smooth directional flow even though each within-cycle path runs from cytosol toward apoplast.",
+          "fix": "Keep one-way illustrative flow but fade or smoothly shrink markers at both ends and only reset while invisible; base onset on output so initial flow also enters smoothly. Do not reinterpret marker count as reaction stoichiometry.",
+          "verification": "At all analytical wrap times and onset, compare position weighted by visible size/opacity; any full reset must occur at zero visible weight. Verify absent condition, finite buffers and repeated seeks.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/24629339/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-plantSignals-04: approach enters ectodomain solid from p~0.45 onward.",
+          "20261004-plantSignals-05: visible markers wrap across 1.24 scene units."
+        ],
+        "limits": [
+          "Lipid footprint changes are schematic local exclusions; normal rendered visibility requires root review.",
+          "No atomistic FLS2/BAK1/RBOHD structure is claimed; 4MN8 supplies interface evidence rather than the current cartoon coordinates."
+        ]
+      },
+      "limitations": [
+        "Primary Li abstract and Sun/RCSB structural abstract opened; Kadota PubMed returned incomplete content and was not treated as independently confirmed full text.",
+        "No browser, full workspace tests, physical-device or performance claims."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

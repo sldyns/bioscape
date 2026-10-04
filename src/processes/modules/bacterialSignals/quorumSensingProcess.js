@@ -4,6 +4,7 @@ import {
   beadInstances,
   transcriptionDetail,
 } from "./structuralDetails.js";
+import { labelAnchors } from "./labelAnchors.js";
 export default {
   id: "quorumSensing",
   title: b(
@@ -124,6 +125,7 @@ export default {
       const body = k.ball([x, y, 0], [0.5, 0.21, 0.23], teal);
       body.rotation.z = 0.35 - i * 0.4;
       neighbors.push(body);
+      body.name = `quorum-population-cell-${i}`;
       halos.push(k.ball([x, y, -0.04], [0.68, 0.39, 0.32], glow));
     });
     const rear = k.mesh(
@@ -132,6 +134,7 @@ export default {
       [1.25, 0, 0],
     );
     rear.scale.set(2, 1.65, 0.7);
+    rear.name = "quorum-cell-cutaway-envelope";
     const lipids = [];
     for (let i = 0; i < 140; i++)
       for (const side of [-1, 1]) {
@@ -157,6 +160,7 @@ export default {
     ]);
     k.tube(edge, 0.035, pale);
     const luxI = k.ball([0.35, 0.6, 0.48], [0.25, 0.19, 0.17], teal);
+    luxI.name = "LuxI";
     const extraI = k.ball([0.68, 0.83, 0.48], [0.21, 0.17, 0.14], teal);
     // LuxI substrate cleft and helical rim remain visible above the DNA.
     for (let i = 0; i < 3; i++)
@@ -171,6 +175,7 @@ export default {
         pale,
       );
     const luxR = new THREE.Group();
+    luxR.name = "LuxR-regulatory-complex";
     group.add(luxR);
     // A split ligand-binding lobe leaves two AHL pockets exposed, with DNA-binding helices below.
     for (const side of [-1, 1]) {
@@ -201,8 +206,8 @@ export default {
         violet,
         luxR,
       );
-      for (const yy of [-0.3, -0.39])
-        helix(
+      for (const yy of [-0.3, -0.39]) {
+        const recognition = helix(
           k,
           luxR,
           [side * 0.05, yy, 0.06],
@@ -212,6 +217,8 @@ export default {
           0.017,
           violet,
         );
+        recognition.name = `LuxR-DNA-binding-helix-${side}-${yy}`;
+      }
     }
     const bound = [];
     for (const x of [-0.19, 0.19])
@@ -223,18 +230,24 @@ export default {
       radius: 0.15,
     });
     const promoter = k.ring([0.35, -1.05, 0], 0.22, 0.018, gold);
+    promoter.name = "lux-box-region-marker";
     promoter.rotation.y = Math.PI / 2;
     // The seven small tabs indicate operon organization without replacing molecular DNA.
-    for (let i = 0; i < 7; i++)
-      k.mesh(new THREE.BoxGeometry(0.2, 0.055, 0.07), i === 0 ? teal : dna, [
-        0.78 + i * 0.28,
-        -1.34,
-        -0.05,
-      ]);
+    const operonTabs = [];
+    for (let i = 0; i < 7; i++) {
+      const tab = k.mesh(
+        new THREE.BoxGeometry(0.2, 0.055, 0.07),
+        i === 0 ? teal : dna,
+        [0.78 + i * 0.28, -1.34, -0.05],
+      );
+      tab.name = `lux-operon-gene-tab-${i}`;
+      operonTabs.push(tab);
+    }
     const AHL = [];
     for (let i = 0; i < 26; i++) {
       const g = new THREE.Group();
       group.add(g);
+      g.name = `free-AHL-${i}`;
       k.ring([0, 0, 0], 0.07, 0.021, gold, g);
       k.segment([0.07, 0, 0], [0.17, 0.06, 0], 0.022, gold, g);
       AHL.push(g);
@@ -257,22 +270,26 @@ export default {
       k.label([-0.23, -0.92, 0.25], "5′ / 3′", "5′ / 3′", 0),
       k.label([3, -1.05, 0.25], "3′ / 5′", "3′ / 5′", 0),
     ];
+    const anchors = labelAnchors(labels),
+      dnaRail = transcription.group.getObjectByName("DNA-0-backbone"),
+      rna = transcription.group.getObjectByName("RNA-backbone");
     function update(value, parameters = {}) {
       const p = clamp(value),
         retained = parameters.exchange !== "diluted",
-        accumulation = retained ? ease(p, 0.2, 0.5) : 0,
         activation = retained ? ease(p, 0.51, 0.68) : 0,
         output = retained ? ease(p, 0.79, 0.96) : 0;
       for (let i = 0; i < AHL.length; i++) {
-        const q = (p * 0.75 + i * 0.137) % 1;
+        const angle = (p * 0.75 + i * 0.137) * Math.PI * 2;
         const visibleCount = retained
           ? 4 + Math.floor(22 * ease(p, 0.12, 0.85))
           : 5;
         AHL[i].visible = i < visibleCount;
         if (i < 5) {
+          // Short-chain AHL enters and leaves the cell on a continuous
+          // illustrative path, without recycling a visible icon by teleport.
           AHL[i].position.set(
-            0.35 - 3.6 * q,
-            0.6 + Math.sin(q * 6 + i) * 0.6,
+            -1.45 + 1.8 * Math.cos(angle),
+            0.6 + Math.sin(angle + i) * 0.6,
             0.5,
           );
         } else {
@@ -286,10 +303,12 @@ export default {
         }
         if (!retained) AHL[i].position.x -= 2 * ease(p, 0.3, 0.95);
       }
+      // The C-terminal helices reach the lux-box duplex in all three axes;
+      // transcription begins only after this approach has completed.
       luxR.position.set(
         1.65 - 1.3 * activation,
-        0.3 + 0.0 * accumulation - 0.93 * activation,
-        0.46,
+        0.3 - 1.09 * activation,
+        0.46 - 0.38 * activation,
       );
       bound.forEach((x) => (x.visible = activation > 0));
       extraI.visible = retained && p > 0.84;
@@ -304,8 +323,19 @@ export default {
       focalGlow.scale.set(2.08, 1.73, 0.73);
       glow.opacity = 0.16 * output;
       halos.forEach((h) => (h.visible = output > 0));
-      labels[3].position = [luxR.position.x + 0.6, luxR.position.y + 0.3, 0.6];
-      labels[7].active = retained && p > 0.74;
+      anchors[0].surface(neighbors[0]);
+      anchors[1].surface(rear);
+      anchors[2].surface(luxI);
+      anchors[3].surface(luxR.children[0]);
+      labels[3].text.zh = labels[3].text.en = bound[0].visible
+        ? "LuxR + AHL"
+        : "LuxR";
+      anchors[4].surface(promoter);
+      anchors[5].surface(operonTabs[3]);
+      anchors[6].surface(AHL[0].children[0]);
+      anchors[7].local(rna, 0, 0.5, 0, rna.count - 1);
+      anchors[8].local(dnaRail, 0, -0.5, 0, 0);
+      anchors[9].local(dnaRail, 0, 0.5, 0, dnaRail.count - 1);
       group.userData = {
         species: "Aliivibrio (Vibrio) fischeri",
         circuit: "LuxI–LuxR",
@@ -313,7 +343,7 @@ export default {
         signalExchange: retained ? "local-retention" : "continuous-dilution",
         cellCountFixed: true,
         receptorCompartment: "cytoplasm",
-        luxBoxOccupied: activation > 0.95,
+        luxBoxOccupied: activation === 1,
         enhancedLuxTranscription: retained && p > 0.7,
         positiveFeedback: retained && p > 0.84,
         lightOutput: output > 0,

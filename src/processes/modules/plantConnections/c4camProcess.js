@@ -1,5 +1,6 @@
 import { THREE, sceneKit, bilingual as b, clamp, ease } from "../../kit.js";
 import { anatomy } from "./anatomy.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 function create() {
   const k = sceneKit(),
@@ -199,8 +200,12 @@ function create() {
   }
   chloroplast(-2.2, -0.7, 0.96, c4, true);
   chloroplast(2.21, 0.06, 1.13, c4, false);
-  enzyme(-2.32, 1.19, captureMat, c4);
-  enzyme(2.38, 0.32, material("#8b9d80"), c4);
+  const c4PEPC = enzyme(-2.32, 1.19, captureMat, c4),
+    c4ME = enzyme(2.38, 0.32, material("#8b9d80"), c4),
+    c4PPDK = enzyme(-2.43, -0.7, material("#8e9b79"), c4);
+  c4PEPC.name = "C4-PEPC";
+  c4ME.name = "C4-NADP-ME";
+  c4PPDK.name = "C4-PPDK";
   const c4Atoms = particles(c4);
   const c4Bonds = [];
   for (let i = 0; i < 3; i++) {
@@ -280,22 +285,27 @@ function create() {
   tube(tonoplastPoints, 0.035, material("#91aaba"), cam);
   chloroplast(2.43, -1.1, 0.91, cam, true);
   detail.mitochondrion(cam, [2.35, 0.86, -0.08], [1.1, 0.59, 0.52]);
-  enzyme(-2.85, 0.77, captureMat, cam);
-  enzyme(2.54, 0.91, material("#ad868c"), cam);
+  const camPEPC = enzyme(-2.85, 0.77, captureMat, cam),
+    camME = enzyme(2.54, 0.91, material("#ad868c"), cam),
+    camRubisco = enzyme(2.55, -0.99, material("#859876"), cam);
+  camPEPC.name = "CAM-PEPC";
+  camME.name = "CAM-NAD-ME";
+  camRubisco.name = "CAM-Rubisco";
   const camAtoms = particles(cam);
   const camBonds = [];
   for (let i = 0; i < 3; i++)
     camBonds.push(mesh(k.cylinder, material("#bfa98e"), [0, 0, 0], cam));
   const reserves = [];
-  for (let i = 0; i < 12; i++)
-    reserves.push(
-      ball(
-        [-0.95 + (i % 4) * 0.34, -0.62 + Math.floor(i / 4) * 0.3, 0.1],
-        0.07,
-        material("#ba9d80"),
-        cam,
-      ),
+  for (let i = 0; i < 12; i++) {
+    const reserve = ball(
+      [-0.95 + (i % 4) * 0.34, -0.62 + Math.floor(i / 4) * 0.3, 0.1],
+      0.2,
+      material("#ba9d80"),
+      cam,
     );
+    reserve.name = `CAM-vacuolar-malate-reserve-${i}`;
+    reserves.push(reserve);
+  }
   // Epidermal stomatal inset is explicitly separate from the mesophyll cell.
   const guardShape = new THREE.Shape();
   guardShape.moveTo(-0.3, -0.18);
@@ -507,8 +517,8 @@ function create() {
         );
   };
   const c4Labels = [
-    label([-2.15, 2.44, 0.2], "玉米 · 叶肉细胞", "Maize · mesophyll cell", 3),
-    label([2.11, 2.44, 0.2], "维管束鞘细胞", "Bundle-sheath cell", 3),
+    label([-2.02, 1.75, 0.1], "玉米 · 叶肉细胞", "Maize · mesophyll cell", 3),
+    label([2.02, 1.75, 0.1], "维管束鞘细胞", "Bundle-sheath cell", 3),
     label([-2.52, 1.61, 0.5], "PEPC：HCO₃⁻ + PEP", "PEPC: HCO₃⁻ + PEP", 2),
     label([0.04, 0.93, 0.7], "苹果酸 4C 跨细胞", "4C malate between cells", 2),
     label(
@@ -527,19 +537,19 @@ function create() {
   ];
   const camLabels = [
     label(
-      [0.2, 2.51, 0.12],
+      [0.2, 1.75, 0.12],
       "K. fedtschenkoi · 成熟叶肉细胞",
       "K. fedtschenkoi · mature mesophyll",
       3,
     ),
     label(
-      [-2.26, 3.14, 0.23],
+      [-2.2, 2.7, 0.14],
       "表皮气孔（局部示意）",
       "Epidermal stoma (inset)",
       2,
     ),
     label(
-      [-0.5, -1.75, 0.46],
+      [-0.52, -0.1, 0.2],
       "液泡 · 夜间储存苹果酸",
       "Vacuole · malic acid stored at night",
       3,
@@ -557,8 +567,19 @@ function create() {
       "Day · chloroplast Rubisco",
       3,
     ),
-    label([3.37, 2.25, 0.2], "夜间", "Night", 2),
+    label([3.25, 2.72, 0], "夜间", "Night", 2),
   ];
+  camBonds[0].name = "CAM-carbon-bond-0";
+  const updateLabelAnchors = labelAnchors([
+    [c4Labels[2], c4PEPC.children[0]],
+    [c4Labels[3], c4Bonds[1]],
+    [c4Labels[4], c4ME.children[0]],
+    [c4Labels[5], c4Bonds[0]],
+    [c4Labels[6], c4PPDK.children[0]],
+    [camLabels[3], camPEPC.children[0]],
+    [camLabels[4], camME.children[0]],
+    [camLabels[5], camRubisco.children[0]],
+  ]);
   const bondDirection = new THREE.Vector3(),
     bondAxis = new THREE.Vector3(0, 1, 0);
   const updateBonds = (atoms, bonds, p, release) => {
@@ -582,8 +603,11 @@ function create() {
     updateBonds(c4Atoms, c4Bonds, p, 0.58);
     updateBonds(camAtoms, camBonds, p, 0.7);
     const reserve = ease(p, 0.14, 0.42) * (1 - ease(p, 0.55, 0.88));
+    // These are storage-volume markers, not the four tracked carbon atoms.
+    // Radius .2 → .36 keeps even the peak inside the actual inner tonoplast;
+    // .2 → 1 would cross both the displayed back wall and the implied front.
     for (let i = 0; i < reserves.length; i++)
-      reserves[i].scale.setScalar(0.2 + 0.8 * reserve);
+      reserves[i].scale.setScalar(0.2 + 0.16 * reserve);
     guardLeft.position.x = -2.65 + 0.24 * day;
     guardRight.position.x = -1.75 - 0.24 * day;
     sun.visible = day >= 0.5;
@@ -595,7 +619,10 @@ function create() {
     );
     for (const l of c4Labels) l.active = !isCAM;
     for (const l of camLabels) l.active = isCAM;
+    c4Labels[3].active = !isCAM && p >= 0.28 && p < 0.58;
+    c4Labels[5].active = !isCAM && p >= 0.65 && p <= 0.93;
     camLabels[6].text = p < 0.52 ? b("夜间", "Night") : b("白天", "Day");
+    updateLabelAnchors();
     group.userData = {
       process: "c4cam",
       structuralDetail:

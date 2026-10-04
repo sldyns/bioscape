@@ -1,4 +1,5 @@
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 import {
   helix,
@@ -69,12 +70,30 @@ function create() {
     const fromNuclear = toNuclear.clone().invert();
     const position = mesh.geometry.attributes.position;
     const rest = new Float64Array(position.count * 3);
-    const v = new THREE.Vector3();
+    const restNormals = new Float64Array(position.count * 3),
+      intoNormal = new THREE.Matrix3().getNormalMatrix(toNuclear),
+      fromNormal = new THREE.Matrix3().getNormalMatrix(fromNuclear),
+      v = new THREE.Vector3();
+    let minX = Infinity,
+      maxX = -Infinity;
     for (let i = 0; i < position.count; i++) {
       v.fromBufferAttribute(position, i).applyMatrix4(toNuclear);
       rest.set(v.toArray(), i * 3);
+      minX = Math.min(minX, v.x);
+      maxX = Math.max(maxX, v.x);
+      v.fromBufferAttribute(mesh.geometry.attributes.normal, i).applyMatrix3(
+        intoNormal,
+      );
+      restNormals.set(v.toArray(), i * 3);
     }
-    deformingMeshes.push({ mesh, rest, fromNuclear });
+    // The deformation contracts each point towards the nuclear x-axis. The
+    // convex hull of its rest bounds and that axis therefore bounds all frames.
+    const box = new THREE.Box3().setFromBufferAttribute(position);
+    box.expandByPoint(v.set(minX, 0, 0).applyMatrix4(fromNuclear));
+    box.expandByPoint(v.set(maxX, 0, 0).applyMatrix4(fromNuclear));
+    mesh.geometry.boundingBox = box;
+    mesh.geometry.boundingSphere = box.getBoundingSphere(new THREE.Sphere());
+    deformingMeshes.push({ mesh, rest, restNormals, fromNuclear, fromNormal });
   }
   capture(nuclearSurface);
   for (const fiber of nuclear.children.filter(
@@ -84,12 +103,13 @@ function create() {
       if (o.isMesh) capture(o);
     });
   let lastDeform = NaN;
-  const deformationPoint = new THREE.Vector3();
+  const deformationPoint = new THREE.Vector3(),
+    deformationNormal = new THREE.Vector3();
   const nuclearPore = poreComplex(k, nuclear, [0.91, 0.27, 0.1], 0.1);
   const gata = k.mesh(
     new THREE.BoxGeometry(0.27, 0.22, 0.2),
     k.material("#b7886d"),
-    [-0.8, 0.6, 0.3],
+    [-0.53, 0.3, 0.08],
     nuclear,
   );
   for (const x of [-0.065, 0.065]) {
@@ -218,6 +238,20 @@ function create() {
       1,
     ),
   ];
+  const constrictionPoint = [0, 0, 0];
+  const anchors = labelAnchors([
+    { label: labels[0], target: group, local: [-0.75, 0.9, 0.1], region: true },
+    { label: labels[1], target: gata },
+    { label: labels[2], target: hemoglobin[0].h.children[0] },
+    { label: labels[3], target: nuclear, region: true },
+    { label: labels[4], target: group, local: [-0.75, 0.6, 0.1], region: true },
+    {
+      label: labels[5],
+      target: plasma.mesh,
+      local: constrictionPoint,
+      region: true,
+    },
+  ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       competent = parameters.program !== "impaired",
@@ -239,30 +273,59 @@ function create() {
     nuclear.scale.setScalar(1 - 0.46 * condense);
     const deform = 0.22 * Math.sin(Math.PI * extrude);
     if (deform !== lastDeform) {
-      for (const { mesh, rest, fromNuclear } of deformingMeshes) {
-        const position = mesh.geometry.attributes.position;
+      for (const {
+        mesh,
+        rest,
+        restNormals,
+        fromNuclear,
+        fromNormal,
+      } of deformingMeshes) {
+        const position = mesh.geometry.attributes.position,
+          normal = mesh.geometry.attributes.normal;
         for (let i = 0; i < position.count; i++) {
           const x = rest[i * 3],
-            nx = x / 1.1;
-          const waist = 1 - deform * Math.exp((-nx * nx) / 0.16);
+            nx = x / 1.1,
+            reduction = deform * Math.exp((-nx * nx) / 0.16),
+            waist = 1 - reduction,
+            derivative = (2 * x * reduction) / (1.1 * 1.1 * 0.16),
+            y = rest[i * 3 + 1],
+            z = rest[i * 3 + 2];
           deformationPoint
-            .set(x, rest[i * 3 + 1] * waist, rest[i * 3 + 2] * waist)
+            .set(x, y * waist, z * waist)
             .applyMatrix4(fromNuclear);
-          position.setXYZ(i, ...deformationPoint.toArray());
+          position.setXYZ(
+            i,
+            deformationPoint.x,
+            deformationPoint.y,
+            deformationPoint.z,
+          );
+          const ny = restNormals[i * 3 + 1] / waist,
+            nz = restNormals[i * 3 + 2] / waist;
+          // Inverse-transpose of the common nonlinear deformation Jacobian.
+          // No topology or resolution changes, and no whole-mesh normal/bounds
+          // rescans are needed for each of the detailed chromatin surfaces.
+          deformationNormal
+            .set(restNormals[i * 3] - derivative * (y * ny + z * nz), ny, nz)
+            .applyMatrix3(fromNormal)
+            .normalize();
+          normal.setXYZ(
+            i,
+            deformationNormal.x,
+            deformationNormal.y,
+            deformationNormal.z,
+          );
         }
         position.needsUpdate = true;
-        mesh.geometry.computeVertexNormals();
-        mesh.geometry.computeBoundingBox();
-        mesh.geometry.computeBoundingSphere();
+        normal.needsUpdate = true;
       }
       lastDeform = deform;
     }
     nuclearMat.opacity = 0.16 + 0.2 * condense;
     gata.visible = competent && t < 0.46;
     gata.position.set(
-      -0.8 + 0.63 * transcription,
-      0.6 - 0.39 * transcription,
-      0.3,
+      -0.53 + 0.36 * transcription,
+      0.3 - 0.09 * transcription,
+      0.08,
     );
     rna.visible = competent && t > 0.17 && t < 0.55;
     rna.scale.setScalar(Math.max(0.001, ease(t, 0.17, 0.3)));
@@ -294,12 +357,24 @@ function create() {
       ],
       0.13,
     );
+    // Attach the regional constriction callout to the membrane section,
+    // not to an invented cortical ring or a fixed point outside the cell.
+    constrictionPoint[0] = (-0.75 + nuclear.position.x) / 2;
+    let low = 0,
+      high = 2.4;
+    for (let i = 0; i < 20; i++) {
+      const y = (low + high) / 2;
+      if (plasma.field(constrictionPoint[0], y, 0) < 0) low = y;
+      else high = y;
+    }
+    constrictionPoint[1] = (low + high) / 2;
     labels[0].active = t < 0.92;
-    labels[1].active = t < 0.44;
-    labels[2].active = t >= 0.23 && t < 0.76;
+    labels[1].active = gata.visible && t < 0.44;
+    labels[2].active = hemoglobin[0].h.visible && t < 0.76;
     labels[3].active = t >= 0.77;
     labels[4].active = t >= 0.92;
     labels[5].active = t >= 0.62 && t < 0.94;
+    anchors.update();
     group.userData = {
       organism: "mouse",
       lineage: "definitive erythroid",
@@ -318,7 +393,14 @@ function create() {
     group,
     update,
     labels,
-    science: { plasma, nuclear, nuclearSurface, deformingMeshes },
+    science: {
+      plasma,
+      nuclear,
+      nuclearSurface,
+      deformingMeshes,
+      gata,
+      labelAnchors: anchors.bindings,
+    },
     materials: materialInventory(group),
     camera: { position: [0, 1.2, 10.8], target: [0, 0, 0] },
   };
@@ -396,6 +478,10 @@ export default {
     },
   ],
   sources: [
+    {
+      title: "GATA1 is a nuclear marker of erythroid precursors",
+      url: "https://academic.oup.com/ajcp/article/147/4/420/3072332",
+    },
     {
       title: "Nucleosome core particle (PDB 1AOI)",
       url: "https://www.rcsb.org/structure/1AOI",

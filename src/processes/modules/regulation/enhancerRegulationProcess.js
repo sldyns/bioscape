@@ -211,6 +211,27 @@ function create() {
       4,
     ),
   ];
+  // Cache real surface vertices; label placement owns text spacing separately.
+  const labelPoint = new THREE.Vector3();
+  const surfaceAnchors = [
+    [
+      0,
+      activators[0].getObjectByName("Sequence-specific activator 1 domain 2"),
+    ],
+    [1, pol.getObjectByName("RPB1 wall")],
+    [2, fiber.cores[3].object.getObjectByName("H3 B")],
+    [3, mediator.getObjectByName("Mediator Middle scaffold")],
+  ].map(([index, object]) => {
+    const positions = object.geometry.attributes.position;
+    let vertex = 0;
+    for (let i = 1; i < positions.count; i++)
+      if (positions.getZ(i) > positions.getZ(vertex)) vertex = i;
+    return {
+      index,
+      object,
+      local: new THREE.Vector3().fromBufferAttribute(positions, vertex),
+    };
+  });
   function update(progress, parameters = {}) {
     p = clamp(progress);
     const impaired = parameters.coactivator === "impaired";
@@ -279,31 +300,17 @@ function create() {
       const release = ease(p, end, Math.min(1, end + 0.1));
       molecule.group.position.set(0, -0.85 * release, 0.45 * release);
     }
-    labels[0].position.splice(
-      0,
-      3,
-      enhancerPos.x - 0.1,
-      enhancerPos.y + 1.05,
-      enhancerPos.z,
-    );
-    labels[1].position.splice(
-      0,
-      3,
-      promoterPos.x + 0.25,
-      promoterPos.y - 0.62,
-      promoterPos.z,
-    );
-    labels[3].position.splice(
-      0,
-      3,
-      mediator.position.x - 0.15,
-      mediator.position.y + 0.64,
-      mediator.position.z,
-    );
+    for (const { index, object, local } of surfaceAnchors) {
+      object.updateWorldMatrix(true, false);
+      labelPoint
+        .copy(local)
+        .applyMatrix4(object.matrixWorld)
+        .toArray(labels[index].position);
+    }
     labels[3].active = !impaired && p > 0.3;
     labels[4].active = burst;
     transcriptPoint(activeFrame, 1, rnaLength, offset);
-    labels[4].position.splice(0, 3, offset.x, offset.y - 0.24, offset.z);
+    offset.toArray(labels[4].position);
     labels[6].active = impaired && p > 0.49;
     labels[5].active = !labels[6].active;
     group.userData = {

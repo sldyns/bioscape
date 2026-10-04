@@ -1,0 +1,23 @@
+{
+  "group": "original",
+  "phase": "rendered supplement; Phase A preserved",
+  "models": [
+    {
+      "id": "transcription",
+      "findings": [
+        {
+          "issueId": "20261004-original-transcription-labels-01",
+          "severity": "P2",
+          "kind": "rendered annotation target",
+          "file": "src/processes/transcriptionProcess.js",
+          "location": "labels and update() end-point tracking",
+          "evidence": "Specific labels used text offsets as world targets: RNA 5-prime anchor stays 0.332415 scene units away from its actual retained endpoint; DNA terminal labels use fixed transverse coordinates while the actual helix frame changes. Polymerase label is offset from its enzyme lobes. The pre-fix actual endpoint regression fails.",
+          "whyWrong": "A leader and numbered marker should identify the named nucleotide endpoint or protein rather than adjacent background, especially when the two antiparallel strands share a small projected area.",
+          "fix": "Attach all four DNA terminal labels to actual strand endpoints, RNA labels to retained nucleotide endpoints, polymerase label to its actual upper lobe, promoter to its torus marker and reading direction to its arrow.",
+          "verification": "Actual instanced cylinder/sphere endpoints and enzyme-lobe regression across dense/irregular states; identical mechanism geometry in 101 before/after states.",
+          "sourceUrls": []
+        }
+      ]
+    }
+  ]
+}

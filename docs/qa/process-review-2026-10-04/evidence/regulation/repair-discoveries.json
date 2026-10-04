@@ -1,0 +1,87 @@
+{
+  "group": "regulation",
+  "discoveredDuring": "Root-exported default English regulation stage review and authorized named-object anchor sweep after immutable Phase A",
+  "phaseAAuditsUnchanged": true,
+  "issues": [
+    {
+      "issueId": "20261004-regulation-labels-01",
+      "severity": "P2",
+      "models": [
+        "promoterRegulation"
+      ],
+      "title": "Promoter molecular labels use text-placement coordinates instead of the represented moving geometry",
+      "evidence": [
+        "resolutions/regulation-rendered.md",
+        "evidence/browser/full-a-retry-000-promoterRegulation-cell-end.webp",
+        "evidence/regulation/promoter-labels-negative.log"
+      ],
+      "confirmedLabels": [
+        "TATA promoter",
+        "TFIID / TBP",
+        "Transcription start +1",
+        "Pol II / TFIIF",
+        "TFIIH / XPB",
+        "Nascent RNA 5-prime end",
+        "Coding strand",
+        "Template strand"
+      ],
+      "repair": "Attach protein leaders to vertices on their named moving surfaces; DNA labels to the appropriate actual backbone; +1 to its marker ring; RNA 5-prime to the existing distal centerline endpoint. Preserve bilingual wording and active-state rules.",
+      "status": "fixed-locally-rendered-acceptance-pending"
+    },
+    {
+      "issueId": "20261004-regulation-labels-02",
+      "severity": "P2",
+      "models": [
+        "enhancerRegulation"
+      ],
+      "title": "Enhancer activator, polymerase, nucleosome, Mediator and RNA leaders miss their represented targets",
+      "evidence": [
+        "resolutions/regulation-rendered.md",
+        "evidence/browser/full-a-retry-001-enhancerRegulation-cell-stage-5.webp",
+        "evidence/regulation/enhancer-labels-negative.log"
+      ],
+      "confirmedLabels": [
+        "Enhancer / activators",
+        "Promoter / Pol II",
+        "Nucleosomes and linker DNA",
+        "Coactivator / Mediator",
+        "Nascent RNA 5-prime end"
+      ],
+      "repair": "Follow the complete transforms of existing activator, Pol II, core-4 histone and Mediator surface vertices. Bind the RNA annotation to its actual free end during either burst. Preserve explanatory proximity/condition notes as regional statements.",
+      "status": "fixed-locally-rendered-acceptance-pending"
+    },
+    {
+      "issueId": "20261004-original-secretion-labels-01",
+      "severity": "P2",
+      "models": [
+        "secretion"
+      ],
+      "title": "Secretory membrane labels float off the ER, Golgi faces and plasma membrane",
+      "evidence": [
+        "evidence/regulation/secretion-labels-negative.log",
+        "evidence/regulation/secretion-labels-final.log"
+      ],
+      "confirmedLabels": [
+        "Rough ER",
+        "Cis face",
+        "Trans face",
+        "Plasma membrane"
+      ],
+      "repair": "Attach leaders to vertices of the existing membranes. Cis/trans labels choose the currently visible cis-most/trans-most membrane sacs during maturation and recycling; spatial cytosolic/extracellular annotations remain spatial.",
+      "status": "fixed-locally-rendered-acceptance-pending",
+      "discoveryScope": "Authorized source/actual-geometry anchor sweep; no secretion image was supplied in the initial gallery index."
+    }
+  ],
+  "verification": {
+    "regulationActualGeometryAssertions": 1045,
+    "secretionActualGeometryAssertions": 444,
+    "parameterScope": "Both declared conditions for each regulation model; no secretion condition control",
+    "negativeControls": "Three retained pre-label-repair models fail the new invariants at their original detached anchors. Negative logs report distance to the selected named mesh vertices, not full-object minimum triangle distance.",
+    "existingRegressions": [
+      "regulation science + 201-frame duplex geometry",
+      "original secretion continuity/attachment/cargo/resources",
+      "secretion-refinement containment/fade/recycling/seeking"
+    ],
+    "renderedBoundary": "Post-repair text visibility and line placement remain for root export/browser verification. Old gallery frames establish defects only."
+  }
+}

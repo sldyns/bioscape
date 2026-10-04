@@ -1,0 +1,620 @@
+{
+  "group": "rna",
+  "discoveredDuring": "rendered review and authorized concrete-object anchor sweep after immutable Phase A",
+  "issues": [
+    {
+      "issueId": "20261004-rna-rendered-01",
+      "severity": "P2",
+      "models": [
+        "nuclearTransport"
+      ],
+      "title": "A combined importin alpha/beta label follows recycled beta while alpha remains in the nucleus",
+      "evidence": [
+        "resolutions/rna-rendered.md",
+        "evidence/browser/gallery-index.json"
+      ],
+      "repair": "Prebuilt independent beta and alpha labels follow actual receptor helices. Alpha changes to retained-in-nucleus only after exposed-NLS import completes nuclear cargo release. Masked NLS retains separate cytosolic receptor identities. Ran-GTP/GDP text reuses prebuilt bilingual values.",
+      "status": "fixed-local-and-sampled-rendered-verified"
+    },
+    {
+      "issueId": "20261004-rna-rendered-02",
+      "severity": "P2",
+      "models": [
+        "rnaProcessing",
+        "nuclearTransport",
+        "motorTransport",
+        "organelleImport"
+      ],
+      "title": "Concrete molecular labels use detached layout coordinates instead of the represented geometry",
+      "confirmedOffObjectAnchors": 18,
+      "evidence": [
+        "evidence/rna/label-anchor-before.json",
+        "evidence/rna/label-anchor-after.json",
+        "evidence/rna/label-negative-control.json"
+      ],
+      "repair": "Bind 20 concrete-object labels (including the new alpha identity and already-near-wire lariat) to vertices on existing moving meshes or selected tubulin instances. Compartment/region annotations are retained. Full label strings are retained except the necessary independent receptor identities.",
+      "status": "fixed-local-and-sampled-rendered-verified"
+    },
+    {
+      "issueId": "20261004-rna-rendered-03",
+      "severity": "P2",
+      "models": [
+        "nuclearTransport"
+      ],
+      "title": "A beta receptor anchor is hidden by bound Ran in the default rendered projection",
+      "confirmedFrame": "evidence/browser/conditions-final-a-042-nuclearTransport-cell-stage-5.webp",
+      "progress": 0.765,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "evidence": [
+        "evidence/rna/npc-label-visibility-probe.json",
+        "evidence/rna/npc-visibility-regression.json"
+      ],
+      "cameraEvidence": "The final probe reproduces ProcessScene sampled visible bounds, 36-degree FOV, 1.12 fitting margin and native 960x640 aspect. At p=.765 the original beta anchor first hits Ran in all three roots. An early unfitted-camera observation at p=.935 is superseded: the fitted camera first hits beta there; .935 remains a preservation check rather than a negative-control failure.",
+      "repair": "Use one fixed centroid of an existing upper-front beta helix triangle (child 8, indexed triangle vertices 579/580/571). No time-based anchor switching, molecular geometry, relative protein poses, Ran anchor or camera changes.",
+      "status": "fixed-local-and-sampled-rendered-verified"
+    }
+  ],
+  "measurement": "Minimum Euclidean distance from the anchor to actual transformed visible triangle surfaces. Before snapshot includes instances and full relevant objects; after snapshot is independently recomputed. The lariat point was within the visual wire envelope, so its 0.00997 surface distance is not counted as an empty-space defect.",
+  "objects": [
+    {
+      "before": {
+        "id": "rnaProcessing",
+        "parameters": {},
+        "p": 0.305,
+        "labelIndex": 0,
+        "text": {
+          "zh": "5′ 帽",
+          "en": "5′ cap"
+        },
+        "anchor": [
+          -3.25,
+          -0.58,
+          0
+        ],
+        "distance": 0.5329999999999999,
+        "nearest": [
+          -3.25,
+          -0.047,
+          1.4897209893110688e-18
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "rnaProcessing",
+        "parameters": {},
+        "p": 0.305,
+        "labelIndex": 1,
+        "text": {
+          "zh": "外显子 1",
+          "en": "Exon 1"
+        },
+        "anchor": [
+          -2.1,
+          -0.6,
+          0
+        ],
+        "distance": 0.24571119842099742,
+        "nearest": [
+          -2.1500000000000004,
+          -0.3822764454773433,
+          0.10232520137044679
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "rnaProcessing",
+        "parameters": {},
+        "p": 0.305,
+        "labelIndex": 2,
+        "text": {
+          "zh": "外显子 2",
+          "en": "Exon 2"
+        },
+        "anchor": [
+          2.1,
+          -0.6,
+          0
+        ],
+        "distance": 0.24571119842099742,
+        "nearest": [
+          2.1500000000000004,
+          -0.3822764454773433,
+          0.10232520137044679
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "rnaProcessing",
+        "parameters": {},
+        "p": 0.305,
+        "labelIndex": 3,
+        "text": {
+          "zh": "剪接体：RNA + 蛋白质",
+          "en": "Spliceosome: RNA + proteins"
+        },
+        "anchor": [
+          0,
+          2.15,
+          0
+        ],
+        "distance": 0.9664547113160141,
+        "nearest": [
+          0.11811443283077974,
+          1.2159868037769646,
+          -0.21841025402488104
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "rnaProcessing",
+        "parameters": {},
+        "p": 0.82,
+        "labelIndex": 4,
+        "text": {
+          "zh": "内含子套索",
+          "en": "Intron lariat"
+        },
+        "anchor": [
+          0.1,
+          -2,
+          0
+        ],
+        "distance": 0.009969946026398675,
+        "nearest": [
+          0.1,
+          -2,
+          0.009969946026398675
+        ]
+      },
+      "confirmedOffObject": false,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "near-wire-anchor-refined-without-new-issue"
+    },
+    {
+      "before": {
+        "id": "rnaProcessing",
+        "parameters": {},
+        "p": 0.82,
+        "labelIndex": 5,
+        "text": {
+          "zh": "poly(A) 尾 · 3′",
+          "en": "Poly(A) tail · 3′"
+        },
+        "anchor": [
+          2.1,
+          -0.7,
+          0
+        ],
+        "distance": 0.7068301972033725,
+        "nearest": [
+          1.7466206896436707,
+          -0.13661433335513545,
+          -0.23943387669618732
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "nuclearTransport",
+        "parameters": {
+          "nls": "exposed"
+        },
+        "p": 0.475,
+        "labelIndex": 3,
+        "text": {
+          "zh": "NLS 货物",
+          "en": "NLS cargo"
+        },
+        "anchor": [
+          -0.0061398160849468475,
+          -0.8,
+          0
+        ],
+        "distance": 0.41220216657029984,
+        "nearest": [
+          0.12808106209509348,
+          -0.4106291013440716,
+          0.0169022266492515
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "nuclearTransport",
+        "parameters": {
+          "nls": "exposed"
+        },
+        "p": 0.475,
+        "labelIndex": 4,
+        "text": {
+          "zh": "importin α / β",
+          "en": "Importin α / β"
+        },
+        "anchor": [
+          0.14386018391505315,
+          1.17,
+          0
+        ],
+        "distance": 0.3297106459970744,
+        "nearest": [
+          0.21055075552121236,
+          0.8476957738399505,
+          0.019531091675162315
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "nuclearTransport",
+        "parameters": {
+          "nls": "exposed"
+        },
+        "p": 1,
+        "labelIndex": 5,
+        "text": {
+          "zh": "Ran-GDP",
+          "en": "Ran-GDP"
+        },
+        "anchor": [
+          -1.6800000000000002,
+          -1.35,
+          0
+        ],
+        "distance": 0.24813446354807797,
+        "nearest": [
+          -1.6800000000000002,
+          -1.1027898272878403,
+          0.021397254681770228
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "motorTransport",
+        "parameters": {
+          "motor": "kinesin",
+          "atp": "available"
+        },
+        "p": 0,
+        "labelIndex": 0,
+        "text": {
+          "zh": "负端 −",
+          "en": "Minus end −"
+        },
+        "anchor": [
+          -3.55,
+          -1.9,
+          0
+        ],
+        "distance": 0.2567388002468618,
+        "nearest": [
+          -3.5888854523944844,
+          -1.6623372414942028,
+          -0.0889895857035499
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "motorTransport",
+        "parameters": {
+          "motor": "kinesin",
+          "atp": "available"
+        },
+        "p": 0,
+        "labelIndex": 1,
+        "text": {
+          "zh": "正端 +",
+          "en": "Plus end +"
+        },
+        "anchor": [
+          3.4,
+          -1.9,
+          0
+        ],
+        "distance": 0.25331943871655144,
+        "nearest": [
+          3.4187226981410417,
+          -1.6638949098672304,
+          0.08985869473448238
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "motorTransport",
+        "parameters": {
+          "motor": "kinesin",
+          "atp": "available"
+        },
+        "p": 0.315,
+        "labelIndex": 2,
+        "text": {
+          "zh": "膜性货物",
+          "en": "Membrane cargo"
+        },
+        "anchor": [
+          -2.5974893198486066,
+          2.85,
+          0
+        ],
+        "distance": 0.20402777816345252,
+        "nearest": [
+          -2.5983889293761573,
+          2.645975351333618,
+          0.0006838871049694717
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "motorTransport",
+        "parameters": {
+          "motor": "kinesin",
+          "atp": "available"
+        },
+        "p": 0,
+        "labelIndex": 3,
+        "text": {
+          "zh": "极性微管 · α/β 微管蛋白",
+          "en": "Polar microtubule · α/β tubulin"
+        },
+        "anchor": [
+          0,
+          -2.45,
+          0
+        ],
+        "distance": 0.7905202378374799,
+        "nearest": [
+          -0.04742528478007646,
+          -1.6667951477215617,
+          0.09624576957801123
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "motorTransport",
+        "parameters": {
+          "motor": "dynein",
+          "atp": "available"
+        },
+        "p": 0.715,
+        "labelIndex": 4,
+        "text": {
+          "zh": "Dynein + dynactin",
+          "en": "Dynein + dynactin"
+        },
+        "anchor": [
+          -0.6257452847192044,
+          0.58,
+          0.5
+        ],
+        "distance": 0.5020306966919865,
+        "nearest": [
+          -0.4705194166559683,
+          0.44537558050111525,
+          0.04194321751594543
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "organelleImport",
+        "parameters": {
+          "transit": "present"
+        },
+        "p": 0,
+        "labelIndex": 2,
+        "text": {
+          "zh": "TOC · 外包膜",
+          "en": "TOC · outer envelope"
+        },
+        "anchor": [
+          -0.95,
+          -1.2,
+          0
+        ],
+        "distance": 0.7276159655179345,
+        "nearest": [
+          -0.77,
+          -0.4950000047683716,
+          9.093002582659851e-17
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "organelleImport",
+        "parameters": {
+          "transit": "present"
+        },
+        "p": 0,
+        "labelIndex": 3,
+        "text": {
+          "zh": "TIC · 内包膜",
+          "en": "TIC · inner envelope"
+        },
+        "anchor": [
+          0.95,
+          -1.8,
+          0
+        ],
+        "distance": 1.3173553004237506,
+        "nearest": [
+          0.77,
+          -0.4950000047683716,
+          9.093002582659851e-17
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "organelleImport",
+        "parameters": {
+          "transit": "present"
+        },
+        "p": 0.355,
+        "labelIndex": 5,
+        "text": {
+          "zh": "N 端转运肽",
+          "en": "N-terminal transit peptide"
+        },
+        "anchor": [
+          -0.6381905743428721,
+          0.65,
+          0
+        ],
+        "distance": 0.5108353702458005,
+        "nearest": [
+          -0.6618747848691879,
+          0.14310243564160835,
+          0.058708542082386406
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "organelleImport",
+        "parameters": {
+          "transit": "present"
+        },
+        "p": 0.775,
+        "labelIndex": 6,
+        "text": {
+          "zh": "ATP 依赖性伴侣 / 马达",
+          "en": "ATP-dependent chaperone / motor"
+        },
+        "anchor": [
+          1.45,
+          0.9,
+          0
+        ],
+        "distance": 0.5386838769339783,
+        "nearest": [
+          1.30256781240755,
+          0.3997512434360463,
+          0.13488977309842393
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    },
+    {
+      "before": {
+        "id": "organelleImport",
+        "parameters": {
+          "transit": "present"
+        },
+        "p": 0.925,
+        "labelIndex": 7,
+        "text": {
+          "zh": "成熟基质蛋白",
+          "en": "Mature stromal protein"
+        },
+        "anchor": [
+          2.8,
+          -1.1,
+          0
+        ],
+        "distance": 0.6119974270501514,
+        "nearest": [
+          2.664249780815007,
+          -0.5037903142276543,
+          0.025431069550307432
+        ]
+      },
+      "confirmedOffObject": true,
+      "maximumAfterSurfaceDistance": 0,
+      "status": "fixed-locally"
+    }
+  ],
+  "verification": {
+    "rootConditionConfigurations": 14,
+    "actualSurfaceAssertions": 1218,
+    "negativeOriginalAnchorsRejected": 18,
+    "stableLabelTextAndPositionIdentity": true,
+    "refinementSuite": "PASS",
+    "nodeGeometryMaterialAllocation": "Existing refinement resource-identity check passes; labels/text/position arrays are preallocated."
+  },
+  "limits": [
+    "Rendered all-branch/root review and continuous-playback acceptance belong to root; this report records local geometry and regression acceptance only.",
+    "Surface anchoring does not guarantee an unobstructed screen projection from every camera angle."
+  ],
+  "visibilityFollowup": {
+    "defaultCameraFirstHitChecks": 156,
+    "rootNLSConfigurations": 6,
+    "stableLocalPointSeeksPerConfiguration": 1005,
+    "oldAnchorNegativeControls": 3,
+    "negativeControlProgress": 0.765,
+    "RanAnchorsChanged": false,
+    "scope": "Gallery/binding/recycling poses, including .765 and .935. Real membrane/pore occlusion during central traversal is preserved; arbitrary-time/angle screen visibility is not promised."
+  },
+  "postRepairRenderedReview": {
+    "report": "resolutions/rna-rendered-all-cases.md",
+    "npcBatch": "conditions-final-e-000..005",
+    "cases": 6,
+    "sheetFrames": 42,
+    "nativeOriginals": 6,
+    "language": "zh",
+    "newIssues": 0,
+    "continuousPlayback": false
+  }
+}

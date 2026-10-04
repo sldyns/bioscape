@@ -65,41 +65,71 @@ function cylinderBetween(a, b, radius, mat) {
   mesh.scale.y = d.length();
   return mesh;
 }
-function duplex(curve, segments = 1100) {
-  // Two continuous strands; thickness and coiling are exaggerated for teaching.
-  const frames = curve.computeFrenetFrames(segments, false),
-    lines = [[], []];
-  for (let i = 0; i <= segments; i++) {
-    const p = curve.getPointAt(i / segments),
-      a = (i / segments) * TAU * 85;
-    for (let j = 0; j < 2; j++)
-      lines[j].push(
-        p
-          .clone()
-          .addScaledVector(frames.normals[i], 0.018 * Math.cos(a + j * Math.PI))
-          .addScaledVector(
-            frames.binormals[i],
-            0.018 * Math.sin(a + j * Math.PI),
-          ),
-      );
+function materialDuplex(curve, packedEndParameter) {
+  // One material coordinate follows the same genome through packing and entry.
+  // The original packing turns and backbone thickness are retained; denser tube
+  // sampling improves the helix instead of swapping to a lower-pitch mesh.
+  const segments = 1440,
+    radialSegments = 6,
+    routeSamples = 8192;
+  curve.arcLengthDivisions = 32768;
+  const lengths = curve.getLengths(),
+    totalLength = lengths.at(-1),
+    endSample = packedEndParameter * curve.arcLengthDivisions,
+    lower = Math.floor(endSample),
+    blend = endSample - lower;
+  const genomeLength =
+    lengths[lower] * (1 - blend) + lengths[lower + 1] * blend;
+  const frames = curve.computeFrenetFrames(routeSamples, false),
+    route = new Float64Array((routeSamples + 1) * 3),
+    routeNormals = new Float64Array(route.length),
+    routeTangents = new Float64Array(route.length),
+    point = V();
+  for (let i = 0; i <= routeSamples; i++) {
+    curve.getPointAt(i / routeSamples, point).toArray(route, i * 3);
+    frames.normals[i].toArray(routeNormals, i * 3);
+    frames.tangents[i].toArray(routeTangents, i * 3);
   }
   const group = new T.Group();
-  lines.forEach((points, i) =>
-    group.add(
-      new T.Mesh(
-        new T.TubeGeometry(
-          new T.CatmullRomCurve3(points),
-          segments,
-          0.013,
-          6,
-          false,
-        ),
-        material(i ? "#ce9971" : "#aa724b"),
-      ),
-    ),
-  );
-  const stride = 8,
-    baseCount = Math.floor(segments / stride) + 1;
+  group.name = "continuous-material-coordinate-duplex";
+  const centers = [
+      new Float64Array((segments + 1) * 3),
+      new Float64Array((segments + 1) * 3),
+    ],
+    radial = new Float64Array((segments + 1) * 3),
+    strandMeshes = [];
+  for (let strand = 0; strand < 2; strand++) {
+    const geometry = new T.BufferGeometry(),
+      positions = new Float32Array((segments + 1) * (radialSegments + 1) * 3),
+      normals = new Float32Array(positions.length),
+      indices = [];
+    for (let i = 1; i <= segments; i++)
+      for (let j = 1; j <= radialSegments; j++) {
+        const a = (i - 1) * (radialSegments + 1) + j - 1,
+          b = i * (radialSegments + 1) + j - 1,
+          c = b + 1,
+          d = a + 1;
+        indices.push(a, d, b, b, d, c);
+      }
+    geometry.setAttribute(
+      "position",
+      new T.BufferAttribute(positions, 3).setUsage(T.DynamicDrawUsage),
+    );
+    geometry.setAttribute(
+      "normal",
+      new T.BufferAttribute(normals, 3).setUsage(T.DynamicDrawUsage),
+    );
+    geometry.setIndex(indices);
+    geometry.boundingBox = new T.Box3();
+    geometry.boundingSphere = new T.Sphere();
+    geometry.userData = { tubularSegments: segments, radialSegments };
+    const mesh = new T.Mesh(geometry, material(strand ? "#ce9971" : "#aa724b"));
+    mesh.name = `continuous-DNA-backbone-${strand + 1}`;
+    strandMeshes.push(mesh);
+    group.add(mesh);
+  }
+  const stride = 16,
+    baseCount = segments / stride + 1;
   const bases = new T.InstancedMesh(
     new T.CylinderGeometry(1, 1, 1, 8),
     material("#dac3a0"),
@@ -107,40 +137,114 @@ function duplex(curve, segments = 1100) {
   );
   bases.name = "DNA-base-pair-rungs";
   bases.instanceMatrix.setUsage(T.DynamicDrawUsage);
-  const baseMatrices = new Float32Array(baseCount * 16),
-    o = new T.Object3D(),
+  const o = new T.Object3D(),
     up = V(0, 1, 0),
-    direction = V();
-  for (let i = 0; i < baseCount; i++) {
-    const n = Math.min(segments, i * stride),
-      a = lines[0][n],
-      b = lines[1][n];
-    o.position.copy(a).lerp(b, 0.5);
-    direction.copy(b).sub(a);
-    o.scale.set(0.008, direction.length(), 0.008);
-    o.quaternion.setFromUnitVectors(up, direction.normalize());
-    o.updateMatrix();
-    o.matrix.toArray(baseMatrices, i * 16);
-    bases.setMatrixAt(i, o.matrix);
-  }
-  bases.instanceMatrix.needsUpdate = true;
-  bases.computeBoundingBox();
-  bases.computeBoundingSphere();
+    tangent = V(),
+    normal = V(),
+    binormal = V(),
+    offset = V(),
+    a = V(),
+    b = V();
+  bases.boundingBox = new T.Box3();
+  bases.boundingSphere = new T.Sphere();
   group.add(bases);
-  group.setInterval = (start, end) => {
-    group.children.forEach((m) => {
-      if (!m.isInstancedMesh)
-        m.geometry.setDrawRange(start * 36, (end - start) * 36);
-    });
-    const lo = Math.ceil(start / stride),
-      hi = Math.min(baseCount, Math.floor(end / stride) + 1);
-    bases.count = Math.max(0, hi - lo);
-    for (let i = 0; i < bases.count * 16; i++)
-      bases.instanceMatrix.array[i] = baseMatrices[lo * 16 + i];
+  let lastOffset = -1;
+  group.setTransfer = (transfer) => {
+    const start = transfer * (totalLength - genomeLength);
+    if (start === lastOffset) return;
+    lastOffset = start;
+    for (let i = 0; i <= segments; i++) {
+      const s = start + (i / segments) * genomeLength,
+        sample = Math.min(routeSamples, (s / totalLength) * routeSamples),
+        lo = Math.min(routeSamples - 1, Math.floor(sample)),
+        t = sample - lo,
+        phase = (i / segments) * TAU * 85;
+      for (let axis = 0; axis < 3; axis++) {
+        point.setComponent(
+          axis,
+          route[lo * 3 + axis] * (1 - t) + route[(lo + 1) * 3 + axis] * t,
+        );
+        normal.setComponent(
+          axis,
+          routeNormals[lo * 3 + axis] * (1 - t) +
+            routeNormals[(lo + 1) * 3 + axis] * t,
+        );
+        tangent.setComponent(
+          axis,
+          routeTangents[lo * 3 + axis] * (1 - t) +
+            routeTangents[(lo + 1) * 3 + axis] * t,
+        );
+      }
+      tangent.normalize();
+      binormal.crossVectors(tangent, normal).normalize();
+      normal.crossVectors(binormal, tangent).normalize();
+      offset
+        .copy(normal)
+        .multiplyScalar(Math.cos(phase))
+        .addScaledVector(binormal, Math.sin(phase));
+      offset.toArray(radial, i * 3);
+      a.copy(point)
+        .addScaledVector(offset, 0.018)
+        .toArray(centers[0], i * 3);
+      b.copy(point)
+        .addScaledVector(offset, -0.018)
+        .toArray(centers[1], i * 3);
+    }
+    for (let strand = 0; strand < 2; strand++) {
+      const geometry = strandMeshes[strand].geometry,
+        positions = geometry.attributes.position,
+        normals = geometry.attributes.normal,
+        path = centers[strand];
+      for (let i = 0; i <= segments; i++) {
+        point.fromArray(path, i * 3);
+        tangent
+          .fromArray(path, Math.min(segments, i + 1) * 3)
+          .sub(a.fromArray(path, Math.max(0, i - 1) * 3))
+          .normalize();
+        normal.fromArray(radial, i * 3).multiplyScalar(strand ? -1 : 1);
+        normal.addScaledVector(tangent, -normal.dot(tangent)).normalize();
+        binormal.crossVectors(tangent, normal).normalize();
+        for (let j = 0; j <= radialSegments; j++) {
+          const phase = (j / radialSegments) * TAU,
+            index = i * (radialSegments + 1) + j;
+          offset
+            .copy(normal)
+            .multiplyScalar(Math.cos(phase))
+            .addScaledVector(binormal, Math.sin(phase));
+          positions.setXYZ(
+            index,
+            point.x + 0.013 * offset.x,
+            point.y + 0.013 * offset.y,
+            point.z + 0.013 * offset.z,
+          );
+          normals.setXYZ(index, offset.x, offset.y, offset.z);
+        }
+      }
+      positions.needsUpdate = true;
+      normals.needsUpdate = true;
+      geometry.computeBoundingBox();
+      geometry.computeBoundingSphere();
+    }
+    for (let i = 0; i < baseCount; i++) {
+      a.fromArray(centers[0], i * stride * 3);
+      b.fromArray(centers[1], i * stride * 3);
+      o.position.copy(a).lerp(b, 0.5);
+      offset.copy(b).sub(a);
+      o.scale.set(0.008, offset.length(), 0.008);
+      o.quaternion.setFromUnitVectors(up, offset.normalize());
+      o.updateMatrix();
+      bases.setMatrixAt(i, o.matrix);
+    }
     bases.instanceMatrix.needsUpdate = true;
     bases.computeBoundingBox();
     bases.computeBoundingSphere();
   };
+  group.userData = {
+    genomeContourLength: genomeLength,
+    duplexTurns: 85,
+    materialSegments: segments,
+  };
+  group.setTransfer(0);
   return group;
 }
 function create() {
@@ -217,10 +321,12 @@ function create() {
     slab.rotation.x = -Math.PI / 2;
     slab.position.y = y - 0.035;
     host.add(slab);
-    return y;
+    slab.name =
+      y > -1 ? "host-outer-membrane-slab" : "host-cytoplasmic-membrane-slab";
+    return slab;
   };
-  membrane(-0.88, "#a8c2b7");
-  membrane(-1.78, "#8fafab");
+  const outerMembrane = membrane(-0.88, "#a8c2b7");
+  const innerMembrane = membrane(-1.78, "#8fafab");
   // A restrained cross-linked peptidoglycan net in the periplasm.
   const wallMat = material("#c4b593"),
     wallParts = [];
@@ -252,6 +358,7 @@ function create() {
     material("#dce8e2", { transparent: true, opacity: 0.5, depthWrite: false }),
   );
   cytosol.position.set(0, -2.35, -1.3);
+  cytosol.name = "host-cytoplasmic-background";
   host.add(cytosol);
   const poreSeal = new T.Mesh(
     new T.CylinderGeometry(0.235, 0.235, 0.14, 40),
@@ -296,11 +403,13 @@ function create() {
   const phage = new T.Group();
   group.add(phage);
   const head = detail("phageHead", true);
+  head.name = "T4-capsid-shell";
   head.scale.setScalar(0.7);
   phage.add(head);
   const sheath = detail("phageSheath", true);
   phage.add(sheath);
   const tail = detail("phageTube", true);
+  tail.name = "rigid-T4-tail-tube";
   tail.scale.set(1, 0.82, 1);
   phage.add(tail);
   const plate = detail("phageBaseplate");
@@ -363,9 +472,6 @@ function create() {
     );
   }
   coilPoints.push(V(0.12, 1.44, 0), V(0, 1.29, 0));
-  const packedCurve = new T.CatmullRomCurve3(coilPoints),
-    packed = duplex(packedCurve, 720);
-  phage.add(packed);
   const finalHeadPoints = coilPoints.map((p) => p.clone().add(V(0, -0.85, 0)));
   const allPoints = [
     ...finalHeadPoints,
@@ -387,16 +493,11 @@ function create() {
     );
   }
   const deliveryCurve = new T.CatmullRomCurve3(allPoints),
-    delivery = duplex(deliveryCurve, 2600);
-  group.add(delivery);
-  const fraction = Math.min(
-    0.6,
-    packedCurve.getLength() / deliveryCurve.getLength(),
-  );
-  // Convert centerline arclength to indexed tube segments; a moving contiguous
-  // interval conserves the displayed DNA length during arbitrarily reversed seek.
-  const totalSegments = 2600,
-    lengthSegments = Math.round(totalSegments * fraction);
+    genome = materialDuplex(
+      deliveryCurve,
+      (finalHeadPoints.length - 1) / (allPoints.length - 1),
+    );
+  group.add(genome);
   const labels = [
     {
       position: [-0.9, 2.2, 0.4],
@@ -411,6 +512,32 @@ function create() {
       position: [1.7, -2.5, 0.5],
       text: { zh: "细菌细胞质", en: "Bacterial cytoplasm" },
     },
+  ];
+  // Pick an actual capsid vertex once; every label is then transformed through
+  // its current object matrix, including head motion and the root's offset.
+  const headSurface = head.children[0],
+    headPositions = headSurface.geometry.attributes.position,
+    labelPoint = V(),
+    preferredHeadPoint = V(-1, 0, 0.4);
+  let headVertex = 0,
+    nearestHeadDistance = Infinity;
+  for (let i = 0; i < headPositions.count; i++) {
+    const distance = labelPoint
+      .fromBufferAttribute(headPositions, i)
+      .distanceToSquared(preferredHeadPoint);
+    if (distance < nearestHeadDistance) {
+      nearestHeadDistance = distance;
+      headVertex = i;
+    }
+  }
+  const labelAnchors = [
+    {
+      object: headSurface,
+      point: V().fromBufferAttribute(headPositions, headVertex),
+    },
+    { object: outerMembrane, point: V(2.9, -0.6, 0.07) },
+    { object: innerMembrane, point: V(2.9, -0.6, 0.07) },
+    { object: cytosol, point: V(1.7, -0.15, 0.065) },
   ];
   const axis = V(0, 1, 0),
     direction = V();
@@ -431,11 +558,10 @@ function create() {
       1 + 0.35 * contraction,
     );
     sheath.position.y = -0.45 + length / 2;
-    packed.position.y = -0.85 * contraction;
-    packed.visible = p < 0.6;
-    delivery.visible = p >= 0.6;
-    const start = Math.round(transfer * (totalSegments - lengthSegments));
-    delivery.setInterval(start, start + lengthSegments);
+    // Before release the same material-coordinate mesh follows the contracting
+    // head. At transfer=0 it is already the exact delivery start pose.
+    genome.position.y = phage.position.y + 0.85 * (1 - contraction);
+    genome.setTransfer(transfer);
     poreSeal.visible = contraction < 0.38;
     membraneSeal.visible = contraction < 0.9;
     if (contraction !== previousContraction) {
@@ -469,8 +595,15 @@ function create() {
       tailTubeLengthConstant: true,
       innerMembraneBulges: true,
       DNAIsDuplex: true,
+      DNAContourLength: genome.userData.genomeContourLength,
     };
     group.updateMatrixWorld(true);
+    labelAnchors.forEach(({ object, point }, index) => {
+      labelPoint
+        .copy(point)
+        .applyMatrix4(object.matrixWorld)
+        .toArray(labels[index].position);
+    });
   }
   update(0);
   return {

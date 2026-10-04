@@ -68,6 +68,8 @@ function create() {
   });
   const migrated = new THREE.Vector3();
   const enzymeLobes = [];
+  const nucleotideTargets = [[], []],
+    investedTargets = [];
   for (const side of [-1, 1]) {
     const x = side * 1.65;
     const enzyme = new THREE.Group();
@@ -120,13 +122,17 @@ function create() {
     }
     enzymeLobes.push({ left, right });
     // Nucleotide binding pockets adjacent to the substrate cleft.
-    for (const y of [-0.2, -1.6]) {
+    for (const [row, y] of [-0.2, -1.6].entries()) {
       const core = details.nucleotide(group, [side * 3.35, y, 0], 0.68);
       core.rotation.z = side * 0.35;
+      nucleotideTargets[row][side < 0 ? 0 : 1] = core.children[1];
+      core.children[1].name = `adenylate-label-${row}-${side < 0 ? 0 : 1}`;
       for (let j = 0; j < 2; j++)
         details.phosphate(group, [side * (3.05 - j * 0.21), y, 0], 0.44);
     }
-    details.nucleotide(group, [side * 3.5, 2, 0], 0.68);
+    investedTargets.push(
+      details.nucleotide(group, [side * 3.5, 2, 0], 0.68).children[1],
+    );
     for (let j = 0; j < 2; j++)
       details.phosphate(group, [side * (3.2 - j * 0.21), 2, 0], 0.44);
   }
@@ -173,6 +179,19 @@ function create() {
     label([-2.55, 1.13, 0.2], "NAD⁺ → NADH", "NAD⁺ → NADH", 1),
     label([2.55, 1.13, 0.2], "NAD⁺ → NADH", "NAD⁺ → NADH", 1),
   ];
+  details.anchor(labels[1], carbons[2]);
+  for (let i = 0; i < 2; i++) {
+    details.anchor(labels[2 + i], investedTargets[i]);
+    details.anchor(labels[4 + i], carbons[i ? 4 : 1]);
+    details.anchor(labels[7 + i], nucleotideTargets[0][i]);
+    details.anchor(labels[9 + i], nucleotideTargets[1][i]);
+    const nadTarget = nad[i].children[0].children[1];
+    nadTarget.name = `NAD-label-surface-${i}`;
+    details.anchor(labels[12 + i], nadTarget);
+  }
+  const enzymeTarget = enzymeLobes[1].right.children[0];
+  enzymeTarget.name = "glycolysis-reaction-label-surface";
+  const reactionAnchor = details.anchor(labels[6], enzymeTarget);
   const update = (progress) => {
     const p = clamp(progress),
       split = ease(p, 0.25, 0.4),
@@ -284,7 +303,6 @@ function create() {
                 : p > 0.55
                   ? b("1,3-BPG → 3-PG", "1,3-BPG → 3-PG")
                   : b("GAP · 3 C", "GAP · 3 C");
-      labels[i].position[1] = positions[i === 4 ? 1 : 4].y + 0.6;
       labels[i].active = p > 0.28;
     }
     labels[6].text =
@@ -304,6 +322,9 @@ function create() {
     for (const i of [7, 8]) labels[i].active = p > 0.52;
     for (const i of [9, 10]) labels[i].active = p > 0.76;
     for (const i of [12, 13]) labels[i].active = p > 0.43;
+    reactionAnchor.target =
+      p > 0.71 && p <= 0.77 ? substrateP[1].children[0] : enzymeTarget;
+    details.syncLabelAnchors();
     group.userData = {
       process: "glycolysis",
       compartment: "cytosol",

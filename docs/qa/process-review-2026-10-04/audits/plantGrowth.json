@@ -1,0 +1,215 @@
+{
+  "group": "plantGrowth",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "plantDivision",
+      "roots": ["plant"],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis somatic meristem, four schematic duplicated chromosomes, mitosis followed by centrifugal phragmoplast-mediated cytokinesis; all six stages and full progress interval; no conditions.",
+      "checks": [
+        "Actual processesByRoot registration inspected; no specialized neuron, muscle or erythrocyte route contains this model.",
+        "Both-language intro, stages and labels preserve replicated-chromosome start, absence of animal centrioles, opposite-pole segregation, outward plate growth and lumen-to-extracellular topology.",
+        "Traced chromatid helper, moving kinetochore attachments, phragmoplast positions, implicit membrane field, parental side membrane window, wall matrix and all visibility thresholds.",
+        "Existing science.test.mjs passed: eight actual spindle tips follow moving attachment domains; early closed porous membrane, later sheet, vesicle lumen union and terminal parent connection pass geometric tests.",
+        "Exact seek test passed 26 reference states including stage-adjacent, reverse and clamped inputs; node/geometry/material identities remained stable.",
+        "Additional actual-triangle ray intersections at both vesicle-loop boundaries establish a rim retreat that is not covered by previous topology tests."
+      ],
+      "sources": [
+        {
+          "url": "https://academic.oup.com/plcell/article/16/4/836/6010368",
+          "title": "Segui-Simarro et al. (2004), Electron Tomographic Analysis of Somatic Cell Plate Formation",
+          "supports": "Opened publisher abstract: late-anaphase initiation, vesicle fusion, tubulo-vesicular network, peripheral expansion and parental-wall connection."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantGrowth-01",
+          "severity": "P2",
+          "kind": "visible_discontinuity/fusion_rim",
+          "file": "src/processes/modules/plantGrowth/plantDivisionProcess.js",
+          "location": "lines 178-185 and 210-211; fusing vesicle modulo reset in the implicit membrane field",
+          "evidence": "At p=0.5 +/- 1e-7, a ray from the lumen center through actual membrane triangles along +x hits x=0.5029747486 then x=0.4079757333: 0.0949990153 retreat. At p=0.7 +/- 1e-7, it hits 1.7702560425 then 1.6752573252: 0.0949987173 retreat. Both equal almost the entire 0.095 vesicle radius. The t≈1 fused bulge is deleted by the modulus reset while the plate radius itself barely changes.",
+          "whyWrong": "A represented fusion region abruptly collapses inward on every cycle despite the lesson showing continuous outward membrane addition. This is a discontinuity of the real cell-plate surface, not merely an invisible particle respawn.",
+          "fix": "Complete vesicle absorption continuously before reuse, retaining or smoothly incorporating its membrane into the plate margin; make the end-of-cycle field agree with the start-of-next-cycle field without reducing membrane detail.",
+          "verification": "Probe actual triangle surfaces on both sides of every cycle boundary, at +x and additional delivery angles. With successively smaller delta-progress, the boundary displacement must converge to zero while closed-lumen, parent-junction and exact-seek regressions remain intact.",
+          "sourceUrls": ["https://academic.oup.com/plcell/article/16/4/836/6010368"]
+        }
+      ],
+      "continuity": {
+        "checked": "Full update formula review; existing 26-state exact-seek regression; actual surface ray diagnostics around p=.5 and .7; bounded 18-update CPU sample.",
+        "findings": ["20261004-plantGrowth-01", "Node update-only sample median 17.05 ms and max 27.86 ms; a potential browser frame-budget concern requiring isolated measurement."],
+        "limits": ["CPU sample was collected while parallel reviewers were active and does not prove browser FPS, GPU cost or a performance regression.", "No browser or rendered continuous-playback acceptance performed."]
+      },
+      "limitations": [
+        "Chromosome count, chromatin shape, membrane thickness, network pores and timing are mesoscale schematics rather than atomically fitted structures.",
+        "The primary paper was opened as a publisher abstract; the inaccessible PMC response was not counted as full-text verification.",
+        "Resource stability and topology tests do not establish smooth visible motion at every unsampled instant."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "cellWallGrowth",
+      "roots": ["plant"],
+      "verdict": "qualified_pass",
+      "scope": "Arabidopsis hypocotyl epidermal local wall patch; all six stages, extensibility=yielding/restrained, default and terminal states.",
+      "checks": [
+        "Actual processesByRoot registration, entries, both-language intro/stages/labels and both condition options inspected; no root-specific override exists.",
+        "Actual geometry places membrane around z=0, cytosolic cortical microtubules at z=-.28, catalytic lobes at negative z and glucan outlets/trails at positive extracellular z.",
+        "Six rosettes alternate x travel directions and their growing fibers share the corresponding start/end x coordinates; no repeated modulus or recycled endpoint exists.",
+        "Yielding patch reaches y-scale 1.32; restrained patch stays at 1 while both deposit equal fiber lengths. Protein y-scale compensates patch stretching. Conceptual control does not claim measured kinetics or permanent independence.",
+        "Existing exact-seek regression passed 26 reference states plus both condition seeks; additional seven samples per branch confirmed actual scale/position responses and stable node/geometry/material identities.",
+        "Inspected .14 deposition visibility, .46 load arrows, .55 extension onset, .82 deposition endpoint and terminal state; smooth position/scale functions and negligible initial fiber extent show no confirmed motion discontinuity."
+      ],
+      "sources": [
+        {
+          "url": "https://researchprofiles.ku.dk/en/publications/cellulose-synthesis-and-cell-expansion-are-regulated-by-different/",
+          "title": "Ivakov et al. (2017), Cellulose synthesis and cell expansion are regulated by different mechanisms in growing Arabidopsis hypocotyls",
+          "supports": "Opened primary-paper author university abstract: biosynthesis and expansion can be uncoupled over studied short-time conditions; wall extensibility controls expansion."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16627697/",
+          "title": "Paredez et al. (2006), Visualization of cellulose synthase demonstrates functional association with microtubules",
+          "supports": "Primary abstract available in search excerpt supports membrane CESA movement aligned with cortical microtubules and bidirectionality. Direct open returned only footer; full text was not verified in this audit."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "Both complete condition formulas, all stage boundaries, 26-state exact seeks and seven explicit transform samples per branch.",
+        "findings": [],
+        "limits": ["No rendered/browser continuous-playback review or sustained frame-rate measurement."]
+      },
+      "limitations": [
+        "Qualified pass covers compartment direction, real control effects and synthesis/extension distinction; it does not certify CESA atomic topology, exact subunit count, glucan chemical geometry or quantitative kinetics.",
+        "Existing ribbons, matrix tethers and membrane edges are schematic; no primary structural dataset fit was performed.",
+        "Paredez primary abstract open was blocked; directional detail was supported by its returned primary abstract excerpt, not claimed as a full-text review."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "doubleFertilization",
+      "roots": ["plant"],
+      "verdict": "confirmed_issue",
+      "scope": "Multicellular Arabidopsis ovule, fused maternal polar nuclei (central 2n), two sperm with both frontEgg/frontCentral assignments, all six stages including compressed embryo/endosperm development.",
+      "checks": [
+        "Actual processesByRoot registration and root relationship annotation correctly distinguish the ovule/gametes from the generic mesophyll cell; both languages and both assignment controls inspected.",
+        "Pollen tube wall/lumen and vegetative nucleus use a shared path; two sperm are carried rather than flagellar swimmers. Target assignment, haploid egg plus sperm, maternal 2n central nucleus plus sperm, and larger basal/smaller apical embryo daughters have appropriate stated scope.",
+        "Traced full sperm mesh hierarchy, maternal gamete and nuclear ellipsoids, path reveal, release, fusion travel, carrier/post-fusion identity handoff, degeneration and developmental visibility thresholds.",
+        "Existing science regressions passed exclusive two paternal identities and asymmetric embryo geometry in both branches; exact seek tests passed. These tests count identities but do not establish compartment containment or continuous identity positions.",
+        "Additional actual sperm-shell vertex transforms and nuclear world positions at .48/.56/.6/.65/.7/.719999 establish compartment failure; both branches measured across .72 identity handoff."
+      ],
+      "sources": [
+        {
+          "url": "https://elifesciences.org/articles/04501",
+          "title": "Kawashima et al. (2014), Dynamic F-actin movement is essential for fertilization in Arabidopsis thaliana",
+          "supports": "Opened full text: gamete plasma-membrane fusion precedes male nuclear migration within the female gamete and nuclear fusion; F-actin assists nuclear migration."
+        },
+        {
+          "url": "https://cir.nii.ac.jp/crid/1360848657020372096",
+          "title": "Hamamura et al. (2011), Live-Cell Imaging Reveals the Dynamics of Two Sperm Cells during Double Fertilization in Arabidopsis thaliana",
+          "supports": "Opened primary-paper abstract record: paired delivery to boundary, waiting period and no fixed sperm target or fusion order; no full-text claim."
+        },
+        {
+          "url": "https://uknowledge.uky.edu/pss_facpub/83/",
+          "title": "Kimata et al. (2016), Cytoskeleton dynamics control the first asymmetric cell division in Arabidopsis zygote",
+          "supports": "Opened author university abstract supports polarized zygote development and an asymmetric first division."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantGrowth-02",
+          "severity": "P1",
+          "kind": "misleading_topology/gamete_fusion_and_compartment",
+          "file": "src/processes/modules/plantGrowth/doubleFertilizationProcess.js",
+          "location": "lines 66-68, 91-104, 138-150 and 230-249",
+          "evidence": "The sperm sphere remains a complete independently visible plasma-membrane shell until p=.72 while its nucleus is a child of that shell. At p=.7 every sampled shell vertex of the egg-target sperm is inside the egg ellipsoid (normalized ellipsoid Q range .102-.494), so the intact sperm cell is transported into the egg interior. Meanwhile the central-target paternal nucleus center is outside the central-cell ellipsoid (Q=1.547 at .7; Q=1.484 at .719999; Q>1 is outside). Its limiting center z=.2689 exceeds the central gamete's maximum front z=.21. Both assignment branches reproduce the same failure. Maternal gamete surfaces are complete transparent ellipsoids, not meshes with a fusion opening.",
+          "whyWrong": "The scene conflates plasma-membrane fusion with transport of a whole intact sperm cell to the maternal nucleus, and routes the central sperm nucleus outside the female gamete it supposedly fertilizes. Correct n/2n/3n labels and an exact identity count do not repair this spatial/causal error.",
+          "fix": "Place and scale maternal nuclei and sperm nuclear routes within the female gamete compartments; depict sperm membrane merger at a real gamete contact before continuing only the paternal nucleus toward the maternal nucleus. Preserve both interchangeable sperm assignments and visible nuclear identities.",
+          "verification": "For both assignments, check actual rendered contact/surface geometry at plasmogamy, retain one paternal nucleus per target, and verify its subsequent world coordinates remain within the intended female gamete up to karyogamy. No intact separately bounded sperm plasma membrane may persist around an intragametic migrating nucleus.",
+          "sourceUrls": ["https://elifesciences.org/articles/04501"]
+        },
+        {
+          "issueId": "20261004-plantGrowth-03",
+          "severity": "P2",
+          "kind": "visible_discontinuity/nuclear_identity_handoff",
+          "file": "src/processes/modules/plantGrowth/doubleFertilizationProcess.js",
+          "location": "lines 247-248 and 260-262",
+          "evidence": "At p=.719999 the egg-target carried paternal nucleus is at [-.22,-.92,.2689]; at .72 its replacement marker appears at [-.13,-.92,.49], a .238716-unit jump. The central-target nucleus jumps from [0,.65,.2689] to [0,.77,.43], .200881 units. Both branches have identical target-specific jumps, while the prior visible nucleus radius is only about .027.",
+          "whyWrong": "The identity handoff preserves the count but abruptly relocates the tracked paternal contribution by several nuclear radii at the exact fusion milestone, weakening the viewer's ability to follow nuclear fusion.",
+          "fix": "Make the post-fusion contribution start at the same world position/size as the arriving paternal nucleus, then move or mix continuously within the maternal nucleus if needed. Keep exclusive identity ownership without an unmatched spatial switch.",
+          "verification": "At .72 +/- shrinking epsilon, match the outgoing and incoming visible paternal contribution positions and visual extents for both assignments. Preserve exactly two total paternal contributions through the handoff and deterministic reverse seeks.",
+          "sourceUrls": ["https://elifesciences.org/articles/04501"]
+        }
+      ],
+      "continuity": {
+        "checked": "All path/reveal, visibility and handoff formulas; 26-state exact seeking; both assignments and actual world-position probes around .72.",
+        "findings": ["20261004-plantGrowth-03"],
+        "limits": ["Later endosperm nuclear proliferation and embryo division remain explicitly time-compressed developmental transitions; no full mitosis sequence is claimed.", "No browser rendering or sustained playback review."]
+      },
+      "limitations": [
+        "Analysis does not require adding the full molecular actin/fusogen mechanism; the confirmed issue is the already represented cell/nuclear contact, compartment and causal sequence.",
+        "Maternal tissue dimensions, tube/cell sizes and developmental timing are schematic, but must still preserve cell and nucleus containment.",
+        "Primary source establishes the biological sequence; the numerical containment and jump findings come from the current scene geometry."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "fungalHyphae",
+      "roots": ["yeast"],
+      "verdict": "confirmed_issue",
+      "scope": "Septate Neurospora crassa hypha under the shared fungal entry; explicitly not S. cerevisiae. All six stages and normal/reduced delivery branches.",
+      "checks": [
+        "Actual processesByRoot maps only to yeast; cellTypes calls this root Fungus, while module intro, title and relationship note explicitly identify Neurospora and reject budding-yeast identity. No misleading yeast-bud structure link is present.",
+        "Both-language metadata, controls, labels, condition note and full update formulas inspected; no root-specific override exists.",
+        "Actual cutaway wall/PM layers, central septal pores, compartment-local cables, multinucleate organization, non-membrane-bounded stratified Spitzenkorper and extracellular retained wall cohorts inspected.",
+        "Existing science test passed full-vesicle septal pore clearance across both controls and stationary deposited wall cohorts as the tip advances; node/geometry/material inventory and exact arbitrary seeking pass.",
+        "Normal delivery gives 20 visible carriers and extension 1.65; reduced gives five visible carriers and extension .396, a conceptual rather than measured treatment response.",
+        "Additional probes cover every accessible t=.68 junction and first wrap for visible carriers in both controls, including .68 and 1 +/- small epsilon."
+      ],
+      "sources": [
+        {
+          "url": "https://escholarship.org/content/qt9f07s7gz/qt9f07s7gz_noSplash_ea3a4598693ca4e27485abac86cb6793.pdf",
+          "title": "Riquelme et al. (2014), The Neurospora crassa exocyst complex tethers Spitzenkorper vesicles to the apical plasma membrane during polarized growth",
+          "supports": "Opened institutional full text: stratified Spitzenkorper, apical tethering and exocytotic events; vesicle PM merger delivers membrane and extracellular contents."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantGrowth-04",
+          "severity": "P1",
+          "kind": "misleading_causality/missing_represented_fusion",
+          "file": "src/processes/modules/plantGrowth/fungalHyphaeProcess.js",
+          "location": "lines 153-156 and 245-287; structuralDetail.js lines 20-46",
+          "evidence": "Every transported object is an explicit vesicle shell with paired membrane rims and three cargo bodies. Its scale remains [.073,.073,.073] and it stays visible through the entire t<1 apical approach. The apical membrane is an unchanged translated sphere patch; there is no fusion neck, opening, shell incorporation or cargo/synthase transfer. At wrap the full carrier reappears at the base. Example normal carrier 0 jumps 5.216738 units at p=2/3 with unchanged visibility/scale; the reduced branch's visible carrier 16 also resets at full scale. Deposits are independently born at predefined progress values.",
+          "whyWrong": "The narrated causal event is vesicle fusion supplying apical membrane/synthases and extracellular wall material. Here a detailed intact carrier reaches the apical membrane location and returns intact to the base without depicting transfer, so the central advertised membrane-fusion event is absent and visually reads as intact-carrier recycling.",
+          "fix": "Represent at least one traceable apical fusion event using prebuilt or fixed-buffer continuous membrane/neck geometry with material/cargo transfer, then recycle carriers only after their individual delivery is no longer visibly intact. Retain ongoing flow, both controls, wall detail and septal clearance.",
+          "verification": "Track an actual carrier through contact and delivery in both branches. Require a continuous membrane connection/transfer during the fusion interval and no intact carrier teleport between apex and base. Preserve extracellular wall location, stationary deposited cohorts, exact seeking and resource inventories.",
+          "sourceUrls": ["https://escholarship.org/content/qt9f07s7gz/qt9f07s7gz_noSplash_ea3a4598693ca4e27485abac86cb6793.pdf"]
+        },
+        {
+          "issueId": "20261004-plantGrowth-05",
+          "severity": "P2",
+          "kind": "visible_discontinuity/transport_path_junction",
+          "file": "src/processes/modules/plantGrowth/fungalHyphaeProcess.js",
+          "location": "lines 249-263",
+          "evidence": "At t=.68 the incoming formula ends with y=.096*sin(i*1.7), z=.2*cos(i*2.1), while the outgoing formula starts y=0,z=.12. The carrier is continuously visible at scale .073. Across p +/- 1e-7, actual positions jump .080-.247406 units in the normal branch and .124660-.227606 for the two reduced-branch visible crossings. Example reduced carrier 12 at p=.222222 moves [.88,.095980,.199548] to [.88,0,.12].",
+          "whyWrong": "This is a discontinuity in the same visible carrier's trajectory at its arrival at the Spitzenkorper, not an intentional staged appearance or a hidden flow reset. The largest jump exceeds the carrier diameter.",
+          "fix": "Make incoming and outgoing paths meet in the same three-dimensional position, with an eased tangent/velocity change or brief cluster dwell. Keep the central-pore convergence and both control speeds.",
+          "verification": "At every .68 branch crossing in both controls, positions on either side must converge as epsilon decreases. Also inspect velocity continuity and retain the entire-vesicle septal clearance regression.",
+          "sourceUrls": ["https://escholarship.org/content/qt9f07s7gz/qt9f07s7gz_noSplash_ea3a4598693ca4e27485abac86cb6793.pdf"]
+        }
+      ],
+      "continuity": {
+        "checked": "All formula branches, both delivery values, every first visible .68 junction and wrap, existing 26-state exact seeks and full pore-clearance tests.",
+        "findings": ["20261004-plantGrowth-04", "20261004-plantGrowth-05"],
+        "limits": ["Carrier recycling itself is permissible; the issue is unchanged full-size visible recycling without represented fusion/transfer.", "No browser continuous playback or GPU measurement."]
+      },
+      "limitations": [
+        "This verdict preserves the explicit N. crassa species scope and does not misclassify its shared fungal navigation root as a budding-yeast scientific error.",
+        "Transport motor identities, all endocytic routes, branching and new septum generation are outside the stated scene scope.",
+        "Source supports the mechanism and localization, not exact geometry, carrier counts or kinetic scaling."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

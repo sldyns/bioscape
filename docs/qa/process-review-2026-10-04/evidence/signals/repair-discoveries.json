@@ -1,0 +1,135 @@
+{
+  "group": "signals",
+  "phase": "B repair discovery; original Phase A audit preserved",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "findings": [
+    {
+      "issueId": "20261004-signals-04",
+      "severity": "P2",
+      "kind": "annotation leader endpoint misidentification and visibility",
+      "status": "fixed",
+      "file": "src/processes/modules/signals/{signalTransduction,apoptosis,differentiation,immuneResponse}Process.js",
+      "evidence": "Original label positions were layout margins rather than geometry endpoints. Baseline reproduction confirms ERK label outside its moving protein, mitochondrial membrane label outside the mitochondrial contour, an active GATA1 label while GATA1 is hidden in the impaired branch, and ER-lumen endpoint outside the ER ellipse. See phase-b-label-before.json.",
+      "whyWrong": "ProcessScene and sceneCapture interpret label.position as a leader endpoint. Named proteins must point to their corresponding geometry, and regional callouts must lie in their stated compartment.",
+      "fix": "Bind concrete labels to points inside actual target meshes through current parent transforms; bind regions to the corresponding cell/compartment. Track moving ERK, receptor domains, apoptosome arms, caspases, GATA1, hemoglobin, pMHC and TCR. Gate GATA1, hemoglobin, BAX and nuclear labels on target visibility; locate the regional constriction endpoint on the membrane field.",
+      "verification": [
+        "650 active endpoint checks across four models, all nine conditions and reverse seeks. Named target endpoints pass MeshBVH ray-parity interior tests and all active target ancestors remain visible.",
+        "ER-lumen endpoint lies inside its actual ellipse; active constriction endpoint satisfies the membrane field boundary to <2e-6.",
+        "Full existing science/smoke tests retain deterministic seek, finite buffers and stable resources."
+      ],
+      "sourceCodeEvidence": [
+        "src/processes/ProcessScene.jsx:187",
+        "src/processes/ProcessScene.jsx:215",
+        "src/scene/sceneCapture.js"
+      ],
+      "evidenceFiles": [
+        "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-before.json",
+        "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-before.mjs",
+        "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-labels.log"
+      ],
+      "files": [
+        "src/processes/modules/signals/labelAnchors.js",
+        "src/processes/modules/signals/labelAnchors.test.mjs",
+        "src/processes/modules/signals/signalTransductionProcess.js",
+        "src/processes/modules/signals/apoptosisProcess.js",
+        "src/processes/modules/signals/differentiationProcess.js",
+        "src/processes/modules/signals/immuneResponseProcess.js"
+      ],
+      "limitations": [
+        "Geometric endpoint tests do not establish label placement readability or rendered occlusion; root rendered review remains required."
+      ],
+      "sourceUrls": []
+    },
+    {
+      "issueId": "20261004-signals-05",
+      "severity": "P2",
+      "kind": "premature label identity for unformed products",
+      "status": "fixed; fresh English critical and Chinese stage event names verified",
+      "file": "src/processes/modules/signals/apoptosisProcess.js",
+      "evidence": "In full-b3-005-apoptosis-cell-stage-6.webp (p=.825), the callout said membrane-enclosed apoptotic bodies while its target was chromatin within one mother-cell membrane. Actual emitted-triangle connectivity has one component and target parent-ellipse value 0.570 (<1). The same sheet at p=.445 named an Apaf-1 apoptosome while its seven arms were still dispersed and the assembly flag was false.",
+      "whyWrong": "A correct moving endpoint can still identify a future product rather than the structure or event currently visible. Formation and completed separation/assembly must be distinguished.",
+      "fix": "Retain the same chromatin and Apaf-1 mesh anchors. Body-region identity now reads condensed chromatin fragment before .89, membrane blebbing and body formation from .89 to .94, and membrane-enclosed apoptotic bodies from .94. The latter is backed by six separate actual membrane components (remnant plus five bodies). Apaf-1 text distinguishes monomers, assembly and assembled complex using the existing actual arm assembly variable. Complete body count is now five only in the separated phase.",
+      "verification": [
+        "Before fixing, labelEvents.test.mjs exits 1 at p=.825 with the incorrect completed-product name; preserved in phase-b-label-events-before.log.",
+        "Apaf-specific extension likewise exits 1 against the previous Apaf labels; preserved in phase-b-label-events-apaf-before.log.",
+        "After fixing, the same test passes both languages, backward seeks, actual membrane connected-component counts at .825/.89/.91/.94/.97/1 and noStress inactivity. Apaf cases check both labels and actual arm radius/assembly state.",
+        "labelEvents.test.mjs is imported by science.test.mjs; root verify already imports labels/deformation separately.",
+        "Fresh conditions-final-b-016 shows Apaf-1 apoptosome assembly at .445, Condensed chromatin fragment at .825, and Membrane-enclosed apoptotic bodies at 1; both original 960 images and the full stage sheet inspected.",
+        "Final-f stress originals additionally verify monomers at .36, assembly at .445/.46, complete complex at .605, condensed chromatin at .825, body formation at .89 and separated bodies at .94/1. Fresh Chinese full-final originals verify .445/.825/1; all noStress saved images remain inactive."
+      ],
+      "evidenceFiles": [
+        "docs/qa/process-review-2026-10-04/evidence/signals/apoptotic-body-event-before.json",
+        "docs/qa/process-review-2026-10-04/evidence/signals/apoptotic-body-event-after.json",
+        "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-events-before.log",
+        "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-events-apaf-before.log",
+        "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-events-after.log",
+        "docs/qa/process-review-2026-10-04/evidence/browser/full-b3-005-apoptosis-cell-stage-6.webp",
+        "docs/qa/process-review-2026-10-04/evidence/signals/final-f-rendered-review.json"
+      ],
+      "files": [
+        "src/processes/modules/signals/apoptosisProcess.js",
+        "src/processes/modules/signals/labelEvents.test.mjs",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "limitations": [
+        "Original full-b3 images predate this event-name correction and remain discovery evidence. Fresh image closure is final-f English critical states and full-final-apoptosis Chinese stages; .36/.89/.94 Chinese originals were not separately captured.",
+        "Default full-b3 frames are Chinese/default stress only, not a rendered audit of all alternatives or all 235 global contexts."
+      ],
+      "sourceCodeEvidence": [
+        "src/processes/modules/signals/apoptosisProcess.js",
+        "src/processes/modules/signals/labelEvents.test.mjs"
+      ],
+      "sourceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC4691890/"
+      ]
+    },
+    {
+      "issueId": "20261004-signals-06",
+      "severity": "P1",
+      "kind": "cytosolic Apaf-1 path crosses compartment membranes",
+      "status": "fixed; actual-geometry regression and fresh critical images pass; both parent-operated native playback records complete",
+      "file": "src/processes/modules/signals/apoptosisProcess.js",
+      "evidence": "Final English conditions-final-b-016-apoptosis-cell-stage-4.webp shows a free Apaf-1 arm crossing the intact nuclear contour at p=.445. Original actual geometry confirms nuclear intersections at p=.36/.375/.43 (6 meshes, 435 nuclear vertices), .445 (5 meshes, 332 vertices), and .46 (3 meshes, 98 vertices). Corrected mitochondrial wall-only counting also finds 14 non-instanced triangle-mesh pairs at .36/.43, 11 at .445 and 7 at .46. The old stationary terminal center additionally leaves 1078 actual protein vertices outside the contracting cell field at 1.",
+      "whyWrong": "The represented Apaf-1 assembly is in the cytosol. A trajectory through intact nuclear/mitochondrial membranes or through the shrinking plasma membrane contradicts that explicit compartment, independent of schematic molecular scale.",
+      "fix": "Free protomers now approach the same sevenfold assembly endpoint from a cytosolic pocket with radial excursion .4 instead of .72. All original folds, WD40 blades, surface resolution and seven assembled arms remain unchanged. During late remnant contraction, the existing complex center follows cytoplasm inward by the original packing interpolation, retaining the previous complex scale. Labels continue to follow their actual target meshes.",
+      "verification": [
+        "The new apoptosomeCytosol.test.mjs fails on the old path with actual mitochondrial membrane/instance-head triangle intersections; old failure log retained.",
+        "The fixed test passes 38 visible poses and 893397 complete protein vertex checks, both controls and arbitrary reverse seeks. It checks every intact nuclear layer, full mitochondrial wall triangles including the actual matrix of every instanced lipid head, actual emitted plasma-membrane triangles, and negative cell-field containment.",
+        "All original Apaf surface position bytes and geometry identities are retained. Seven arms still meet the original assembled local endpoint. The moving label agrees with the actual Apaf domain transform.",
+        "Negative controls restoring the original free-arm radius recreate 5 real nuclear-intersecting meshes at .445; restoring the original fixed terminal center recreates 1078 vertices outside the contracting cell.",
+        "Full surface gaps in scene units for nuclear / mitochondrial / plasma boundaries: .36 = .148776 / .145007 / .149369; .445 = .161327 / .159498 / .159717; .46 = .195976 / .198316 / .187044. Each has zero actual BVH intersections.",
+        "apoptosomeCytosol.test.mjs is statically imported by science.test.mjs. The focused event-label regression remains passing. The seven non-apoptosis cases retain their prior sampled final acceptance and were not changed for this repair.",
+        "Fresh final-f review inspects both full 11-image English sheets plus stress .36/.445/.46/.605/.825/.89/.94/1 and noStress start/end at original 960 resolution. No Apaf nuclear/mitochondrial crossing or terminal outside-cell protrusion is visible. NoStress has one identical hash across all 11 files.",
+        "Fresh Chinese full-final-apoptosis review inspects both 7-image sheets and stress .445/.825/1 originals. Both parent-operated native-playback records complete at terminal 1 with monotonic progress and errors=[], 1279/1370 updates, and 16.9/24.7 ms vs 16.9/19.1 ms median/P95 frame intervals. The reviewer inspected images/metadata; root operated playback."
+      ],
+      "files": [
+        "src/processes/modules/signals/apoptosisProcess.js",
+        "src/processes/modules/signals/apoptosomeCytosol.test.mjs",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "evidenceFiles": [
+        "docs/qa/process-review-2026-10-04/evidence/signals/final-apaf-nucleus-diagnostic.json",
+        "docs/qa/process-review-2026-10-04/evidence/signals/final-apaf-mito-diagnostic.json",
+        "docs/qa/process-review-2026-10-04/evidence/signals/apaf-cytosol-before.log",
+        "docs/qa/process-review-2026-10-04/evidence/signals/apaf-cytosol-after.log",
+        "docs/qa/process-review-2026-10-04/evidence/signals/apaf-cytosol-after.json",
+        "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-b-016-apoptosis-cell-stage-4.webp",
+        "docs/qa/process-review-2026-10-04/evidence/signals/final-f-rendered-review.json",
+        "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-f-manifest.json",
+        "docs/qa/process-review-2026-10-04/evidence/browser/full-final-apoptosis-manifest.json"
+      ],
+      "diagnosticCorrection": "Early exploratory mitochondrial counts incorrectly treated instanced unit-sphere heads as if they had a single world transform. Those counts (including the exploratory path-probe output) are superseded and must not be cited. The wall-only original counts exclude those heads. The final regression explicitly bakes every instance matrix into 52358 actual mitochondrial triangles and uses those correct surfaces.",
+      "limitations": [
+        "conditions-final-b-016 predates repair 06; final-f and full-final-apoptosis are the fresh frozen-model image sets. Saved stills and raw completion records are distinct from this reviewer personally watching every live frame.",
+        "This final review changed reports only. Native playback was root-operated; no browser/shared annotation/product edits, commit or deployment were performed by this reviewer."
+      ],
+      "sourceCodeEvidence": [
+        "src/processes/modules/signals/apoptosisProcess.js",
+        "src/processes/modules/signals/apoptosomeCytosol.test.mjs"
+      ],
+      "sourceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC4691890/"
+      ]
+    }
+  ]
+}

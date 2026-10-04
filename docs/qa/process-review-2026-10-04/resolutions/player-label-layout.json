@@ -1,0 +1,187 @@
+{
+  "sharedResolution": "export-caption-geometry-avoidance",
+  "referenceIssueId": "20261004-turnover-R05",
+  "status": "fixed-and-native-rendered-verified-for-three-reported-cases",
+  "owner": "review_regulation, explicitly assigned shared sceneCapture/test ownership by root",
+  "issueRegistry": "resolutions/turnover.json remains the only issue registration; this document supplies the shared repair receipt",
+  "files": ["src/scene/sceneCapture.js", "tests/scene-capture.mjs"],
+  "change": "Use the existing transparent export alpha buffer to build a conservative occupied-cell integral image. Place each complete selected label column with ordered dynamic programming: minimum model overlap first, then minimum squared displacement from its projected anchors. Text, font, wrapping, label selection, camera, render pixels and resolution are unchanged.",
+  "complexity": {
+    "mask": "One scan of the already-read RGBA buffer; <=32 million pixels under the existing capture limit; approx <=480 grid columns and Uint32 prefix table",
+    "rectangleCost": "O(1)",
+    "layout": "O(selected captions * min(logical canvas height, 4096)); search state count is hard-bounded independently of labelScale",
+    "additionalGpuPasses": 0,
+    "additionalGpuReadbacks": 0
+  },
+  "invariants": [
+    "Original selected labels, text and lines retained; no new omission policy",
+    "Original font size, padding and box widths/heights retained",
+    "Original anchor x/y and left/right column assignment retained",
+    "Captions stay inside the canvas, retain vertical anchor order and do not overlap one another",
+    "RGBA image read-only; camera/model and renderer-state restoration unchanged",
+    "No background-color segmentation, hence white models and transparent exports use the same true-alpha occupancy"
+  ],
+  "verification": [
+    {
+      "command": "node tests/scene-capture.mjs",
+      "result": "14/14 PASS; all original eight tests retained; six meaningful regressions added for three R05 masks, alpha/scale/top-down behavior, full-frame preservation and bounded search under tiny labelScale",
+      "log": "evidence/player/capture-layout-tests.log"
+    },
+    {
+      "command": "node tests/comparison-capture.mjs",
+      "result": "PASS",
+      "log": "evidence/player/capture-layout-comparison-tests.log"
+    },
+    {
+      "command": "esbuild browser bundle (write:false)",
+      "result": "PASS",
+      "log": "evidence/player/capture-layout-bundle.log"
+    },
+    {
+      "command": "prettier --check owned files; git diff --check owned files",
+      "result": "PASS",
+      "log": "evidence/player/capture-layout-format.log"
+    }
+  ],
+  "cpuBenchmark": [
+    {
+      "width": 960,
+      "height": 640,
+      "samples": 20,
+      "medianMs": 1.635666999999998,
+      "p95Ms": 2.3596250000000083,
+      "maxMs": 4.171042,
+      "scope": "Node CPU only: existing RGBA scan, conservative mask/integral, and 12-caption DP; no GPU or capture pass; synthetic dense occupancy"
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "samples": 20,
+      "medianMs": 4.356207999999981,
+      "p95Ms": 5.219666000000018,
+      "maxMs": 5.23112500000002,
+      "scope": "Node CPU only: existing RGBA scan, conservative mask/integral, and 12-caption DP; no GPU or capture pass; synthetic dense occupancy"
+    },
+    {
+      "width": 3840,
+      "height": 2160,
+      "samples": 20,
+      "medianMs": 15.565541999999994,
+      "p95Ms": 16.978542000000004,
+      "maxMs": 17.105208000000005,
+      "scope": "Node CPU only: existing RGBA scan, conservative mask/integral, and 12-caption DP; no GPU or capture pass; synthetic dense occupancy"
+    }
+  ],
+  "limitations": [
+    "Native image signoff is limited to the three reported R05 Chinese poses. Broader final scene/condition collection remains root integration scope.",
+    "When the entire canvas is occupied, no layout can create blank space without changing other constraints. The solver keeps every selected caption and returns the globally least occupied ordered layout; it does not suppress labels.",
+    "This repair covers exported canvas annotations. Live DOM annotation placement is outside the assigned shared-file scope.",
+    "CPU benchmark uses Node and a synthetic dense mask; it is not a browser/GPU/display-FPS measurement."
+  ],
+  "sourceSha256": {
+    "src/scene/sceneCapture.js": "693fe82f3a2e228cfc9724a6166897a471c1eed3906f8c255313fd37ccd26831",
+    "tests/scene-capture.mjs": "b981a8f13d683090317d23e74c0b298fc9eba2b39cbf07c19d3133d674beb803"
+  },
+  "originalPixelReplay": {
+    "manifest": "evidence/browser/capture-label-replay-browser-input.json",
+    "command": "node docs/qa/process-review-2026-10-04/evidence/player/capture-label-replay.mjs docs/qa/process-review-2026-10-04/evidence/browser/capture-label-replay-browser-input.json",
+    "evidence": "evidence/player/capture-label-original-pixel-replay.json",
+    "pixelSource": "Root actual same-pose 960x640 unlabeled transparent PNGs; original alpha buffer decoded losslessly",
+    "fontSource": "Root actual in-app Chromium Canvas2D measureText using the exact sceneCapture font",
+    "projectionSource": "Reconstructed from the unchanged ProcessScene default 36-degree camera, same sampled full-progress visible bounds, model camera target/direction, zoom=1 and 960x640 aspect",
+    "measurement": "Pixels with alpha >8/255 inside rectangular caption bounds. Rectangles conservatively include rounded corners. New search adds clearance on top of these measured rectangles.",
+    "records": [
+      {
+        "name": "rnaSilencing stage-4 p=0.575",
+        "png": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/label-mask-raw-000-rnaSilencing-cell-stage-4.png",
+        "width": 960,
+        "height": 640,
+        "modelPixels": 54820,
+        "transparentPixels": 559580,
+        "retainedLabels": 7,
+        "fontSize": 14.76923076923077,
+        "fontMetrics": "Actual in-app Chromium Canvas2D measureText, matching sceneCapture font",
+        "beforeModelPixels": 3205,
+        "afterModelPixels": 0,
+        "beforeOccupiedCells": 842,
+        "afterOccupiedCells": 0,
+        "rgbaSha256": "ed6c7d16e42e5d0f7656c0e81729bfe6ef83dbc892b2b47d4d3de6e536b9f437",
+        "rgbaUnchanged": true,
+        "canvasContained": true,
+        "captionRectsDisjoint": true,
+        "contentUnchanged": true
+      },
+      {
+        "name": "bacterialRepair start p=0",
+        "png": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/label-mask-raw-001-bacterialRepair-bacterium-start.png",
+        "width": 960,
+        "height": 640,
+        "modelPixels": 50767,
+        "transparentPixels": 563633,
+        "retainedLabels": 5,
+        "fontSize": 14.76923076923077,
+        "fontMetrics": "Actual in-app Chromium Canvas2D measureText, matching sceneCapture font",
+        "beforeModelPixels": 1761,
+        "afterModelPixels": 0,
+        "beforeOccupiedCells": 496,
+        "afterOccupiedCells": 0,
+        "rgbaSha256": "ea937e551bd42b749429c2d7bee8668a73c9cd408a450573e6c8c8633c9618ee",
+        "rgbaUnchanged": true,
+        "canvasContained": true,
+        "captionRectsDisjoint": true,
+        "contentUnchanged": true
+      },
+      {
+        "name": "bacterialRepair stage-5 p=0.795",
+        "png": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/label-mask-raw-001-bacterialRepair-bacterium-stage-5.png",
+        "width": 960,
+        "height": 640,
+        "modelPixels": 72464,
+        "transparentPixels": 541936,
+        "retainedLabels": 8,
+        "fontSize": 14.76923076923077,
+        "fontMetrics": "Actual in-app Chromium Canvas2D measureText, matching sceneCapture font",
+        "beforeModelPixels": 2770,
+        "afterModelPixels": 0,
+        "beforeOccupiedCells": 770,
+        "afterOccupiedCells": 0,
+        "rgbaSha256": "0bd2be2c88b435ff26e77d56306d582ead424796835d66763c01317e094e5f84",
+        "rgbaUnchanged": true,
+        "canvasContained": true,
+        "captionRectsDisjoint": true,
+        "contentUnchanged": true
+      }
+    ]
+  },
+  "nativeRenderedSignoff": {
+    "reviewer": "review_regulation",
+    "method": "Direct view_image of all three original 960x640 Chinese WebPs at original detail; no browser operation by reviewer",
+    "verdict": "PASS for the three reported R05 overlap cases",
+    "images": [
+      {
+        "path": "evidence/browser/label-zh-final-000-rnaSilencing-cell-stage-4.webp",
+        "progress": 0.575,
+        "activeLabels": 7,
+        "observation": "CCR4-NOT box is above/right of the full visible green/orange enzyme, with its original leader target retained. All seven captions are readable and separate; no box covers RNA or protein geometry."
+      },
+      {
+        "path": "evidence/browser/label-zh-final-001-bacterialRepair-bacterium-start.webp",
+        "progress": 0,
+        "activeLabels": 5,
+        "observation": "Long damage-gap box is below the upper DNA flank rather than on it. Both strand captions are outside the lower duplex. All five original captions remain readable."
+      },
+      {
+        "path": "evidence/browser/label-zh-final-001-bacterialRepair-bacterium-stage-5.webp",
+        "progress": 0.795,
+        "activeLabels": 8,
+        "observation": "RecA caption sits above the upper DNA; damage-gap caption sits below/right of it. All eight captions including LexA, RNA polymerase, both DNA strands, SOS box and response RNA remain visible without box/model occlusion."
+      }
+    ],
+    "scope": "Default model conditions and original cameras for these three Chinese cases; full 235-combination integration remains root-owned"
+  },
+  "followupSharedLayer": {
+    "issueId": "20261004-shared-capture-leader-layer-01",
+    "resolution": "resolutions/player-label-layer.json",
+    "relationship": "Separate later confirmed annotation paint-order issue; original R05 source hashes are historical at its signoff, and its layout/pixel invariants pass again after the layer fix."
+  }
+}

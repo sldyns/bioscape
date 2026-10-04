@@ -5,6 +5,8 @@ import {
   cytoplasmicAnatomy,
   materialInventory,
 } from "./anatomy.js";
+import { axialRadius, axialTube } from "./topology.js";
+import { labelAnchors } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 
 // Open-neck surfaces meet at x=.15. Their terminal disks close only at cytokinesis.
@@ -60,7 +62,8 @@ function create() {
   const purple = k.material("#777da3"),
     teal = k.material("#57988e"),
     gold = k.material("#c99c61"),
-    pink = k.material("#bb8b88");
+    pink = k.material("#bb8b88"),
+    histone = k.material("#b7a4bd");
   const mother = surface(k, wall),
     bud = surface(k, wall);
   const nucleus = surface(k, envelope);
@@ -75,28 +78,42 @@ function create() {
     budLayers = layeredCutaway(k, bud.mesh);
   const nuclearLayers = layeredCutaway(k, nucleus.mesh, 40, 48, true),
     pores = surfacePores(k, nucleus.mesh);
-  nuclearAnatomy(k, nMother);
-  nuclearAnatomy(k, nBud);
+  nuclearAnatomy(k, nMother, false);
+  nuclearAnatomy(k, nBud, false);
   const motherInterior = cytoplasmicAnatomy(k, group, 0.94);
   motherInterior.position.x = -1.22;
   const budInterior = cytoplasmicAnatomy(k, group, 0.63);
-  const chromatin = new THREE.Group();
-  group.add(chromatin);
-  for (let i = 0; i < 3; i++)
-    k.tube(
-      Array.from({ length: 48 }, (_, j) => {
-        const t = j / 47;
+  // These same two chromatin populations are inherited by the daughter nuclei.
+  // A second population grows during the schematic replication interval.
+  const chromatin = [0, 1].map((side) => {
+    const parent = new THREE.Group();
+    parent.name = `budding-inherited-chromatin-${side}`;
+    group.add(parent);
+    const strands = Array.from({ length: 3 }, (_, strand) => {
+      const path = Array.from({ length: 54 }, (_, j) => {
+        const a = (j / 53) * Math.PI * 2;
         return [
-          -0.73 + 1.46 * t,
-          0.17 * Math.sin(t * Math.PI * 6 + i),
-          0.12 + 0.055 * Math.cos(t * Math.PI * 8 + i),
+          0.24 * Math.cos(a + strand * 0.6),
+          0.17 * Math.sin(a * 2 + strand),
+          0.1 + 0.07 * Math.sin(a * 3 + strand),
         ];
-      }),
-      0.016,
-      purple,
-      chromatin,
-      72,
-    );
+      });
+      const mesh = k.tube(path, 0.016, purple, parent, 80);
+      mesh.name = `budding-chromatin-${side}-${strand}`;
+      const beads = [];
+      for (let j = 0; j < path.length; j += 6) {
+        const bead = k.ball(path[j], [0.028, 0.02, 0.025], histone, parent);
+        bead.name = `budding-histone-${side}-${strand}-${j}`;
+        beads.push({ mesh: bead, rest: path[j] });
+      }
+      return {
+        mesh,
+        rest: mesh.geometry.attributes.position.array.slice(),
+        beads,
+      };
+    });
+    return { parent, strands };
+  });
   const collarA = k.ring([0.1, 0, 0], 0.44, 0.045, teal),
     collarB = k.ring([0.2, 0, 0], 0.44, 0.045, teal);
   collarA.rotation.y = collarB.rotation.y = Math.PI / 2;
@@ -125,18 +142,13 @@ function create() {
   const secretion = Array.from({ length: 8 }, () =>
     k.ball([0, 0, 0], 0.065, teal),
   );
-  const cables = [-1, 1].map((s) =>
-    k.tube(
-      [
-        [-2, s * 0.6, -0.12],
-        [-0.9, s * 0.65, -0.12],
-        [0.05, s * 0.2, -0.12],
-        [1.4, s * 0.45, -0.12],
-      ],
-      0.016,
-      teal,
-    ),
+  secretion.forEach((mesh, i) => {
+    mesh.name = `budding-secretory-vesicle-${i}`;
+  });
+  const cables = [-1, 1].map((side, i) =>
+    axialTube(k, teal, `budding-actin-cable-${i}`),
   );
+  const routePoint = new THREE.Vector3();
   const scar = k.ring([-1.95, -1.04, 0.5], 0.21, 0.045, gold);
   scar.rotation.x = 0.9;
   const labels = [
@@ -151,6 +163,7 @@ function create() {
       8,
     ),
   ];
+  const anchor = labelAnchors(labels);
   function update(raw) {
     const p = clamp(raw),
       growth = ease(p, 0.05, 0.4),
@@ -206,39 +219,44 @@ function create() {
       split = ease(p, 0.68, 0.76);
     const left = -1.55 + 0.36 * move,
       right = -0.65 + 0.35 * move + 1.66 * segregation;
+    const handoff = ease(p, 0.68, 0.75);
     nucleus.mesh.visible = p < 0.75;
     nucleus.shape((t) => {
-      const x =
-        (left + right) / 2 -
-        ((right - left + 0.72) / 2) * Math.cos(Math.PI * t);
+      const start = THREE.MathUtils.lerp(left - 0.36, -1.68, handoff),
+        end = THREE.MathUtils.lerp(right + 0.36, 1.57, handoff),
+        x = (start + end) / 2 - ((end - start) / 2) * Math.cos(Math.PI * t);
       const base = 0.53 * Math.sin(Math.PI * t);
       const neckDip =
         1 - 0.74 * segregation * Math.exp(-Math.pow((x - 0.15) / 0.33, 2));
-      return [
-        x,
-        Math.max(
-          0,
-          base *
-            neckDip *
-            (1 - 0.97 * split * Math.exp(-Math.pow((x - 0.15) / 0.25, 2))),
-        ),
-      ];
+      const dividingRadius =
+        base *
+        neckDip *
+        (1 - 0.97 * split * Math.exp(-Math.pow((x - 0.15) / 0.25, 2)));
+      const targetX =
+        (-1.68 + 1.57) / 2 - ((1.57 + 1.68) / 2) * Math.cos(Math.PI * t);
+      const daughterRadius = Math.max(
+        0.55 * Math.sqrt(Math.max(0, 1 - Math.pow((targetX + 1.1) / 0.58, 2))),
+        0.49 * Math.sqrt(Math.max(0, 1 - Math.pow((targetX - 1.07) / 0.5, 2))),
+      );
+      return [x, THREE.MathUtils.lerp(dividingRadius, daughterRadius, handoff)];
     });
     nMother.visible = nBud.visible = p >= 0.75;
     nBud.position.x = 1.07 + shift;
     spindle.visible = p > 0.34 && p < 0.73;
-    spindle.position.set((left + right) / 2, 0, 0);
-    spindle.scale.set(0.025, Math.max(0.01, right - left + 0.72), 0.025);
+    const nuclearVertices = nucleus.mesh.geometry.attributes.position,
+      poleLeft = nuclearVertices.getX(0),
+      poleRight = nuclearVertices.getX(40 * 49);
+    spindle.position.set((poleLeft + poleRight) / 2, 0, 0);
+    spindle.scale.set(0.025, Math.max(0.01, poleRight - poleLeft), 0.025);
     for (let i = 0; i < 2; i++) {
       poles[i].visible = spindle.visible;
       // The polar vertices belong to the actual deforming envelope.
-      poles[i].position.set(i ? right + 0.36 : left - 0.36, 0, 0);
+      poles[i].position.set(i ? poleRight : poleLeft, 0, 0);
     }
     for (let i = 0; i < 8; i++) {
       const side = i < 4 ? 0 : 1,
         j = i % 4;
       dna[i].visible = i < 4 || p > 0.24;
-      const handoff = ease(p, 0.68, 0.75);
       const origin = (side ? right : left) + (j - 1.5) * 0.075;
       const destination = (side ? 1.07 + shift : -1.1) + (j - 1.5) * 0.09;
       dna[i].position.set(
@@ -270,26 +288,85 @@ function create() {
       dna[i].position.y *= fit;
       dna[i].position.z *= fit;
     }
+    for (let side = 0; side < 2; side++) {
+      const origin = side ? right : left,
+        destination = side ? 1.07 + shift : -1.1,
+        center = THREE.MathUtils.lerp(origin, destination, handoff),
+        replication = side ? ease(p, 0.2, 0.28) : 1,
+        population = chromatin[side];
+      population.parent.position.x = center;
+      population.parent.visible = replication > 0;
+      const availableRadius = (x) =>
+        p < 0.75
+          ? axialRadius(nucleus.mesh, center + x) * 0.88
+          : (side ? 0.49 : 0.55) *
+            Math.sqrt(Math.max(0, 1 - Math.pow(x / (side ? 0.5 : 0.58), 2))) *
+            0.88;
+      for (const { mesh, rest, beads } of population.strands) {
+        const positions = mesh.geometry.attributes.position;
+        for (let i = 0; i < positions.count; i++) {
+          const x = rest[i * 3] * replication,
+            y = rest[i * 3 + 1] * replication,
+            z = rest[i * 3 + 2] * replication,
+            available = availableRadius(x),
+            fit = Math.min(1, available / Math.max(0.00001, Math.hypot(y, z)));
+          positions.setXYZ(i, x, y * fit, z * fit);
+        }
+        positions.needsUpdate = true;
+        mesh.geometry.computeVertexNormals();
+        mesh.geometry.computeBoundingBox();
+        mesh.geometry.computeBoundingSphere();
+        for (const bead of beads) {
+          const x = bead.rest[0] * replication,
+            y = bead.rest[1] * replication,
+            z = bead.rest[2] * replication,
+            width = 0.028 * replication,
+            available = Math.min(
+              availableRadius(x - width),
+              availableRadius(x),
+              availableRadius(x + width),
+            ),
+            fit = Math.min(
+              1,
+              available /
+                Math.max(0.00001, Math.hypot(y, z) + 0.033 * replication),
+            );
+          bead.mesh.position.set(x, y * fit, z * fit);
+          bead.mesh.scale.set(
+            width,
+            0.02 * replication * fit,
+            0.025 * replication * fit,
+          );
+        }
+      }
+    }
+    const cytoplasmicRoute = (u, side, point) => {
+      const x = -2 + (2.15 + budLength * 0.75) * u,
+        shell = x <= 0.15 ? mother.mesh : bud.mesh,
+        radius = axialRadius(shell, x) * 0.909;
+      point.set(x, side * radius * 0.46, -radius * 0.12);
+      return radius;
+    };
     for (let i = 0; i < 8; i++) {
       const u = (p * 3 + i / 8) % 1;
       secretion[i].visible = p > 0.07 && p < 0.68;
       // Recycle carriers only while fully shrunk at either endpoint.
+      const radius = cytoplasmicRoute(u, i % 2 ? 1 : -1, routePoint);
       secretion[i].scale.setScalar(
-        0.065 *
+        Math.min(0.065, radius * 0.24) *
           ease(u, 0.02, 0.12) *
           (1 - ease(u, 0.88, 0.98)) *
           ease(p, 0.07, 0.09) *
           (1 - ease(p, 0.66, 0.68)),
       );
-      secretion[i].position.set(
-        -1.9 + (2.05 + budLength * 0.75) * u,
-        0.35 * Math.sin(u * Math.PI),
-        0.36,
-      );
+      secretion[i].position.copy(routePoint);
     }
-    cables.forEach((c) => {
-      c.visible = p > 0.12 && p < 0.65;
-      c.scale.x = 0.55 + 0.45 * growth;
+    cables.forEach((c, i) => {
+      c.mesh.visible = p > 0.12 && p < 0.65;
+      c.shape(
+        (u, point) => cytoplasmicRoute(u, i ? 1 : -1, point),
+        0.016 * ease(p, 0.12, 0.145) * (1 - ease(p, 0.63, 0.65)),
+      );
     });
     motherLayers.update();
     budLayers.update();
@@ -298,12 +375,13 @@ function create() {
     budInterior.visible = growth > 0.25;
     budInterior.position.set(0.15 + shift + budLength * 0.56, 0, -0.12);
     budInterior.scale.setScalar(0.63 * growth);
-    chromatin.visible = p < 0.75;
-    chromatin.position.x = (left + right) / 2;
-    chromatin.scale.x = (right - left + 0.35) / 1.46;
     labels[1].active = p > 0.08;
-    labels[1].position[0] = 0.9 + shift;
     labels[3].active = p < 0.78;
+    anchor.atVertex(0, mother.mesh, 20 * 49);
+    anchor.atVertex(1, bud.mesh, 24 * 49);
+    anchor.atVertex(2, mother.mesh, 36 * 49);
+    if (nucleus.mesh.visible) anchor.atVertex(3, nucleus.mesh, 11 * 49);
+    else anchor.atVertex(3, nMother, 0);
     group.userData = {
       species: "Saccharomyces cerevisiae",
       process: "budding",
@@ -329,6 +407,7 @@ function create() {
       teal,
       gold,
       pink,
+      histone,
     ]),
     camera: { position: [0, 1.8, 10.5], target: [-0.1, 0, 0] },
   };
@@ -401,6 +480,11 @@ export default {
     { color: "#c99c61", text: B("核内纺锤体", "Intranuclear spindle") },
   ],
   sources: [
+    {
+      title:
+        "Role of actin and Myo2p in polarized secretion and growth of Saccharomyces cerevisiae",
+      url: "https://pubmed.ncbi.nlm.nih.gov/10793147/",
+    },
     {
       title:
         "Timely Endocytosis of Cytokinetic Enzymes Prevents Premature Spindle Breakage during Mitotic Exit",

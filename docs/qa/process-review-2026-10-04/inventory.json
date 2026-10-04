@@ -1,0 +1,5868 @@
+{
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "summary": {
+    "models": 84,
+    "groups": 23,
+    "rootContexts": 114,
+    "contextConditionCases": 235
+  },
+  "models": [
+    {
+      "id": "secretion",
+      "group": "original",
+      "file": "src/processes/secretionProcess.js",
+      "duration": 24,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.12,
+            0.2,
+            0.42,
+            0.67,
+            0.78,
+            0.9
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transcription",
+      "group": "original",
+      "file": "src/processes/transcriptionProcess.js",
+      "duration": 28,
+      "roots": [
+        "cell",
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.13,
+            0.27,
+            0.43,
+            0.68,
+            0.86
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.13,
+            0.27,
+            0.43,
+            0.68,
+            0.86
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "photosynthesis",
+      "group": "original",
+      "file": "src/processes/photosynthesisProcess.js",
+      "duration": 24,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.14,
+            0.32,
+            0.5,
+            0.66,
+            0.88
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "infection",
+      "group": "original",
+      "file": "src/processes/phageProcess.js",
+      "duration": 24,
+      "roots": [
+        "phage"
+      ],
+      "contexts": [
+        {
+          "root": "phage",
+          "stages": [
+            0,
+            0.32,
+            0.6
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "replication",
+      "group": "genome",
+      "file": "src/processes/modules/genome/replicationProcess.js",
+      "duration": 36,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.12,
+            0.28,
+            0.58,
+            0.79,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "ligase",
+              "label": {
+                "zh": "DNA 连接酶",
+                "en": "DNA ligase"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常工作",
+                    "en": "Active"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "缺失：切口保留",
+                    "en": "Absent: nicks remain"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "ligase": "active"
+            },
+            {
+              "ligase": "absent"
+            }
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.12,
+            0.28,
+            0.58,
+            0.79,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "ligase",
+              "label": {
+                "zh": "DNA 连接酶",
+                "en": "DNA ligase"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常工作",
+                    "en": "Active"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "缺失：切口保留",
+                    "en": "Absent: nicks remain"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "ligase": "active"
+            },
+            {
+              "ligase": "absent"
+            }
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.12,
+            0.28,
+            0.58,
+            0.79,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "ligase",
+              "label": {
+                "zh": "DNA 连接酶",
+                "en": "DNA ligase"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常工作",
+                    "en": "Active"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "缺失：切口保留",
+                    "en": "Absent: nicks remain"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "ligase": "active"
+            },
+            {
+              "ligase": "absent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dnaRepair",
+      "group": "genome",
+      "file": "src/processes/modules/genome/dnaRepairProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.13,
+            0.31,
+            0.48,
+            0.64,
+            0.89
+          ],
+          "controls": [
+            {
+              "id": "incision",
+              "label": {
+                "zh": "切除能力",
+                "en": "Incision capacity"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "双侧切开正常",
+                    "en": "Dual incision active"
+                  }
+                },
+                {
+                  "value": "blocked",
+                  "label": {
+                    "zh": "切开受阻",
+                    "en": "Incision blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "incision": "active"
+            },
+            {
+              "incision": "blocked"
+            }
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.13,
+            0.31,
+            0.48,
+            0.64,
+            0.89
+          ],
+          "controls": [
+            {
+              "id": "incision",
+              "label": {
+                "zh": "切除能力",
+                "en": "Incision capacity"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "双侧切开正常",
+                    "en": "Dual incision active"
+                  }
+                },
+                {
+                  "value": "blocked",
+                  "label": {
+                    "zh": "切开受阻",
+                    "en": "Incision blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "incision": "active"
+            },
+            {
+              "incision": "blocked"
+            }
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.13,
+            0.31,
+            0.48,
+            0.64,
+            0.89
+          ],
+          "controls": [
+            {
+              "id": "incision",
+              "label": {
+                "zh": "切除能力",
+                "en": "Incision capacity"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "双侧切开正常",
+                    "en": "Dual incision active"
+                  }
+                },
+                {
+                  "value": "blocked",
+                  "label": {
+                    "zh": "切开受阻",
+                    "en": "Incision blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "incision": "active"
+            },
+            {
+              "incision": "blocked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transduction",
+      "group": "genome",
+      "file": "src/processes/modules/genome/transductionProcess.js",
+      "duration": 36,
+      "roots": [
+        "phage",
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "phage",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.51,
+            0.71,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "route",
+              "label": {
+                "zh": "转导类型",
+                "en": "Transduction route"
+              },
+              "default": "p1",
+              "options": [
+                {
+                  "value": "p1",
+                  "label": {
+                    "zh": "P1 · 广义转导",
+                    "en": "P1 · generalized"
+                  }
+                },
+                {
+                  "value": "lambda",
+                  "label": {
+                    "zh": "λ · 局限性转导",
+                    "en": "λ · specialized"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "route": "p1"
+            },
+            {
+              "route": "lambda"
+            }
+          ]
+        },
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.51,
+            0.71,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "route",
+              "label": {
+                "zh": "转导类型",
+                "en": "Transduction route"
+              },
+              "default": "p1",
+              "options": [
+                {
+                  "value": "p1",
+                  "label": {
+                    "zh": "P1 · 广义转导",
+                    "en": "P1 · generalized"
+                  }
+                },
+                {
+                  "value": "lambda",
+                  "label": {
+                    "zh": "λ · 局限性转导",
+                    "en": "λ · specialized"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "route": "p1"
+            },
+            {
+              "route": "lambda"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bacterialSporulation",
+      "group": "genome",
+      "file": "src/processes/modules/genome/bacterialSporulationProcess.js",
+      "duration": 38,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.15,
+            0.32,
+            0.56,
+            0.73,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "engulfment",
+              "label": {
+                "zh": "膜包裹",
+                "en": "Membrane engulfment"
+              },
+              "default": "normal",
+              "options": [
+                {
+                  "value": "normal",
+                  "label": {
+                    "zh": "正常推进",
+                    "en": "Normal"
+                  }
+                },
+                {
+                  "value": "blocked",
+                  "label": {
+                    "zh": "包裹受阻",
+                    "en": "Blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "engulfment": "normal"
+            },
+            {
+              "engulfment": "blocked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "promoterRegulation",
+      "group": "regulation",
+      "file": "src/processes/modules/regulation/promoterRegulationProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.17,
+            0.34,
+            0.52,
+            0.66,
+            0.81
+          ],
+          "controls": [
+            {
+              "id": "bindingSite",
+              "label": {
+                "zh": "TATA 识别位点",
+                "en": "TATA recognition site"
+              },
+              "default": "intact",
+              "options": [
+                {
+                  "value": "intact",
+                  "label": {
+                    "zh": "完整位点",
+                    "en": "Intact site"
+                  }
+                },
+                {
+                  "value": "altered",
+                  "label": {
+                    "zh": "改变位点 · 未稳定结合示例",
+                    "en": "Altered site · unstable binding example"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "bindingSite": "intact"
+            },
+            {
+              "bindingSite": "altered"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enhancerRegulation",
+      "group": "regulation",
+      "file": "src/processes/modules/regulation/enhancerRegulationProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.17,
+            0.35,
+            0.53,
+            0.66,
+            0.8
+          ],
+          "controls": [
+            {
+              "id": "coactivator",
+              "label": {
+                "zh": "共激活因子招募",
+                "en": "Coactivator recruitment"
+              },
+              "default": "competent",
+              "options": [
+                {
+                  "value": "competent",
+                  "label": {
+                    "zh": "可招募",
+                    "en": "Recruitment competent"
+                  }
+                },
+                {
+                  "value": "impaired",
+                  "label": {
+                    "zh": "招募受限",
+                    "en": "Recruitment impaired"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "coactivator": "competent"
+            },
+            {
+              "coactivator": "impaired"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chromatinAccess",
+      "group": "chromatin",
+      "file": "src/processes/modules/chromatin/chromatinAccessProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.17,
+            0.34,
+            0.64,
+            0.84
+          ],
+          "controls": [
+            {
+              "id": "hydrolysis",
+              "label": {
+                "zh": "ATP 水解",
+                "en": "ATP hydrolysis"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常滑移",
+                    "en": "Active sliding"
+                  }
+                },
+                {
+                  "value": "disabled",
+                  "label": {
+                    "zh": "水解受阻",
+                    "en": "Hydrolysis disabled"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "hydrolysis": "active"
+            },
+            {
+              "hydrolysis": "disabled"
+            }
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.17,
+            0.34,
+            0.64,
+            0.84
+          ],
+          "controls": [
+            {
+              "id": "hydrolysis",
+              "label": {
+                "zh": "ATP 水解",
+                "en": "ATP hydrolysis"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常滑移",
+                    "en": "Active sliding"
+                  }
+                },
+                {
+                  "value": "disabled",
+                  "label": {
+                    "zh": "水解受阻",
+                    "en": "Hydrolysis disabled"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "hydrolysis": "active"
+            },
+            {
+              "hydrolysis": "disabled"
+            }
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.17,
+            0.34,
+            0.64,
+            0.84
+          ],
+          "controls": [
+            {
+              "id": "hydrolysis",
+              "label": {
+                "zh": "ATP 水解",
+                "en": "ATP hydrolysis"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常滑移",
+                    "en": "Active sliding"
+                  }
+                },
+                {
+                  "value": "disabled",
+                  "label": {
+                    "zh": "水解受阻",
+                    "en": "Hydrolysis disabled"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "hydrolysis": "active"
+            },
+            {
+              "hydrolysis": "disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tad",
+      "group": "chromatin",
+      "file": "src/processes/modules/chromatin/tadProcess.js",
+      "duration": 36,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.16,
+            0.36,
+            0.62,
+            0.78,
+            0.93
+          ],
+          "controls": [
+            {
+              "id": "condition",
+              "label": {
+                "zh": "染色质条件",
+                "en": "Chromatin condition"
+              },
+              "default": "normal",
+              "options": [
+                {
+                  "value": "normal",
+                  "label": {
+                    "zh": "相向 CTCF 边界",
+                    "en": "Convergent CTCF boundaries"
+                  }
+                },
+                {
+                  "value": "boundaryDeleted",
+                  "label": {
+                    "zh": "删除右侧边界",
+                    "en": "Delete right boundary"
+                  }
+                },
+                {
+                  "value": "cohesinDepleted",
+                  "label": {
+                    "zh": "耗竭黏连蛋白",
+                    "en": "Deplete cohesin"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "condition": "normal"
+            },
+            {
+              "condition": "boundaryDeleted"
+            },
+            {
+              "condition": "cohesinDepleted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plantGenome",
+      "group": "chromatin",
+      "file": "src/processes/modules/chromatin/plantGenomeProcess.js",
+      "duration": 36,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.12,
+            0.34,
+            0.57,
+            0.77,
+            0.91
+          ],
+          "controls": [
+            {
+              "id": "targeting",
+              "label": {
+                "zh": "前体定位信号",
+                "en": "Precursor targeting signals"
+              },
+              "default": "intact",
+              "options": [
+                {
+                  "value": "intact",
+                  "label": {
+                    "zh": "定位肽完整",
+                    "en": "Signals intact"
+                  }
+                },
+                {
+                  "value": "removed",
+                  "label": {
+                    "zh": "删除定位肽",
+                    "en": "Targeting peptides removed"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "targeting": "intact"
+            },
+            {
+              "targeting": "removed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plantRdDM",
+      "group": "chromatin",
+      "file": "src/processes/modules/chromatin/plantRdDMProcess.js",
+      "duration": 38,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.33,
+            0.46,
+            0.61,
+            0.82,
+            0.95
+          ],
+          "controls": [
+            {
+              "id": "drm2",
+              "label": {
+                "zh": "DRM2 催化活性",
+                "en": "DRM2 catalytic activity"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常催化",
+                    "en": "Active catalysis"
+                  }
+                },
+                {
+                  "value": "inactive",
+                  "label": {
+                    "zh": "催化失活",
+                    "en": "Catalytically inactive"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "drm2": "active"
+            },
+            {
+              "drm2": "inactive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rnaProcessing",
+      "group": "rna",
+      "file": "src/processes/modules/rna/rnaProcessingProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell",
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.13,
+            0.29,
+            0.46,
+            0.69,
+            0.9
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.13,
+            0.29,
+            0.46,
+            0.69,
+            0.9
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nuclearTransport",
+      "group": "rna",
+      "file": "src/processes/modules/rna/nuclearTransportProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.56,
+            0.75,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "nls",
+              "label": {
+                "zh": "核定位信号",
+                "en": "Nuclear localization signal"
+              },
+              "default": "exposed",
+              "options": [
+                {
+                  "value": "exposed",
+                  "label": {
+                    "zh": "NLS 暴露",
+                    "en": "NLS exposed"
+                  }
+                },
+                {
+                  "value": "masked",
+                  "label": {
+                    "zh": "NLS 被遮蔽",
+                    "en": "NLS masked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "nls": "exposed"
+            },
+            {
+              "nls": "masked"
+            }
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.56,
+            0.75,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "nls",
+              "label": {
+                "zh": "核定位信号",
+                "en": "Nuclear localization signal"
+              },
+              "default": "exposed",
+              "options": [
+                {
+                  "value": "exposed",
+                  "label": {
+                    "zh": "NLS 暴露",
+                    "en": "NLS exposed"
+                  }
+                },
+                {
+                  "value": "masked",
+                  "label": {
+                    "zh": "NLS 被遮蔽",
+                    "en": "NLS masked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "nls": "exposed"
+            },
+            {
+              "nls": "masked"
+            }
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.56,
+            0.75,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "nls",
+              "label": {
+                "zh": "核定位信号",
+                "en": "Nuclear localization signal"
+              },
+              "default": "exposed",
+              "options": [
+                {
+                  "value": "exposed",
+                  "label": {
+                    "zh": "NLS 暴露",
+                    "en": "NLS exposed"
+                  }
+                },
+                {
+                  "value": "masked",
+                  "label": {
+                    "zh": "NLS 被遮蔽",
+                    "en": "NLS masked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "nls": "exposed"
+            },
+            {
+              "nls": "masked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "motorTransport",
+      "group": "rna",
+      "file": "src/processes/modules/rna/motorTransportProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.15,
+            0.3,
+            0.48,
+            0.7,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "motor",
+              "label": {
+                "zh": "运输马达",
+                "en": "Transport motor"
+              },
+              "default": "kinesin",
+              "options": [
+                {
+                  "value": "kinesin",
+                  "label": {
+                    "zh": "Kinesin-1 → 正端",
+                    "en": "Kinesin-1 → plus end"
+                  }
+                },
+                {
+                  "value": "dynein",
+                  "label": {
+                    "zh": "胞质 Dynein → 负端",
+                    "en": "Cytoplasmic dynein → minus end"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "atp",
+              "label": {
+                "zh": "ATP 条件",
+                "en": "ATP condition"
+              },
+              "default": "available",
+              "options": [
+                {
+                  "value": "available",
+                  "label": {
+                    "zh": "可用 ATP",
+                    "en": "ATP available"
+                  }
+                },
+                {
+                  "value": "depleted",
+                  "label": {
+                    "zh": "缺少可用 ATP",
+                    "en": "ATP unavailable"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "motor": "kinesin",
+              "atp": "available"
+            },
+            {
+              "motor": "kinesin",
+              "atp": "depleted"
+            },
+            {
+              "motor": "dynein",
+              "atp": "available"
+            },
+            {
+              "motor": "dynein",
+              "atp": "depleted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "organelleImport",
+      "group": "rna",
+      "file": "src/processes/modules/rna/organelleImportProcess.js",
+      "duration": 35,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.55,
+            0.76,
+            0.91
+          ],
+          "controls": [
+            {
+              "id": "transit",
+              "label": {
+                "zh": "N 端转运肽",
+                "en": "N-terminal transit peptide"
+              },
+              "default": "present",
+              "options": [
+                {
+                  "value": "present",
+                  "label": {
+                    "zh": "具有转运肽",
+                    "en": "Transit peptide present"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "缺少转运肽",
+                    "en": "Transit peptide absent"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "transit": "present"
+            },
+            {
+              "transit": "absent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "translation",
+      "group": "translation",
+      "file": "src/processes/modules/translation/translationProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast",
+        "paramecium"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.13,
+            0.33,
+            0.53,
+            0.73,
+            0.88
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.13,
+            0.33,
+            0.53,
+            0.73,
+            0.88
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.13,
+            0.33,
+            0.53,
+            0.73,
+            0.88
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        },
+        {
+          "root": "paramecium",
+          "stages": [
+            0,
+            0.13,
+            0.33,
+            0.53,
+            0.73,
+            0.88
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proteinFolding",
+      "group": "translation",
+      "file": "src/processes/modules/translation/proteinFoldingProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.15,
+            0.32,
+            0.48,
+            0.62,
+            0.83
+          ],
+          "controls": [
+            {
+              "id": "cycle",
+              "label": {
+                "zh": "Hsp70 循环",
+                "en": "Hsp70 cycle"
+              },
+              "default": "complete",
+              "options": [
+                {
+                  "value": "complete",
+                  "label": {
+                    "zh": "完成核苷酸交换",
+                    "en": "Complete nucleotide exchange"
+                  }
+                },
+                {
+                  "value": "hold",
+                  "label": {
+                    "zh": "停留在 ADP 结合态",
+                    "en": "Hold the ADP-bound state"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "cycle": "complete"
+            },
+            {
+              "cycle": "hold"
+            }
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.15,
+            0.32,
+            0.48,
+            0.62,
+            0.83
+          ],
+          "controls": [
+            {
+              "id": "cycle",
+              "label": {
+                "zh": "Hsp70 循环",
+                "en": "Hsp70 cycle"
+              },
+              "default": "complete",
+              "options": [
+                {
+                  "value": "complete",
+                  "label": {
+                    "zh": "完成核苷酸交换",
+                    "en": "Complete nucleotide exchange"
+                  }
+                },
+                {
+                  "value": "hold",
+                  "label": {
+                    "zh": "停留在 ADP 结合态",
+                    "en": "Hold the ADP-bound state"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "cycle": "complete"
+            },
+            {
+              "cycle": "hold"
+            }
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.15,
+            0.32,
+            0.48,
+            0.62,
+            0.83
+          ],
+          "controls": [
+            {
+              "id": "cycle",
+              "label": {
+                "zh": "Hsp70 循环",
+                "en": "Hsp70 cycle"
+              },
+              "default": "complete",
+              "options": [
+                {
+                  "value": "complete",
+                  "label": {
+                    "zh": "完成核苷酸交换",
+                    "en": "Complete nucleotide exchange"
+                  }
+                },
+                {
+                  "value": "hold",
+                  "label": {
+                    "zh": "停留在 ADP 结合态",
+                    "en": "Hold the ADP-bound state"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "cycle": "complete"
+            },
+            {
+              "cycle": "hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alternativeSplicing",
+      "group": "translation",
+      "file": "src/processes/modules/translation/alternativeSplicingProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.17,
+            0.34,
+            0.57,
+            0.77,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "isoform",
+              "label": {
+                "zh": "剪接结果",
+                "en": "Splicing outcome"
+              },
+              "default": "include",
+              "options": [
+                {
+                  "value": "include",
+                  "label": {
+                    "zh": "保留外显子 7",
+                    "en": "Include exon 7"
+                  }
+                },
+                {
+                  "value": "skip",
+                  "label": {
+                    "zh": "跳跃外显子 7",
+                    "en": "Skip exon 7"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "isoform": "include"
+            },
+            {
+              "isoform": "skip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nitrogenFixation",
+      "group": "translation",
+      "file": "src/processes/modules/translation/nitrogenFixationProcess.js",
+      "duration": 36,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.3,
+            0.46,
+            0.66,
+            0.83
+          ],
+          "controls": [
+            {
+              "id": "oxygen",
+              "label": {
+                "zh": "酶的氧暴露",
+                "en": "Oxygen at the enzyme"
+              },
+              "default": "protected",
+              "options": [
+                {
+                  "value": "protected",
+                  "label": {
+                    "zh": "受到氧保护",
+                    "en": "Oxygen protected"
+                  }
+                },
+                {
+                  "value": "exposed",
+                  "label": {
+                    "zh": "无保护氧暴露",
+                    "en": "Unprotected oxygen exposure"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "oxygen": "protected"
+            },
+            {
+              "oxygen": "exposed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rnaSilencing",
+      "group": "turnover",
+      "file": "src/processes/modules/turnover/rnaSilencingProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.18,
+            0.38,
+            0.56,
+            0.78
+          ],
+          "controls": [
+            {
+              "id": "pairing",
+              "label": {
+                "zh": "靶位点与 Argonaute",
+                "en": "Target site and Argonaute"
+              },
+              "default": "seed",
+              "options": [
+                {
+                  "value": "seed",
+                  "label": {
+                    "zh": "种子区配对 · 常规 miRISC",
+                    "en": "Seed pairing · typical miRISC"
+                  }
+                },
+                {
+                  "value": "slice",
+                  "label": {
+                    "zh": "充分配对 · 活性 AGO2",
+                    "en": "Extensive pairing · active AGO2"
+                  }
+                },
+                {
+                  "value": "mismatch",
+                  "label": {
+                    "zh": "种子区不匹配",
+                    "en": "Seed mismatch"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "pairing": "seed"
+            },
+            {
+              "pairing": "slice"
+            },
+            {
+              "pairing": "mismatch"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proteasome",
+      "group": "turnover",
+      "file": "src/processes/modules/turnover/proteasomeProcess.js",
+      "duration": 36,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.52,
+            0.72,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "tag",
+              "label": {
+                "zh": "底物标记",
+                "en": "Substrate tag"
+              },
+              "default": "ubiquitin",
+              "options": [
+                {
+                  "value": "ubiquitin",
+                  "label": {
+                    "zh": "K48 多聚泛素标记",
+                    "en": "K48 polyubiquitin tag"
+                  }
+                },
+                {
+                  "value": "untagged",
+                  "label": {
+                    "zh": "无标记对照",
+                    "en": "Untagged comparison"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "shell",
+              "label": {
+                "zh": "20S 观察方式",
+                "en": "20S view"
+              },
+              "default": "cutaway",
+              "options": [
+                {
+                  "value": "cutaway",
+                  "label": {
+                    "zh": "前侧剖切 · 显示内腔",
+                    "en": "Front cutaway · chamber"
+                  }
+                },
+                {
+                  "value": "whole",
+                  "label": {
+                    "zh": "完整四环外观",
+                    "en": "Complete four-ring exterior"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "tag": "ubiquitin",
+              "shell": "cutaway"
+            },
+            {
+              "tag": "ubiquitin",
+              "shell": "whole"
+            },
+            {
+              "tag": "untagged",
+              "shell": "cutaway"
+            },
+            {
+              "tag": "untagged",
+              "shell": "whole"
+            }
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.52,
+            0.72,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "tag",
+              "label": {
+                "zh": "底物标记",
+                "en": "Substrate tag"
+              },
+              "default": "ubiquitin",
+              "options": [
+                {
+                  "value": "ubiquitin",
+                  "label": {
+                    "zh": "K48 多聚泛素标记",
+                    "en": "K48 polyubiquitin tag"
+                  }
+                },
+                {
+                  "value": "untagged",
+                  "label": {
+                    "zh": "无标记对照",
+                    "en": "Untagged comparison"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "shell",
+              "label": {
+                "zh": "20S 观察方式",
+                "en": "20S view"
+              },
+              "default": "cutaway",
+              "options": [
+                {
+                  "value": "cutaway",
+                  "label": {
+                    "zh": "前侧剖切 · 显示内腔",
+                    "en": "Front cutaway · chamber"
+                  }
+                },
+                {
+                  "value": "whole",
+                  "label": {
+                    "zh": "完整四环外观",
+                    "en": "Complete four-ring exterior"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "tag": "ubiquitin",
+              "shell": "cutaway"
+            },
+            {
+              "tag": "ubiquitin",
+              "shell": "whole"
+            },
+            {
+              "tag": "untagged",
+              "shell": "cutaway"
+            },
+            {
+              "tag": "untagged",
+              "shell": "whole"
+            }
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.52,
+            0.72,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "tag",
+              "label": {
+                "zh": "底物标记",
+                "en": "Substrate tag"
+              },
+              "default": "ubiquitin",
+              "options": [
+                {
+                  "value": "ubiquitin",
+                  "label": {
+                    "zh": "K48 多聚泛素标记",
+                    "en": "K48 polyubiquitin tag"
+                  }
+                },
+                {
+                  "value": "untagged",
+                  "label": {
+                    "zh": "无标记对照",
+                    "en": "Untagged comparison"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "shell",
+              "label": {
+                "zh": "20S 观察方式",
+                "en": "20S view"
+              },
+              "default": "cutaway",
+              "options": [
+                {
+                  "value": "cutaway",
+                  "label": {
+                    "zh": "前侧剖切 · 显示内腔",
+                    "en": "Front cutaway · chamber"
+                  }
+                },
+                {
+                  "value": "whole",
+                  "label": {
+                    "zh": "完整四环外观",
+                    "en": "Complete four-ring exterior"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "tag": "ubiquitin",
+              "shell": "cutaway"
+            },
+            {
+              "tag": "ubiquitin",
+              "shell": "whole"
+            },
+            {
+              "tag": "untagged",
+              "shell": "cutaway"
+            },
+            {
+              "tag": "untagged",
+              "shell": "whole"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crispr",
+      "group": "turnover",
+      "file": "src/processes/modules/turnover/crisprProcess.js",
+      "duration": 32,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.18,
+            0.36,
+            0.56,
+            0.76
+          ],
+          "controls": [
+            {
+              "id": "target",
+              "label": {
+                "zh": "外源 DNA 靶位点",
+                "en": "Foreign DNA target"
+              },
+              "default": "matched",
+              "options": [
+                {
+                  "value": "matched",
+                  "label": {
+                    "zh": "NGG PAM + 匹配引导",
+                    "en": "NGG PAM + matching guide"
+                  }
+                },
+                {
+                  "value": "noPam",
+                  "label": {
+                    "zh": "缺少兼容 PAM",
+                    "en": "No compatible PAM"
+                  }
+                },
+                {
+                  "value": "mismatch",
+                  "label": {
+                    "zh": "PAM 邻近种子区多处错配",
+                    "en": "Multiple PAM-proximal seed mismatches"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "target": "matched"
+            },
+            {
+              "target": "noPam"
+            },
+            {
+              "target": "mismatch"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bacterialRepair",
+      "group": "turnover",
+      "file": "src/processes/modules/turnover/bacterialRepairProcess.js",
+      "duration": 34,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.18,
+            0.38,
+            0.57,
+            0.78
+          ],
+          "controls": [
+            {
+              "id": "lexA",
+              "label": {
+                "zh": "LexA 条件",
+                "en": "LexA condition"
+              },
+              "default": "wildtype",
+              "options": [
+                {
+                  "value": "wildtype",
+                  "label": {
+                    "zh": "可自切割 LexA",
+                    "en": "Self-cleavable LexA"
+                  }
+                },
+                {
+                  "value": "noncleavable",
+                  "label": {
+                    "zh": "不可切割 LexA 对照",
+                    "en": "Noncleavable LexA comparison"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "lexA": "wildtype"
+            },
+            {
+              "lexA": "noncleavable"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "respiration",
+      "group": "energy",
+      "file": "src/processes/modules/energy/respirationProcess.js",
+      "duration": 36,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast",
+        "paramecium"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.16,
+            0.33,
+            0.5,
+            0.67,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "coupling",
+              "label": {
+                "zh": "内膜耦联",
+                "en": "Inner-membrane coupling"
+              },
+              "default": "coupled",
+              "options": [
+                {
+                  "value": "coupled",
+                  "label": {
+                    "zh": "正常耦联",
+                    "en": "Coupled"
+                  }
+                },
+                {
+                  "value": "leak",
+                  "label": {
+                    "zh": "质子泄漏",
+                    "en": "Proton leak"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "coupling": "coupled"
+            },
+            {
+              "coupling": "leak"
+            }
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.33,
+            0.5,
+            0.67,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "coupling",
+              "label": {
+                "zh": "内膜耦联",
+                "en": "Inner-membrane coupling"
+              },
+              "default": "coupled",
+              "options": [
+                {
+                  "value": "coupled",
+                  "label": {
+                    "zh": "正常耦联",
+                    "en": "Coupled"
+                  }
+                },
+                {
+                  "value": "leak",
+                  "label": {
+                    "zh": "质子泄漏",
+                    "en": "Proton leak"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "coupling": "coupled"
+            },
+            {
+              "coupling": "leak"
+            }
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.16,
+            0.33,
+            0.5,
+            0.67,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "coupling",
+              "label": {
+                "zh": "内膜耦联",
+                "en": "Inner-membrane coupling"
+              },
+              "default": "coupled",
+              "options": [
+                {
+                  "value": "coupled",
+                  "label": {
+                    "zh": "正常耦联",
+                    "en": "Coupled"
+                  }
+                },
+                {
+                  "value": "leak",
+                  "label": {
+                    "zh": "质子泄漏",
+                    "en": "Proton leak"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "coupling": "coupled"
+            },
+            {
+              "coupling": "leak"
+            }
+          ]
+        },
+        {
+          "root": "paramecium",
+          "stages": [
+            0,
+            0.16,
+            0.33,
+            0.5,
+            0.67,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "coupling",
+              "label": {
+                "zh": "内膜耦联",
+                "en": "Inner-membrane coupling"
+              },
+              "default": "coupled",
+              "options": [
+                {
+                  "value": "coupled",
+                  "label": {
+                    "zh": "正常耦联",
+                    "en": "Coupled"
+                  }
+                },
+                {
+                  "value": "leak",
+                  "label": {
+                    "zh": "质子泄漏",
+                    "en": "Proton leak"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "coupling": "coupled"
+            },
+            {
+              "coupling": "leak"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "glycolysis",
+      "group": "energy",
+      "file": "src/processes/modules/energy/glycolysisProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.08,
+            0.27,
+            0.44,
+            0.58,
+            0.78,
+            0.93
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.08,
+            0.27,
+            0.44,
+            0.58,
+            0.78,
+            0.93
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.08,
+            0.27,
+            0.44,
+            0.58,
+            0.78,
+            0.93
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bacterialEnergetics",
+      "group": "energy",
+      "file": "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+      "duration": 34,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.33,
+            0.5,
+            0.66,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "route",
+              "label": {
+                "zh": "电子传递支路",
+                "en": "Electron-transfer branch"
+              },
+              "default": "ndh1-bo",
+              "options": [
+                {
+                  "value": "ndh1-bo",
+                  "label": {
+                    "zh": "NDH-I → bo₃",
+                    "en": "NDH-I → bo₃"
+                  }
+                },
+                {
+                  "value": "ndh2-bd",
+                  "label": {
+                    "zh": "NDH-II → bd-I",
+                    "en": "NDH-II → bd-I"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "route": "ndh1-bo"
+            },
+            {
+              "route": "ndh2-bd"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bacterialPhotosynthesis",
+      "group": "energy",
+      "file": "src/processes/modules/energy/bacterialPhotosynthesisProcess.js",
+      "duration": 36,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.12,
+            0.26,
+            0.42,
+            0.59,
+            0.74,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "light",
+              "label": {
+                "zh": "光条件",
+                "en": "Light condition"
+              },
+              "default": "light",
+              "options": [
+                {
+                  "value": "light",
+                  "label": {
+                    "zh": "有光",
+                    "en": "Light"
+                  }
+                },
+                {
+                  "value": "dark",
+                  "label": {
+                    "zh": "暗 · 无光驱动流",
+                    "en": "Dark · no light-driven flow"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "light": "light"
+            },
+            {
+              "light": "dark"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "diffusion",
+      "group": "membrane",
+      "file": "src/processes/modules/membrane/diffusionProcess.js",
+      "duration": 30,
+      "roots": [
+        "cell",
+        "plant",
+        "bacterium",
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.16,
+            0.38,
+            0.6,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "route",
+              "label": {
+                "zh": "分子与通路",
+                "en": "Molecule and route"
+              },
+              "default": "water",
+              "options": [
+                {
+                  "value": "water",
+                  "label": {
+                    "zh": "水 · 水通道蛋白",
+                    "en": "Water · aquaporin"
+                  }
+                },
+                {
+                  "value": "oxygen",
+                  "label": {
+                    "zh": "氧 · 脂双层",
+                    "en": "Oxygen · lipid bilayer"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "gradient",
+              "label": {
+                "zh": "初始梯度 · 水选项指水活度",
+                "en": "Initial gradient · water option uses water activity"
+              },
+              "default": "outside",
+              "options": [
+                {
+                  "value": "outside",
+                  "label": {
+                    "zh": "外侧较高",
+                    "en": "Higher outside"
+                  }
+                },
+                {
+                  "value": "equal",
+                  "label": {
+                    "zh": "两侧相等",
+                    "en": "Equal on both sides"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "route": "water",
+              "gradient": "outside"
+            },
+            {
+              "route": "water",
+              "gradient": "equal"
+            },
+            {
+              "route": "oxygen",
+              "gradient": "outside"
+            },
+            {
+              "route": "oxygen",
+              "gradient": "equal"
+            }
+          ]
+        },
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.38,
+            0.6,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "route",
+              "label": {
+                "zh": "分子与通路",
+                "en": "Molecule and route"
+              },
+              "default": "water",
+              "options": [
+                {
+                  "value": "water",
+                  "label": {
+                    "zh": "水 · 水通道蛋白",
+                    "en": "Water · aquaporin"
+                  }
+                },
+                {
+                  "value": "oxygen",
+                  "label": {
+                    "zh": "氧 · 脂双层",
+                    "en": "Oxygen · lipid bilayer"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "gradient",
+              "label": {
+                "zh": "初始梯度 · 水选项指水活度",
+                "en": "Initial gradient · water option uses water activity"
+              },
+              "default": "outside",
+              "options": [
+                {
+                  "value": "outside",
+                  "label": {
+                    "zh": "外侧较高",
+                    "en": "Higher outside"
+                  }
+                },
+                {
+                  "value": "equal",
+                  "label": {
+                    "zh": "两侧相等",
+                    "en": "Equal on both sides"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "route": "water",
+              "gradient": "outside"
+            },
+            {
+              "route": "water",
+              "gradient": "equal"
+            },
+            {
+              "route": "oxygen",
+              "gradient": "outside"
+            },
+            {
+              "route": "oxygen",
+              "gradient": "equal"
+            }
+          ]
+        },
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.38,
+            0.6,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "route",
+              "label": {
+                "zh": "分子与通路",
+                "en": "Molecule and route"
+              },
+              "default": "water",
+              "options": [
+                {
+                  "value": "water",
+                  "label": {
+                    "zh": "水 · 水通道蛋白",
+                    "en": "Water · aquaporin"
+                  }
+                },
+                {
+                  "value": "oxygen",
+                  "label": {
+                    "zh": "氧 · 脂双层",
+                    "en": "Oxygen · lipid bilayer"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "gradient",
+              "label": {
+                "zh": "初始梯度 · 水选项指水活度",
+                "en": "Initial gradient · water option uses water activity"
+              },
+              "default": "outside",
+              "options": [
+                {
+                  "value": "outside",
+                  "label": {
+                    "zh": "外侧较高",
+                    "en": "Higher outside"
+                  }
+                },
+                {
+                  "value": "equal",
+                  "label": {
+                    "zh": "两侧相等",
+                    "en": "Equal on both sides"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "route": "water",
+              "gradient": "outside"
+            },
+            {
+              "route": "water",
+              "gradient": "equal"
+            },
+            {
+              "route": "oxygen",
+              "gradient": "outside"
+            },
+            {
+              "route": "oxygen",
+              "gradient": "equal"
+            }
+          ]
+        },
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.16,
+            0.38,
+            0.6,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "route",
+              "label": {
+                "zh": "分子与通路",
+                "en": "Molecule and route"
+              },
+              "default": "water",
+              "options": [
+                {
+                  "value": "water",
+                  "label": {
+                    "zh": "水 · 水通道蛋白",
+                    "en": "Water · aquaporin"
+                  }
+                },
+                {
+                  "value": "oxygen",
+                  "label": {
+                    "zh": "氧 · 脂双层",
+                    "en": "Oxygen · lipid bilayer"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "gradient",
+              "label": {
+                "zh": "初始梯度 · 水选项指水活度",
+                "en": "Initial gradient · water option uses water activity"
+              },
+              "default": "outside",
+              "options": [
+                {
+                  "value": "outside",
+                  "label": {
+                    "zh": "外侧较高",
+                    "en": "Higher outside"
+                  }
+                },
+                {
+                  "value": "equal",
+                  "label": {
+                    "zh": "两侧相等",
+                    "en": "Equal on both sides"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "route": "water",
+              "gradient": "outside"
+            },
+            {
+              "route": "water",
+              "gradient": "equal"
+            },
+            {
+              "route": "oxygen",
+              "gradient": "outside"
+            },
+            {
+              "route": "oxygen",
+              "gradient": "equal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "activeTransport",
+      "group": "membrane",
+      "file": "src/processes/modules/membrane/activeTransportProcess.js",
+      "duration": 36,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.2,
+            0.38,
+            0.56,
+            0.71,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "energy",
+              "label": {
+                "zh": "能量条件",
+                "en": "Energy condition"
+              },
+              "default": "atp",
+              "options": [
+                {
+                  "value": "atp",
+                  "label": {
+                    "zh": "有 ATP",
+                    "en": "ATP available"
+                  }
+                },
+                {
+                  "value": "none",
+                  "label": {
+                    "zh": "无 ATP",
+                    "en": "No ATP"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "energy": "atp"
+            },
+            {
+              "energy": "none"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "osmoticBalance",
+      "group": "membrane",
+      "file": "src/processes/modules/membrane/osmoticBalanceProcess.js",
+      "duration": 28,
+      "roots": [
+        "cell",
+        "erythrocyte"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.18,
+            0.38,
+            0.63,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "tonicity",
+              "label": {
+                "zh": "外液张力",
+                "en": "External tonicity"
+              },
+              "default": "hypotonic",
+              "options": [
+                {
+                  "value": "hypotonic",
+                  "label": {
+                    "zh": "低渗 · 吸水",
+                    "en": "Hypotonic · water gain"
+                  }
+                },
+                {
+                  "value": "isotonic",
+                  "label": {
+                    "zh": "等渗 · 净水流为零",
+                    "en": "Isotonic · zero net flow"
+                  }
+                },
+                {
+                  "value": "hypertonic",
+                  "label": {
+                    "zh": "高渗 · 失水",
+                    "en": "Hypertonic · water loss"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "tonicity": "hypotonic"
+            },
+            {
+              "tonicity": "isotonic"
+            },
+            {
+              "tonicity": "hypertonic"
+            }
+          ]
+        },
+        {
+          "root": "erythrocyte",
+          "stages": [
+            0,
+            0.18,
+            0.38,
+            0.63,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "tonicity",
+              "label": {
+                "zh": "外液张力",
+                "en": "External tonicity"
+              },
+              "default": "hypotonic",
+              "options": [
+                {
+                  "value": "hypotonic",
+                  "label": {
+                    "zh": "低渗 · 吸水",
+                    "en": "Hypotonic · water gain"
+                  }
+                },
+                {
+                  "value": "isotonic",
+                  "label": {
+                    "zh": "等渗 · 净水流为零",
+                    "en": "Isotonic · zero net flow"
+                  }
+                },
+                {
+                  "value": "hypertonic",
+                  "label": {
+                    "zh": "高渗 · 失水",
+                    "en": "Hypertonic · water loss"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "tonicity": "hypotonic"
+            },
+            {
+              "tonicity": "isotonic"
+            },
+            {
+              "tonicity": "hypertonic"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bacterialCellWall",
+      "group": "membrane",
+      "file": "src/processes/modules/membrane/bacterialCellWallProcess.js",
+      "duration": 34,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.17,
+            0.35,
+            0.64,
+            0.77,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "antibiotic",
+              "label": {
+                "zh": "PBP2 条件",
+                "en": "PBP2 condition"
+              },
+              "default": "none",
+              "options": [
+                {
+                  "value": "none",
+                  "label": {
+                    "zh": "无抗生素",
+                    "en": "No antibiotic"
+                  }
+                },
+                {
+                  "value": "betaLactam",
+                  "label": {
+                    "zh": "β-内酰胺占据活性位点",
+                    "en": "β-lactam occupies active site"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "antibiotic": "none"
+            },
+            {
+              "antibiotic": "betaLactam"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "endocytosis",
+      "group": "traffic",
+      "file": "src/processes/modules/traffic/endocytosisProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.14,
+            0.34,
+            0.47,
+            0.67,
+            0.8
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "autophagy",
+      "group": "traffic",
+      "file": "src/processes/modules/traffic/autophagyProcess.js",
+      "duration": 33,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.16,
+            0.44,
+            0.54,
+            0.65,
+            0.73,
+            0.9
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mitosis",
+      "group": "division",
+      "file": "src/processes/modules/division/mitosisProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.19,
+            0.37,
+            0.49,
+            0.71,
+            0.94
+          ],
+          "controls": [
+            {
+              "id": "attachment",
+              "label": {
+                "zh": "动粒附着",
+                "en": "Kinetochore attachment"
+              },
+              "default": "normal",
+              "options": [
+                {
+                  "value": "normal",
+                  "label": {
+                    "zh": "完成双向附着",
+                    "en": "Biorientation complete"
+                  }
+                },
+                {
+                  "value": "unattached",
+                  "label": {
+                    "zh": "一个动粒未附着",
+                    "en": "One unattached kinetochore"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "attachment": "normal"
+            },
+            {
+              "attachment": "unattached"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meiosis",
+      "group": "division",
+      "file": "src/processes/modules/division/meiosisProcess.js",
+      "duration": 38,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.14,
+            0.28,
+            0.36,
+            0.58,
+            0.71,
+            0.94
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "signalTransduction",
+      "group": "signals",
+      "file": "src/processes/modules/signals/signalTransductionProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.23,
+            0.36,
+            0.51,
+            0.78,
+            0.93
+          ],
+          "controls": [
+            {
+              "id": "condition",
+              "label": {
+                "zh": "受体条件",
+                "en": "Receptor condition"
+              },
+              "default": "ligand",
+              "options": [
+                {
+                  "value": "ligand",
+                  "label": {
+                    "zh": "PDGF + 功能受体",
+                    "en": "PDGF + functional receptor"
+                  }
+                },
+                {
+                  "value": "noLigand",
+                  "label": {
+                    "zh": "无 PDGF",
+                    "en": "No PDGF"
+                  }
+                },
+                {
+                  "value": "kinaseInactive",
+                  "label": {
+                    "zh": "受体激酶失活",
+                    "en": "Inactive receptor kinase"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "condition": "ligand"
+            },
+            {
+              "condition": "noLigand"
+            },
+            {
+              "condition": "kinaseInactive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "apoptosis",
+      "group": "signals",
+      "file": "src/processes/modules/signals/apoptosisProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.16,
+            0.29,
+            0.43,
+            0.59,
+            0.81
+          ],
+          "controls": [
+            {
+              "id": "condition",
+              "label": {
+                "zh": "内源性触发",
+                "en": "Intrinsic trigger"
+              },
+              "default": "stress",
+              "options": [
+                {
+                  "value": "stress",
+                  "label": {
+                    "zh": "不可恢复应激",
+                    "en": "Irrecoverable stress"
+                  }
+                },
+                {
+                  "value": "noStress",
+                  "label": {
+                    "zh": "无触发应激",
+                    "en": "No triggering stress"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "condition": "stress"
+            },
+            {
+              "condition": "noStress"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "differentiation",
+      "group": "signals",
+      "file": "src/processes/modules/signals/differentiationProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.17,
+            0.32,
+            0.5,
+            0.68,
+            0.93
+          ],
+          "controls": [
+            {
+              "id": "program",
+              "label": {
+                "zh": "红系调控程序",
+                "en": "Erythroid regulatory program"
+              },
+              "default": "competent",
+              "options": [
+                {
+                  "value": "competent",
+                  "label": {
+                    "zh": "GATA1 功能完整",
+                    "en": "Functional GATA1"
+                  }
+                },
+                {
+                  "value": "impaired",
+                  "label": {
+                    "zh": "GATA1 功能不足",
+                    "en": "Insufficient GATA1 function"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "program": "competent"
+            },
+            {
+              "program": "impaired"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "immuneResponse",
+      "group": "signals",
+      "file": "src/processes/modules/signals/immuneResponseProcess.js",
+      "duration": 36,
+      "roots": [
+        "cell"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.19,
+            0.35,
+            0.5,
+            0.81,
+            0.94
+          ],
+          "controls": [
+            {
+              "id": "epitope",
+              "label": {
+                "zh": "呈递肽与该 TCR",
+                "en": "Presented peptide and this TCR"
+              },
+              "default": "matched",
+              "options": [
+                {
+                  "value": "matched",
+                  "label": {
+                    "zh": "可被该 TCR 识别",
+                    "en": "Recognized by this TCR"
+                  }
+                },
+                {
+                  "value": "unmatched",
+                  "label": {
+                    "zh": "该 TCR 不识别",
+                    "en": "Not recognized by this TCR"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "epitope": "matched"
+            },
+            {
+              "epitope": "unmatched"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actionPotential",
+      "group": "neurons",
+      "file": "src/processes/modules/neurons/actionPotentialProcess.js",
+      "duration": 32,
+      "roots": [
+        "cell",
+        "neuron"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.12,
+            0.24,
+            0.42,
+            0.64,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "stimulus",
+              "label": {
+                "zh": "起始刺激",
+                "en": "Initiating stimulus"
+              },
+              "default": "on",
+              "options": [
+                {
+                  "value": "on",
+                  "label": {
+                    "zh": "足够强的刺激",
+                    "en": "Sufficient stimulus"
+                  }
+                },
+                {
+                  "value": "off",
+                  "label": {
+                    "zh": "无刺激",
+                    "en": "No stimulus"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "stimulus": "on"
+            },
+            {
+              "stimulus": "off"
+            }
+          ]
+        },
+        {
+          "root": "neuron",
+          "stages": [
+            0,
+            0.12,
+            0.24,
+            0.42,
+            0.64,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "stimulus",
+              "label": {
+                "zh": "起始刺激",
+                "en": "Initiating stimulus"
+              },
+              "default": "on",
+              "options": [
+                {
+                  "value": "on",
+                  "label": {
+                    "zh": "足够强的刺激",
+                    "en": "Sufficient stimulus"
+                  }
+                },
+                {
+                  "value": "off",
+                  "label": {
+                    "zh": "无刺激",
+                    "en": "No stimulus"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "stimulus": "on"
+            },
+            {
+              "stimulus": "off"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "synapse",
+      "group": "neurons",
+      "file": "src/processes/modules/neurons/synapseProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell",
+        "neuron"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.14,
+            0.26,
+            0.38,
+            0.56,
+            0.78
+          ],
+          "controls": [
+            {
+              "id": "calcium",
+              "label": {
+                "zh": "突触前 Ca²⁺ 通道",
+                "en": "Presynaptic Ca²⁺ channels"
+              },
+              "default": "available",
+              "options": [
+                {
+                  "value": "available",
+                  "label": {
+                    "zh": "可开放",
+                    "en": "Available"
+                  }
+                },
+                {
+                  "value": "blocked",
+                  "label": {
+                    "zh": "阻断",
+                    "en": "Blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "calcium": "available"
+            },
+            {
+              "calcium": "blocked"
+            }
+          ]
+        },
+        {
+          "root": "neuron",
+          "stages": [
+            0,
+            0.14,
+            0.26,
+            0.38,
+            0.56,
+            0.78
+          ],
+          "controls": [
+            {
+              "id": "calcium",
+              "label": {
+                "zh": "突触前 Ca²⁺ 通道",
+                "en": "Presynaptic Ca²⁺ channels"
+              },
+              "default": "available",
+              "options": [
+                {
+                  "value": "available",
+                  "label": {
+                    "zh": "可开放",
+                    "en": "Available"
+                  }
+                },
+                {
+                  "value": "blocked",
+                  "label": {
+                    "zh": "阻断",
+                    "en": "Blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "calcium": "available"
+            },
+            {
+              "calcium": "blocked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "muscle",
+      "group": "neurons",
+      "file": "src/processes/modules/neurons/muscleProcess.js",
+      "duration": 34,
+      "roots": [
+        "cell",
+        "muscleFibre"
+      ],
+      "contexts": [
+        {
+          "root": "cell",
+          "stages": [
+            0,
+            0.15,
+            0.31,
+            0.43,
+            0.65,
+            0.85
+          ],
+          "controls": [
+            {
+              "id": "calcium",
+              "label": {
+                "zh": "肌浆 Ca²⁺",
+                "en": "Sarcoplasmic Ca²⁺"
+              },
+              "default": "released",
+              "options": [
+                {
+                  "value": "released",
+                  "label": {
+                    "zh": "短暂释放",
+                    "en": "Transient release"
+                  }
+                },
+                {
+                  "value": "low",
+                  "label": {
+                    "zh": "保持低水平",
+                    "en": "Remain low"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "calcium": "released"
+            },
+            {
+              "calcium": "low"
+            }
+          ]
+        },
+        {
+          "root": "muscleFibre",
+          "stages": [
+            0,
+            0.15,
+            0.31,
+            0.43,
+            0.65,
+            0.85
+          ],
+          "controls": [
+            {
+              "id": "calcium",
+              "label": {
+                "zh": "肌浆 Ca²⁺",
+                "en": "Sarcoplasmic Ca²⁺"
+              },
+              "default": "released",
+              "options": [
+                {
+                  "value": "released",
+                  "label": {
+                    "zh": "短暂释放",
+                    "en": "Transient release"
+                  }
+                },
+                {
+                  "value": "low",
+                  "label": {
+                    "zh": "保持低水平",
+                    "en": "Remain low"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "calcium": "released"
+            },
+            {
+              "calcium": "low"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ciliaryMotion",
+      "group": "neurons",
+      "file": "src/processes/modules/neurons/ciliaryMotionProcess.js",
+      "duration": 32,
+      "roots": [
+        "paramecium"
+      ],
+      "contexts": [
+        {
+          "root": "paramecium",
+          "stages": [
+            0,
+            0.17,
+            0.34,
+            0.51,
+            0.7,
+            0.89
+          ],
+          "controls": [
+            {
+              "id": "atp",
+              "label": {
+                "zh": "ATP 供应",
+                "en": "ATP supply"
+              },
+              "default": "available",
+              "options": [
+                {
+                  "value": "available",
+                  "label": {
+                    "zh": "可用",
+                    "en": "Available"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "无 ATP（停动示意）",
+                    "en": "Absent (arrest schematic)"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "atp": "available"
+            },
+            {
+              "atp": "absent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plasmolysis",
+      "group": "plantWater",
+      "file": "src/processes/modules/plantWater/plasmolysisProcess.js",
+      "duration": 32,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.14,
+            0.3,
+            0.49,
+            0.66,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "bath",
+              "label": {
+                "zh": "外液处理",
+                "en": "Bath treatment"
+              },
+              "default": "recover",
+              "options": [
+                {
+                  "value": "recover",
+                  "label": {
+                    "zh": "高渗后换稀外液",
+                    "en": "Hypertonic, then dilute"
+                  }
+                },
+                {
+                  "value": "hold",
+                  "label": {
+                    "zh": "持续高渗",
+                    "en": "Maintain hypertonic bath"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "bath": "recover"
+            },
+            {
+              "bath": "hold"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stomata",
+      "group": "plantWater",
+      "file": "src/processes/modules/plantWater/stomataProcess.js",
+      "duration": 34,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.12,
+            0.26,
+            0.46,
+            0.62,
+            0.86
+          ],
+          "controls": [
+            {
+              "id": "signal",
+              "label": {
+                "zh": "后半程信号",
+                "en": "Second-half signal"
+              },
+              "default": "aba",
+              "options": [
+                {
+                  "value": "aba",
+                  "label": {
+                    "zh": "蓝光后加入 ABA",
+                    "en": "Blue light, then ABA"
+                  }
+                },
+                {
+                  "value": "light",
+                  "label": {
+                    "zh": "持续蓝光",
+                    "en": "Sustained blue light"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "signal": "aba"
+            },
+            {
+              "signal": "light"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plantLongDistanceTransport",
+      "group": "plantWater",
+      "file": "src/processes/modules/plantWater/plantLongDistanceTransportProcess.js",
+      "duration": 34,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.15,
+            0.31,
+            0.47,
+            0.65,
+            0.88
+          ],
+          "controls": [
+            {
+              "id": "stomata",
+              "label": {
+                "zh": "叶片气孔",
+                "en": "Leaf stomata"
+              },
+              "default": "close",
+              "options": [
+                {
+                  "value": "close",
+                  "label": {
+                    "zh": "中途收窄气孔",
+                    "en": "Narrow stomata midway"
+                  }
+                },
+                {
+                  "value": "open",
+                  "label": {
+                    "zh": "保持开放",
+                    "en": "Keep stomata open"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "stomata": "close"
+            },
+            {
+              "stomata": "open"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chloroplastMovement",
+      "group": "plantWater",
+      "file": "src/processes/modules/plantWater/chloroplastMovementProcess.js",
+      "duration": 32,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.13,
+            0.36,
+            0.51,
+            0.69,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "genotype",
+              "label": {
+                "zh": "蓝光响应",
+                "en": "Blue-light response"
+              },
+              "default": "wild",
+              "options": [
+                {
+                  "value": "wild",
+                  "label": {
+                    "zh": "野生型",
+                    "en": "Wild type"
+                  }
+                },
+                {
+                  "value": "phot2",
+                  "label": {
+                    "zh": "phot2 缺失",
+                    "en": "phot2 loss"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "genotype": "wild"
+            },
+            {
+              "genotype": "phot2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plantDivision",
+      "group": "plantGrowth",
+      "file": "src/processes/modules/plantGrowth/plantDivisionProcess.js",
+      "duration": 34,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.32,
+            0.43,
+            0.62,
+            0.9
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cellWallGrowth",
+      "group": "plantGrowth",
+      "file": "src/processes/modules/plantGrowth/cellWallGrowthProcess.js",
+      "duration": 30,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.15,
+            0.32,
+            0.5,
+            0.68,
+            0.88
+          ],
+          "controls": [
+            {
+              "id": "extensibility",
+              "label": {
+                "zh": "壁的可伸展性",
+                "en": "Wall extensibility"
+              },
+              "default": "yielding",
+              "options": [
+                {
+                  "value": "yielding",
+                  "label": {
+                    "zh": "可松弛的壁",
+                    "en": "Yielding wall"
+                  }
+                },
+                {
+                  "value": "restrained",
+                  "label": {
+                    "zh": "伸展受限的壁",
+                    "en": "Restrained wall"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "extensibility": "yielding"
+            },
+            {
+              "extensibility": "restrained"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "doubleFertilization",
+      "group": "plantGrowth",
+      "file": "src/processes/modules/plantGrowth/doubleFertilizationProcess.js",
+      "duration": 36,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.17,
+            0.33,
+            0.5,
+            0.73,
+            0.88
+          ],
+          "controls": [
+            {
+              "id": "assignment",
+              "label": {
+                "zh": "等价精细胞的去向示例",
+                "en": "Example fate of equivalent sperm"
+              },
+              "default": "frontEgg",
+              "options": [
+                {
+                  "value": "frontEgg",
+                  "label": {
+                    "zh": "前方精细胞进入卵",
+                    "en": "Front sperm enters egg"
+                  }
+                },
+                {
+                  "value": "frontCentral",
+                  "label": {
+                    "zh": "前方精细胞进入中央细胞",
+                    "en": "Front sperm enters central cell"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "assignment": "frontEgg"
+            },
+            {
+              "assignment": "frontCentral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fungalHyphae",
+      "group": "plantGrowth",
+      "file": "src/processes/modules/plantGrowth/fungalHyphaeProcess.js",
+      "duration": 32,
+      "roots": [
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.16,
+            0.32,
+            0.49,
+            0.67,
+            0.87
+          ],
+          "controls": [
+            {
+              "id": "delivery",
+              "label": {
+                "zh": "顶端囊泡供应",
+                "en": "Apical vesicle supply"
+              },
+              "default": "normal",
+              "options": [
+                {
+                  "value": "normal",
+                  "label": {
+                    "zh": "供应充分",
+                    "en": "Adequate supply"
+                  }
+                },
+                {
+                  "value": "reduced",
+                  "label": {
+                    "zh": "供应减少",
+                    "en": "Reduced supply"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "delivery": "normal"
+            },
+            {
+              "delivery": "reduced"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "auxin",
+      "group": "plantSignals",
+      "file": "src/processes/modules/plantSignals/auxinProcess.js",
+      "duration": 34,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.52,
+            0.71,
+            0.88
+          ],
+          "controls": [
+            {
+              "id": "auxin",
+              "label": {
+                "zh": "核内生长素",
+                "en": "Nuclear auxin"
+              },
+              "default": "present",
+              "options": [
+                {
+                  "value": "present",
+                  "label": {
+                    "zh": "有生长素",
+                    "en": "Auxin present"
+                  }
+                },
+                {
+                  "value": "low",
+                  "label": {
+                    "zh": "低生长素对照",
+                    "en": "Low auxin control"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "auxin": "present"
+            },
+            {
+              "auxin": "low"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plantDefense",
+      "group": "plantSignals",
+      "file": "src/processes/modules/plantSignals/plantDefenseProcess.js",
+      "duration": 32,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.51,
+            0.7,
+            0.87
+          ],
+          "controls": [
+            {
+              "id": "ligand",
+              "label": {
+                "zh": "外界信号",
+                "en": "External signal"
+              },
+              "default": "flg22",
+              "options": [
+                {
+                  "value": "flg22",
+                  "label": {
+                    "zh": "有 flg22",
+                    "en": "flg22 present"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "无配体对照",
+                    "en": "No-ligand control"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "ligand": "flg22"
+            },
+            {
+              "ligand": "absent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plantTransport",
+      "group": "plantConnections",
+      "file": "src/processes/modules/plantConnections/plantTransportProcess.js",
+      "duration": 30,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.13,
+            0.35,
+            0.48,
+            0.64,
+            0.89
+          ],
+          "controls": [
+            {
+              "id": "energy",
+              "label": {
+                "zh": "供能条件",
+                "en": "Energy supply"
+              },
+              "default": "available",
+              "options": [
+                {
+                  "value": "available",
+                  "label": {
+                    "zh": "ATP 可用",
+                    "en": "ATP available"
+                  }
+                },
+                {
+                  "value": "depleted",
+                  "label": {
+                    "zh": "无 ATP · 初始无梯度",
+                    "en": "No ATP · initially no gradient"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "energy": "available"
+            },
+            {
+              "energy": "depleted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plasmodesmata",
+      "group": "plantConnections",
+      "file": "src/processes/modules/plantConnections/plasmodesmataProcess.js",
+      "duration": 32,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.52,
+            0.74,
+            0.91
+          ],
+          "controls": [
+            {
+              "id": "gate",
+              "label": {
+                "zh": "颈部状态",
+                "en": "Neck state"
+              },
+              "default": "open",
+              "options": [
+                {
+                  "value": "open",
+                  "label": {
+                    "zh": "低胼胝质 · 通行",
+                    "en": "Low callose · passage"
+                  }
+                },
+                {
+                  "value": "callose",
+                  "label": {
+                    "zh": "胼胝质积累 · 收窄",
+                    "en": "Callose accumulation · narrowing"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "gate": "open"
+            },
+            {
+              "gate": "callose"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "photorespiration",
+      "group": "plantConnections",
+      "file": "src/processes/modules/plantConnections/photorespirationProcess.js",
+      "duration": 36,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.17,
+            0.36,
+            0.51,
+            0.65,
+            0.8,
+            0.96
+          ],
+          "controls": [
+            {
+              "id": "glyk",
+              "label": {
+                "zh": "末步甘油酸激酶",
+                "en": "Final glycerate kinase step"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "GLYK 正常",
+                    "en": "GLYK active"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "GLYK 缺失",
+                    "en": "GLYK absent"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "glyk": "active"
+            },
+            {
+              "glyk": "absent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c4cam",
+      "group": "plantConnections",
+      "file": "src/processes/modules/plantConnections/c4camProcess.js",
+      "duration": 36,
+      "roots": [
+        "plant"
+      ],
+      "contexts": [
+        {
+          "root": "plant",
+          "stages": [
+            0,
+            0.1,
+            0.26,
+            0.51,
+            0.71,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "strategy",
+              "label": {
+                "zh": "特化植物与策略",
+                "en": "Specialized plant and strategy"
+              },
+              "default": "c4",
+              "options": [
+                {
+                  "value": "c4",
+                  "label": {
+                    "zh": "C₄ · 玉米 · 空间分隔",
+                    "en": "C₄ · maize · spatial separation"
+                  }
+                },
+                {
+                  "value": "cam",
+                  "label": {
+                    "zh": "CAM · 伽蓝菜 · 昼夜分隔",
+                    "en": "CAM · Kalanchoë · day/night separation"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "strategy": "c4"
+            },
+            {
+              "strategy": "cam"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lacOperon",
+      "group": "operons",
+      "file": "src/processes/modules/operons/lacOperonProcess.js",
+      "duration": 32,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.36,
+            0.53,
+            0.72,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "lactose",
+              "label": {
+                "zh": "乳糖",
+                "en": "Lactose"
+              },
+              "default": "present",
+              "options": [
+                {
+                  "value": "present",
+                  "label": {
+                    "zh": "有",
+                    "en": "Present"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "无",
+                    "en": "Absent"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "glucose",
+              "label": {
+                "zh": "葡萄糖",
+                "en": "Glucose"
+              },
+              "default": "low",
+              "options": [
+                {
+                  "value": "low",
+                  "label": {
+                    "zh": "低",
+                    "en": "Low"
+                  }
+                },
+                {
+                  "value": "high",
+                  "label": {
+                    "zh": "高",
+                    "en": "High"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "lactose": "present",
+              "glucose": "low"
+            },
+            {
+              "lactose": "present",
+              "glucose": "high"
+            },
+            {
+              "lactose": "absent",
+              "glucose": "low"
+            },
+            {
+              "lactose": "absent",
+              "glucose": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trpOperon",
+      "group": "operons",
+      "file": "src/processes/modules/operons/trpOperonProcess.js",
+      "duration": 36,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.14,
+            0.31,
+            0.49,
+            0.66,
+            0.87
+          ],
+          "controls": [
+            {
+              "id": "tryptophan",
+              "label": {
+                "zh": "胞内游离色氨酸",
+                "en": "Intracellular free tryptophan"
+              },
+              "default": "low",
+              "options": [
+                {
+                  "value": "low",
+                  "label": {
+                    "zh": "严重匮乏（带 Trp 的 tRNA 不足）",
+                    "en": "Severely depleted (charged tRNA limiting)"
+                  }
+                },
+                {
+                  "value": "high",
+                  "label": {
+                    "zh": "充足",
+                    "en": "High"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "charging",
+              "label": {
+                "zh": "tRNAᵀʳᵖ 充电能力",
+                "en": "tRNAᵀʳᵖ charging capacity"
+              },
+              "default": "normal",
+              "options": [
+                {
+                  "value": "normal",
+                  "label": {
+                    "zh": "正常",
+                    "en": "Normal"
+                  }
+                },
+                {
+                  "value": "limited",
+                  "label": {
+                    "zh": "受限",
+                    "en": "Limited"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "tryptophan": "low",
+              "charging": "normal"
+            },
+            {
+              "tryptophan": "low",
+              "charging": "limited"
+            },
+            {
+              "tryptophan": "high",
+              "charging": "normal"
+            },
+            {
+              "tryptophan": "high",
+              "charging": "limited"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yeastGal",
+      "group": "operons",
+      "file": "src/processes/modules/operons/yeastGalProcess.js",
+      "duration": 34,
+      "roots": [
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.17,
+            0.37,
+            0.56,
+            0.73,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "galactose",
+              "label": {
+                "zh": "半乳糖",
+                "en": "Galactose"
+              },
+              "default": "present",
+              "options": [
+                {
+                  "value": "present",
+                  "label": {
+                    "zh": "有",
+                    "en": "Present"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "无",
+                    "en": "Absent"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "glucose",
+              "label": {
+                "zh": "葡萄糖",
+                "en": "Glucose"
+              },
+              "default": "low",
+              "options": [
+                {
+                  "value": "low",
+                  "label": {
+                    "zh": "低",
+                    "en": "Low"
+                  }
+                },
+                {
+                  "value": "high",
+                  "label": {
+                    "zh": "高",
+                    "en": "High"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "galactose": "present",
+              "glucose": "low"
+            },
+            {
+              "galactose": "present",
+              "glucose": "high"
+            },
+            {
+              "galactose": "absent",
+              "glucose": "low"
+            },
+            {
+              "galactose": "absent",
+              "glucose": "high"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yeastOsmoregulation",
+      "group": "operons",
+      "file": "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+      "duration": 38,
+      "roots": [
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.15,
+            0.32,
+            0.49,
+            0.68,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "osmolarity",
+              "label": {
+                "zh": "外界渗透变化",
+                "en": "External osmotic step"
+              },
+              "default": "high",
+              "options": [
+                {
+                  "value": "high",
+                  "label": {
+                    "zh": "升高",
+                    "en": "Increase"
+                  }
+                },
+                {
+                  "value": "unchanged",
+                  "label": {
+                    "zh": "不变",
+                    "en": "Unchanged"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "hog1",
+              "label": {
+                "zh": "Hog1 激活位点",
+                "en": "Hog1 activation sites"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常",
+                    "en": "Normal"
+                  }
+                },
+                {
+                  "value": "inhibited",
+                  "label": {
+                    "zh": "不可磷酸化",
+                    "en": "Nonphosphorylatable"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "osmolarity": "high",
+              "hog1": "active"
+            },
+            {
+              "osmolarity": "high",
+              "hog1": "inhibited"
+            },
+            {
+              "osmolarity": "unchanged",
+              "hog1": "active"
+            },
+            {
+              "osmolarity": "unchanged",
+              "hog1": "inhibited"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bacterialExpression",
+      "group": "bacterialCore",
+      "file": "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+      "duration": 32,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.18,
+            0.34,
+            0.5,
+            0.65,
+            0.84
+          ],
+          "controls": [
+            {
+              "id": "sigma",
+              "label": {
+                "zh": "启动条件",
+                "en": "Initiation condition"
+              },
+              "default": "present",
+              "options": [
+                {
+                  "value": "present",
+                  "label": {
+                    "zh": "有 σ70",
+                    "en": "σ70 available"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "缺少 σ70",
+                    "en": "σ70 absent"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "sigma": "present"
+            },
+            {
+              "sigma": "absent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bacterialDivision",
+      "group": "bacterialCore",
+      "file": "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+      "duration": 36,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.17,
+            0.43,
+            0.52,
+            0.68,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "septalSynthesis",
+              "label": {
+                "zh": "隔膜合成条件",
+                "en": "Septal synthesis"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "正常合成",
+                    "en": "Active synthesis"
+                  }
+                },
+                {
+                  "value": "blocked",
+                  "label": {
+                    "zh": "隔膜肽聚糖合成受阻",
+                    "en": "Septal wall synthesis blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "septalSynthesis": "active"
+            },
+            {
+              "septalSynthesis": "blocked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conjugation",
+      "group": "bacterialCore",
+      "file": "src/processes/modules/bacterialCore/conjugationProcess.js",
+      "duration": 34,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.49,
+            0.8,
+            0.91
+          ],
+          "controls": [
+            {
+              "id": "oriT",
+              "label": {
+                "zh": "转移起点切口",
+                "en": "Nicking at oriT"
+              },
+              "default": "intact",
+              "options": [
+                {
+                  "value": "intact",
+                  "label": {
+                    "zh": "TraI 可切开 oriT",
+                    "en": "TraI can nick oriT"
+                  }
+                },
+                {
+                  "value": "blocked",
+                  "label": {
+                    "zh": "oriT 切口受阻",
+                    "en": "oriT nicking blocked"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "oriT": "intact"
+            },
+            {
+              "oriT": "blocked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transformation",
+      "group": "bacterialCore",
+      "file": "src/processes/modules/bacterialCore/transformationProcess.js",
+      "duration": 35,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.33,
+            0.51,
+            0.69,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "homology",
+              "label": {
+                "zh": "输入 DNA 与染色体",
+                "en": "Incoming DNA versus chromosome"
+              },
+              "default": "matched",
+              "options": [
+                {
+                  "value": "matched",
+                  "label": {
+                    "zh": "有同源区",
+                    "en": "Homologous sequence"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "无可配对的同源区",
+                    "en": "No matching homology"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "homology": "matched"
+            },
+            {
+              "homology": "absent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chemotaxis",
+      "group": "bacterialSignals",
+      "file": "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+      "duration": 30,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.18,
+            0.38,
+            0.56,
+            0.75,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "environment",
+              "label": {
+                "zh": "引诱物环境",
+                "en": "Attractant environment"
+              },
+              "default": "gradient",
+              "options": [
+                {
+                  "value": "gradient",
+                  "label": {
+                    "zh": "沿游程增加",
+                    "en": "Increasing during a run"
+                  }
+                },
+                {
+                  "value": "uniform",
+                  "label": {
+                    "zh": "均匀环境",
+                    "en": "Uniform environment"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "environment": "gradient"
+            },
+            {
+              "environment": "uniform"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "twoComponent",
+      "group": "bacterialSignals",
+      "file": "src/processes/modules/bacterialSignals/twoComponentProcess.js",
+      "duration": 32,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.51,
+            0.7,
+            0.9
+          ],
+          "controls": [
+            {
+              "id": "nitrate",
+              "label": {
+                "zh": "周质硝酸盐",
+                "en": "Periplasmic nitrate"
+              },
+              "default": "present",
+              "options": [
+                {
+                  "value": "present",
+                  "label": {
+                    "zh": "存在",
+                    "en": "Present"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "缺少",
+                    "en": "Absent"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "nitrate": "present"
+            },
+            {
+              "nitrate": "absent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quorumSensing",
+      "group": "bacterialSignals",
+      "file": "src/processes/modules/bacterialSignals/quorumSensingProcess.js",
+      "duration": 32,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.16,
+            0.34,
+            0.51,
+            0.7,
+            0.88
+          ],
+          "controls": [
+            {
+              "id": "exchange",
+              "label": {
+                "zh": "同一群体的信号交换",
+                "en": "Signal exchange for the same population"
+              },
+              "default": "retained",
+              "options": [
+                {
+                  "value": "retained",
+                  "label": {
+                    "zh": "局部积累",
+                    "en": "Local accumulation"
+                  }
+                },
+                {
+                  "value": "diluted",
+                  "label": {
+                    "zh": "持续稀释",
+                    "en": "Continuous dilution"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "exchange": "retained"
+            },
+            {
+              "exchange": "diluted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "biofilm",
+      "group": "bacterialSignals",
+      "file": "src/processes/modules/bacterialSignals/biofilmProcess.js",
+      "duration": 36,
+      "roots": [
+        "bacterium"
+      ],
+      "contexts": [
+        {
+          "root": "bacterium",
+          "stages": [
+            0,
+            0.17,
+            0.34,
+            0.51,
+            0.7,
+            0.88
+          ],
+          "controls": [
+            {
+              "id": "cue",
+              "label": {
+                "zh": "成熟后的环境",
+                "en": "Environment after maturation"
+              },
+              "default": "NO",
+              "options": [
+                {
+                  "value": "NO",
+                  "label": {
+                    "zh": "低水平 NO 分散信号",
+                    "en": "Low-level NO dispersal cue"
+                  }
+                },
+                {
+                  "value": "none",
+                  "label": {
+                    "zh": "无此次分散信号",
+                    "en": "No added dispersal cue"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "cue": "NO"
+            },
+            {
+              "cue": "none"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yeastBudding",
+      "group": "yeastLife",
+      "file": "src/processes/modules/yeastLife/yeastBuddingProcess.js",
+      "duration": 32,
+      "roots": [
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.14,
+            0.34,
+            0.5,
+            0.73,
+            0.89
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yeastFermentation",
+      "group": "yeastLife",
+      "file": "src/processes/modules/yeastLife/yeastFermentationProcess.js",
+      "duration": 30,
+      "roots": [
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.19,
+            0.4,
+            0.6,
+            0.8,
+            0.93
+          ],
+          "controls": [
+            {
+              "id": "condition",
+              "label": {
+                "zh": "高糖条件下的氧气",
+                "en": "Oxygen under high glucose"
+              },
+              "default": "anaerobic",
+              "options": [
+                {
+                  "value": "anaerobic",
+                  "label": {
+                    "zh": "无氧 · 高糖",
+                    "en": "Anaerobic · high glucose"
+                  }
+                },
+                {
+                  "value": "aerobic",
+                  "label": {
+                    "zh": "有氧 · 高糖",
+                    "en": "Aerobic · high glucose"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "condition": "anaerobic"
+            },
+            {
+              "condition": "aerobic"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yeastMating",
+      "group": "yeastLife",
+      "file": "src/processes/modules/yeastLife/yeastMatingProcess.js",
+      "duration": 32,
+      "roots": [
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.17,
+            0.43,
+            0.55,
+            0.69,
+            0.91
+          ],
+          "controls": [
+            {
+              "id": "partner",
+              "label": {
+                "zh": "交配型组合",
+                "en": "Mating-type pair"
+              },
+              "default": "compatible",
+              "options": [
+                {
+                  "value": "compatible",
+                  "label": {
+                    "zh": "互补 a + α",
+                    "en": "Compatible a + α"
+                  }
+                },
+                {
+                  "value": "same",
+                  "label": {
+                    "zh": "同型 a + a",
+                    "en": "Same type a + a"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "partner": "compatible"
+            },
+            {
+              "partner": "same"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yeastSporulation",
+      "group": "yeastLife",
+      "file": "src/processes/modules/yeastLife/yeastSporulationProcess.js",
+      "duration": 36,
+      "roots": [
+        "yeast"
+      ],
+      "contexts": [
+        {
+          "root": "yeast",
+          "stages": [
+            0,
+            0.14,
+            0.31,
+            0.51,
+            0.66,
+            0.87
+          ],
+          "controls": [
+            {
+              "id": "nutrients",
+              "label": {
+                "zh": "二倍体的营养条件",
+                "en": "Diploid nutrient condition"
+              },
+              "default": "starved",
+              "options": [
+                {
+                  "value": "starved",
+                  "label": {
+                    "zh": "缺氮 + 乙酸",
+                    "en": "Nitrogen starvation + acetate"
+                  }
+                },
+                {
+                  "value": "rich",
+                  "label": {
+                    "zh": "营养充足对照",
+                    "en": "Nutrient-rich control"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "nutrients": "starved"
+            },
+            {
+              "nutrients": "rich"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parameciumFeeding",
+      "group": "parameciumLife",
+      "file": "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+      "duration": 36,
+      "roots": [
+        "paramecium"
+      ],
+      "contexts": [
+        {
+          "root": "paramecium",
+          "stages": [
+            0,
+            0.18,
+            0.34,
+            0.51,
+            0.73,
+            0.88
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contractileVacuole",
+      "group": "parameciumLife",
+      "file": "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+      "duration": 30,
+      "roots": [
+        "paramecium"
+      ],
+      "contexts": [
+        {
+          "root": "paramecium",
+          "stages": [
+            0,
+            0.18,
+            0.42,
+            0.63,
+            0.8
+          ],
+          "controls": [
+            {
+              "id": "osmotic",
+              "label": {
+                "zh": "外界低渗程度",
+                "en": "External hypotonicity"
+              },
+              "default": "freshwater",
+              "options": [
+                {
+                  "value": "freshwater",
+                  "label": {
+                    "zh": "较强低渗",
+                    "en": "More hypotonic"
+                  }
+                },
+                {
+                  "value": "mild",
+                  "label": {
+                    "zh": "较弱低渗",
+                    "en": "Less hypotonic"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "osmotic": "freshwater"
+            },
+            {
+              "osmotic": "mild"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parameciumDivision",
+      "group": "parameciumLife",
+      "file": "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+      "duration": 32,
+      "roots": [
+        "paramecium"
+      ],
+      "contexts": [
+        {
+          "root": "paramecium",
+          "stages": [
+            0,
+            0.16,
+            0.33,
+            0.53,
+            0.73,
+            0.91
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parameciumConjugation",
+      "group": "parameciumLife",
+      "file": "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+      "duration": 40,
+      "roots": [
+        "paramecium"
+      ],
+      "contexts": [
+        {
+          "root": "paramecium",
+          "stages": [
+            0,
+            0.14,
+            0.32,
+            0.44,
+            0.55,
+            0.68,
+            0.8
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phageLytic",
+      "group": "phageLife",
+      "file": "src/processes/modules/phageLife/phageLyticProcess.js",
+      "duration": 36,
+      "roots": [
+        "phage"
+      ],
+      "contexts": [
+        {
+          "root": "phage",
+          "stages": [
+            0,
+            0.17,
+            0.34,
+            0.52,
+            0.67,
+            0.85
+          ],
+          "controls": [],
+          "combinations": [
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phageLysogenic",
+      "group": "phageLife",
+      "file": "src/processes/modules/phageLife/phageLysogenicProcess.js",
+      "duration": 38,
+      "roots": [
+        "phage"
+      ],
+      "contexts": [
+        {
+          "root": "phage",
+          "stages": [
+            0,
+            0.18,
+            0.35,
+            0.49,
+            0.67,
+            0.78,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "fate",
+              "label": {
+                "zh": "子细胞的后续条件",
+                "en": "Daughter-cell condition"
+              },
+              "default": "induce",
+              "options": [
+                {
+                  "value": "induce",
+                  "label": {
+                    "zh": "DNA 损伤：诱导裂解",
+                    "en": "DNA damage: induction"
+                  }
+                },
+                {
+                  "value": "maintain",
+                  "label": {
+                    "zh": "无诱导：保持溶原",
+                    "en": "No induction: maintain lysogeny"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "fate": "induce"
+            },
+            {
+              "fate": "maintain"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phageAssembly",
+      "group": "phageLife",
+      "file": "src/processes/modules/phageLife/phageAssemblyProcess.js",
+      "duration": 35,
+      "roots": [
+        "phage"
+      ],
+      "contexts": [
+        {
+          "root": "phage",
+          "stages": [
+            0,
+            0.15,
+            0.33,
+            0.5,
+            0.69,
+            0.83
+          ],
+          "controls": [
+            {
+              "id": "protease",
+              "label": {
+                "zh": "gp21 成熟蛋白酶",
+                "en": "gp21 maturation protease"
+              },
+              "default": "active",
+              "options": [
+                {
+                  "value": "active",
+                  "label": {
+                    "zh": "有活性：正常成熟",
+                    "en": "Active: maturation"
+                  }
+                },
+                {
+                  "value": "inactive",
+                  "label": {
+                    "zh": "无活性：支架保留",
+                    "en": "Inactive: scaffold retained"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "protease": "active"
+            },
+            {
+              "protease": "inactive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phagePackaging",
+      "group": "phageLife",
+      "file": "src/processes/modules/phageLife/phagePackagingProcess.js",
+      "duration": 34,
+      "roots": [
+        "phage"
+      ],
+      "contexts": [
+        {
+          "root": "phage",
+          "stages": [
+            0,
+            0.16,
+            0.3,
+            0.51,
+            0.78,
+            0.92
+          ],
+          "controls": [
+            {
+              "id": "atp",
+              "label": {
+                "zh": "可水解的 ATP",
+                "en": "Hydrolysable ATP"
+              },
+              "default": "present",
+              "options": [
+                {
+                  "value": "present",
+                  "label": {
+                    "zh": "有 ATP：包装推进",
+                    "en": "ATP present: packaging"
+                  }
+                },
+                {
+                  "value": "absent",
+                  "label": {
+                    "zh": "无 ATP：转位停滞",
+                    "en": "No ATP: translocation stalled"
+                  }
+                }
+              ]
+            }
+          ],
+          "combinations": [
+            {
+              "atp": "present"
+            },
+            {
+              "atp": "absent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

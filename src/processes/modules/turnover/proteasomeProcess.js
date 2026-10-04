@@ -1,6 +1,7 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
 import { molecularDetail } from "./molecularDetail.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 export default {
   id: "proteasome",
@@ -426,24 +427,26 @@ export default {
     }
     const labels = [
       k.label(
-        [-2.8, 3.9, 0],
+        [0, 0, 0],
         "已标记底物 · 可接近起始区",
         "Tagged substrate · accessible initiation region",
         2,
       ),
-      k.label([-3.2, 2.1, 0.3], "K48 多聚泛素", "K48 polyubiquitin", 2),
-      k.label(
-        [1.55, 0.85, 0],
-        "19S · ATPase 六聚体",
-        "19S · ATPase hexamer",
-        3,
-      ),
-      k.label([1.75, -0.85, 0], "20S · α–β–β–α", "20S · α–β–β–α", 3),
-      k.label([-1.65, -0.8, 0.4], "β 催化腔", "β catalytic chamber", 2),
-      k.label([0.6, 1.65, 0.2], "Rpn11", "Rpn11", 2),
-      k.label([1.7, -2.5, 0], "短肽释放", "Peptide release", 2),
-      k.label([-2.65, 2.9, 0.3], "泛素回收", "Ubiquitin recycling", 2),
+      k.label([0, 0, 0], "K48 多聚泛素", "K48 polyubiquitin", 2),
+      k.label([0, 0, 0], "19S · ATPase 六聚体", "19S · ATPase hexamer", 3),
+      k.label([0, 0, 0], "20S · α–β–β–α", "20S · α–β–β–α", 3),
+      k.label([0, 0, 0], "β 催化腔", "β catalytic chamber", 2),
+      k.label([0, 0, 0], "Rpn11", "Rpn11", 2),
+      k.label([0, 0, 0], "短肽释放", "Peptide release", 2),
+      k.label([0, 0, 0], "泛素回收", "Ubiquitin recycling", 2),
     ];
+    const anchor = labelAnchors(labels),
+      rpn11Anchor = group.getObjectByName("Rpn11 catalytic domain").children[0],
+      motorAnchor = motor[1].children[0].children[0],
+      coreAnchor = group.getObjectByName("20S beta subunit 1:0").children[1]
+        .children[0],
+      peptideAnchor = peptides[0].children[0],
+      peptidePoint = peptideAnchor.geometry.parameters.path.getPoint(0.5);
     const engaged = new THREE.Vector3(),
       atCut = new THREE.Vector3(),
       attached = new THREE.Vector3(),
@@ -552,16 +555,20 @@ export default {
             "Untagged substrate · not recruited here",
           );
       labels[0].active = residues[41].visible && residues[41].position.y > 1.45;
-      labels[0].position[0] = residues[41].position.x - 0.42;
-      labels[0].position[1] = residues[41].position.y + 0.23;
-      labels[0].position[2] = residues[41].position.z;
-      labels[1].position[0] = ubiquitin[2].position.x - 0.45;
-      labels[1].position[1] = ubiquitin[2].position.y;
-      labels[1].position[2] = ubiquitin[2].position.z;
+      anchor[0](residues[41]);
+      anchor[1](ubiquitin[2].children[0]);
+      anchor[2](motorAnchor);
+      anchor[3](coreAnchor);
+      // This real beta2 site is exposed through the default front cutaway;
+      // beta5 on the right is occluded by its foreground beta subunit.
+      anchor[4](catalytic[1]);
+      anchor[5](rpn11Anchor);
+      anchor[6](peptideAnchor, peptidePoint.x, peptidePoint.y, peptidePoint.z);
+      anchor[7](ubiquitin[2].children[0]);
       labels[1].active = tagged && release < 0.5;
       labels[4].active = parameters.shell !== "whole";
       labels[7].active = tagged && release > 0.5;
-      labels[6].active = tagged && p > 0.65;
+      labels[6].active = peptides[0].visible;
       group.userData = {
         structuralDetail:
           "28 folded core subunits, six bilobed ATPases, inward pore loops, schematic secondary structures",

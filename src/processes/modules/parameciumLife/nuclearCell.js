@@ -5,11 +5,19 @@ import { corticalRows } from "./fineStructure.js";
 export function nuclearCell(
   k,
   parent,
-  { length = 3, width = 1.15, color = "#a6b8a2" } = {},
+  { length = 3, width = 1.15, color = "#a6b8a2", fissionHalf = 0 } = {},
 ) {
   const group = new THREE.Group();
   parent.add(group);
-  const geometry = new THREE.SphereGeometry(1, 40, 28, Math.PI, Math.PI),
+  const geometry = new THREE.SphereGeometry(
+      1,
+      40,
+      28,
+      Math.PI,
+      Math.PI,
+      fissionHalf < 0 ? Math.PI / 2 : 0,
+      fissionHalf ? Math.PI / 2 : Math.PI,
+    ),
     base = geometry.attributes.position.array.slice();
   const shell = k.mesh(
     geometry,
@@ -27,7 +35,8 @@ export function nuclearCell(
     "position",
     new THREE.BufferAttribute(new Float32Array(100 * 3), 3),
   );
-  const edge = new THREE.LineLoop(
+  const Edge = fissionHalf ? THREE.Line : THREE.LineLoop;
+  const edge = new Edge(
     edgeGeometry,
     new THREE.LineBasicMaterial({
       color: "#849c89",
@@ -38,7 +47,9 @@ export function nuclearCell(
   group.add(edge);
   const hairs = [];
   for (let i = 0; i < 52; i++) {
-    const a = (i / 52) * Math.PI * 2;
+    const a = fissionHalf
+      ? (fissionHalf < 0 ? Math.PI : 0) + (i / 51) * Math.PI
+      : (i / 52) * Math.PI * 2;
     const h = k.segment(
       [0, 0, 0],
       [Math.cos(a) * 0.19, Math.sin(a) * 0.19, 0.055],
@@ -48,19 +59,54 @@ export function nuclearCell(
     );
     hairs.push({ h, a });
   }
-  function shape(u, v, w, pinch = 0, stretch = 1) {
+  function shape(
+    u,
+    v,
+    w,
+    pinch = 0,
+    stretch = 1,
+    division = 0,
+    separation = 0,
+  ) {
     const y = v * length * stretch;
     const narrow = 1 - pinch * Math.exp(-Math.pow(v / 0.19, 2));
     const side = 0.88 + 0.12 * v;
     const indentation =
       u > 0 ? 1 - 0.18 * Math.exp(-Math.pow((v - 0.05) / 0.23, 2)) : 1;
+    const x = u * width * side * indentation * narrow + 0.09 * v * v,
+      z = w * 0.48 * narrow;
+    if (!fissionHalf || division === 0) return [x, y, z];
+    // Each hemisphere becomes one complete daughter surface. Their equatorial
+    // rings coincide until both shrink to a pole, then separate with no mesh swap.
+    const daughterV = fissionHalf * (2 * v * v - 1),
+      daughterU = u * 2 * Math.abs(v),
+      daughterW = w * 2 * Math.abs(v),
+      daughterSide = 0.88 + 0.12 * daughterV,
+      daughterIndent =
+        daughterU > 0
+          ? 1 - 0.18 * Math.exp(-Math.pow((daughterV - 0.05) / 0.23, 2))
+          : 1,
+      dx =
+        daughterU * 1.05 * daughterSide * daughterIndent +
+        0.09 * daughterV * daughterV,
+      dy = daughterV * 1.62 + fissionHalf * (1.62 + 0.43 * separation),
+      dz = daughterW * 0.48;
     return [
-      u * width * side * indentation * narrow + 0.09 * v * v,
-      y,
-      w * 0.48 * narrow,
+      x + (dx - x) * division,
+      y + (dy - y) * division,
+      z + (dz - z) * division,
     ];
   }
-  const fineCortex = corticalRows(k, group, shape, { rows: 15, columns: 19 });
+  const fineCortex = corticalRows(k, group, shape, {
+    rows: 15,
+    columns: 19,
+    latitudeRange:
+      fissionHalf > 0
+        ? [0.025, 0.97]
+        : fissionHalf < 0
+          ? [-0.97, -0.025]
+          : [-0.91, 0.91],
+  });
   const inner = k.mesh(
     geometry,
     k.material("#d4dfc7", {
@@ -73,8 +119,8 @@ export function nuclearCell(
     group,
   );
   inner.scale.set(0.969, 0.986, 0.93);
-  function deform(pinch = 0, stretch = 1) {
-    fineCortex.update(pinch, stretch);
+  function deform(pinch = 0, stretch = 1, division = 0, separation = 0) {
+    fineCortex.update(pinch, stretch, division, separation);
     const attr = geometry.attributes.position;
     for (let i = 0; i < attr.count; i++) {
       const q = shape(
@@ -83,6 +129,8 @@ export function nuclearCell(
         base[i * 3 + 2],
         pinch,
         stretch,
+        division,
+        separation,
       );
       attr.setXYZ(i, ...q);
     }
@@ -92,15 +140,33 @@ export function nuclearCell(
     geometry.computeBoundingBox();
     const edgeAttr = edgeGeometry.attributes.position;
     for (let i = 0; i < 100; i++) {
-      const a = (i / 100) * Math.PI * 2,
-        q = shape(Math.cos(a), Math.sin(a), 0, pinch, stretch);
+      const a = fissionHalf
+          ? (fissionHalf < 0 ? Math.PI : 0) + (i / 99) * Math.PI
+          : (i / 100) * Math.PI * 2,
+        q = shape(
+          Math.cos(a),
+          Math.sin(a),
+          0,
+          pinch,
+          stretch,
+          division,
+          separation,
+        );
       edgeAttr.setXYZ(i, q[0], q[1], 0.07);
     }
     edgeAttr.needsUpdate = true;
     edgeGeometry.computeBoundingSphere();
     edgeGeometry.computeBoundingBox();
     hairs.forEach(({ h, a }) => {
-      const q = shape(Math.cos(a), Math.sin(a), 0, pinch, stretch);
+      const q = shape(
+        Math.cos(a),
+        Math.sin(a),
+        0,
+        pinch,
+        stretch,
+        division,
+        separation,
+      );
       h.position.set(
         q[0] + Math.cos(a) * 0.08,
         q[1] + Math.sin(a) * 0.08,

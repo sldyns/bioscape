@@ -295,3 +295,7 @@ console.log(
 console.log(
   "PASS finite geometry, all-stage deterministic seeks and stable resources for both corrected models",
 );
+
+await import("./continuity.test.mjs");
+await import("./labelAnchors.test.mjs");
+await import("./renderedMechanics.test.mjs");

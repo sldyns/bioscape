@@ -1,0 +1,18 @@
+{
+  "command": "npm run check",
+  "startedAt": "2026-10-04T06:17:56.192Z",
+  "finishedAt": "2026-10-04T06:24:16.170Z",
+  "exitCode": 0,
+  "codeFilesChecked": 210,
+  "sourceSetStable": true,
+  "changedDuringCheck": [],
+  "gates": [
+    "format:check",
+    "verify",
+    "build",
+    "check:release"
+  ],
+  "log": "evidence/final-check.log",
+  "before": "evidence/final-code-before-check.json",
+  "after": "evidence/final-code-after-check.json"
+}

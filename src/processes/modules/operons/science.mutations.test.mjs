@@ -4,6 +4,13 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { verifyLac, verifyTrp, verifyHog } from "./science.test.mjs";
 import { verifyDuplexClearance } from "./duplexGeometry.test.mjs";
+import {
+  verifyInducerOrder,
+  verifyDNATransitions,
+  verifyRNAHandoff,
+  verifyLeaderContinuity,
+  verifyGlycerolContainment,
+} from "./playback.test.mjs";
 
 // Mutations exist only in esbuild memory; never rewrite the product files.
 const root = fileURLToPath(new URL("./", import.meta.url));
@@ -50,6 +57,62 @@ const cases = [
     "y + radius * Math.cos(i*.29+s*Math.PI)*(1-.8*spread)+sign*.32*spread,\n          radius*.72*Math.sin(i*.29+s*Math.PI)*(1-spread),",
     (model) => verifyDuplexClearance(model, [0.7385]),
     "lacOperonProcess.js",
+  ],
+  [
+    "20261004-operons-01",
+    "lacOperonProcess.js",
+    "ease(p, 0.25, 0.43)",
+    "ease(p, 0.17, 0.39)",
+    verifyInducerOrder,
+  ],
+  [
+    "20261004-operons-02-dna",
+    "lacOperonProcess.js",
+    "i < count\n            ? ease(p, start - 0.035, start) * (1 - ease(p, end, end + 0.04))\n            : 0",
+    "m.visible ? 1 : 0",
+    verifyDNATransitions,
+  ],
+  [
+    "20261004-operons-02-rna",
+    "lacOperonProcess.js",
+    "transcripts[i].visible,\n          ease(p, 0.87",
+    "polymerases[i].visible,\n          ease(p, 0.87",
+    verifyRNAHandoff,
+  ],
+  [
+    "20261004-operons-03",
+    "trpOperonProcess.js",
+    "ease(p, 0.22 + i * 0.095, 0.22 + (i + 1) * 0.095)",
+    "ease(p, 0.22 + i * 0.095, 0.34 + i * 0.095)",
+    verifyLeaderContinuity,
+  ],
+  [
+    "20261004-operons-04",
+    "trpOperonProcess.js",
+    "ease(p, 0.17, 0.22) * (stall ? 1 : 1 - ease(p, 0.81, 0.96))",
+    "polymerase.visible && p > 0.2 ? 1 : 0",
+    verifyDNATransitions,
+  ],
+  [
+    "20261004-operons-05-dna",
+    "yeastGalProcess.js",
+    "induced ? ease(p, 0.68, 0.72) * (1 - ease(p, 0.96, 1)) : 0",
+    "polymerase.visible ? 1 : 0",
+    verifyDNATransitions,
+  ],
+  [
+    "20261004-operons-05-rna",
+    "yeastGalProcess.js",
+    "rna.visible,\n        ease(p, 0.97",
+    "polymerase.visible,\n        ease(p, 0.97",
+    verifyRNAHandoff,
+  ],
+  [
+    "20261004-operons-06",
+    "yeastOsmoregulationProcess.js",
+    "g.position.x = (-2.3 + (i % 5) * 0.85) * volume;\n        g.position.y = (-1.25 - Math.floor(i / 5) * 0.3) * volume;",
+    "g.position.x = -2.3 + (i % 5) * 0.85;\n        g.position.y = -1.25 - Math.floor(i / 5) * 0.3;",
+    verifyGlycerolContainment,
   ],
 ];
 for (const [id, file, before, after, verify, entry] of cases) {

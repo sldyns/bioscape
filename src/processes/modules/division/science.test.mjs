@@ -354,3 +354,9 @@ for (const definition of [mitosis, meiosis]) {
   }
 }
 console.log("Division irregular playback and replay regression PASS");
+
+// Keep the original contact, chromosome, membrane-topology and replay checks
+// above; also run the 2026-10-04 regression for membrane-coupled cortical rings.
+await import("./cortical-ring.test.mjs");
+await import("./label-anchors.test.mjs");
+await import("./geometry-equivalence.test.mjs");

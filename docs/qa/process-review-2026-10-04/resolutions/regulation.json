@@ -1,0 +1,67 @@
+{
+  "group": "regulation",
+  "issues": [
+    {
+      "issueId": "20261004-regulation-labels-01",
+      "status": "fixed",
+      "changes": [
+        "Attach protein leaders to vertices on their named moving surfaces; DNA labels to the appropriate actual backbone; +1 to its marker ring; RNA 5-prime to the existing distal centerline endpoint. Preserve bilingual wording and active-state rules."
+      ],
+      "files": [
+        "src/processes/modules/regulation/promoterRegulationProcess.js",
+        "tests/regulation-label-review.mjs"
+      ],
+      "verification": [
+        "1,045 actual surface/backbone/endpoint assertions across both control values, burst boundaries and arbitrary seeks passed.",
+        "Retained pre-label-repair source fails the intended named-object anchor assertion.",
+        "Existing regulation science and 201-frame-per-condition duplex regression passed."
+      ],
+      "limitations": [
+        "Root post-repair rendered label visibility/placement acceptance pending."
+      ]
+    },
+    {
+      "issueId": "20261004-regulation-labels-02",
+      "status": "fixed",
+      "changes": [
+        "Follow the complete transforms of existing activator, Pol II, core-4 histone and Mediator surface vertices. Bind the RNA annotation to its actual free end during either burst. Preserve explanatory proximity/condition notes as regional statements."
+      ],
+      "files": [
+        "src/processes/modules/regulation/enhancerRegulationProcess.js",
+        "tests/regulation-label-review.mjs"
+      ],
+      "verification": [
+        "1,045 actual surface/backbone/endpoint assertions across both control values, burst boundaries and arbitrary seeks passed.",
+        "Retained pre-label-repair source fails the intended named-object anchor assertion.",
+        "Existing regulation science and 201-frame-per-condition duplex regression passed."
+      ],
+      "limitations": [
+        "Root post-repair rendered label visibility/placement acceptance pending."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "changes": "Default English exported frames confirmed label leaders detached from their represented geometry; anchors now follow existing geometry. Phase A reports remain immutable.",
+  "files": [
+    "src/processes/modules/regulation/promoterRegulationProcess.js",
+    "src/processes/modules/regulation/enhancerRegulationProcess.js",
+    "tests/regulation-label-review.mjs"
+  ],
+  "verification": [
+    "Bilingual label text and condition semantics unchanged.",
+    "Protein leaders use complete transforms, including enhancer polymerase rotation/scale and moving histones.",
+    "RNA endpoint labels follow the actual free 5-prime point during synthesis; existing visibility predicates retained.",
+    "60 pre/post cases across all three owned models compare rendered geometry/instances/materials without differences (see label-geometry-preservation.json)."
+  ],
+  "commands": [
+    "node tests/regulation-label-review.mjs",
+    "node src/processes/modules/regulation/science.test.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/regulation/label-geometry-preservation.mjs"
+  ],
+  "sourcesAdded": [],
+  "limitations": [
+    "Post-repair native browser/capture check remains separate.",
+    "Old default English stage gallery does not establish alternate-condition/Chinese rendered acceptance or sustained frame rate.",
+    "Enhancer recycling at p=0.79-0.82 remains the existing continuous but fast perceptual playback focus."
+  ]
+}

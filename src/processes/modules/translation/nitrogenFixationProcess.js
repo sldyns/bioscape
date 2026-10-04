@@ -6,6 +6,7 @@ import {
   phase,
   bilingual as b,
 } from "../../kit.js";
+import { labelAnchors, surfacePoint } from "./labelAnchors.js";
 
 import {
   cutawayLobe,
@@ -32,6 +33,7 @@ function create({ rootId = "bacterium" } = {}) {
     hydrogen = k.material("#e0ddd0"),
     oxygen = k.material("#bf8a80");
   const moFe = new THREE.Group();
+  moFe.name = "MoFe-protein";
   group.add(moFe);
   moFe.position.set(0.9, 0, 0);
   for (const side of [-1, 1]) {
@@ -77,7 +79,11 @@ function create({ rootId = "bacterium" } = {}) {
     }
   }
   // Distinct cluster topology: [4Fe–4S], fused [8Fe–7S], and [7Fe–9S–Mo–C].
-  pCluster(k, moFe, [-0.9, 0.04, 0.49], 0.108, iron, sulfur);
+  const leftP = new THREE.Group();
+  leftP.name = "P-cluster-left";
+  leftP.position.set(-0.9, 0.04, 0.49);
+  moFe.add(leftP);
+  pCluster(k, leftP, [0, 0, 0], 0.108, iron, sulfur);
   const leftFeMo = feMoCofactor(k, moFe, [-0.8, 0.64, 0.05], 0.8);
   leftFeMo.name = "FeMo-alpha-left";
   pCluster(k, moFe, [0.92, -0.08, 0.13], 0.08, iron, sulfur);
@@ -98,9 +104,10 @@ function create({ rootId = "bacterium" } = {}) {
       30,
     );
   const fe = new THREE.Group();
+  fe.name = "Fe-protein";
   group.add(fe);
   for (const y of [-0.43, 0.43]) {
-    cutawayLobe(
+    const feSurface = cutawayLobe(
       k,
       fe,
       [-0.32, y, -0.12],
@@ -108,6 +115,8 @@ function create({ rootId = "bacterium" } = {}) {
       k.material("#a794b1", { side: THREE.DoubleSide }),
       y,
     );
+    feSurface.name =
+      y < 0 ? "Fe-protein-lower-domain" : "Fe-protein-upper-domain";
     sheet(
       k,
       fe,
@@ -135,7 +144,14 @@ function create({ rootId = "bacterium" } = {}) {
     const g = new THREE.Group();
     fe.add(g);
     g.position.set(-0.44, y, 0.47);
-    k.ball([-0.22, 0, 0], [0.12, 0.15, 0.07], k.material("#96afa8"), g);
+    const base = k.ball(
+      [-0.22, 0, 0],
+      [0.12, 0.15, 0.07],
+      k.material("#96afa8"),
+      g,
+    );
+    base.name =
+      y < 0 ? "Fe-protein-lower-nucleotide" : "Fe-protein-upper-nucleotide";
     const phosphates = [];
     for (let j = 0; j < 3; j++)
       phosphates.push(k.ball([-0.06 + j * 0.13, 0, 0], 0.068, sulfur, g));
@@ -146,6 +162,7 @@ function create({ rootId = "bacterium" } = {}) {
     k.ball([0, 0, 0], 0.068, sulfur),
   ];
   const donor = new THREE.Group();
+  donor.name = "nitrogen-reduced-donor";
   group.add(donor);
   donor.position.set(-3.92, -1.6, 0.15);
   ferredoxinFold(
@@ -167,15 +184,21 @@ function create({ rootId = "bacterium" } = {}) {
     k.material("#e4c577", { emissive: "#af8135", emissiveIntensity: 0.35 }),
   );
   const substrate = new THREE.Group();
+  substrate.name = "dinitrogen-bond-symbol";
   group.add(substrate);
-  for (const x of [-0.17, 0.17]) k.ball([x, 0, 0], 0.17, nitrogen, substrate);
+  // The same two nitrogen atoms remain visible through substrate conversion.
+  const nitrogenAtoms = [-0.17, 0.17].map((x, i) => {
+    const atom = k.ball([x, 0, 0], 0.17, nitrogen);
+    atom.name = `nitrogen-atom-${i}`;
+    return atom;
+  });
   for (const y of [-0.06, 0, 0.06])
     k.segment([-0.12, y, 0.025], [0.12, y, 0.025], 0.017, nitrogen, substrate);
   const ammonia = [];
   for (let i = 0; i < 2; i++) {
     const g = new THREE.Group();
+    g.name = `ammonia-product-${i}`;
     group.add(g);
-    k.ball([0, 0, 0], 0.19, nitrogen, g);
     for (let h = 0; h < 3; h++) {
       const a = (h * Math.PI * 2) / 3;
       const end = [0.31 * Math.cos(a), 0.31 * Math.sin(a), 0.16];
@@ -184,7 +207,12 @@ function create({ rootId = "bacterium" } = {}) {
     }
     ammonia.push(g);
   }
+  const ammoniaDestinations = [
+    new THREE.Vector3(3.45, 1.24, 0.72),
+    new THREE.Vector3(3.45, 0.04, 0.72),
+  ];
   const h2 = new THREE.Group();
+  h2.name = "hydrogen-coproduct";
   group.add(h2);
   k.ball([-0.1, 0, 0], 0.095, hydrogen, h2);
   k.ball([0.1, 0, 0], 0.095, hydrogen, h2);
@@ -201,6 +229,7 @@ function create({ rootId = "bacterium" } = {}) {
     return g;
   });
   const damage = k.ring([0.89, 0.6, 0.73], 0.55, 0.035, oxygen);
+  damage.name = "nitrogen-oxygen-inactivation";
   damage.visible = false;
   const labels = [
     k.label([1.3, -2, 0.2], "MoFe 蛋白 · α₂β₂", "MoFe protein · α₂β₂", 2),
@@ -261,6 +290,23 @@ function create({ rootId = "bacterium" } = {}) {
       1,
     ),
   );
+  const feSurface = fe.getObjectByName("Fe-protein-upper-domain"),
+    alphaSurface = moFe.getObjectByName("alpha-domain-right"),
+    betaSurface = moFe.getObjectByName("beta-domain-right");
+  const updateLabelAnchors = labelAnchors([
+    [labels[0], moFe],
+    [labels[1], feSurface, surfacePoint(feSurface)],
+    [labels[2], leftFeMo],
+    [labels[3], leftP],
+    [labels[4], donor],
+    [labels[5], fe.getObjectByName("Fe-protein-lower-nucleotide")],
+    [labels[6], nitrogenAtoms[0]],
+    [labels[7], nitrogenAtoms[0]],
+    [labels[8], h2],
+    [labels[10], damage],
+    [labels[11], alphaSurface, surfacePoint(alphaSurface)],
+    [labels[12], betaSurface, surfacePoint(betaSurface)],
+  ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       exposed = parameters.oxygen === "exposed",
@@ -306,24 +352,35 @@ function create({ rootId = "bacterium" } = {}) {
         0.6,
       );
     }
-    const product = blocked ? 0 : ease(p, 0.8, 0.98);
-    substrate.visible = p < 0.81 || blocked;
+    const product = blocked ? 0 : ease(p, 0.8, 0.98),
+      converted = !blocked && p >= 0.8,
+      productFormation = blocked ? 0 : ease(p, 0.8, 0.85);
+    substrate.visible = !converted;
     substrate.position.set(
       2.75 - 2.45 * ease(p, 0.02, 0.15),
       1.65 - 0.81 * ease(p, 0.02, 0.15),
       0.72 - 0.44 * ease(p, 0.02, 0.15),
     );
     substrate.scale.setScalar(blocked ? 1 : 1 - 0.35 * ease(p, 0.52, 0.78));
-    ammonia.forEach((g, i) => {
-      g.visible = !blocked && p >= 0.8;
-      g.position.set(
-        0.1 + 3.35 * product,
-        0.64 + (i ? -0.6 : 0.6) * product,
-        0.72,
+    nitrogenAtoms.forEach((atom, i) => {
+      atom.position.set(
+        substrate.position.x + (i ? 0.17 : -0.17) * substrate.scale.x,
+        substrate.position.y,
+        substrate.position.z,
       );
-      g.scale.setScalar(0.6 + 0.4 * product);
+      atom.position.lerp(ammoniaDestinations[i], product);
+      const substrateRadius = 0.17 * substrate.scale.x;
+      atom.scale.setScalar(
+        substrateRadius + (0.19 - substrateRadius) * product,
+      );
     });
-    h2.visible = !blocked && p >= 0.8;
+    ammonia.forEach((g, i) => {
+      g.visible = productFormation > 0;
+      g.position.copy(nitrogenAtoms[i].position);
+      g.scale.setScalar(productFormation);
+    });
+    h2.visible = productFormation > 0;
+    h2.scale.setScalar(productFormation);
     h2.position.set(0.1 + 2.2 * product, 0.64 - 1.72 * product, 0.6);
     protons.forEach((o, i) => {
       o.visible = active;
@@ -346,10 +403,10 @@ function create({ rootId = "bacterium" } = {}) {
     moMat.color.set(blocked ? "#ac9690" : "#879ea7");
     betaMat.color.set(blocked ? "#b6a69b" : "#a3b8ab");
     labels[7].active = !blocked && p >= 0.8;
-    labels[8].active = labels[7].active;
+    labels[8].active = h2.visible;
     labels[10].active = blocked;
     labels[6].active = p < 0.8;
-    labels[1].position[0] = fe.position.x;
+    updateLabelAnchors();
     group.userData = {
       process: "nitrogenFixation",
       rootId,

@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import "./bubble.science.test.mjs";
+import "./transformation-uptake.science.test.mjs";
+import "./label-anchors.science.test.mjs";
 import * as THREE from "three";
 import * as esbuild from "esbuild";
 import expression from "./bacterialExpressionProcess.js";

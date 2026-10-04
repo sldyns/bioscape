@@ -3,6 +3,7 @@ import {
   proteinDomain,
   helix,
   molecularInventory,
+  bindLabelToSurface,
 } from "./refinementGeometry.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
@@ -355,8 +356,27 @@ export default {
         2,
       ),
       k.label([-3.2, -0.8, 0], "NLS 货物", "NLS cargo", 2),
-      k.label([-2.8, 1, 0], "importin α / β", "Importin α / β", 1),
+      k.label([-2.8, 1, 0], "importin β", "Importin β", 1),
       k.label([2.7, -1.4, 0], "Ran-GTP", "Ran-GTP", 1),
+      k.label([-2.8, 1, 0], "importin α", "Importin α", 1),
+    ];
+    alpha.name = "importin-alpha";
+    beta.name = "importin-beta";
+    ran.name = "ran";
+    const alphaText = labels[6].text;
+    const retainedAlphaText = b(
+      "importin α · 核内保留",
+      "Importin α · retained in nucleus",
+    );
+    const ranGTPText = labels[5].text;
+    const ranGDPText = b("Ran-GDP", "Ran-GDP");
+    const updateLabelAnchors = [
+      bindLabelToSurface(labels[3], cargo.children[0]),
+      // One stable existing triangle on the upper-front helix stays clear of
+      // bound Ran in the default view; its centroid avoids a grazing tube edge.
+      bindLabelToSurface(labels[4], beta.children[8], [579, 580, 571]),
+      bindLabelToSurface(labels[5], ran.children[0]),
+      bindLabelToSurface(labels[6], alpha.children[2]),
     ];
     function update(value, parameters = {}) {
       const p = clamp(value),
@@ -403,15 +423,9 @@ export default {
         0.04,
       );
       gtp.visible = !enabled || p < 0.96;
-      labels[3].position[0] = cargoX;
-      labels[4].position[0] = beta.position.x;
-      labels[4].position[1] = beta.position.y + 0.82;
-      labels[5].position[0] = ran.position.x;
-      labels[5].position[1] = ran.position.y - 0.5;
-      labels[5].text =
-        enabled && p >= 0.96
-          ? b("Ran-GDP", "Ran-GDP")
-          : b("Ran-GTP", "Ran-GTP");
+      for (const updateAnchor of updateLabelAnchors) updateAnchor();
+      labels[6].text = enabled && p >= 0.73 ? retainedAlphaText : alphaText;
+      labels[5].text = enabled && p >= 0.96 ? ranGDPText : ranGTPText;
       group.userData = {
         rootId,
         pathway: "classical-NLS-import",

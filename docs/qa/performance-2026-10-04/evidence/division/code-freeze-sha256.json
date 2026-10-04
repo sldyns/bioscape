@@ -1,0 +1,34 @@
+{
+  "status": "code frozen; directed equivalence/science/smoke PASS; root timing/render/deployment gates pending",
+  "baseline": "/tmp/bioscape-performance-20261004-baseline/src",
+  "files": {
+    "src/processes/modules/division/divisionShapes.js": {
+      "currentSha256": "642a24b88e4f7ba69e210147f698a3073d41c27a97feeb9437daf2262a180556",
+      "kind": "product",
+      "baselineSha256": "07006c20a7235b7ebca66fbfffd909b8680d19298916f24e6b02970090efccb7"
+    },
+    "src/processes/modules/division/germCellMembrane.js": {
+      "currentSha256": "ab3c520603a6ed05ce1371c450156d582b9b657b0c1ffb2931dbf34a8fa30f41",
+      "kind": "product",
+      "baselineSha256": "edc58c5edd90aad9e5beac5b23ad77da379f1bb2c644eb684f99e494c37a7d71"
+    },
+    "src/processes/modules/division/meiosisProcess.js": {
+      "currentSha256": "ddca511ed617e3b767a3cce604c4db1cd398d3bdc46a070e8b8192f423984f98",
+      "kind": "product",
+      "baselineSha256": "b9d024468f8073dc801df46c95e03f9eb06c5a33fc1bc6389ab8a2ab610dd420"
+    },
+    "src/processes/modules/division/science.test.mjs": {
+      "currentSha256": "b2d43914619c736f753314b7a20fb789fd914735106e5712faeb5d7af6f55862",
+      "kind": "regression",
+      "baselineSha256": "73b92daa41658b3581d0d542b6af3275787c5b50a5a7dbdf20bd998399b8039e"
+    },
+    "src/processes/modules/division/geometry-equivalence.test.mjs": {
+      "currentSha256": "78123ef1346e1bece0a7a5d17cde97141093bb26e15243b6955ec24feb0967bf",
+      "kind": "regression"
+    },
+    "src/processes/modules/division/geometry-equivalence-baseline.json": {
+      "currentSha256": "29c2114fcc7e911cb4f507d1afc68fda25f4d3def79e02458fae817b257167e7",
+      "kind": "regression"
+    }
+  }
+}

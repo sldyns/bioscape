@@ -1,4 +1,5 @@
 import { THREE } from "../../kit.js";
+import { cristaGeometry } from "./cristaGeometry.js";
 
 // Educational envelopes and secondary structures, not atomic reconstructions.
 export function anatomy(k) {
@@ -230,40 +231,38 @@ export function anatomy(k) {
     g.position.set(...center);
     g.scale.set(...scale);
     parent.add(g);
-    envelope(g, [0, 0, 0], [1, 1, 1], "#c6a39b", {
+    const shell = envelope(g, [0, 0, 0], [1, 1, 1], "#c6a39b", {
       name: "mitochondrion",
       gap: 0.1,
     });
     const membrane = material("#b4857e"),
       rim = material("#dfc3ae");
+    const connectedInner = shell.getObjectByName("inner-membrane-back");
+    connectedInner.geometry = cristaGeometry();
+    connectedInner.position.set(0, 0, 0);
+    connectedInner.scale.set(1, 1, 1);
+    connectedInner.material = material("#b4857e", { side: THREE.DoubleSide });
+    connectedInner.name = "inner-membrane-with-open-crista-junctions";
+    for (const [
+      index,
+      junction,
+    ] of connectedInner.geometry.userData.junctions.entries())
+      for (const side of ["start", "end"]) {
+        const positions = connectedInner.geometry.attributes.position;
+        const points = junction[side].map((id) => [
+          positions.getX(id),
+          positions.getY(id),
+          positions.getZ(id),
+        ]);
+        points.push(points[0]);
+        const edge = tube(points, 0.006, rim, g, 32);
+        edge.name = `crista-junction-lumen-rim-${index}-${side}`;
+      }
     for (let i = 0; i < 5; i++) {
       const x = -0.66 + i * 0.31,
-        base = -0.62 * Math.sqrt(1 - x * x),
-        height = 0.83 * (1 - Math.abs(x) * 0.32);
-      const outer = [
-        [x - 0.085, base, -0.1],
-        [x - 0.065, base + height, -0.14],
-        [x + 0.06, base + height + 0.04, -0.16],
-        [x + 0.095, base, -0.12],
-      ];
-      tube(outer, 0.068, membrane, g, 40);
-      const inner = outer.map((p) => [p[0], p[1] - 0.016, p[2] + 0.047]);
-      tube(inner, 0.027, rim, g, 40);
-      // Two connecting necks anchor every crista to the inner boundary.
-      segment(
-        [x - 0.085, base, -0.1],
-        [x - 0.085, base - 0.12, -0.13],
-        0.065,
-        membrane,
-        g,
-      );
-      segment(
-        [x + 0.095, base, -0.12],
-        [x + 0.095, base - 0.12, -0.13],
-        0.065,
-        membrane,
-        g,
-      );
+        base = -0.62 * Math.sqrt(1 - x * x);
+      // The crista surfaces and their open junctions are part of connectedInner.
+      // Small membrane-associated complexes remain on the matrix-facing side.
       for (let j = 0; j < 3; j++) {
         const y = base + 0.18 + j * 0.16;
         segment([x + 0.12, y, -0.1], [x + 0.22, y, -0.06], 0.015, membrane, g);

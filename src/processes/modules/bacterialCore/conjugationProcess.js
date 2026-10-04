@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { rod, chain, segmentWriter, instances } from "./bacterialGeometry.js";
+import { anchorObject, anchorSegment, anchorVertex } from "./labelAnchors.js";
 const process = {
   id: "conjugation",
   title: b("F 质粒接合转移", "F-plasmid conjugation"),
@@ -107,9 +108,17 @@ const process = {
       newMat = k.material("#c5a46e"),
       protein = k.material("#9d91ac");
     const cells = [new THREE.Group(), new THREE.Group()];
+    const envelopes = [];
     cells.forEach((c, i) => {
       group.add(c);
-      rod(k, c, { color: i ? "#90aab1" : "#88a58e", radius: 0.84, length: 2 });
+      c.name = i ? "F-recipient-cell" : "F-donor-cell";
+      envelopes.push(
+        rod(k, c, {
+          color: i ? "#90aab1" : "#88a58e",
+          radius: 0.84,
+          length: 2,
+        }),
+      );
     });
     for (const cell of cells) {
       const points = Array.from({ length: 160 }, (_, i) => {
@@ -144,6 +153,12 @@ const process = {
     }
     const pilus = chain(k, 30, protein, group),
       transfer = chain(k, 240, tMat, group);
+    pilus.forEach((mesh, i) => {
+      mesh.name = `conjugative-pilus-${i}`;
+    });
+    donorBase.forEach((mesh, i) => {
+      mesh.name = `donor-template-${i}`;
+    });
     transfer.forEach((mesh, i) => {
       mesh.name = `T-strand-${i}`;
     });
@@ -154,9 +169,12 @@ const process = {
       mesh.name = `recipient-complement-${i}`;
     });
     const junction = new THREE.Group();
+    junction.name = "F-transfer-junction";
     group.add(junction);
     for (const x of [-0.2, 0.2]) {
       const ring = k.ring([x, -0.55, 0.12], 0.23, 0.09, protein, junction);
+      ring.name =
+        x < 0 ? "F-transfer-donor-mouth" : "F-transfer-recipient-mouth";
       ring.rotation.y = Math.PI / 2;
     }
     const gate = k.segment(
@@ -252,16 +270,11 @@ const process = {
         "T strand: 5′ end first",
         9,
       ),
-      k.label(
-        [-1.8, -2.22, 0],
-        "供体替代链合成",
-        "Donor replacement synthesis",
-        8,
-      ),
+      k.label([-1.8, -2.22, 0], "供体新合成链", "New donor strand", 8),
       k.label(
         [1.8, -2.22, 0],
-        "受体互补链合成",
-        "Recipient complementary synthesis",
+        "受体新合成互补链",
+        "New recipient complementary strand",
         8,
       ),
     ];
@@ -374,22 +387,24 @@ const process = {
         !blocked && advance > 0 && advance < 1 + bridgeFraction;
       relaxase.position.set(...strandPoint(0));
       nick.visible = !blocked && p >= 0.36 && p < 0.48;
-      labels[0].position[0] = -cx;
-      labels[1].position[0] = cx;
+      anchorVertex(labels[0], envelopes[0].children[0], 33 * 65 + 64);
+      anchorVertex(labels[1], envelopes[1].children[0], 33 * 65 + 64);
       labels[1].text =
         !blocked && p >= 0.94
           ? b("获得 F 质粒的受体", "Recipient with F plasmid")
           : b("F⁻ 受体", "F⁻ recipient");
-      labels[2].active = p < 0.34;
+      labels[2].active = pilusReach > 0 && p < 0.34;
+      anchorSegment(labels[2], pilus[15]);
       labels[3].active = p >= 0.33 && p < 0.93;
+      anchorObject(labels[3], junction.children[0], -0.32, 0, 0);
       labels[4].active = p >= 0.3 && p < 0.49;
-      labels[4].position[0] = -cx;
-      labels[5].active =
-        !blocked && advance > 0 && advance < 1 + bridgeFraction;
-      labels[6].active = !blocked && p > 0.48;
-      labels[7].active = !blocked && p > 0.75;
-      labels[6].position[0] = -cx;
-      labels[7].position[0] = cx;
+      anchorSegment(labels[4], donorBase[0], 0);
+      labels[5].active = relaxase.visible;
+      anchorObject(labels[5], relaxase);
+      labels[6].active = donorNew[0].visible && p > 0.48;
+      labels[7].active = recipientNew[0].visible && p > 0.75;
+      anchorSegment(labels[6], donorNew[36]);
+      anchorSegment(labels[7], recipientNew[36]);
       if (blocked && p > 0.48) {
         labels[4].active = true;
         labels[4].text = b("oriT 未切开：无转移", "oriT uncut: no transfer");

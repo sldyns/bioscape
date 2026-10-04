@@ -6,6 +6,7 @@ import {
   surfacePores,
 } from "./anatomy.js";
 import { longitudinalEnvelope, placeSegment } from "./topology.js";
+import { labelAnchors } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 
 // Each half is an open polar surface after fusion; both rims meet at x=0.
@@ -158,6 +159,9 @@ function create() {
   const pheromones = Array.from({ length: 14 }, (_, i) =>
     k.ball([0, 0, 0], 0.055, i < 7 ? teal : rose),
   );
+  pheromones.forEach((mesh, i) => {
+    mesh.name = `mating-pheromone-${i}`;
+  });
   const contacts = [
     k.ring([0, 0, 0], 0.84, 0.025, teal),
     k.ring([0, 0, 0], 0.84, 0.025, rose),
@@ -168,6 +172,9 @@ function create() {
   const vesicles = Array.from({ length: 8 }, (_, i) =>
     k.ball([0, 0, 0], 0.06, i < 4 ? teal : rose),
   );
+  vesicles.forEach((mesh, i) => {
+    mesh.name = `mating-secretory-vesicle-${i}`;
+  });
   const labels = [
     k.label([-1.65, -1.6, 0], "a 型 · 单倍体 n", "Type a · haploid n", 10),
     k.label([1.65, -1.6, 0], "α 型 · 单倍体 n", "Type α · haploid n", 10),
@@ -202,6 +209,7 @@ function create() {
       10,
     ),
   ];
+  const anchor = labelAnchors(labels);
   function update(raw, parameters = {}) {
     const p = clamp(raw),
       compatible = parameters.partner !== "same",
@@ -220,10 +228,16 @@ function create() {
       nuclei[side].visible = q < 0.77;
       nuclei[side].scale.set(0.49, 0.5, 0.5);
       inheritedChromatin[side].position.x = nx;
+      for (const strand of inheritedChromatin[side].children)
+        if (strand.geometry.type === "TubeGeometry")
+          strand.material = side === 0 || !compatible ? teal : rose;
       // A dorsal SPB site leaves microtubules on the cytoplasmic NE face.
       const pole = new THREE.Vector3(nx - sign * 0.294, 0, 0.4);
-      const tipX =
-        opening >= 1 ? -sign * 0.13 : sign * (0.86 - 0.2 * projection);
+      const tipX = THREE.MathUtils.lerp(
+        sign * (0.86 - 0.2 * projection),
+        -sign * 0.13,
+        ease(q, 0.62, 0.655),
+      );
       const mtTip = new THREE.Vector3(tipX, 0, 0.53);
       microtubules[side].visible = compatible && q > 0.28 && q < 0.77;
       placeSegment(microtubules[side], pole, mtTip);
@@ -244,6 +258,13 @@ function create() {
         const v = vesicles[i],
           t = (q * 2 + j / 4) % 1;
         v.visible = compatible && q > 0.17 && q < 0.57;
+        v.scale.setScalar(
+          0.06 *
+            ease(t, 0.02, 0.12) *
+            (1 - ease(t, 0.88, 0.98)) *
+            ease(q, 0.17, 0.2) *
+            (1 - ease(q, 0.54, 0.57)),
+        );
         v.position.set(
           sign * (2.05 - (1.5 + 0.52 * projection) * t),
           0.3 * Math.sin(t * Math.PI),
@@ -272,6 +293,12 @@ function create() {
       const t = (q * 1.8 + (i % 7) / 7) % 1,
         fromLeft = i < 7;
       pheromones[i].visible = compatible && q < 0.46;
+      pheromones[i].scale.setScalar(
+        0.055 *
+          ease(t, 0.02, 0.12) *
+          (1 - ease(t, 0.88, 0.98)) *
+          (1 - ease(q, 0.42, 0.46)),
+      );
       pheromones[i].position.set(
         (fromLeft ? -1 : 1) * (0.55 - 1.1 * t),
         0.57 + ((i % 3) - 1) * 0.2,
@@ -318,6 +345,12 @@ function create() {
     labels[4].active = compatible && q >= 0.64 && q < 0.9;
     labels[5].active = compatible && q >= 0.9;
     labels[6].active = !compatible;
+    anchor.atVertex(0, left.mesh, 20 * 49);
+    anchor.atVertex(1, right.mesh, 20 * 49);
+    anchor.atVertex(3, left.mesh, 0);
+    if (fused.mesh.visible) anchor.atVertex(4, fused.mesh, 20 * 49);
+    else anchor.atVertex(4, nuclei[0], 14 * 41 + 20);
+    anchor.atVertex(5, fused.mesh, 14 * 49);
     group.userData = {
       species: "Saccharomyces cerevisiae",
       process: "mating",

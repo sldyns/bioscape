@@ -1,0 +1,143 @@
+{
+  "group": "division",
+  "reviewer": "review_division",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "mitosis",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Mammalian somatic-cell mitosis after DNA replication; four duplicated chromosomes are a subset, not a complete karyotype. Default and both attachment options checked.",
+      "checks": [
+        "Registered roots enumerated from processesByRoot: only cell for both models; no specialized or alternate-root override is registered.",
+        "Read bilingual entries, intro, stages, labels and legends; scientific scope explicitly identifies a chromosome subset and cutaway/schematic geometry.",
+        "Product and tests remained unchanged during Phase A. Historical full regressions reviewed and retained; they were not rerun at full dense sampling.",
+        "Checked invalid/out-of-range progress NaN/-1/2 yields finite transforms.",
+        "Four paired sets remain eight chromatid objects throughout; sisters partition four per daughter at the end without replication or disappearance.",
+        "Actual microtubule endpoints contact outer-kinetochore triangle surfaces at 15 normal/default/arrest pose+condition samples; seven contacts in blocked condition, eight otherwise.",
+        "Arrest clamps actual geometry at .43, holds sisters together and prevents furrowing; returning to normal restores progression.",
+        "78 irregular repeat-seek checks hash transforms, visible state, geometry positions/normals, instance matrices, labels and state identically after intervening .9573/.0383 seeks; 254 nodes and 103 geometry/material resources remain stable.",
+        "Opposed interpolar half-bundles have independent midzone endings and shrinking overlap; broad centrosome architecture and membrane/nuclear envelope transitions traced through update code."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2199954/",
+          "title": "Rieder et al. (1995): The checkpoint delaying anaphase in response to chromosome monoorientation",
+          "supports": "Opened primary article: laser ablation experiments identify unattached kinetochores as the source of an anaphase-inhibitory signal in PtK1 mammalian cells."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/8253845/",
+          "title": "Mastronarde et al. (1993): Interpolar spindle microtubules in PTK cells",
+          "supports": "Publisher/PMC open was blocked; the primary abstract was retrieved directly through Europe PMC REST and saved in evidence/division/primary-source-abstracts.json. Serial EM reconstructions show antiparallel interdigitating populations, rather than a single strand spanning both poles. Detailed ipMT minus-end distributions are outside the schematic."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "26 boundary/intermediate/terminal progress values x 3 parameter configurations; capture, alignment, separation, membrane crossfade and arbitrary seeking inspected.",
+        "findings": [],
+        "limits": [
+          "Existing visibility switches of astrals/ring/cohesion/pore collars are localized stage events; no rendered continuity conclusion from source-only review.",
+          "Browser continuous-playback and bilingual control display remain root acceptance gates."
+        ]
+      },
+      "limitations": [
+        "The detailed chromatin folds, microtubule counts, cleavage shape and durations remain educational abstractions.",
+        "No molecular separase/APC/C kinetics, complete interphase decondensation or full karyotype is claimed.",
+        "All interval formulas reviewed; numeric tests sample bounded poses rather than every real-valued progress."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "meiosis",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mouse primary spermatocyte with two selected telocentric autosomal pairs; one crossover per shown pair, two segregation events, four haploid spermatids and retained bridges; no controls.",
+      "checks": [
+        "Registered roots enumerated from processesByRoot: only cell for both models; no specialized or alternate-root override is registered.",
+        "Read bilingual entries, intro, stages, labels and legends; scientific scope explicitly identifies a chromosome subset and cutaway/schematic geometry.",
+        "Product and tests remained unchanged during Phase A. Historical full regressions reviewed and retained; they were not rerun at full dense sampling.",
+        "Checked invalid/out-of-range progress NaN/-1/2 yields finite transforms.",
+        "Eight actual chromatids persist; each I product inherits one homolog per pair, and each II product one chromatid per pair. No extra DNA replication geometry exists.",
+        "Co-oriented sisters in I and bioriented sisters in II trace to appropriate poles; eight real bundle endpoints contact kinetochore surfaces at seven intermediate samples.",
+        "Telocentric short-arm extent and reciprocal distal ancestry swap at a common nonsister junction are present in actual geometry; recombination deformation relaxes during homolog segregation.",
+        "Continuous two-leaflet level set retains three open bridge channels; historical ray and manifold regression inspected and retained.",
+        "26 irregular repeat seeks hash full geometry/normal/instance arrays and visible state deterministically; 325 nodes and 144 geometry/material resources remain stable.",
+        "Actual membrane-to-ring geometry measurements confirm attachment failure through both contractions; bounded update timings expose the synchronous moving-membrane cost."
+      ],
+      "sources": [
+        {
+          "url": "https://www.informatics.jax.org/silver/chapters/5-2.shtml",
+          "title": "Mouse Genetics: The mouse karyotype",
+          "supports": "Opened JAX scientific resource: standard mouse autosomes are telocentric; species has 19 autosomal pairs, so the stated two-pair subset must not be read as a karyotype."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/34758289/",
+          "title": "Ogushi et al. (2021): Loss of sister kinetochore co-orientation and peri-centromeric cohesin protection",
+          "supports": "Opened primary abstract and figure captions: co-orientation and pericentromeric cohesion preserve sisters through I; loss in II permits sister disjunction. The experiment uses mouse oocytes; used only for conserved chromosome mechanics, not male-specific cytokinesis."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16549803/",
+          "title": "Greenbaum et al. (2006): TEX14 is essential for intercellular bridges and fertility in male mice",
+          "supports": "Primary abstract retrieved through Europe PMC REST after PMC/PubMed opens were blocked; saved locally. Mouse germ-cell cytokinesis retains permanent cytoplasmic channels; loss of TEX14 eliminates bridges."
+        },
+        {
+          "url": "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001599",
+          "title": "Delivery of ceramide phosphoethanolamine lipids to the cleavage furrow through the endocytic pathway is essential for male meiotic cytokinesis (2022)",
+          "supports": "Opened primary article, Figure 4 and associated live-imaging results: normal actomyosin ring/furrow constriction remains coupled; membrane detachment accompanies failed cytokinesis. Drosophila experiments support the generic coupling invariant only; no insect lipid/mutant mechanism is transferred to the mouse model."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-division-01",
+          "severity": "P1",
+          "kind": "misleading_attachment",
+          "file": "src/processes/modules/division/meiosisProcess.js",
+          "location": "update(), lines 111-119; germCellMembrane.js lines 105-124",
+          "evidence": "Three existing actomyosin belts retain the old independent scale formulas although the membrane now deforms as a joined-lobe level set. At p=0.495, actual first-ring centreline samples lie 0.38679, 0.41958 and 0.51766 world units from the inner membrane triangles. At p=0.865, both second-ring samples are 0.34319-0.44434 units away. Sampling uses world-transformed ring centreline and nearest triangle surfaces at negative-z positions retained in the cutaway, so this is not a front-cut or nearest-vertex artifact. Full bounded records: evidence/division/diagnostics.json, ringContacts.",
+          "whyWrong": "The normal dividing-cell scene depicts a contractile belt shrinking deep inside the cytoplasm while the membrane remains distant, breaking the mechanical attachment responsible for furrow ingression. The gap greatly exceeds the tube radius (~0.013 times ring scale), and is sustained through both constrictions.",
+          "fix": "Drive each belt from the actual level-set cleavage cross-section or deform membrane and belt from a shared geometric contour; keep a cortical inset consistent with leaflet/ring thickness, preserve retained open bridges, and preserve the full chromosome and membrane detail.",
+          "verification": "During both division windows, test several actual rear belt vertices/centreline points against transformed inner-membrane triangles across early, middle and late contraction; require a bounded cortical gap that rejects the present 0.34-0.52 displacement. Retain membrane lumen/manifold and irregular seek/resource tests.",
+          "sourceUrls": [
+            "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001599",
+            "https://pubmed.ncbi.nlm.nih.gov/16549803/"
+          ]
+        },
+        {
+          "issueId": "20261004-division-02",
+          "severity": "P2",
+          "kind": "continuous_playback_cpu_budget",
+          "file": "src/processes/modules/division/germCellMembrane.js",
+          "location": "update(), lines 126-218",
+          "evidence": "A bounded same-process diagnostic measured 12 changing-membrane poses p=.480-.491 after warmup: median update 32.6759 ms, max 53.8420 ms; 12 stable-membrane poses p=.640-.651: median 0.2972 ms, max 0.3925 ms. The moving path recomputes 70,395 scalar samples, finite-difference gradients and two full 64x56x18 marching-tetrahedron scans synchronously. Timing data saved in evidence/division/diagnostics.json.",
+          "whyWrong": "The changing-membrane update alone exceeds a 16.7 ms frame budget before rendering on the audit host, placing continuous constriction playback at risk even though absolute seeking succeeds. This confirms excessive synchronous work at these measured poses, not a claimed browser FPS measurement.",
+          "fix": "Optimize repeated work while retaining identical grid resolution, isosurface detail, bridge topology, absolute seeking and stable geometry/material/node identities; favor cached grid topology, active-cell reuse within one update, bounded updates and exact arithmetic reuse over reducing resolution.",
+          "verification": "Repeat the same bounded moving/stable samples and compare actual output geometry/topology with the baseline. Root must separately measure rendered playback at both changing-membrane intervals; current concurrent host load limits precise performance attribution.",
+          "sourceUrls": []
+        }
+      ],
+      "continuity": {
+        "checked": "Paired/crossed, I segregation, rotation, II segregation, nuclear reassembly, all membrane-changing intervals and visibility boundaries traced; 26 repeated irregular pose checks.",
+        "findings": [
+          "20261004-division-01",
+          "20261004-division-02"
+        ],
+        "limits": [
+          "No browser FPS or physical-device claim; numeric update timings were collected while other audit agents were active.",
+          "Spindle and synapsis visibility switches require root visual judgement; no extra defect assigned merely because a visibility flag changes.",
+          "Surface triangulation connectivity changes during division; index correspondence is not used as a false geometric-discontinuity metric."
+        ]
+      },
+      "limitations": [
+        "Mouse-oocyte primary data supports chromosome-orientation mechanics only; male bridge scope is supported independently by mouse TEX14 study.",
+        "No full sexual chromosome behavior, recombination repair chemistry, sperm maturation or realistic meiotic timing is claimed.",
+        "Inherited bridges to other preexisting germ cells are outside the explicitly followed single-cell lineage.",
+        "Updated membrane geometry was measured; a passing former audit cannot certify the current belt attachment."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

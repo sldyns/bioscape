@@ -1,6 +1,10 @@
-import { hollowInlet, collectingBladder } from "./scientificGeometry.js";
+import {
+  hollowInlet,
+  collectingBladder,
+  collectingAmpulla,
+} from "./scientificGeometry.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { membraneDetail } from "./fineStructure.js";
+import { labelAnchor } from "./labelAnchors.js";
 
 export default {
   id: "contractileVacuole",
@@ -117,7 +121,7 @@ export default {
     const canalOuter = new THREE.CylinderGeometry(
       0.105,
       0.105,
-      1.3,
+      0.9,
       20,
       1,
       true,
@@ -127,7 +131,7 @@ export default {
     const canalInner = new THREE.CylinderGeometry(
       0.076,
       0.076,
-      1.3,
+      0.9,
       20,
       1,
       true,
@@ -142,8 +146,9 @@ export default {
       inlets = [],
       ampullae = [],
       drops = [];
+    let labelledCanal, labelledSpongiome, spongiomePoint;
     for (let i = 0; i < 6; i++) {
-      const a = (i * Math.PI) / 3 + 0.22,
+      const a = (i * Math.PI) / 3,
         c = Math.cos(a),
         s = Math.sin(a);
       const points = [
@@ -154,17 +159,20 @@ export default {
       const wall = k.mesh(
         canalOuter,
         k.material("#7fa8a5", { side: THREE.DoubleSide }),
-        [c * 1.6, s * 1.6, -0.02],
+        [c * 1.8, s * 1.8, 0],
       );
       wall.rotation.z = a - Math.PI / 2;
       const lumen = k.mesh(
         canalInner,
         k.material("#c0d9ca", { side: THREE.DoubleSide }),
-        [c * 1.6, s * 1.6, -0.02],
+        [c * 1.8, s * 1.8, 0],
       );
       lumen.rotation.z = a - Math.PI / 2;
-      for (const end of [0.95, 2.25]) {
-        const rim = k.ring([c * end, s * end, -0.02], 0.09, 0.017, edgeMat);
+      wall.name = `collecting-canal-${i}-outer`;
+      lumen.name = `collecting-canal-${i}-inner`;
+      if (i === 0) labelledCanal = lumen;
+      for (const end of [1.35, 2.25]) {
+        const rim = k.ring([c * end, s * end, 0], 0.09, 0.017, edgeMat);
         rim.quaternion.setFromUnitVectors(
           new THREE.Vector3(0, 0, 1),
           new THREE.Vector3(c, s, 0),
@@ -185,13 +193,18 @@ export default {
               -0.06 + 0.045 * Math.sin(t * Math.PI * 2),
             ]);
           }
-          k.tube(
+          const loop = k.tube(
             pts,
             0.022,
             k.material(j % 2 ? "#9fbbb1" : "#8fada6"),
             group,
             24,
           );
+          if (i === 2 && side === 1 && j === 5) {
+            loop.name = "labelled-spongiome-tubule";
+            labelledSpongiome = loop;
+            spongiomePoint = pts[10];
+          }
           for (let q = 0; q < 2; q++) {
             const t = 0.33 + q * 0.33,
               rad = r + 0.17 * t,
@@ -206,13 +219,7 @@ export default {
             pumps.setMatrixAt(pumpIndex++, pumpTemp.matrix);
           }
         }
-      const ampulla = k.ball(
-        [c * 1.04, s * 1.04, 0],
-        [0.18, 0.29, 0.17],
-        canalMat,
-      );
-      ampulla.rotation.z = a - Math.PI / 2;
-      membraneDetail(k, ampulla);
+      const ampulla = collectingAmpulla(k, group, a, `collecting-ampulla-${i}`);
       ampullae.push(ampulla);
       const inlet = hollowInlet(
         k,
@@ -259,6 +266,7 @@ export default {
     const bladderRim = k.ring([0, 0, 0.24], 0.8, 0.035, k.material("#659aa6"));
     const duct = k.segment([0, 0, 0.3], [0, 0, 1.55], 0.13, canalMat);
     const pore = k.ring([0, 0, 1.57], 0.2, 0.057, lipMat);
+    pore.name = "contractile-vacuole-discharge-pore";
     const poreInner = k.ring(
       [0, 0, 1.515],
       0.145,
@@ -283,16 +291,21 @@ export default {
       k.material("#a9baa0"),
     );
     const jet = [];
-    for (let i = 0; i < 9; i++) jet.push(k.ball([0, 0, 0], 0.068, waterMat));
+    for (let i = 0; i < 9; i++) {
+      const o = k.ball([0, 0, 0], 0.068, waterMat);
+      o.name = `discharged-water-${i}`;
+      jet.push(o);
+    }
     const entry = [];
-    for (let i = 0; i < 8; i++)
-      entry.push(
-        k.ball(
-          [0, 0, 0],
-          0.045,
-          k.material("#8daebf", { transparent: true, opacity: 0.72 }),
-        ),
+    for (let i = 0; i < 8; i++) {
+      const o = k.ball(
+        [0, 0, 0],
+        0.045,
+        k.material("#8daebf", { transparent: true, opacity: 0.72 }),
       );
+      o.name = `entry-water-${i}`;
+      entry.push(o);
+    }
     const labels = [
       k.label([0.5, 0.7, 0.55], "中央伸缩泡", "Central bladder", 3),
       k.label([2.2, 0.65, 0.1], "放射状集水管", "Radial collecting canal", 3),
@@ -307,6 +320,17 @@ export default {
         "Cortex / plasma membrane",
         1,
       ),
+    ];
+    const anchors = [
+      labelAnchor(group, labels[0], bladder),
+      labelAnchor(group, labels[1], labelledCanal),
+      labelAnchor(group, labels[2], ampullae[4].group, [
+        1.145 * Math.cos((4 * Math.PI) / 3),
+        1.145 * Math.sin((4 * Math.PI) / 3),
+        0,
+      ]),
+      labelAnchor(group, labels[3], labelledSpongiome, spongiomePoint),
+      labelAnchor(group, labels[4], pore),
     ];
     function update(progress, parameters = {}) {
       const p = clamp(progress),
@@ -323,7 +347,9 @@ export default {
       bladder.scale.set(
         radius,
         radius,
-        radius * (0.73 + 0.27 * ease(cycle, 0.62, 0.73)),
+        radius *
+          (0.73 +
+            0.27 * ease(cycle, 0.62, 0.73) * (1 - ease(cycle, 0.91, 0.99))),
       );
       bladderRim.scale.setScalar(radius / 0.8);
       bladderRim.visible = disconnected;
@@ -336,9 +362,18 @@ export default {
         o.update(radius, bladder.scale.z, (i * Math.PI) / 3);
       });
       ampullae.forEach((o) => {
-        const f = disconnected ? 1.3 : 0.82 + 0.18 * Math.sin(cycle * 8);
-        o.scale.set(0.18 * f, 0.29 * f, 0.17 * f);
+        const collection =
+            0.82 + 0.18 * Math.sin(cycle * 8) * (1 - ease(cycle, 0.95, 1)),
+          isolation = ease(cycle, 0.66, 0.71) * (1 - ease(cycle, 0.9, 0.945)),
+          f = collection + (1.3 - collection) * isolation;
+        o.update(f);
       });
+      const flowEnvelope = (t) => ease(t, 0, 0.09) * (1 - ease(t, 0.91, 1));
+      const radialEnvelope =
+        ease(cycle, 0, 0.035) *
+        (1 - ease(cycle, 0.93, 0.96)) *
+        ease(Math.abs(cycle - 0.7), 0, 0.025) *
+        ease(Math.abs(cycle - 0.94), 0, 0.018);
       drops.forEach(({ o, i, j }) => {
         const t = (cycle * 2.3 + j / 3) % 1,
           r = 2.2 - t * (2.2 - (disconnected ? 1.1 : 0.12)),
@@ -346,7 +381,9 @@ export default {
         const neckZ =
           r >= 0.94 ? 0 : 0.22 * Math.min(1, (0.94 - r) / (0.94 - radius));
         o.position.set(a.c * r, a.s * r, neckZ);
-        o.visible = cycle < 0.96 && (condition === "freshwater" || j < 2);
+        const fade = flowEnvelope(t) * radialEnvelope;
+        o.scale.setScalar(0.04 * fade);
+        o.visible = fade > 1e-6 && (condition === "freshwater" || j < 2);
       });
       jet.forEach((o, i) => {
         const t = (discharge + i / 9) % 1;
@@ -355,15 +392,22 @@ export default {
           Math.cos(i * 2.4) * 0.055 * t,
           1.64 + t * 1.18,
         );
-        o.visible = open;
+        const fade =
+          flowEnvelope(t) *
+          ease(cycle, 0.76, 0.775) *
+          (1 - ease(cycle, 0.895, 0.91));
+        o.scale.setScalar(0.068 * fade);
+        o.visible = open && fade > 1e-6;
       });
       entry.forEach((o, i) => {
         const t = (p * (condition === "mild" ? 1.7 : 3.2) + i / 8) % 1;
         const a = i * 2.4;
         o.position.set(Math.cos(a) * 2.67, Math.sin(a) * 2.4, 2.1 - t * 2.0);
-        o.visible = condition === "freshwater" || i % 2 === 0;
+        const fade = flowEnvelope(t);
+        o.scale.setScalar(0.045 * fade);
+        o.visible = fade > 1e-6 && (condition === "freshwater" || i % 2 === 0);
       });
-      labels[0].position[1] = radius + 0.25;
+      anchors.forEach((anchor) => anchor());
       group.userData = {
         species: "Paramecium multimicronucleatum",
         condition,

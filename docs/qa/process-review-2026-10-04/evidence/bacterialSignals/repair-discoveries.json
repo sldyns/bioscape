@@ -1,0 +1,150 @@
+{
+  "group": "bacterialSignals",
+  "phase": "rendered-followup",
+  "baselineAuditUnchanged": true,
+  "reviewedNativeFrames": 28,
+  "reviewedModels": [
+    {
+      "id": "chemotaxis",
+      "root": "bacterium",
+      "progress": [
+        0,
+        0.195,
+        0.395,
+        0.5750000000000001,
+        0.765,
+        0.915,
+        1
+      ]
+    },
+    {
+      "id": "twoComponent",
+      "root": "bacterium",
+      "progress": [
+        0,
+        0.175,
+        0.35500000000000004,
+        0.525,
+        0.715,
+        0.915,
+        1
+      ]
+    },
+    {
+      "id": "quorumSensing",
+      "root": "bacterium",
+      "progress": [
+        0,
+        0.175,
+        0.35500000000000004,
+        0.525,
+        0.715,
+        0.895,
+        1
+      ]
+    },
+    {
+      "id": "biofilm",
+      "root": "bacterium",
+      "progress": [
+        0,
+        0.185,
+        0.35500000000000004,
+        0.525,
+        0.715,
+        0.895,
+        1
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issueId": "20261004-bacterialSignals-06",
+      "model": "chemotaxis",
+      "severity": "P2",
+      "kind": "rendered-label-identity-and-visibility",
+      "status": "confirmed",
+      "evidence": "Static label leaders miss receptor, CheA/CheW, CheZ, moving CheY-P and basal motor geometry; cell wobble is ignored. The path annotation also points below the displayed trajectory.",
+      "renderEvidence": {
+        "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-stable-044-chemotaxis-bacterium.jpg",
+        "images": [
+          "full-a-stable-044-chemotaxis-bacterium-start.webp",
+          "full-a-stable-044-chemotaxis-bacterium-stage-2.webp",
+          "full-a-stable-044-chemotaxis-bacterium-stage-3.webp",
+          "full-a-stable-044-chemotaxis-bacterium-stage-4.webp",
+          "full-a-stable-044-chemotaxis-bacterium-stage-5.webp",
+          "full-a-stable-044-chemotaxis-bacterium-stage-6.webp",
+          "full-a-stable-044-chemotaxis-bacterium-end.webp"
+        ]
+      },
+      "fix": "Anchor object labels to actual visible mesh surfaces or instance endpoints after update transforms; preserve label arrays; gate labels by actual target visibility and distinguish compartment-region annotations from molecular identity.",
+      "verification": "Owned numeric regression across both conditions, stage/boundary/irregular seeks, stable arrays, transformed parents and invisible-target cases; root rerender after repair."
+    },
+    {
+      "issueId": "20261004-bacterialSignals-07",
+      "model": "twoComponent",
+      "severity": "P2",
+      "kind": "rendered-label-identity-and-visibility",
+      "status": "confirmed",
+      "evidence": "NarX sensor/His and membrane leaders use text offsets. ATP and NarL-Asp leaders do not follow actual moved/rotated sites. RNA and DNA-end leaders miss rendered backbones. Periplasm and nitrate are conflated even when nitrate is absent.",
+      "renderEvidence": {
+        "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-stable-045-twoComponent-bacterium.jpg",
+        "images": [
+          "full-a-stable-045-twoComponent-bacterium-start.webp",
+          "full-a-stable-045-twoComponent-bacterium-stage-2.webp",
+          "full-a-stable-045-twoComponent-bacterium-stage-3.webp",
+          "full-a-stable-045-twoComponent-bacterium-stage-4.webp",
+          "full-a-stable-045-twoComponent-bacterium-stage-5.webp",
+          "full-a-stable-045-twoComponent-bacterium-stage-6.webp",
+          "full-a-stable-045-twoComponent-bacterium-end.webp"
+        ]
+      },
+      "fix": "Anchor object labels to actual visible mesh surfaces or instance endpoints after update transforms; preserve label arrays; gate labels by actual target visibility and distinguish compartment-region annotations from molecular identity.",
+      "verification": "Owned numeric regression across both conditions, stage/boundary/irregular seeks, stable arrays, transformed parents and invisible-target cases; root rerender after repair."
+    },
+    {
+      "issueId": "20261004-bacterialSignals-08",
+      "model": "quorumSensing",
+      "severity": "P2",
+      "kind": "rendered-label-identity-and-visibility",
+      "status": "confirmed",
+      "evidence": "LuxI, LuxR, lux-box, operon, AHL, RNA and DNA-end leaders use text offsets instead of actual geometry. LuxR is labeled with AHL before any bound AHL is visible and in the diluted branch.",
+      "renderEvidence": {
+        "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-stable-046-quorumSensing-bacterium.jpg",
+        "images": [
+          "full-a-stable-046-quorumSensing-bacterium-start.webp",
+          "full-a-stable-046-quorumSensing-bacterium-stage-2.webp",
+          "full-a-stable-046-quorumSensing-bacterium-stage-3.webp",
+          "full-a-stable-046-quorumSensing-bacterium-stage-4.webp",
+          "full-a-stable-046-quorumSensing-bacterium-stage-5.webp",
+          "full-a-stable-046-quorumSensing-bacterium-stage-6.webp",
+          "full-a-stable-046-quorumSensing-bacterium-end.webp"
+        ]
+      },
+      "fix": "Anchor object labels to actual visible mesh surfaces or instance endpoints after update transforms; preserve label arrays; gate labels by actual target visibility and distinguish compartment-region annotations from molecular identity.",
+      "verification": "Owned numeric regression across both conditions, stage/boundary/irregular seeks, stable arrays, transformed parents and invisible-target cases; root rerender after repair."
+    },
+    {
+      "issueId": "20261004-bacterialSignals-09",
+      "model": "biofilm",
+      "severity": "P2",
+      "kind": "rendered-label-identity-and-visibility",
+      "status": "confirmed",
+      "evidence": "Psl/eDNA/protein labels remain active before corresponding matrix geometry appears. PAO1, NO, c-di-GMP, release and substrate leaders miss their geometry or do not follow attachment, shrinkage and release.",
+      "renderEvidence": {
+        "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-stable-047-biofilm-bacterium.jpg",
+        "images": [
+          "full-a-stable-047-biofilm-bacterium-start.webp",
+          "full-a-stable-047-biofilm-bacterium-stage-2.webp",
+          "full-a-stable-047-biofilm-bacterium-stage-3.webp",
+          "full-a-stable-047-biofilm-bacterium-stage-4.webp",
+          "full-a-stable-047-biofilm-bacterium-stage-5.webp",
+          "full-a-stable-047-biofilm-bacterium-stage-6.webp",
+          "full-a-stable-047-biofilm-bacterium-end.webp"
+        ]
+      },
+      "fix": "Anchor object labels to actual visible mesh surfaces or instance endpoints after update transforms; preserve label arrays; gate labels by actual target visibility and distinguish compartment-region annotations from molecular identity.",
+      "verification": "Owned numeric regression across both conditions, stage/boundary/irregular seeks, stable arrays, transformed parents and invisible-target cases; root rerender after repair."
+    }
+  ]
+}

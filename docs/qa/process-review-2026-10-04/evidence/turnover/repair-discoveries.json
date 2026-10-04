@@ -1,0 +1,50 @@
+{
+  "group": "turnover",
+  "discoverySource": "docs/qa/process-review-2026-10-04/resolutions/turnover-rendered.md",
+  "evidenceBoundary": "25 original 960x640 stage WebPs; default conditions and first registered root. Supplementary findings; immutable Phase A unchanged.",
+  "authorization": "Root explicitly authorized these four repairs after rendered review.",
+  "issues": [
+    {
+      "issueId": "20261004-turnover-R01",
+      "severity": "P2",
+      "process": "rnaSilencing",
+      "title": "RNA labels use layout offsets and cap/target labels outlive their geometry",
+      "evidence": "Cap, target, guide, AGO and effector anchors miss real geometry; cap and target label remain active at p=1 with no cap or target backbone.",
+      "repair": "Bind prebuilt labels to real moving proteins and visible RNA/cap/tail; suppress absent targets."
+    },
+    {
+      "issueId": "20261004-turnover-R02",
+      "severity": "P2",
+      "process": "proteasome",
+      "title": "Proteasome molecular and product labels miss their targets",
+      "evidence": "Rpn11 label is 0.562 units outside its actual domain bounds; core/motor/product anchors retain layout offsets.",
+      "repair": "Bind to actual Rpn11, ATPase, core/catalytic site, residue, ubiquitin and peptide geometry; use actual product visibility."
+    },
+    {
+      "issueId": "20261004-turnover-R03",
+      "severity": "P2",
+      "process": "crispr",
+      "title": "Cas9/PAM/nuclease labels do not follow molecular identity",
+      "evidence": "HNH and RuvC anchors are respectively 2.007 and 1.184 units outside real world domain bounds at p=0; PAM label misses DNA PAM cubes.",
+      "repair": "Track current domains through parent transforms and anchor PAM to DNA; strand/RNA labels to their own rails."
+    },
+    {
+      "issueId": "20261004-turnover-R04",
+      "severity": "P2",
+      "process": "bacterialRepair",
+      "title": "SOS locus and growing transcript anchors retain text offsets",
+      "evidence": "Response RNA label is 1.948 units outside visible backbone bounds at p=.795; operator/LexA/RecA/strand labels displaced.",
+      "repair": "Bind labels to actual translated, rotated and scaled molecular objects and currently visible transcript. Keep damage-gap description explicitly regional."
+    },
+    {
+      "issueId": "20261004-turnover-R05",
+      "severity": "P2",
+      "process": "rnaSilencing / bacterialRepair",
+      "title": "Chinese label boxes occlude peripheral molecular geometry",
+      "evidence": "full-b1-008-rnaSilencing-cell-stage-4.webp CCR4-NOT box covers the orange right protein lobe; full-b1-011-bacterialRepair-bacterium-start.webp and following frames gap-label box covers right DNA flank; stage-5 RecA box overlaps left upper DNA. Detailed native-frame review: resolutions/turnover-rendered-final.md.",
+      "repair": "Shared capture-layout repair is assigned by root to regulation. Preserve actual molecular anchors; avoid label boxes over peripheral geometry. Turnover owns no shared-code changes.",
+      "status": "pending_root_repair",
+      "authorization": "Root authorized adding this record and a pending resolution; shared sceneCapture repair remains with root/regulation."
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "group": "plantConnections",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "phase": "B",
+  "status": "locally_verified_and_frozen_for_root_review",
+  "issues": [
+    {
+      "issueId": "20261004-plantConnections-01",
+      "status": "fixed",
+      "changes": [
+        "Coupled pore-leaflet and lipid positions to the wall-side elliptical collar profile; collar axial extent stays inside |x|≤.96, before the cell-facing PM at |x|=.99.",
+        "Increased pore axial sampling to 64 while retaining the sleeve, appressed ER, wall layers, both collar controls and all cargo outcomes."
+      ],
+      "files": [
+        "src/processes/modules/plantConnections/plasmodesmataProcess.js",
+        "src/processes/modules/plantConnections/topology.test.mjs",
+        "src/processes/modules/plantConnections/science.test.mjs"
+      ],
+      "verification": [
+        "topology.test.mjs passes 680 actual callose-versus-membrane triangle checks over both conditions and accumulation states; minimum membrane clearance 0.0118457796; minimum lipid-head sphere clearance 0.0149329384.",
+        "Original callose/neck geometry is reconstructed as negative controls: the original collar intersects the original pore profile, and the old central neck cannot reach the inner envelope.",
+        "smoke.mjs passes all four models and eight conditions: finite buffers/bounds, non-monotonic deterministic seeks, stable resource identities and independent bundling."
+      ],
+      "limitations": [
+        "Rendered collar appearance remains root-owned acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-plantConnections-02",
+      "status": "fixed",
+      "changes": [
+        "Replaced detached decorative crista necks with a single indexed inner-envelope surface containing ten true apertures stitched into five open tubular cristae.",
+        "Retained outer envelope and cut rim, added luminal aperture rims, retained membrane-associated complexes and prevented envelope crossing, caps and self-intersections."
+      ],
+      "files": [
+        "src/processes/modules/plantConnections/anatomy.js",
+        "src/processes/modules/plantConnections/cristaGeometry.js",
+        "src/processes/modules/plantConnections/topology.test.mjs",
+        "src/processes/modules/plantConnections/science.test.mjs"
+      ],
+      "verification": [
+        "Connected inner-membrane mesh has one component, consistent face orientation, no internal free boundaries, and no nonadjacent-triangle self-intersections; 30 open-junction checks cover photorespiration active/absent and CAM.",
+        "Original callose/neck geometry is reconstructed as negative controls: the original collar intersects the original pore profile, and the old central neck cannot reach the inner envelope.",
+        "smoke.mjs passes all four models and eight conditions: finite buffers/bounds, non-monotonic deterministic seeks, stable resource identities and independent bundling."
+      ],
+      "limitations": [
+        "Tubular cristae remain a teaching schematic; no organelle-specific tomographic reconstruction is claimed."
+      ]
+    },
+    {
+      "issueId": "20261004-plantConnections-03",
+      "status": "fixed",
+      "changes": [
+        "Applied the same continuous open-junction helper to the CAM mitochondrion.",
+        "Kept C4 pore geometry and carbon trajectories unchanged, and retained both strategy branches and original pore regressions."
+      ],
+      "files": [
+        "src/processes/modules/plantConnections/anatomy.js",
+        "src/processes/modules/plantConnections/cristaGeometry.js",
+        "src/processes/modules/plantConnections/topology.test.mjs",
+        "src/processes/modules/plantConnections/science.test.mjs"
+      ],
+      "verification": [
+        "science.test.mjs passes the unchanged SUC2 topology/single-proton regressions and 10001-frame C4 sphere/bond/pore/torus regression (4000 triangle checks, 1700 bond checks; minimum actual rim clearance 0.0022313727).",
+        "Connected inner-membrane mesh has one component, consistent face orientation, no internal free boundaries, and no nonadjacent-triangle self-intersections; 30 open-junction checks cover photorespiration active/absent and CAM.",
+        "Original callose/neck geometry is reconstructed as negative controls: the original collar intersects the original pore profile, and the old central neck cannot reach the inner envelope.",
+        "smoke.mjs passes all four models and eight conditions: finite buffers/bounds, non-monotonic deterministic seeks, stable resource identities and independent bundling."
+      ],
+      "limitations": [
+        "C4/CAM rendering and continuous playback remain root-owned acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-plantConnections-04",
+      "status": "fixed",
+      "changes": "Bind named-object leaders to actual world-space mesh/vertex targets each update; place region labels inside their compartments. Add schematic bodies for the already-labeled C4 PPDK and CAM Rubisco reaction sites, and restrict moving C4 malate/pyruvate labels to their actual metabolite stages. Rendered follow-up: move the carbon-balance region caption from outside the depicted pathway to the mitochondrial split-reaction region; preserve wording, activation, CO2 geometry and its true molecular anchor.",
+      "files": [
+        "src/processes/modules/plantConnections/plasmodesmataProcess.js",
+        "src/processes/modules/plantConnections/plantTransportProcess.js",
+        "src/processes/modules/plantConnections/photorespirationProcess.js",
+        "src/processes/modules/plantConnections/c4camProcess.js",
+        "src/processes/modules/plantConnections/labelAnchors.js",
+        "src/processes/modules/plantConnections/labelAnchors.test.mjs"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs passes 432 actual-object comparisons across all eight conditions and non-monotonic progress, plus active-stage conditions and an original static-sucrose negative control.",
+        "smoke.mjs passes all four models and eight conditions: finite buffers/bounds, non-monotonic deterministic seeks, stable resource identities and independent bundling.",
+        "Rendered-caption return repair passes 24 actual matrix/pathway bounds and fitted-camera projection checks across both GLYK conditions, 960x640/640x960 aspects and nonmonotonic stages, including an original-caption negative control. All four module smoke checks pass again."
+      ],
+      "limitations": [
+        "Default full-b2 frames were reviewed; caption return repair awaits root recapture. CO2 label-box occlusion is owned by shared sceneCapture layout work, and CAM awaits full-combination images. Phase A remains unchanged."
+      ]
+    },
+    {
+      "issueId": "20261004-plantConnections-05",
+      "severity": "P2",
+      "status": "fixed",
+      "files": [
+        "src/processes/modules/plantConnections/c4camProcess.js",
+        "src/processes/modules/plantConnections/camStorage.test.mjs",
+        "src/processes/modules/plantConnections/science.test.mjs"
+      ],
+      "changes": [
+        "Keep 12 original 425-vertex spheres, 925-vertex inner tonoplast, materials, camera, tracked-carbon paths and uptake/release timing. Correct marker radius from .2+.8*reserve to .2+.16*reserve, hence peak .36. Minimum center-to-inner-face distance .3915494991 minus .03 safety clearance permits about .3615495; .36 is below that bound."
+      ],
+      "verification": [
+        "All 5100 repaired peak world vertices are contained, minimum clearance .0324701624 (rendered back .3395808203). 2016 branch/progress states and 24192 marker states have conservative bounding-sphere clearance >=.0315494854. Old-scale negative control fails. Owned science, smoke and dedicated regression pass; geometry precision and visible storage variation are retained."
+      ],
+      "limitations": [
+        "P2 concerns the storage-volume schematic; tracked four-carbon trajectories remain unchanged.",
+        "Closure combines numerical all-progress containment with the four specified fresh rendered frames. It does not imply all-condition full playback or project-wide acceptance."
+      ],
+      "renderedVerification": {
+        "status": "passed",
+        "method": "Read-only view_image(detail=original) of four fresh 960x640 native irregular-seek frames; no browser or product change.",
+        "images": [
+          "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-000-c4cam-plant-stage-4.webp",
+          "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-000-c4cam-plant-end.webp",
+          "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-001-c4cam-plant-stage-4.webp",
+          "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-001-c4cam-plant-end.webp"
+        ],
+        "result": "CAM p=.525 and end show the complete storage-marker silhouette inside and visibly separated from the vacuolar rim. The C4 counterparts show no CAM storage geometry. Issue 05 is closed within owned module scope.",
+        "scope": "Targeted recapture verification only, not all-condition full playback or whole-project acceptance."
+      }
+    }
+  ],
+  "unchangedModels": [],
+  "changedFiles": [
+    "src/processes/modules/plantConnections/anatomy.js",
+    "src/processes/modules/plantConnections/cristaGeometry.js",
+    "src/processes/modules/plantConnections/plasmodesmataProcess.js",
+    "src/processes/modules/plantConnections/plantTransportProcess.js",
+    "src/processes/modules/plantConnections/photorespirationProcess.js",
+    "src/processes/modules/plantConnections/c4camProcess.js",
+    "src/processes/modules/plantConnections/labelAnchors.js",
+    "src/processes/modules/plantConnections/labelAnchors.test.mjs",
+    "src/processes/modules/plantConnections/topology.test.mjs",
+    "src/processes/modules/plantConnections/science.test.mjs",
+    "src/processes/modules/plantConnections/camStorage.test.mjs"
+  ],
+  "commands": [
+    "node src/processes/modules/plantConnections/science.test.mjs",
+    "node src/processes/modules/plantConnections/smoke.mjs",
+    "npx prettier --write (only the 10 changed owned module files)",
+    "git diff --check -- src/processes/modules/plantConnections",
+    "node src/processes/modules/plantConnections/camStorage.test.mjs"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/9245766/",
+      "supports": "Open crista junction continuity; primary paper opened during Phase A."
+    },
+    {
+      "url": "https://www.nature.com/articles/s41477-026-02294-9",
+      "supports": "Wall-side callose and membrane-separated cytoplasmic sleeve; opened during Phase A, without importing moss-specific closure kinetics."
+    }
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/science-repair.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/smoke-repair-final.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/format-repair.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/repair-discoveries.json",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/caption-regression.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/caption-smoke.log",
+    "docs/qa/process-review-2026-10-04/resolutions/plantConnections-rendered.md",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/cam-storage-before.json",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/cam-storage-plane-diagnostic.json",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/cam-storage-regression.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/science-cam-storage-final.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/smoke-cam-storage-final.log",
+    "docs/qa/process-review-2026-10-04/resolutions/plantConnections-rendered-all-cases.md",
+    "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-000-c4cam-plant-stage-4.webp",
+    "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-000-c4cam-plant-end.webp",
+    "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-001-c4cam-plant-stage-4.webp",
+    "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-001-c4cam-plant-end.webp"
+  ],
+  "limits": [
+    "No browser operation, full-workspace suite or production release was performed.",
+    "All eight owned root/control cases were reviewed via supplied sheets (58 frames) and ten full-resolution images; native irregular seeks are not eight full-playback runs. CAM storage repair has passed focused fresh recapture; shared label paint-order acceptance remains root-owned.",
+    "No FPS, GPU benchmark or physical-device acceptance is claimed."
+  ]
+}

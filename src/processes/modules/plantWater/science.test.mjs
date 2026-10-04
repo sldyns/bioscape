@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 import * as THREE from "three";
 import process from "./chloroplastMovementProcess.js";
 import { ease } from "../../kit.js";
+import "./waterFlux.test.mjs";
+import "./labelAnchors.test.mjs";
 
 // plantWater-01: test the finite-size, rendered organelles, including every
 // instance of the internal grana. Centers alone missed the original defect.

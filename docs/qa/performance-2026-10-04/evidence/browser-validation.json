@@ -1,0 +1,72 @@
+{
+  "recordedAt": "2026-10-04T06:25:31.219Z",
+  "annotation": {
+    "result": "passed",
+    "checks": [
+      "Zero hidden DOM mutations and label size reads across timeline/language/resize/font changes",
+      "Recovered English text, measured sizes, placement, leader coordinates and key match fresh visible mount exactly",
+      "Capture with labels succeeds after hidden changes"
+    ],
+    "hiddenMutations": 0,
+    "hiddenMeasurements": 0,
+    "observerScope": "Label/key layout descendants. The language-dependent accessible name on the key container is excluded because it is required semantic metadata, not layout.",
+    "raw": "browser/annotation-recovery.json",
+    "image": "browser/annotation-recovery.png"
+  },
+  "sceneBridge": {
+    "result": "passed",
+    "types": [
+      "structure",
+      "cell",
+      "neuron",
+      "process"
+    ],
+    "checks": [
+      "async readiness",
+      "initial view",
+      "silent setView",
+      "fit-relative resize",
+      "separation/progress captures",
+      "exact pose restoration",
+      "release",
+      "disposal",
+      "null notification"
+    ],
+    "raw": "browser/scene-bridge-result.txt"
+  },
+  "narrow": {
+    "viewport": [
+      390,
+      844
+    ],
+    "result": "passed",
+    "actions": [
+      "hide labels",
+      "seek 0.94",
+      "switch to English",
+      "show labels"
+    ],
+    "documentWidth": 375,
+    "visibleMarkers": 3,
+    "markerSizes": [
+      [
+        21,
+        21
+      ],
+      [
+        21,
+        21
+      ],
+      [
+        21,
+        21
+      ]
+    ],
+    "timeline": 940,
+    "screenshot": "browser/narrow-annotations-en.png",
+    "physicalDevice": false
+  },
+  "limitations": [
+    "This is local Chromium browser validation, not a physical mobile-device test."
+  ]
+}

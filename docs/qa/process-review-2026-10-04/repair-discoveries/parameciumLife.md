@@ -1,0 +1,27 @@
+# parameciumLife repair discoveries
+
+## 20261004-parameciumLife-07 — label_anchor_misdirection
+
+Named label.position values were old text-placement offsets: food vacuole used loc.y-0.5 and z=.8 instead of its actual center; CV bladder label lay above and outside it; division nuclei labels used offset+.55; conjugation label stayed near the original micronucleus after nuclear identity changed.
+
+Bind specific labels to actual structure/lumen coordinates with full parent transforms and switch targets as nuclei divide or differentiate. Explicit environment/partner-region labels remain compartment anchors.
+
+Owned review20261004.test.mjs compares actual food/nuclear/canal/pore world coordinates, moving donor lumen centers and changing conjugation targets at six stages. Imported by owned science.test.mjs.
+
+## 20261004-parameciumLife-08 — adjacent_nuclear_transition_continuity
+
+While aligning label target handoffs, the early meiotic daughters, migratory pronuclei, synkaryon and maternal fragments were found to enter visibility at nonzero sizes.
+
+Grow new meiotic nuclei from the parent locus; originate migratory pronuclei at the retained nuclear locus; shrink fusing pronuclei to zero; show the synkaryon from zero size; fragment the maternal macronucleus through continuous size transfer. Preserve haploid/diploid identities and persistent fragments.
+
+Old nutrient/identity regressions remain; late arbitrary seeking and finite geometry checks pass. This smoothing changes illustration timing, not biological counts. Root rendered validation remains required.
+
+## 20261004-parameciumLife-09 — fixed
+
+full-b3-016-parameciumConjugation-paramecium-stage-2.webp at p=0.155 labels an ongoing first meiotic division as haploid meiotic products. The first separation completes at p=.22 and the second at p=.30.
+
+For .14 <= p < .30, show 小核 · 减数分裂中 / Micronucleus · meiosis in progress. Show haploid meiotic products after the second division completes at p=.30. Geometry and actual anchor targets are unchanged.
+
+Owned science regression checks Chinese/English identities at .14/.22/.30 boundaries and neighboring values, p=.155/.265/.335 and NaN, after resets 1/.725/0/.815/NaN. The original implementation failed at p=.14 after seek 1; the corrected owned science test passes.
+
+Corrects stage identity to the already implemented two sequential meiotic divisions. Phase A remains unchanged. Existing full-b3 images predate this wording fix; new rendered capture is pending.

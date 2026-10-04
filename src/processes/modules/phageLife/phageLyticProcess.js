@@ -1,3 +1,4 @@
+import { objectAnchor, vertexAnchor, duplexAnchor } from "./labelAnchors.js";
 import { entryGenome } from "./entryGeometry.js";
 import { duplex, ribosome } from "./refinedGeometry.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
@@ -129,10 +130,14 @@ export default {
         70,
       ),
     );
+    amplifications.forEach((dna, i) => {
+      dna.name = `T4-concatemer-${i}`;
+    });
     const expression = new THREE.Group();
     group.add(expression);
     const rnaMat = k.material("#8faca1"),
-      proteins = [];
+      proteins = [],
+      ribosomes = [];
     for (let j = 0; j < 3; j++) {
       const x = -1.75 + j * 1.5,
         y = -0.58 + (j % 2) * 0.15;
@@ -148,7 +153,9 @@ export default {
         expression,
         24,
       );
-      ribosome(k, expression, [x, y, 0.3], 0.26);
+      const rib = ribosome(k, expression, [x, y, 0.3], 0.26);
+      rib.name = `T4-expression-ribosome-${j}`;
+      ribosomes.push(rib);
       proteins.push(
         k.tube(
           [
@@ -175,6 +182,7 @@ export default {
     ];
     const progeny = sites.map(([x, y], i) => {
       const v = phage(k, group, { scale: 0.36 });
+      v.group.name = `T4-progeny-${i}`;
       v.group.position.set(x, y, 0.27);
       v.group.rotation.z = ((i % 3) - 1) * 0.3;
       return v;
@@ -270,11 +278,28 @@ export default {
         portals[i].position.set(x, y - 0.02, 0.31);
       });
       host.rupture(release);
+      labels[1].active = p < 0.85;
       labels[2].active = p < 0.3;
       labels[3].active = expression.visible;
-      labels[4].active = p >= 0.34 && p < 0.64;
+      labels[4].active = amplifications[0].visible && p < 0.64;
       labels[5].active = p >= 0.52 && p < 0.85;
       labels[6].active = p >= 0.85;
+      vertexAnchor(labels[0], host.group.children[0].children[0], 175);
+      objectAnchor(labels[1], group, 1.4, -0.55, 0.2);
+      vertexAnchor(
+        labels[2],
+        visitor.head.getObjectByName("T4-open-neck-capsid-shell"),
+      );
+      objectAnchor(labels[3], ribosomes[1].children[0].children[0]);
+      duplexAnchor(labels[4], amplifications[0]);
+      vertexAnchor(
+        labels[5],
+        progeny[1].head.getObjectByName("T4-open-neck-capsid-shell"),
+      );
+      vertexAnchor(
+        labels[6],
+        progeny[0].head.getObjectByName("T4-open-neck-capsid-shell"),
+      );
       group.userData = {
         rootId,
         host: "Escherichia coli",

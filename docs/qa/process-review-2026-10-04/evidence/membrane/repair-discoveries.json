@@ -1,0 +1,68 @@
+{
+  "group": "membrane",
+  "stage": "default-condition rendered follow-up after Phase B",
+  "originalAuditPreserved": true,
+  "sourceIndex": "docs/qa/process-review-2026-10-04/evidence/browser/gallery-index.json",
+  "scope": "26 captured stages across diffusion/cell, activeTransport/cell, osmoticBalance/cell and bacterialCellWall/bacterium. All four sheets and five key original 960x640 images opened. Other roots/conditions and Chinese layout are not yet rendered acceptance.",
+  "findings": [
+    {
+      "issueId": "20261004-membrane-07",
+      "severity": "P2",
+      "model": "diffusion",
+      "kind": "object_label_anchor",
+      "file": "src/processes/modules/membrane/diffusionProcess.js",
+      "location": "labels[2], aquaporin tetramer",
+      "evidence": "Stage-3 original shows the aquaporin leader ending on the right-hand lipid-head area. Anchor [1.26,.97,.6] is .349682 outside the actual aquaporin mesh bounding box, not on any channel subunit.",
+      "fix": "Use an actual aquaporin surface/helix anchor. Keep compartment and route-summary text distinct from object callouts.",
+      "verification": "Actual label endpoint is on a chosen visible protein mesh feature in all registered roots and route/gradient conditions."
+    },
+    {
+      "issueId": "20261004-membrane-08",
+      "severity": "P2",
+      "model": "activeTransport",
+      "kind": "object_label_anchor",
+      "file": "src/processes/modules/membrane/activeTransportProcess.js",
+      "location": "labels[4], labels[5], labels[7], labels[8] and pump-state callout",
+      "evidence": "Stage-3 original shows ATP-binding and phosphorylation-domain lines ending outside their named domains; ADP retains fixed [-2.6,-2.57,.45] while the nucleotide moves. Phosphate label uses y+0.27, putting its endpoint above the bead. Pump-state text points to the right lipid region rather than pump geometry.",
+      "fix": "Derive moving molecule/domain/state anchors from real scene objects. Do not use text-layout offsets as world anchors; preserve the no-ATP explanatory status without a leader pointing to an absent ATP molecule.",
+      "verification": "Across gate/domain movement, ATP-to-ADP handoff and Pi release, endpoints track the actual named object or intended pump state feature; energy-none has no misleading absent-molecule leader."
+    },
+    {
+      "issueId": "20261004-membrane-09",
+      "severity": "P2",
+      "model": "osmoticBalance",
+      "kind": "object_label_anchor",
+      "file": "src/processes/modules/membrane/osmoticBalanceProcess.js",
+      "location": "labels[5], inner leaflet / cortex; cell and arrow callouts",
+      "evidence": "Stage-5 original shows the cortex callout ending to the right of the whole red cell, away from the open cortex window. [1.62,1.14,1.45] stays fixed while the membrane/cortex deform. The cell and flow-arrow callouts also retain old off-object layout coordinates.",
+      "fix": "Anchor cortex to an actual deformed cortical junction/edge, cell callout to an actual membrane point and flow callouts to arrow geometry. Keep bath/tonicity region statements as region statements.",
+      "verification": "At all tonicities and both roots, actual anchor coordinates follow the selected deformed node/membrane vertex and arrow object, including arbitrary seeks."
+    },
+    {
+      "issueId": "20261004-membrane-10",
+      "severity": "P2",
+      "model": "bacterialCellWall",
+      "kind": "object_label_anchor_and_visibility",
+      "file": "src/processes/modules/membrane/bacterialCellWallProcess.js",
+      "location": "labels[2–5]",
+      "evidence": "Stage-5/end originals show RodA line below the protein, PBP2 line on the right lipid slab, and tetrasaccharide callout still over RodA after the chain moved right. New peptide crosslinks is displayed from p=0 before any exist and its leader points at the rightmost old unlinked stem, not either new bond.",
+      "fix": "Tie RodA/PBP2/substrate labels to actual features, update substrate anchors after polymerization, activate new-crosslink label only when a bond exists, and anchor inhibited-state wording to the occupied catalytic site.",
+      "verification": "True object endpoints and correct visibility/text before, during and after both reactions, plus the inhibited branch; no new-crosslink annotation points to a pre-existing unlinked stem."
+    },
+    {
+      "issueId": "20261004-membrane-11",
+      "severity": "P1",
+      "model": "bacterialCellWall",
+      "kind": "false_peptide_branch_topology",
+      "file": "src/processes/modules/membrane/bacterialCellWallProcess.js",
+      "location": "existing acceptor stems, reacting terminal D-Ala geometry and new crosslink paths",
+      "evidence": "Both new crosslinks run vertically from donor D-Ala4 at y=1.94 to acceptor mDAP3 at y=2.23, all at the same x/z. The acceptor's unrelated terminal D-Ala4 is at y=2.04 on that very line: line-to-bead-center distance <6e-16. Its center is only .10 from new donor D-Ala4 while each residue radius is .064, so the two residue spheres overlap. Stage-5/end frames visually merge the branch into a linear peptide run. The leaving donor D-Ala5 also initially shares the reaction axis.",
+      "whyWrong": "The molecular endpoints are nominally correct, but the drawn link passes through a different amino-acid residue, falsely rendering mDAP-side-chain branching as continuation through terminal D-Ala. Endpoint-only regressions missed this.",
+      "fix": "Separate nonreacting terminal D-Ala4 and leaving D-Ala5 from the new-link corridor while retaining residue identity, all actual stem bonds and mDAP3 branch attachment; use a clear branch geometry rather than hiding atoms.",
+      "verification": "Actual bond-to-nonendpoint-residue clearance and residue-sphere separation at both reactions and intervening states, alongside all old sugar/carrier/peptide endpoint and inhibited-branch invariants. Demonstrate the original geometry fails the new check.",
+      "sourceUrls": ["https://www.nature.com/articles/s41467-023-40483-8"]
+    }
+  ],
+  "numericEvidence": "docs/qa/process-review-2026-10-04/evidence/membrane/rendered-review-diagnostics.json",
+  "authorization": "Root explicitly authorized repair of 07–11 after read-only reporting, with original Phase A kept immutable."
+}

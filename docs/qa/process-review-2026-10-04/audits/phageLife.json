@@ -1,0 +1,244 @@
+{
+  "group": "phageLife",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "phageLytic",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Obligately lytic T4 in susceptible Escherichia coli, phage root, no condition controls.",
+      "checks": [
+        "Bilingual title, intro, every stage, labels and controls inspected; no context overrides or separate legends declared.",
+        "Actual registered processesByRoot evaluated: phage only; no specialized root aliases include these IDs.",
+        "All declared conditions inspected; all [0,1] update branches traced, including threshold visibility, draw ranges, finite buffers, terminal states and non-finite/clamped inputs.",
+        "Local diagnostics: static geometry attributes finite; all sampled world transforms finite; 11 irregular seek targets per condition deterministic; node/geometry/material inventories stable. No browser or full-workspace suite used.",
+        "The existing actual-triangle entry regression was rerun: one conserved moving duplex interval passes open capsid neck, tube and baseplate without solid barrier crossing; residual head genome is disabled.",
+        "Host has two explicit lipid bilayers and intervening peptidoglycan; lipid tails terminate at their bilayer midpoint. DNA/RNA/protein colors and duplex versus single RNA paths are distinct.",
+        "Entry precedes expression (0.17), genome amplification (0.34), separate proheads/tails (0.51/0.56), packaging (0.67–0.76), joining (0.74–0.84), release (0.85–1). Incoming capsid remains outside before it is removed from the overview.",
+        "Prohead positioning near inner-envelope face detaches before packaging; both shell and progeny terminal transforms are finite. Lysis is an explicitly schematic envelope failure, with no claim of an atomistic holin/endolysin pathway.",
+        "Numeric evidence: 88 progress values per condition, conditions=[{}]"
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4568249/",
+          "title": "Structural remodeling of bacteriophage T4 and host membranes during infection initiation",
+          "supports": "Primary cryo-ET indexed text documents receptor attachment, sheath contraction, tube/periplasm and inner-membrane remodeling. Used to bound the lytic entry overview; full-text open was challenged."
+        },
+        {
+          "url": "https://www.nature.com/articles/ncomms8548",
+          "title": "Cryo-EM structure of the bacteriophage T4 portal protein assembly at near-atomic resolution",
+          "supports": "Primary cryo-EM: gp20 dodecamer, membrane-associated initiation, gp17 motor docking, headful motor loss before neck/tail/fiber completion; portal-capsid contacts oppose a rotating-portal depiction. Full article opened and XML preserved."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "All code intervals and visibility thresholds; stage-boundary +/-1e-5 samples plus 0.02 grid and selected switch times; irregular seek checks.",
+        "findings": [
+          "Entry draw-range windows advance continuously to tessellation tolerance. No new proven macroscopic continuity failure was promoted for this overview.",
+          "Host-DNA/visitor removal and expression/assembly population changes are stage abstractions requiring root rendered review."
+        ],
+        "limits": [
+          "No rendered frame-to-frame metric; source-code discontinuities were only promoted where a macroscopic failure or molecular conversion error is demonstrated."
+        ]
+      },
+      "limitations": [
+        "No rendered continuous-playback, browser, physical-device or FPS acceptance in this agent scope.",
+        "No claim of exact particle number, protein copy number except explicitly labeled gp20/gp17, time, DNA packing layout or atomistic domain shapes.",
+        "Entry omits sheath-contraction dynamics and is explicitly labeled overview; detailed infection belongs to the root-owned model.",
+        "This pass does not verify exact concatemer contour conservation or detailed lysis proteins."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "phageLysogenic",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Temperate lambda in E. coli; fate=induce or maintain. Entry/circularization, integration, inheritance and one-daughter induction.",
+      "checks": [
+        "Bilingual title, intro, every stage, labels and controls inspected; no context overrides or separate legends declared.",
+        "Actual registered processesByRoot evaluated: phage only; no specialized root aliases include these IDs.",
+        "All declared conditions inspected; all [0,1] update branches traced, including threshold visibility, draw ranges, finite buffers, terminal states and non-finite/clamped inputs.",
+        "Local diagnostics: static geometry attributes finite; all sampled world transforms finite; 11 irregular seek targets per condition deterministic; node/geometry/material inventories stable. No browser or full-workspace suite used.",
+        "Lambda uses a narrow curved noncontractile tail; T4 identity is not reused. CI/RecA descriptions in both languages assign activated RecA a CI self-cleavage promoting role.",
+        "Both daughter chromosome/prophage/CI/envelope states remain visible in maintain; only induced left lineage excises and lyses. The old effective-visibility regression passes.",
+        "Actual entry and conversion geometries were inspected independently of state flags; their object overlap/blank intervals are recorded in diagnostics.json.",
+        "Numeric evidence: 91 progress values per condition, conditions=[{}, {'fate': 'maintain'}]"
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1976217/",
+          "title": "Real-time observations of single bacteriophage lambda DNA ejections in vitro",
+          "supports": "Primary single-molecule experiments; retrieved scientific text identifies one duplex moving from capsid through tail into host. Full-text open was challenged; indexed primary text was readable, so access limitation is retained."
+        },
+        {
+          "url": "https://www.nature.com/articles/nature03657",
+          "title": "A structural basis for allosteric control of DNA recombination by lambda integrase",
+          "supports": "Opened publisher abstract and figure descriptions: integrase synapses DNA and orders strand cleavage/exchange during integration and excision. Supports conversion of substrate into recombined products, not an extra complete genome."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1BNA",
+          "title": "1BNA: Structure of a B-DNA dodecamer. Conformation and dynamics",
+          "supports": "Opened primary deposited 1.9 Angstrom crystal structure and primary abstract: a right-handed double-stranded B helix; used only for the handedness invariant, not phage-specific sequence or packing conformation."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-phageLife-01",
+          "severity": "P1",
+          "kind": "molecular-continuity-and-conversion",
+          "file": "src/processes/modules/phageLife/phageLysogenicProcess.js",
+          "location": "lines 313–328 and 342–348; lambda genome, linearDNA, freeDNA, inserted and excised objects",
+          "evidence": "At p=.05 the residual capsid genome has minimum world y=2.43530 while the independent incoming DNA has maximum y=1.61885, leaving >=0.81645 scene units without DNA through the tail. The capsid molecule is scaled toward its origin, while the full separate linear molecule is simply enabled at p>.025. Linear and complete circular genome coexist for .1<p<.135 (1.33 s at duration 38). Complete free circle and integrated prophage coexist at .29<=p<.3; excised circle appears at .795 before the integrated segment is removed at .805.",
+          "whyWrong": "The declared entry, circularization and site-specific recombination steps convert or transfer one genome. Independent complete-molecule swaps create unearned extra genomes and a missing tail-spanning interval; a time/shape disclaimer does not establish molecular continuity.",
+          "fix": "Use one continuous duplex transfer through the lambda tail with an open delivery lumen, then continuously close cohesive ends. Implement integration/excision as complementary, nonduplicating geometric conversions at a common recombination site; preserve both daughter prophages and the maintained branch.",
+          "verification": "Trace actual visible backbone intervals through the tail at early/intermediate entry; verify shrinking residual and growing incoming intervals are contiguous and conserve schematic contour. At .11, .295, .8 and surrounding samples reject two independent complete representations of the same genome. Re-run both daughter-fate and deterministic/resource tests.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC1976217/",
+            "https://www.nature.com/articles/nature03657"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": "All code intervals and visibility thresholds; stage-boundary +/-1e-5 samples plus 0.02 grid and selected switch times; irregular seek checks.",
+        "findings": [
+          "Confirmed molecular conversion discontinuities in issue 01.",
+          "Right host is enabled at .51 with nonzero size and second chromosome at .5; full topology of the schematic division needs root rendering and is not claimed as a resolved fission trajectory."
+        ],
+        "limits": [
+          "No rendered frame-to-frame metric; source-code discontinuities were only promoted where a macroscopic failure or molecular conversion error is demonstrated."
+        ]
+      },
+      "limitations": [
+        "No rendered continuous-playback, browser, physical-device or FPS acceptance in this agent scope.",
+        "No claim of exact particle number, protein copy number except explicitly labeled gp20/gp17, time, DNA packing layout or atomistic domain shapes.",
+        "Primary lambda entry article indexed scientific text was available, while direct full-text requests hit access challenges; publisher lambda integrase abstract/figure descriptions opened successfully."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "phageAssembly",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "T4 head/tail/fiber morphogenesis; gp21 active/inactive.",
+      "checks": [
+        "Bilingual title, intro, every stage, labels and controls inspected; no context overrides or separate legends declared.",
+        "Actual registered processesByRoot evaluated: phage only; no specialized root aliases include these IDs.",
+        "All declared conditions inspected; all [0,1] update branches traced, including threshold visibility, draw ranges, finite buffers, terminal states and non-finite/clamped inputs.",
+        "Local diagnostics: static geometry attributes finite; all sampled world transforms finite; 11 irregular seek targets per condition deterministic; node/geometry/material inventories stable. No browser or full-workspace suite used.",
+        "gp21 inactivity preserves scaffold, prevents DNA loading/sealing/head-tail completion, and leaves independent tail growth active.",
+        "Portal remains fixed; initial head near membrane clears scaffold .33–.48, loads DNA .51–.69, seals .69–.8 and joins .83–.94. No infection-style sheath contraction is used.",
+        "Portal has real axial lumen; head panels are clipped for a basal opening and anterior cutaway. DNA enters lumen by draw-range growth rather than a fully opaque shell substitution.",
+        "Numeric evidence: 89 progress values per condition, conditions=[{}, {'protease': 'inactive'}]"
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/ncomms8548",
+          "title": "Cryo-EM structure of the bacteriophage T4 portal protein assembly at near-atomic resolution",
+          "supports": "Primary cryo-EM: gp20 dodecamer, membrane-associated initiation, gp17 motor docking, headful motor loss before neck/tail/fiber completion; portal-capsid contacts oppose a rotating-portal depiction. Full article opened and XML preserved."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-phageLife-02",
+          "severity": "P2",
+          "kind": "visible-discontinuity-and-attachment",
+          "file": "src/processes/modules/phageLife/phageAssemblyProcess.js",
+          "location": "lines 201–204; tail.fibers scale/visibility and fiberPreview",
+          "evidence": "Across p=.93 +/-1e-7, six long fibers switch from invisible to a world bounding size [1.8,.7704,1.57235]. Their group is scaled by .72 around tail origin; actual fiber roots are .61233 scene units from their intended baseplate attachment. At p=.95 (mature-progeny label enabled), that root gap is still .45358 and only becomes zero at .99. Preview fibers independently remain visible through .95.",
+          "whyWrong": "The installation step shows a macroscopic fiber set appearing in midair at substantial size and sliding its roots down to the baseplate through global scaling. That fails smooth attachment playback and temporarily contradicts the displayed mature-particle state.",
+          "fix": "Animate existing prebuilt fibers continuously from the separate assembly route into their baseplate binding positions at preserved length, or grow/reveal fibers about their actual anchored roots. Remove preview/attached duplicate transition and delay mature labeling until attachment is complete.",
+          "verification": "Sample immediately around .93 and .95; require no nonzero-size set appearance, bound root world displacement per small progress step, ensure roots coincide with baseplate when labeled attached/mature, and preserve the inactive-gp21 head block with independent tail assembly.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/ncomms8548"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": "All code intervals and visibility thresholds; stage-boundary +/-1e-5 samples plus 0.02 grid and selected switch times; irregular seek checks.",
+        "findings": [
+          "Confirmed full-size fiber appearance and transient detached roots, issue 02.",
+          "Discrete sheath rows/head panels represent component assembly; those individual additions were not alone counted as a defect."
+        ],
+        "limits": [
+          "No rendered frame-to-frame metric; source-code discontinuities were only promoted where a macroscopic failure or molecular conversion error is demonstrated."
+        ]
+      },
+      "limitations": [
+        "No rendered continuous-playback, browser, physical-device or FPS acceptance in this agent scope.",
+        "No claim of exact particle number, protein copy number except explicitly labeled gp20/gp17, time, DNA packing layout or atomistic domain shapes.",
+        "Packaging is an overview without an explicit external concatemer feed; detailed feed conservation is assessed in phagePackaging."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "phagePackaging",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "T4 gp17 ATP-driven packaging through fixed gp20; ATP present/absent.",
+      "checks": [
+        "Bilingual title, intro, every stage, labels and controls inspected; no context overrides or separate legends declared.",
+        "Actual registered processesByRoot evaluated: phage only; no specialized root aliases include these IDs.",
+        "All declared conditions inspected; all [0,1] update branches traced, including threshold visibility, draw ranges, finite buffers, terminal states and non-finite/clamped inputs.",
+        "Local diagnostics: static geometry attributes finite; all sampled world transforms finite; 11 irregular seek targets per condition deterministic; node/geometry/material inventories stable. No browser or full-workspace suite used.",
+        "Actual gp20 has 12 repeated subunits and gp17 has 5; domain motifs are schematic, not fitted atomic protein structures.",
+        "No-ATP branch stays docked without lumen-DNA accumulation, shell expansion, cut, motor release or seal. Active branch reaches load=1 at .78, cut .79–.85, release .82–.92, seal .92–1.",
+        "In active branch the interior duplex grows via draw range; external DNA shortens by visibility thresholds. Full set of all modulo/phase/visibility expressions inspected: no floor/modulus recycling loop exists in this process.",
+        "Numeric evidence: 87 progress values per condition, conditions=[{}, {'atp': 'absent'}]"
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/ncomms8548",
+          "title": "Cryo-EM structure of the bacteriophage T4 portal protein assembly at near-atomic resolution",
+          "supports": "Primary cryo-EM: gp20 dodecamer, membrane-associated initiation, gp17 motor docking, headful motor loss before neck/tail/fiber completion; portal-capsid contacts oppose a rotating-portal depiction. Full article opened and XML preserved."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1BNA",
+          "title": "1BNA: Structure of a B-DNA dodecamer. Conformation and dynamics",
+          "supports": "Opened primary deposited 1.9 Angstrom crystal structure and primary abstract: a right-handed double-stranded B helix; used only for the handedness invariant, not phage-specific sequence or packing conformation."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-phageLife-03",
+          "severity": "P1",
+          "kind": "DNA-handedness",
+          "file": "src/processes/modules/phageLife/phagePackagingProcess.js",
+          "location": "lines 280–307; external rails and base-pair rung positions",
+          "evidence": "The external duplex uses y increasing with i, x=.09 cos(i*.42), z=+.09 sin(i*.42). With its advancing +Y axis, (r_i cross r_(i+1)) dot axis = -0.00330285967, a left-handed helix. The same sign occurs on both antipodal backbones and is present in both ATP conditions. This differs from the common Frenet-frame duplex helper used for the packaged DNA.",
+          "whyWrong": "The process presents ordinary double-stranded phage DNA, with no Z-DNA scope. Its exterior substrate is rendered as a left-handed helix while the standard B-DNA structural reference is right-handed. Reflection is a molecular identity error rather than a timing abstraction.",
+          "fix": "Correct the external duplex phase/orientation consistently for both rails and base-pair rungs, preferably share one right-handed path helper between external, portal and internal segments. Preserve ATP stall, cleavage, motor release and sealing behavior.",
+          "verification": "Compute signed twist from actual world-space rail endpoints around the centerline at several visible indices and progress values for both ATP conditions; require right-handed orientation and pairing. Also check the original ATP-block branch and resource/seek invariants.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1BNA",
+            "https://www.nature.com/articles/ncomms8548"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": "All code intervals and visibility thresholds; stage-boundary +/-1e-5 samples plus 0.02 grid and selected switch times; irregular seek checks.",
+        "findings": [
+          "Signed-twist defect in issue 03 is visible throughout playback, including stalled branch.",
+          "External DNA is piecewise clipped in .06204-unit segments; motor-cycle amplitude snaps at .25/.78. These remain root rendered-review targets; the current numeric check does not establish perceptual smoothness."
+        ],
+        "limits": [
+          "No rendered frame-to-frame metric; source-code discontinuities were only promoted where a macroscopic failure or molecular conversion error is demonstrated."
+        ]
+      },
+      "limitations": [
+        "No rendered continuous-playback, browser, physical-device or FPS acceptance in this agent scope.",
+        "No claim of exact particle number, protein copy number except explicitly labeled gp20/gp17, time, DNA packing layout or atomistic domain shapes.",
+        "A narrow one-cylinder portal connector changes representation from duplex to rod; measured conservative radial clearances of 0.003–0.009 units need rendered judgment before being promoted to an independently visible break.",
+        "gp17 domain orientation is a schematic with historical literature disagreement, so no unsupported definitive orientation defect is asserted."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

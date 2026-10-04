@@ -1,6 +1,7 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
 import { instances } from "./bacterialGeometry.js";
+import { anchorObject, anchorSegment, anchorVertex } from "./labelAnchors.js";
 
 const process = {
   id: "bacterialDivision",
@@ -161,7 +162,7 @@ const process = {
       geo.setIndex(indices);
       const mesh = k.mesh(geo, material, [0, 0, 0], cells[side]);
       mesh.name = `envelope-${side}-${radius}`;
-      surfaces.push({ side, radius, geo });
+      surfaces.push({ side, radius, geo, mesh });
       return mesh;
     }
     for (let side = 0; side < 2; side++) {
@@ -597,17 +598,30 @@ const process = {
         mesh.position.x = j ? 0.09 : -0.09;
       }
       labels[2].active = p < 0.47;
+      anchorSegment(
+        labels[2],
+        replication < 1 ? unreplicated[72] : dnaPieces[0][144],
+      );
       labels[3].active = replication > 0 && replication < 1;
-      labels[4].active = p >= 0.48 && p < 0.69;
-      labels[5].active = p >= 0.59 && p < 0.86;
+      anchorObject(labels[3], forks[0]);
+      const visibleFtsZ = fts.find(({ mesh }) => mesh.visible)?.mesh;
+      labels[4].active = scaffold.visible && !!visibleFtsZ && p < 0.69;
+      anchorSegment(labels[4], visibleFtsZ ?? fts[0].mesh);
+      labels[5].active = synthases[0].visible && p >= 0.59 && p < 0.86;
+      anchorObject(labels[5], synthases[0]);
       labels[6].active = p >= 0.7 && (p < 0.9 || blocked);
       labels[6].text = blocked
-        ? b("合成受阻：不能完成分裂", "Synthesis blocked: division stalls")
+        ? b("分裂区：隔膜合成受阻", "Division site: septal synthesis blocked")
         : b(
             "包膜内陷与隔膜重塑",
             "Envelope invagination and septal remodeling",
           );
       labels[7].active = labels[8].active = !blocked && p >= 0.9;
+      anchorVertex(labels[0], surfaces[0].mesh, 20 * (roundSteps + 1));
+      anchorVertex(labels[1], surfaces[3].mesh, 20 * (roundSteps + 1));
+      anchorVertex(labels[6], surfaces[2].mesh, 0);
+      anchorSegment(labels[7], dnaPieces[0][72]);
+      anchorSegment(labels[8], dnaPieces[1][72]);
       group.userData = {
         process: "bacterialDivision",
         structuralDetail:

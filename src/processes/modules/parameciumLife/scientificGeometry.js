@@ -36,6 +36,7 @@ function surface(k, parent, material, name, rows = 40, columns = 32) {
 }
 
 export function fusionVacuole(k, parent) {
+  const donorAnchor = [0, 0, 0];
   const outerMat = k.material("#c6a572", { side: THREE.DoubleSide }),
     innerMat = k.material("#e6d2aa", { side: THREE.DoubleSide });
   const acidMat = k.material("#cc9367", { side: THREE.DoubleSide }),
@@ -68,16 +69,18 @@ export function fusionVacuole(k, parent) {
     const radius = 0.26 * (1 - ease(t, 0.72, 1));
     const opening = 0.48 * radius * Math.sin(Math.PI * t);
     const delta = Math.asin(opening),
+      exitAngle = 0.7 * egestionOpening(p),
       alpha = radius > 1e-8 ? Math.asin(opening / radius) : 0;
     const donorCenter = -1 - radius - (0.018 + 0.55 * (1 - approach));
+    donorAnchor[0] = donorCenter;
     const recipientEnd = -Math.cos(delta),
       donorEnd = donorCenter + radius * Math.cos(alpha);
     recipient.shape((u) => {
-      const a = (Math.PI - delta) * u;
+      const a = exitAngle + (Math.PI - delta - exitAngle) * u;
       return [Math.cos(a), Math.sin(a)];
     });
     inner.shape((u) => {
-      const a = (Math.PI - delta) * u;
+      const a = exitAngle + (Math.PI - delta - exitAngle) * u;
       return [Math.cos(a), Math.sin(a) * 0.94];
     });
     donor.shape((u) => {
@@ -112,9 +115,102 @@ export function fusionVacuole(k, parent) {
   return {
     outer: recipient.mesh,
     inner: inner.mesh,
+    donor: donor.mesh,
+    donorAnchor,
     update,
     materials: [outerMat, innerMat, acidMat, lysoMat],
   };
+}
+
+export const egestionOpening = (p) =>
+  ease(p, 0.88, 0.904) * (1 - ease(p, 0.972, 0.992));
+
+// The vacuole and the local cytoproct membrane use the very same terminal
+// curves as this open passage. The front half is the common viewing cut.
+export function egestionOutlet(k, parent, vacuole, center, angle) {
+  const group = new THREE.Group();
+  group.name = "cytoproct-fusion-passage";
+  parent.add(group);
+  const layers = [
+    k.mesh(
+      gridGeometry(),
+      k.material("#b99d78", { side: THREE.DoubleSide }),
+      [0, 0, 0],
+      group,
+    ),
+    k.mesh(
+      gridGeometry(),
+      k.material("#e3cfaa", { side: THREE.DoubleSide }),
+      [0, 0, 0],
+      group,
+    ),
+  ];
+  layers[0].name = "cytoproct-passage-outer";
+  layers[1].name = "cytoproct-passage-inner";
+  const cortical = [
+    k.mesh(
+      gridGeometry(),
+      k.material("#a5b6a1", { side: THREE.DoubleSide }),
+      [0, 0, 0],
+      parent,
+    ),
+    k.mesh(
+      gridGeometry(),
+      k.material("#d0ddbe", { side: THREE.DoubleSide }),
+      [0, 0, 0],
+      parent,
+    ),
+  ];
+  cortical[0].name = "cytoproct-local-surface-outer";
+  cortical[1].name = "cytoproct-local-surface-inner";
+  const point = new THREE.Vector3(),
+    startCenter = new THREE.Vector3(),
+    c = Math.cos(angle),
+    s = Math.sin(angle);
+  function update(p) {
+    const opening = egestionOpening(p);
+    group.visible = opening > 1e-6;
+    [vacuole.outer, vacuole.inner].forEach((recipient, index) => {
+      recipient.updateWorldMatrix(true, false);
+      const attr = layers[index].geometry.attributes.position,
+        surfaceAttr = cortical[index].geometry.attributes.position,
+        endRadius = (index ? 0.17 : 0.2) * opening;
+      for (let col = 0; col <= portColumns; col++) {
+        point
+          .fromBufferAttribute(recipient.geometry.attributes.position, col)
+          .applyMatrix4(recipient.matrixWorld);
+        const phase = -Math.PI + (col / portColumns) * Math.PI,
+          across = endRadius * Math.cos(phase),
+          endX = center[0] - s * across,
+          endY = center[1] + c * across,
+          endZ = center[2] + endRadius * Math.sin(phase);
+        if (index === 0 && col === 0) startCenter.copy(point);
+        if (index === 0 && col === portColumns)
+          startCenter.add(point).multiplyScalar(0.5);
+        for (let row = 0; row <= portRows; row++) {
+          const t = row / portRows,
+            q = row * (portColumns + 1) + col,
+            rimRadius = endRadius + (0.32 - endRadius) * t,
+            rimAcross = rimRadius * Math.cos(phase);
+          attr.setXYZ(
+            q,
+            point.x + (endX - point.x) * t,
+            point.y + (endY - point.y) * t,
+            point.z + (endZ - point.z) * t,
+          );
+          surfaceAttr.setXYZ(
+            q,
+            center[0] - s * rimAcross,
+            center[1] + c * rimAcross,
+            center[2] + rimRadius * Math.sin(phase),
+          );
+        }
+      }
+      finishGeometry(layers[index].geometry);
+      finishGeometry(cortical[index].geometry);
+    });
+  }
+  return { group, update, startCenter };
 }
 
 export function macronuclearBridge(k, parent, material) {
@@ -272,4 +368,56 @@ export function hollowInlet(k, parent, material, name) {
     }
   }
   return { group: g, update };
+}
+
+// Both ends are open and share the inlet/canal section. Only the central
+// ampullary bulge changes during collection; its two attachment rings stay put.
+export function collectingAmpulla(k, parent, angle, name) {
+  const group = new THREE.Group();
+  group.name = name;
+  parent.add(group);
+  const layers = [
+    k.mesh(
+      gridGeometry(),
+      k.material("#84aeb5", { side: THREE.DoubleSide }),
+      [0, 0, 0],
+      group,
+    ),
+    k.mesh(
+      gridGeometry(),
+      k.material("#b9d9d4", { side: THREE.DoubleSide }),
+      [0, 0, 0],
+      group,
+    ),
+  ];
+  layers[0].name = `${name}-outer`;
+  layers[1].name = `${name}-inner`;
+  const c = Math.cos(angle),
+    s = Math.sin(angle);
+  function update(bulge = 1) {
+    layers.forEach((layer, index) => {
+      const start = index ? 0.057 : 0.075,
+        end = index ? 0.076 : 0.105,
+        attr = layer.geometry.attributes.position;
+      for (let row = 0; row <= portRows; row++) {
+        const t = row / portRows,
+          distance = 0.94 + 0.41 * t,
+          radius =
+            start * (1 - t) + end * t + 0.105 * bulge * Math.sin(Math.PI * t);
+        for (let col = 0; col <= portColumns; col++) {
+          const phase = -Math.PI + (col / portColumns) * Math.PI,
+            across = radius * Math.cos(phase);
+          attr.setXYZ(
+            row * (portColumns + 1) + col,
+            c * distance - s * across,
+            s * distance + c * across,
+            radius * Math.sin(phase),
+          );
+        }
+      }
+      finishGeometry(layer.geometry);
+    });
+  }
+  update();
+  return { group, update };
 }

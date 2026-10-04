@@ -73,14 +73,14 @@ function create() {
       2,
     ),
     k.label([-0.8, 1.9, 0.4], "两层独立膜", "Two separate membranes", 2),
-    k.label([2.4, 1.5, 0.2], "溶酶体", "Lysosome", 2),
+    k.label([2.02, 0, 0], "溶酶体", "Lysosome", 2),
     k.label(
       [0.5, -2, 0.5],
       "外膜融合；内膜仍包围货物",
       "Outer membrane fuses; inner membrane encloses cargo",
       2,
     ),
-    k.label([0.8, 1.8, 0.3], "自噬溶酶体", "Autolysosome", 2),
+    k.label([0.48, 0, 0], "自噬溶酶体", "Autolysosome", 2),
     k.label(
       [2.15, -1.15, 0.4],
       "组织蛋白酶 D · 腔内",
@@ -88,6 +88,16 @@ function create() {
       1,
     ),
   ];
+  const labelPoint = new THREE.Vector3();
+  const anchorVertex = (index, object, vertexIndex = 0) => {
+    labelPoint.fromBufferAttribute(
+      object.geometry.attributes.position,
+      vertexIndex,
+    );
+    object.localToWorld(labelPoint).toArray(labels[index].position);
+  };
+  const cargoTrace = aggregate.children[1].children[0],
+    enzymeTrace = enzymes[3].children[0];
   const points = [
     [-1.92, 0],
     [-1.75, 0.68],
@@ -108,6 +118,24 @@ function create() {
     [2.02, 0.92],
     1.2,
     0.6,
+  );
+  // Preserve each lysosomal anchor across the change of surface coordinates.
+  // Reusing a sphere's t on the whole fused organelle would move its proteins
+  // to the former autophagosomal lobe in a single frame.
+  const lysosomalAnchor = (sphereT) => {
+    const x = 2.02 - 0.92 * Math.cos(Math.PI * sphereT);
+    let lo = 0,
+      hi = 1;
+    for (let i = 0; i < 40; i++) {
+      const mid = (lo + hi) * 0.5;
+      if (envelope(mid, 0)[0] < x) lo = mid;
+      else hi = mid;
+    }
+    return (lo + hi) * 0.5;
+  };
+  const pumpAnchor = lysosomalAnchor(0.76);
+  const glycanAnchors = glycans.map((_, i) =>
+    lysosomalAnchor(0.25 + i * 0.083),
   );
   function update(progress) {
     const p = clamp(progress),
@@ -183,7 +211,7 @@ function create() {
         (-0.2 - 0.18 * Math.cos(i)) * neckCentering,
       );
     }
-    const pumpT = 0.76;
+    const pumpT = fused ? pumpAnchor : 0.76;
     let anchorX, anchorR;
     if (fused) {
       const [x, r] = envelope(pumpT, opening);
@@ -199,7 +227,7 @@ function create() {
     pump.position.set(anchorX, anchorR * 0.85, -anchorR * 0.527);
     pump.rotation.set(-0.56, 0, 0);
     for (let i = 0; i < glycans.length; i++) {
-      const t = 0.25 + i * 0.083,
+      const t = fused ? glycanAnchors[i] : 0.25 + i * 0.083,
         a = -1.6 + i * 0.49;
       let x, r;
       if (fused) {
@@ -219,13 +247,26 @@ function create() {
         new THREE.Vector3(0, -Math.sin(a), Math.cos(a)),
       );
     }
+    anchorVertex(0, outer.mesh.children[0], 64 * 65 + 32);
     labels[0].active = !closed;
+    anchorVertex(
+      1,
+      cargoTrace,
+      Math.floor(cargoTrace.geometry.attributes.position.count / 2),
+    );
+    labels[1].active = aggregate.visible;
+    anchorVertex(2, outer.mesh.children[0], 32 * 65 + 64);
     labels[2].active = closed && !fused;
     labels[3].active = !fused;
+    anchorVertex(4, inner.mesh.children[0], 32 * 65 + 64);
     labels[4].active = fused && p < 0.71;
     labels[5].active = p >= 0.71;
-    labels[6].position[0] = fused ? 1.1 : 2.15;
-    labels[6].active = p < 0.98;
+    anchorVertex(
+      6,
+      enzymeTrace,
+      Math.floor(enzymeTrace.geometry.attributes.position.count / 2),
+    );
+    labels[6].active = enzymes[3].visible;
     group.userData = {
       process: "autophagy",
       specimen: "mammalian macroautophagy",

@@ -1,0 +1,245 @@
+{
+  "group": "original",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "secretion",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Conventional soluble secretory cargo; ER lumen, cisternal maturation, carrier fusion and exocytosis. Both languages, all stages, no control branches.",
+      "checks": [
+        "Root source review and finite/resource/irregular-seek diagnostics",
+        "Independent peer measured actual instance-world coordinates and triangle surface distances",
+        "Cargo trajectory and all fusion boundary cargo vertices are continuous",
+        "Post-handoff lipids stay attached to rendered fusion triangles"
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16699524/",
+          "title": "Losev et al. (2006), Golgi maturation visualized in living yeast",
+          "supports": "Cargo can remain inside a maturing cisterna; the model explicitly presents this as one simplified trafficking mechanism."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-original-01",
+          "severity": "P2",
+          "kind": "visible motion discontinuity",
+          "file": "src/processes/secretionProcess.js",
+          "location": "incoming.root.rotation.z at progress 0.20",
+          "evidence": "Persistent incoming lipid heads jump 0.4562253107 world units across .2 +/- 1e-7; limit remains nonzero at 1e-8. Rotation switches -pi/2 to pi. Actual composed instance coordinates, not parent origins.",
+          "whyWrong": "A tracked membrane lipid pattern instantaneously reorients at carrier departure.",
+          "fix": "Keep budding orientation at departure; rotate continuously while the carrier is closed and complete docking orientation before .34.",
+          "verification": "Epsilon-convergent per-instance world coordinates at .20/.34 and exact open-neck alignment.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/16699524/"
+          ]
+        },
+        {
+          "issueId": "20261004-original-02",
+          "severity": "P2",
+          "kind": "visible motion discontinuity",
+          "file": "src/processes/secretionProcess.js",
+          "location": "carrier-to-fusion shell and lipid handoff at progress .90",
+          "evidence": "840 visible persistent lipid heads jump max .7516005424, mean .3817248215 world units. New shell to old triangle surface max .1227398160. Cargo is continuous; later lipid-shell attachment error <8.6e-8.",
+          "whyWrong": "A differently sized and oriented shell replaces a still-visible carrier instantly, breaking persistent membrane identities.",
+          "fix": "Use a finite, common surface deformation from the exact departing sphere and lipid positions into an opening fusion pore, preserving final membrane incorporation.",
+          "verification": "Per-instance continuity at .90 and actual lipid-to-rendered-triangle attachment through deformation; retain closed compartment until pore opens.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/16699524/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-original-01",
+          "20261004-original-02"
+        ],
+        "limits": [
+          "Visibility of a budding-state depiction alone was not called a defect."
+        ]
+      },
+      "limitations": [
+        "Protein, membranes and trafficking timing remain teaching-scale schematics; not an atomic trajectory."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "transcription",
+      "roots": [
+        "cell",
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Nuclear eukaryotic protein-coding Pol II transcription, local bubble, 5-prime to 3-prime RNA synthesis, cleavage before downstream termination.",
+      "checks": [
+        "Both registered roots and bilingual stages inspected",
+        "Peer 201 samples per root: catalytic RNA gap <=1.19e-7, DNA segment join gap <=1.99e-7, cut-point gap <=4.42e-8",
+        "Right-handed closed duplex: 510 positive and zero negative signed angular steps per root",
+        "Finite buffers, stable inventories, deterministic irregular seeks; root boundary diagnostic found no visible position jump"
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/5C44",
+          "title": "Barnes et al. (2015), complete Pol II transcription bubble",
+          "supports": "Template/non-template strands and nascent RNA are distinct; local opening and strand annealing accompany transcription."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5830926/",
+          "title": "Eaton et al. (2018), CPSF73 and Xrn2 in Pol II termination",
+          "supports": "RNA cleavage is distinct from downstream termination; peer checked complete primary content despite intermittent source fetches."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "No browser playback acceptance yet."
+        ]
+      },
+      "limitations": [
+        "No sequence identity, atomic fit or quantitative kinetics implied; capping/splicing/polyadenylation are explicitly not expanded."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "photosynthesis",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Plant chloroplast explanatory overview: thylakoid light reactions, stromal ATP/NADPH use and Calvin-cycle/G3P relationship. No controls.",
+      "checks": [
+        "Both-language descriptions distinguish oxygen from water, stromal carbon fixation, lumen-to-stroma proton flow, concurrent reactions and schematic overlay markers",
+        "ATP synthase head faces +Y/stroma and PSII OEC faces -Y/lumen",
+        "Finite buffers, stable resources and irregular seeks",
+        "Shared helix chirality is also affected: tracked once under 20261004-plantSignals-01, owned by plantSignals reviewer"
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/6FKF",
+          "title": "Hahn et al. (2018), chloroplast ATP synthase",
+          "supports": "Membrane Fo rotor drives ATP formation in F1 head; chloroplast rotor/stator arrangement and proton pathway."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1197436/",
+          "title": "Shimoni et al. (2005), thylakoid membrane electron tomography",
+          "supports": "Grana and stromal lamellae form a connected membrane/lumen network; exact alternative stack geometries are not inferred."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-original-03",
+          "severity": "P2",
+          "kind": "visible motion discontinuity",
+          "file": "src/processes/photosynthesisProcess.js",
+          "location": "flow packet modulo resets, update loop",
+          "evidence": "First incoming light marker at p=.12+1/3.8 jumps 1.5227923283 world units across +/-1e-7, fully visible with unchanged radius .047 and opacity 1. All finite open overlay routes use this reset.",
+          "whyWrong": "An explicitly directional visible marker snaps upstream rather than completing and beginning a new illustrative flow pulse.",
+          "fix": "Give finite open routes a continuous endpoint visibility/scale envelope; preserve closed reaction-loop continuity and clear start-to-end direction.",
+          "verification": "All finite flow wrap boundaries have vanishing visible extent at reset; interior trajectories and closed cycle remain continuous; deterministic arbitrary seek.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/6FKF"
+          ]
+        },
+        {
+          "issueId": "20261004-original-04",
+          "severity": "P1",
+          "kind": "membrane topology",
+          "file": "src/processes/photosynthesisProcess.js",
+          "location": "intergranal lamellae at y=-.30 and .28",
+          "evidence": "Actual triangle ray hits source inner surface at path t=.440800 and outer at .515004 behind viewing cut. Upper tube then hits destination outer .477912 and inner .599736. Lower endpoint is within destination membrane thickness (inner ellipsoid score1.702367, outer .673281), never inside lumen. No intersecting faces removed or junctions welded.",
+          "whyWrong": "The purported hollow intergranal connections are blocked by the separately closed thylakoid membrane surfaces; one ends inside the bilayer.",
+          "fix": "Build genuinely continuous lumen junctions with correctly placed endpoints and shared/open membrane boundaries, preserving cutaway detail and lipid layers.",
+          "verification": "Actual lumen route has no membrane triangle obstruction and enters both destination/source lumina; continuous membrane annular boundaries without gaps or double walls.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC1197436/"
+          ]
+        },
+        {
+          "issueId": "20261004-original-06",
+          "severity": "P1",
+          "kind": "protein compartment geometry",
+          "file": "src/processes/photosynthesisProcess.js",
+          "location": "PSII OEC caps and ATP synthase membrane rotor placement",
+          "evidence": "Independent actual OEC meshes contain286/3951 and66/3951 vertices beyond the opposite lower outer thylakoid membrane, behind the viewing cut (worst ellipsoid score1.335645). ATP rotor spansY=.50.. .64 at a site with lower outer wallY=.53143 and upperY=.60857; rotor ring also extends beyond right membrane rimX=-.81.",
+          "whyWrong": "The lumen-facing OEC protrudes through the opposite membrane into stroma; the membrane rotor straddles the opposite wall and the open edge instead of being embedded at its intended upper membrane site. Correct direction labels alone do not preserve compartments.",
+          "fix": "Adjust local protein positions and schematic dimensions to fit the actual lumen/upper membrane footprint; preserve recognizable complexes, subunit detail and connected output routes.",
+          "verification": "Actual OEC mesh stays on lumen side without crossing opposite leaflet; rotor ring fits its upper membrane site without spanning lower wall or leaving disc. Preserve stromal F1 head and shared right-handed helices.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/6FKF",
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC2879734/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-original-03"
+        ],
+        "limits": [
+          "Full rendered playback and detailed junction review follow repairs."
+        ]
+      },
+      "limitations": [
+        "Overlay markers are expressly reaction/energy relationships rather than actual molecular trajectories or counts.",
+        "Protein shapes are schematic; shared helper chirality must nevertheless be correct."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "infection",
+      "roots": [
+        "phage"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "T4 infection initiation: receptor engagement, fixed-length tail tube with sheath contraction, inner membrane bulging and duplex delivery; no lysogeny or replication.",
+      "checks": [
+        "Root read all geometry and bilingual stage code",
+        "Finite buffers, stable resources and deterministic irregular seeks",
+        "Peer measured actual rendered duplex centerlines/arclengths",
+        "Tail annulus and bulged membrane hole overlap; rear samples differ only .00349/.00488, so no extra membrane-disconnection issue filed"
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/26283379/",
+          "title": "Hu et al. (2015), T4 and host membrane remodeling during infection initiation",
+          "supports": "Primary cryo-ET intermediate and figure evidence for contraction, DNA remaining inside capsid, and host membrane remodeling."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-original-05",
+          "severity": "P2",
+          "kind": "DNA geometry handoff",
+          "file": "src/processes/phageProcess.js",
+          "location": "packed.visible / delivery.visible switch at progress .60",
+          "evidence": "Actual rendered leading duplex centerline endpoint jumps .377242 world units. Strand arclength drops from18.816/18.823 to16.878/16.825 (10.30/10.62%). Separate meshes distribute85 turns over720 versus2600 segments; initial delivery prefix includes about20.9 turns.",
+          "whyWrong": "The same visible genome changes position and material extent instantly before the transfer parameter advances.",
+          "fix": "Use one continuous DNA representation and consistent material coordinates across contracted packed and entering states; keep displayed genome extent through handoff.",
+          "verification": "World-space endpoint/strand contour continuity at .60, no DNA material disappearance at zero transfer, fixed-length tail and actual membrane outlet retained.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/26283379/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-original-05"
+        ],
+        "limits": [
+          "Physical delivery forces and full DNA molecular length are not simulated."
+        ]
+      },
+      "limitations": [
+        "T4 mechanism is explicitly separated from the atlas T2-shaped structural illustration."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 import {
   helix,
@@ -8,6 +9,7 @@ import {
   chromatinFiber,
   materialInventory,
 } from "./structuralKit.js";
+import { secretoryMembrane } from "./secretoryMembrane.js";
 
 function create() {
   const k = sceneKit(),
@@ -21,27 +23,7 @@ function create() {
       const t = a + ((b - a) * i) / 80;
       return [cx + rx * Math.cos(t), cy + ry * Math.sin(t), 0];
     });
-  // Cross-sectional target membrane has a closable fusion opening on its right.
-  k.tube(arc(-1.3, 0.35, 2.5, 2.3, 0.24, Math.PI * 2 - 0.015), 0.055, mem);
-  const membranePatch = k.tube(
-    arc(-1.3, 0.35, 2.5, 2.3, -0.015, 0.24),
-    0.055,
-    mem,
-  );
-  membraneWall(
-    k,
-    group,
-    arc(-1.3, 0.35, 2.5, 2.3, 0.24, Math.PI * 2 - 0.015),
-    mem,
-    { thickness: 0.075, depth: 0.09 },
-  );
-  const surfacePatch = membraneWall(
-    k,
-    group,
-    arc(-1.3, 0.35, 2.5, 2.3, -0.015, 0.24),
-    mem,
-    { thickness: 0.075, depth: 0.09 },
-  );
+  const secretory = secretoryMembrane(k, group, erMat, mem);
   rearShell(k, group, [-1.3, 0.35, -0.08], [2.5, 2.3, 0.8], "#c3d1c6", 0.56);
   const nucleus = k.ball(
     [-2.4, -0.9, -0.05],
@@ -53,57 +35,6 @@ function create() {
     }),
   );
   k.ring([-2.4, -0.9, 0.08], 0.63, 0.034, k.material("#a9a0b9")).scale.y = 0.95;
-  const erPoints = [
-    [-3.1, 0.33, 0],
-    [-3.25, 0.65, 0],
-    [-3.1, 1.23, 0],
-    [-2, 1.31, 0],
-    [-0.9, 1.22, 0],
-    [-0.72, 0.75, 0],
-    [-0.9, 0.33, 0],
-    [-1.67, 0.29, 0],
-  ];
-  k.tube(erPoints, 0.065, erMat);
-  k.tube(
-    [
-      [-2.02, 0.29, 0],
-      [-2.5, 0.3, 0],
-      [-3.1, 0.33, 0],
-    ],
-    0.065,
-    erMat,
-  );
-  const erCurve = new THREE.CatmullRomCurve3(
-    erPoints.map((p) => new THREE.Vector3(...p)),
-  );
-  membraneWall(
-    k,
-    group,
-    erCurve.getPoints(80).map((p) => p.toArray()),
-    erMat,
-    { thickness: 0.07, depth: 0.2 },
-  );
-  membraneWall(
-    k,
-    group,
-    [
-      [-2.02, 0.29, 0],
-      [-2.5, 0.3, 0],
-      [-3.1, 0.33, 0],
-    ],
-    erMat,
-    { thickness: 0.07, depth: 0.2 },
-  );
-  const erBack = k.mesh(
-    new THREE.PlaneGeometry(2.05, 0.73),
-    k.material("#cad4d3", {
-      transparent: true,
-      opacity: 0.45,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    }),
-    [-1.97, 0.8, -0.2],
-  );
   rearShell(k, group, [-2.4, -0.9, -0.05], [0.65, 0.6, 0.32], "#b6abc5", 0.62);
   chromatinFiber(
     k,
@@ -120,17 +51,17 @@ function create() {
   const tap = new THREE.Group();
   group.add(tap);
   tap.position.set(-1.86, 0.29, 0);
-  for (const x of [-0.11, 0.11])
+  for (const x of [-0.25, 0.25])
     k.segment([x, -0.22, 0], [x, 0.23, 0], 0.075, k.material("#80939a"), tap);
-  k.ball([-0.12, -0.25, 0], [0.14, 0.12, 0.12], k.material("#a4a994"), tap);
-  k.ball([0.12, -0.25, 0], [0.14, 0.12, 0.12], k.material("#a4a994"), tap);
+  k.ball([-0.3, -0.25, 0], [0.14, 0.12, 0.12], k.material("#a4a994"), tap);
+  k.ball([0.3, -0.25, 0], [0.14, 0.12, 0.12], k.material("#a4a994"), tap);
   for (const side of [-1, 1])
     for (let i = 0; i < 6; i++) {
       const a = (i * Math.PI) / 3;
       helix(
         k,
         tap,
-        [side * 0.13 + Math.cos(a) * 0.04, 0, 0.06 + Math.sin(a) * 0.04],
+        [side * 0.25 + Math.cos(a) * 0.04, 0, 0.06 + Math.sin(a) * 0.04],
         0.38,
         0.022,
         k.material("#a9bcc0"),
@@ -204,7 +135,8 @@ function create() {
   peptide.name = "presented-peptide";
   group.add(mhc);
   const mhcMat = k.material("#7c9ca8");
-  k.segment([0, -0.16, 0], [0, 0.21, 0], 0.052, mhcMat, mhc);
+  k.segment([0, -0.16, 0], [0, 0.21, 0], 0.052, mhcMat, mhc).name =
+    "MHC-I-transmembrane-stem";
   k.ball([0, 0.26, 0], [0.15, 0.17, 0.13], mhcMat, mhc);
   k.tube(
     [
@@ -249,7 +181,7 @@ function create() {
     );
   betaSheet(k, mhc, [0, 0.2, 0.133], 0.17, k.material("#b6c9cd"), 4);
   betaSheet(k, mhc, [0.19, 0.2, 0.196], 0.12, k.material("#d3dbd5"), 3);
-  helix(
+  const mhcTransmembraneHelix = helix(
     k,
     mhc,
     [0, 0, 0.06],
@@ -260,23 +192,15 @@ function create() {
     "y",
     0.016,
   );
+  mhcTransmembraneHelix.name = "MHC-I-transmembrane-helix";
   const carrier = new THREE.Group();
+  carrier.name = "secretory-carrier-frame";
   group.add(carrier);
-  const vmat = k.material("#a4b8ad", {
-    transparent: true,
-    opacity: 0.2,
-    depthWrite: false,
-  });
-  const vesicle = k.ball([0, 0, 0], 0.46, vmat, carrier);
-  const vRim = k.ring([0, 0, 0.05], 0.46, 0.034, mem, carrier);
-  membraneWall(k, carrier, arc(0, 0, 0.46, 0.46, 0, Math.PI * 2), mem, {
-    thickness: 0.039,
-    depth: 0.03,
-  });
-  rearShell(k, carrier, [0, 0, -0.02], [0.45, 0.45, 0.45], "#b6c7bb", 0.52);
   const golgi = new THREE.Group();
   group.add(golgi);
-  golgi.position.y = 1.05;
+  // The compressed Golgi route is an adjacent explanatory structure; its
+  // cisternae must not intersect the tracked carrier or its luminal cargo.
+  golgi.position.y = -0.15;
   for (let i = 0; i < 3; i++)
     k.tube(
       [
@@ -418,11 +342,20 @@ function create() {
     k.label([1.15, 1.48, 0.1], "肽–MHC-I", "Peptide–MHC-I", 2),
     k.label([2.7, -0.48, 0.2], "TCR + CD8", "TCR + CD8", 2),
   ];
+  const anchors = labelAnchors([
+    { label: labels[0], target: group, local: [-2.7, 1.8, 0], region: true },
+    { label: labels[1], target: tcell, local: [0.25, 0.9, 0], region: true },
+    { label: labels[2], target: group, local: [-2.3, 0.9, 0.1], region: true },
+    { label: labels[3], target: proteasome.children[4] },
+    { label: labels[4], target: tap.children[0] },
+    { label: labels[5], target: golgi.children[0], local: [0, -0.42, 0] },
+    { label: labels[6], target: mhc.children[1] },
+    { label: labels[7], target: tcr.children[1] },
+  ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       match = parameters.epitope !== "unmatched";
     const degrade = ease(p, 0.03, 0.19),
-      imported = ease(p, 0.19, 0.35),
       load = ease(p, 0.35, 0.46),
       traffic = ease(p, 0.5, 0.72),
       fuse = ease(p, 0.72, 0.81),
@@ -433,25 +366,27 @@ function create() {
     residues.forEach((r, i) => {
       r.position.y = Math.sin(i * 1.3) * 0.03 + (match ? 0 : (i % 2) * 0.075);
     });
-    const turn = (ease(p, 0.5, 0.6) * Math.PI) / 2;
-    const cx = -0.8 + 1.46 * traffic,
-      cy = 0.75 - 0.04 * traffic;
-    carrier.visible = p >= 0.49 && p < 0.82;
-    carrier.position.set(cx + 0.5 * fuse, cy, 0);
-    carrier.scale.set(1 - 0.97 * fuse, 1, 1);
-    const mx = p < 0.5 ? -0.8 : cx - 0.45 * Math.sin(turn) + 0.94 * fuse;
-    const my = p < 0.5 ? 0.3 : cy - 0.45 * Math.cos(turn);
+    // Keep MHC on the exposed lower bud membrane until the neck closes.
+    // It rotates on the free carrier only after separation from the ER.
+    const turn = (ease(p, 0.63, 0.71) * Math.PI) / 2;
+    const cx = -1.5 + 2.16 * traffic,
+      cy = 0.8 - 0.09 * traffic,
+      carrierX = cx + 0.99 * fuse;
+    carrier.position.set(carrierX, cy, 0);
+    secretory.update(carrierX, cy, p < 0.82, fuse);
+    const mx = carrierX - 0.46 * Math.sin(turn),
+      my = cy - 0.46 * Math.cos(turn);
     mhc.position.set(mx, my, 0.03);
     mhc.rotation.z = -turn;
     if (p < 0.19) peptide.position.set(-2.46 + 0.3 * degrade, -0.11, 0.12);
     else if (p < 0.35)
       peptide.position.set(
-        -2.16 + 0.3 * imported,
-        -0.11 + 0.72 * imported,
+        -2.16 + 0.19 * ease(p, 0.19, 0.23),
+        -0.11 + 0.72 * ease(p, 0.23, 0.35),
         0.12,
       );
     else if (p < 0.46)
-      peptide.position.set(-1.86 + 1.02 * load, 0.61 + 0.09 * load, 0.12);
+      peptide.position.set(-1.97 + 0.37 * load, 0.61 + 0.16 * load, 0.12);
     else
       peptide.position.set(
         mx + 0.43 * Math.sin(turn) - 0.1 * Math.cos(turn),
@@ -460,8 +395,6 @@ function create() {
       );
     peptide.rotation.z = p >= 0.46 ? -turn : 0;
     peptide.visible = p >= 0.13;
-    membranePatch.visible = !(p >= 0.735 && p < 0.81);
-    surfacePatch.visible = membranePatch.visible;
     tcell.position.set(
       3.62 - 0.32 * contact + (match ? 0 : 0.33 * ease(p, 0.94, 1)),
       0.43,
@@ -481,6 +414,7 @@ function create() {
     labels[7].active = p >= 0.81;
     labels[3].active = p < 0.34;
     labels[4].active = p < 0.5;
+    anchors.update();
     group.userData = {
       organism: "mammalian",
       mechanism: "endogenous MHC-I presentation to effector CD8 T cell",
@@ -506,7 +440,18 @@ function create() {
     group,
     update,
     labels,
-    science: { mhc, peptide, tcr, tcell, residues },
+    science: {
+      mhc,
+      peptide,
+      tcr,
+      tcell,
+      residues,
+      secretory,
+      carrier,
+      tap,
+      golgi,
+      labelAnchors: anchors.bindings,
+    },
     materials: materialInventory(group),
     camera: { position: [0.3, 1.15, 13.6], target: [0.3, 0.2, 0] },
   };
@@ -590,6 +535,11 @@ export default {
     },
   ],
   sources: [
+    {
+      title:
+        "COPII pre-budding complex: cargo selection and ER membrane deformation",
+      url: "https://www.rcsb.org/structure/1M2V",
+    },
     {
       title: "TCR-peptide-MHC complex (PDB 1AO7)",
       url: "https://www.rcsb.org/structure/1AO7",

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import "./seek.test.mjs";
+import "./fusion.test.mjs";
 import * as THREE from "three";
 import division from "./plantDivisionProcess.js";
 import fertilization from "./doubleFertilizationProcess.js";

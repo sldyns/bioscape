@@ -1,4 +1,5 @@
-import { vesicle, beads } from "./structuralDetail.js";
+import { vesicle, beads, anchorLabel } from "./structuralDetail.js";
+import { fieldMembrane } from "./cellPlateMembrane.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 function create() {
   const k = sceneKit(),
@@ -48,15 +49,21 @@ function create() {
     );
   outer.rotation.z = inner.rotation.z = Math.PI / 2;
   const cap = k.mesh(
-      new THREE.SphereGeometry(0.77, 40, 24, Math.PI, Math.PI, 0, Math.PI / 2),
-      wall,
-    ),
-    memCap = k.mesh(
-      new THREE.SphereGeometry(0.69, 40, 24, Math.PI, Math.PI, 0, Math.PI / 2),
-      pm,
-    );
+    new THREE.SphereGeometry(0.77, 40, 24, Math.PI, Math.PI, 0, Math.PI / 2),
+    wall,
+  );
+  const fusionMembrane = fieldMembrane(k, pm, {
+    nx: 40,
+    ny: 56,
+    nz: 28,
+    lo: [0, -0.84, -0.84],
+    hi: [0.88, 0.84, 0],
+    maxVertices: 150000,
+    name: "Apical plasma membrane continuous with exocytotic vesicle lumens",
+  });
+  const memCap = fusionMembrane.mesh;
   cap.name = "Advancing hyphal apical wall";
-  cap.rotation.z = memCap.rotation.z = -Math.PI / 2;
+  cap.rotation.z = -Math.PI / 2;
   const wallMatrix = k.material("#d6c29d", { side: THREE.DoubleSide });
   const middle = k.mesh(
     new THREE.CylinderGeometry(
@@ -87,9 +94,11 @@ function create() {
     );
     cutRails.push(m);
   }
+  const septa = [];
   for (const x of [-2.8, -1.4]) {
     const s = k.mesh(new THREE.RingGeometry(0.18, 0.72, 40), septum, [x, 0, 0]);
     s.name = "Septal solid wall with central pore";
+    septa.push(s);
     s.rotation.y = Math.PI / 2;
     s.material.side = THREE.DoubleSide;
     const pore = k.ring([x, 0, 0], 0.185, 0.036, chitin);
@@ -151,10 +160,50 @@ function create() {
   }
   const vesicles = [];
   for (let i = 0; i < 20; i++) {
-    const m = vesicle(k, cargo, chitin);
+    const m = vesicle(k, pm, chitin);
     m.scale.setScalar(0.073);
-    vesicles.push({ m, index: i });
+    vesicles.push({
+      m,
+      index: i,
+      shells: m.children.filter((n) => n.name.startsWith("Vesicle membrane")),
+      cargo: m.children.filter((n) => n.name === "Vesicle lumen wall cargo"),
+    });
   }
+  // Cohorts receive released lumen material and stay on the expanding wall.
+  // Shared geometry retains the strand detail without duplicating GPU buffers.
+  const cohortGeometry = [];
+  for (let strand = 0; strand < 3; strand++) {
+    const pts = [];
+    for (let j = 0; j <= 20; j++) {
+      const t = j / 20;
+      pts.push(
+        new THREE.Vector3(
+          0.012 * Math.sin(t * Math.PI * 6 + strand),
+          -0.045 + t * 0.09,
+          0.012 * Math.cos(t * Math.PI * 6 + strand),
+        ),
+      );
+    }
+    cohortGeometry.push(
+      new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3(pts),
+        24,
+        0.009,
+        8,
+        false,
+      ),
+    );
+  }
+  const deliveredCohorts = [];
+  for (let i = 0; i < 20; i++)
+    for (let cycle = 0; cycle < 3; cycle++) {
+      const g = new THREE.Group();
+      group.add(g);
+      g.name = "Delivered wall matrix cohort";
+      for (const geometry of cohortGeometry)
+        k.mesh(geometry, chitin, [0, 0, 0], g);
+      deliveredCohorts.push({ m: g, index: i, cycle });
+    }
   const synthases = [],
     deposits = [];
   for (let i = 0; i < 15; i++) {
@@ -224,6 +273,10 @@ function create() {
       2,
     ),
   ];
+  const fusing = new Float64Array(20 * 3);
+  let fusionCount = 0;
+  let membraneKey = "";
+  const fusionAnchor = new THREE.Vector3();
   function update(value, parameters = {}) {
     const p = clamp(value),
       active = parameters.delivery !== "reduced",
@@ -240,27 +293,95 @@ function create() {
       m.position.x = (tip - 3.3) / 2;
       m.scale.y = length;
     });
-    spk.position.set(tip - 0.27, 0, 0.05);
+    spk.position.set(tip - 0.27, 0, 0);
     spk.scale.setScalar(0.65 + 0.35 * delivery);
-    vesicles.forEach(({ m, index: i }) => {
+    fusionCount = 0;
+    vesicles.forEach(({ m, index: i, shells, cargo: contents }) => {
       const t = (p * 1.5 * delivery + i / 20) % 1;
       m.visible = active || i % 4 === 0;
+      const emergence = ease(t, 0, 0.045);
+      m.scale.setScalar(0.073 * emergence);
+      const theta = -1.1 + ((i % 7) / 6) * 2.2;
+      m.rotation.z = theta * ease(t, 0.68, 0.86);
       // Converge to the central septal pores rather than crossing solid septal walls.
       if (t < 0.68) {
+        const transport = ease(t, 0, 0.68);
         m.position.set(
-          -2.8 + ((tip + 2.53) * t) / 0.68,
-          0.3 * Math.sin(i * 1.7) * (1 - t),
-          0.2 * Math.cos(i * 2.1),
+          -2.8 + (tip + 2.53) * transport,
+          0.3 * Math.sin(i * 1.7) * (1 - transport),
+          0.2 * Math.cos(i * 2.1) * (1 - transport),
+        );
+      } else if (t < 0.86) {
+        const u = ease(t, 0.68, 0.86);
+        m.position.set(
+          tip - 0.27 + (0.27 + 0.617 * Math.cos(theta)) * u,
+          0.617 * Math.sin(theta) * u,
+          0,
         );
       } else {
-        const u = (t - 0.68) / 0.32,
-          theta = -1.1 + ((i % 7) / 6) * 2.2;
+        // The exterior and vesicle lumen share one isosurface; moving its
+        // remaining cup outward incorporates its membrane into the apical PM.
+        const radius = 0.617 + 0.17 * ease(t, 0.86, 0.98);
         m.position.set(
-          tip - 0.27 + (0.27 + 0.69 * Math.cos(theta)) * u,
-          0.69 * Math.sin(theta) * u,
-          0.12,
+          tip + radius * Math.cos(theta),
+          radius * Math.sin(theta),
+          0,
         );
       }
+      shells.forEach((shell) => {
+        shell.visible = t < 0.84;
+      });
+      contents.forEach((body) => {
+        body.scale.setScalar(0.19 * (1 - ease(t, 0.94, 0.98)));
+      });
+      if (m.visible && t >= 0.84 && t < 0.98) {
+        fusing[fusionCount * 3] = m.position.x - tip;
+        fusing[fusionCount * 3 + 1] = m.position.y;
+        fusing[fusionCount * 3 + 2] = 0.073;
+        fusionCount++;
+      }
+    });
+    const nextMembraneKey = `${delivery}:${p}`;
+    if (membraneKey !== nextMembraneKey) {
+      fusionMembrane.update(
+        (x, y, z) => {
+          let field = 0.69 - Math.sqrt(x * x + y * y + z * z);
+          for (let i = 0; i < fusionCount; i++) {
+            const dx = x - fusing[i * 3],
+              dy = y - fusing[i * 3 + 1],
+              r = fusing[i * 3 + 2];
+            const bound = field + r;
+            if (
+              bound > 0 &&
+              Math.abs(dx) < bound &&
+              Math.abs(dy) < bound &&
+              Math.abs(z) < bound
+            )
+              field = Math.min(field, Math.sqrt(dx * dx + dy * dy + z * z) - r);
+          }
+          return field;
+        },
+        1,
+        1,
+      );
+      membraneKey = nextMembraneKey;
+    }
+    deliveredCohorts.forEach(({ m, index: i, cycle }) => {
+      const birth = (cycle + 0.94 - i / 20) / (1.5 * delivery);
+      const live = birth >= 0 && birth <= p && (active || i % 4 === 0);
+      const theta = -1.1 + ((i % 7) / 6) * 2.2,
+        side = theta < 0 ? -1 : 1;
+      const birthTip = 1.15 + ease(birth, 0.28, 1) * 1.65 * delivery;
+      const x = birthTip + 0.79 * Math.cos(theta);
+      const localX = Math.max(0, Math.min(0.79, x - tip));
+      m.position.set(
+        x,
+        side * Math.sqrt(Math.max(0, 0.79 ** 2 - localX ** 2)),
+        0,
+      );
+      m.rotation.z = Math.atan2(m.position.y, localX);
+      m.scale.setScalar(ease(p, birth, birth + 0.04 / (1.5 * delivery)));
+      m.visible = live;
     });
     vesicles.forEach(({ m }) => {
       const distance = Math.min(
@@ -273,11 +394,7 @@ function create() {
       m.position.z *= gate;
     });
     synthases.forEach(({ m, theta }) => {
-      m.position.set(
-        tip + 0.69 * Math.cos(theta),
-        0.69 * Math.sin(theta),
-        0.13,
-      );
+      m.position.set(tip + 0.69 * Math.cos(theta), 0.69 * Math.sin(theta), 0);
       m.visible = p >= 0.18;
       m.rotation.z = theta;
     });
@@ -290,8 +407,39 @@ function create() {
     });
     arrow.position.x = tip - 0.7;
     arrow.visible = p >= 0.3;
-    labels[2].position[0] = tip - 0.6;
-    labels[3].position[0] = tip + 0.2;
+    labels[0].position.splice(0, 3, -2.4, 0.77, 0);
+    anchorLabel(labels[1], septa[1], group);
+    anchorLabel(labels[2], spk.children[0], group);
+    labels[3].active = p >= 0.18;
+    let fusionTarget = -1;
+    for (let i = 0; i < fusionCount; i++) {
+      const r = Math.hypot(fusing[i * 3], fusing[i * 3 + 1]);
+      if (r > 0.635 && r < 0.75) {
+        fusionTarget = i;
+        break;
+      }
+    }
+    if (fusionTarget >= 0) {
+      const x = fusing[fusionTarget * 3],
+        y = fusing[fusionTarget * 3 + 1],
+        r = Math.hypot(x, y);
+      fusionAnchor.set((0.69 * x) / r, (0.69 * y) / r, -0.025);
+      const attr = memCap.geometry.attributes.position;
+      let nearest = 0,
+        distance = Infinity;
+      for (let i = 0; i < memCap.geometry.drawRange.count; i++) {
+        const dx = attr.getX(i) - fusionAnchor.x,
+          dy = attr.getY(i) - fusionAnchor.y,
+          dz = attr.getZ(i) - fusionAnchor.z;
+        const d = dx * dx + dy * dy + dz * dz;
+        if (d < distance) {
+          distance = d;
+          nearest = i;
+        }
+      }
+      anchorLabel(labels[3], memCap, group, nearest);
+    } else anchorLabel(labels[3], synthases[7].m.children[0], group);
+    labels[4].position.splice(0, 3, arrow.position.x + 0.85, -1.2, 0);
     labels[4].active = p >= 0.3;
     group.userData = {
       mechanism: "Spitzenkorper-mediated polarized hyphal tip growth",
@@ -319,8 +467,8 @@ export default {
   title: b("丝状真菌的菌丝顶端生长", "Filamentous fungal tip growth"),
   duration: 32,
   intro: b(
-    "粗糙脉孢菌（Neurospora crassa）的有隔菌丝，归入图谱的真菌入口；这里不是酿酒酵母。透明壁面显示带孔隔膜、顶体和顶端膜。比较囊泡供应充分与减少的概念条件，比例不表示实验测量。",
-    "A septate Neurospora crassa hypha, grouped under the atlas fungal entry; this is not budding yeast. The transparent wall reveals porous septa, Spitzenkörper, and apical membrane. Adequate versus reduced vesicle supply is a conceptual comparison, not measured kinetics.",
+    "粗糙脉孢菌（Neurospora crassa）的有隔菌丝，归入图谱的真菌入口；这里不是酿酒酵母。壁面剖切显示带孔隔膜、顶体和顶端膜，融合开口及释放的壁材料为放大示意。比较囊泡供应充分与减少的概念条件，比例不表示实验测量。",
+    "A septate Neurospora crassa hypha, grouped under the atlas fungal entry; this is not budding yeast. The cutaway wall reveals porous septa, Spitzenkörper, and apical membrane; fusion openings and released wall material are enlarged schematics. Adequate versus reduced supply is a conceptual comparison, not measured kinetics.",
   ),
   controls: [
     {

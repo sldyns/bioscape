@@ -1,0 +1,183 @@
+{
+  "group": "plantSignals",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-plantSignals-01",
+      "status": "fixed",
+      "changes": "Reversed the transverse sine in the owned helix helper. All regular protein helices now have the same positive signed torsion as deposited 2P1Q class-1 CA helices; integer-turn endpoints, axis, center, radius and tessellation remain unchanged. Informed the traffic reviewer responsible for photosynthesis.",
+      "files": [
+        "src/processes/modules/plantSignals/structures.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Portable reference-coordinate handedness regression and non-axis-aligned endpoint assertions pass.",
+        "Actual consumer inventory: auxin 137/137, plantDefense 61/61 and root photosynthesis 155/155 helper helices are right-handed. Maximum endpoint change is 2.12e-16 scene units across these consumers.",
+        "In-memory reversal to the old sign is rejected by the new issue-specific assertion."
+      ],
+      "limitations": [
+        "Photosynthesis is a shared-helper consumer; its original process file was not edited here and its other fixes remain owned by traffic.",
+        "Protein cartoons remain illustrative, except for the explicitly experimental TIR1 pocket."
+      ]
+    },
+    {
+      "issueId": "20261004-plantSignals-02",
+      "status": "fixed",
+      "changes": "Raised the free Aux/IAA body by 0.43 units to touch the ARF PB1 surface and adjusted its departure interpolation so the experimental TIR1 docking endpoint stays unchanged. Named the partner domains for geometric regression.",
+      "files": [
+        "src/processes/modules/plantSignals/auxinProcess.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "ARF PB1 vertices contained in the repressor decrease from 1700/1700 to 0/1700.",
+        "Ray/triangle contact assertions cover initial, full low-auxin branch and early departure states with small nonpenetrating surface gap.",
+        "Existing common-transform 2P1Q atom and triangle-surface ternary contacts still pass.",
+        "Restoring the original coincident position is rejected by the new issue-specific assertion."
+      ],
+      "limitations": [
+        "ARF and the compact repressor body are domain cartoons, not atomic PB1 reconstructions."
+      ]
+    },
+    {
+      "issueId": "20261004-plantSignals-03",
+      "status": "fixed",
+      "changes": "Replaced the fully switched static strand with a prebuilt 64-segment rounded instanced substrate, continuously anchored to the compact Aux/IAA body. The strand grows into the proteasome, then its tail and remaining compact body feed into the core; visible size tends to zero before hiding. Reused existing materials and instance writer.",
+      "files": [
+        "src/processes/modules/plantSignals/auxinProcess.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Actual instance endpoints remain attached to the body within 1e-6 through the degradation interval.",
+        "At the former appearance boundary the length changes smoothly from 0.4612023 to 0.4612143 across +/-1e-7 progress, rather than jumping 1.1674 units.",
+        "At the former disappearance boundary length changes from 0.0118786 to 0.0118770; at p=0.7 the radius and visible length are zero.",
+        "Midstage visible strand remains >0.6 units long with radius >0.03; low-auxin branch remains hidden.",
+        "Restoring the old finite-length visibility switch is rejected by the new issue-specific assertion."
+      ],
+      "limitations": [
+        "Unfolding/transport speed is educational timing and not a kinetic simulation."
+      ]
+    },
+    {
+      "issueId": "20261004-plantSignals-04",
+      "status": "fixed",
+      "changes": "Moved the BAK1 ectodomain approach forward to contact FLS2 without bulk overlap, and compensated its cytosolic kinase/tether transforms to preserve kinase contacts. Ternary-interface verification also established that the old flg22 path bowed away from FLS2; reshaped that same peptide to follow the concave FLS2 surface and kept contact with BAK1. Added the primary 4MN8 structural-reference link.",
+      "files": [
+        "src/processes/modules/plantSignals/plantDefenseProcess.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "At the original overlap witness, the -0.35-unit penetration becomes a +0.0103676-unit gap between actual main-solid triangle surfaces.",
+        "Approach-to-docking samples prohibit bulk closed-solid overlap and require final ectodomain contact.",
+        "All 12 represented flg22 beads now have FLS2 triangle-surface gaps between -0.00950 and -0.00049 units; BAK1 independently meets the bound peptide.",
+        "Existing FLS2-BAK1 kinase, FLS2-BIK1 and BIK1-RBOHD interface regressions pass unchanged. Both-branch membrane containment and vacated-site refill also pass unchanged.",
+        "Restoring the original zero-depth final pose is rejected by the new issue-specific assertion."
+      ],
+      "limitations": [
+        "Ectodomains and peptide are contact-aware cartoons informed by 4MN8, not fitted atomic trajectories. Small glyph/surface overlap is bounded for visibility; it is distinct from the removed full-solid interpenetration."
+      ]
+    },
+    {
+      "issueId": "20261004-plantSignals-05",
+      "status": "fixed",
+      "changes": "Added deterministic smooth size envelopes to the existing one-way electron markers. They reach zero visible size at both ends before the modulo reset, and flow onset grows continuously with induced output.",
+      "files": [
+        "src/processes/modules/plantSignals/plantDefenseProcess.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "All analytical active wrap times are sampled immediately before, at and after reset; maximum radius is 4.65e-13 units at +/-1e-7 progress.",
+        "Active-flow onset is zero-weight; at p=0.8 at least three full-size moving markers remain visible, guarding against hiding the process.",
+        "Absent-ligand branch has no induced electron markers.",
+        "Restoring full size through the reset is rejected by the new issue-specific assertion."
+      ],
+      "limitations": [
+        "Electron markers illustrate direction and repeated throughput, not electron stoichiometry or measured kinetics."
+      ]
+    },
+    {
+      "issueId": "20261004-plantSignals-06",
+      "status": "fixed",
+      "changes": "Replaced auxin named-label layout offsets with triangle-surface anchors following actual object/instance transforms. Covered the TIR1 pocket, proteasome, DNA-bound ARF, moving/shrinking Aux/IAA, nascent RNA, the growing tissue inset and experimental auxin atoms. Kept the nucleus/specimen caption as an interior-region annotation and retained proper transient-label active branches.",
+      "files": [
+        "src/processes/modules/plantSignals/auxinProcess.js",
+        "src/processes/modules/plantSignals/structures.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Reviewed all seven auxin stages in the supplied sheet; opened native 960x640 stage-3 and stage-6 frames before editing.",
+        "97 active named anchors across both controls and nine progress values have maximum distance 5.56e-17 from their actual target triangle surfaces. Labels repeat exactly after irregular seeks.",
+        "Low-auxin control hides Auxin and RNA labels while retaining repressor annotation; degraded repressor labels are inactive. Nuclear context anchor stays inside its region.",
+        "An in-memory restoration of the old Auxin offset is rejected by the new issue-specific geometric assertion."
+      ],
+      "limitations": [
+        "Fixed anchors have not been re-rendered by this reviewer; root must reload the frozen source and perform final label-layout/continuous-playback review.",
+        "Contextual nucleus/tissue explanations are distinguished from named molecular pointers; the nucleus anchor intentionally names empty interior space."
+      ]
+    },
+    {
+      "issueId": "20261004-plantSignals-07",
+      "status": "fixed",
+      "changes": "Bound FLS2/BAK1 ectodomain, moving BIK1, RBOHD, flg22, ROS and donor labels to their actual mesh surfaces, with complete world transforms. The membrane leader now follows a persistent lipid-head instance. Apoplast/Cytosol remain region annotations. ROS labels follow represented output visibility; ligand/donor labels are inactive under the absent control.",
+      "files": [
+        "src/processes/modules/plantSignals/plantDefenseProcess.js",
+        "src/processes/modules/plantSignals/structures.js",
+        "src/processes/modules/plantSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Reviewed all seven plantDefense stages in the supplied sheet; opened native 960x640 stage-4 and end frames before editing.",
+        "106 active anchors across both controls and nine progress values have maximum distance 1.12e-16 from actual target triangle surfaces, including full BAK1 depth, BIK1 motion, donor motion and ROS scale/trajectory.",
+        "Active labels never target hidden geometry; absent-ligand scenario hides flg22/ROS/donor labels. Compartment captions remain on the correct membrane side.",
+        "An in-memory restoration of the old BIK1 y-offset is rejected by the new issue-specific geometric assertion."
+      ],
+      "limitations": [
+        "Final numbered-marker/leader placement and continuous rendering remain root review; no browser was operated here.",
+        "Apoplast/Cytosol are deliberately empty-space regional captions, not molecular surface assertions."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/plantSignals/science.test.mjs",
+      "result": "PASS: prior regressions plus all five new science/continuity regressions; browser bundle checks included.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/plantSignals/science-repair.log"
+    },
+    {
+      "command": "node docs/qa/process-review-2026-10-04/evidence/plantSignals/mutation-checks.mjs",
+      "result": "PASS: 5/5 independently reintroduced defects rejected by their corresponding assertions; source files never modified by the mutation run.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/plantSignals/mutation-checks.json"
+    },
+    {
+      "command": "node docs/qa/process-review-2026-10-04/evidence/plantSignals/repair-diagnostics.mjs",
+      "result": "PASS: 4 conditions x 101 states and 11 irregular seek targets each; finite data, stable resources and deterministic transforms/labels. Includes helper consumer endpoint inspection.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/plantSignals/repair-diagnostics.json"
+    },
+    {
+      "command": "npx prettier --check src/processes/modules/plantSignals/auxinProcess.js src/processes/modules/plantSignals/plantDefenseProcess.js src/processes/modules/plantSignals/structures.js src/processes/modules/plantSignals/science.test.mjs",
+      "result": "PASS after formatting only owned files."
+    },
+    {
+      "phase": "integrated-rendered-followup",
+      "command": "node src/processes/modules/plantSignals/science.test.mjs",
+      "result": "PASS: all prior regressions and both new rendered-anchor regressions, 203 actual triangle-surface checks plus active-branch and irregular-seek validation.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/plantSignals/science-rendered-repair.log"
+    },
+    {
+      "phase": "integrated-rendered-followup",
+      "command": "node docs/qa/process-review-2026-10-04/evidence/plantSignals/rendered-mutation-checks.mjs",
+      "result": "PASS: both reintroduced legacy offsets rejected by the corresponding new assertions; no product source mutation on disk.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/plantSignals/rendered-mutation-checks.json"
+    },
+    {
+      "phase": "integrated-rendered-followup",
+      "command": "npx prettier --check [the four owned source/test files]; git diff --check -- src/processes/modules/plantSignals",
+      "result": "PASS; only owned files formatted."
+    }
+  ],
+  "sourcesAdded": [
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC3986151/",
+    "https://www.lander-lab.com/pdfs/30309908.pdf",
+    "https://www.rcsb.org/structure/4MN8"
+  ],
+  "acceptanceBoundary": "Seven findings are locally fixed and individually resolved: five Phase B science/continuity findings and two appended rendered-anchor findings. Both supplied seven-stage sheets and four native 960x640 originals were visually reviewed. Source is frozen for root reload; updated anchors still require root re-render and continuous playback acceptance. No browser, full-workspace suite, publication, physical-device or performance acceptance was performed by this reviewer."
+}

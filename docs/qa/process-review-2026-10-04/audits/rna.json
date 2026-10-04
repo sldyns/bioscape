@@ -1,0 +1,203 @@
+{
+  "group": "rna",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "rnaProcessing",
+      "roots": [
+        "cell",
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "One intron-containing polyadenylated Pol II transcript in animal/plant nucleus; 2 root/condition configurations.",
+      "checks": [
+        "Actual registered roots read from processesByRoot; no additional neuron/muscle/erythrocyte registration for these four IDs.",
+        "Bilingual intro, all stages, control labels, labels, entry summary, source metadata and external conditionNotes read; no per-root text overrides exist.",
+        "401 regular samples per root/condition plus six irregular repeat-seek sequences: finite world matrices, deterministic scene/labels/state and stable node/geometry/material identities.",
+        "Existing module science.test.mjs and refinement.test.mjs rerun; both passed. Passing tests do not establish rendered acceptance.",
+        "Actual tube/cylinder endpoints at 1005 progress values in each root retain the pre-splice 5-prime linkage, lariat/exon-2 linkage, branch-point junction and ligated exons in the stated order.",
+        "Cap attaches to the left 5-prime end; poly(A) grows from the retained exon-2 3-prime endpoint; downstream stub departs after cleavage; no nuclear translation shown.",
+        "Full update formulas traced through loop .43-.55, exon ligation .55-.65, lariat release .65-.79, cleavage .71-.78 and poly(A) .77-.92."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/28076345/",
+          "title": "Structure of a spliceosome remodelled for exon ligation.",
+          "supports": "Primary cryo-EM experiment establishes branching then exon ligation, with lariat-exon-2 intermediate retained before second-step ligation; study uses yeast, so it supports conserved reaction topology rather than this animal/plant schematic shape."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "401 samples/root; 1005 geometry linkage samples/root; source inspection of all visibility and stage thresholds.",
+        "findings": [],
+        "limits": [
+          "Spliceosome, cleaver and downstream fragment use staged visibility; poly(A) adds prebuilt segments. These are annotated assembly/release abstractions, not confirmed playback defects without rendered review.",
+          "Maximum sampled persistent mesh-origin movement 0.08243 per progress increment .0025; this is a motion diagnostic, not a physical-speed measurement."
+        ]
+      },
+      "limitations": [
+        "No browser, screenshots or rendered continuous playback in Phase A; integrator must verify visible motion and label readability.",
+        "Functional molecular surfaces and sizes are schematic, not fitted coordinates or measured motion.",
+        "Some Nature/NCBI pages returned cookie/recaptcha errors; primary-paper abstracts were retrieved live from Europe PMC core API and saved, rather than treating an inaccessible page as read.",
+        "Capping enzyme and complete 3-prime machinery are not structurally resolved; no claim of actual nucleotide sequence or full atomistic chemistry."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "nuclearTransport",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Classical importin-alpha/beta NLS protein import and beta/Ran recycling; exposed/masked NLS across 3 roots (6 configurations).",
+      "checks": [
+        "Actual registered roots read from processesByRoot; no additional neuron/muscle/erythrocyte registration for these four IDs.",
+        "Bilingual intro, all stages, control labels, labels, entry summary, source metadata and external conditionNotes read; no per-root text overrides exist.",
+        "401 regular samples per root/condition plus six irregular repeat-seek sequences: finite world matrices, deterministic scene/labels/state and stable node/geometry/material identities.",
+        "Existing module science.test.mjs and refinement.test.mjs rerun; both passed. Passing tests do not establish rendered acceptance.",
+        "Actual paired pore-rim leaflets tested over all 57 angular sections for no section crossing, correct order, 0.17 separation and annular-membrane joins.",
+        "Cargo positions read for 1001 samples/root/NLS option; masked cargo remains cytosolic.",
+        "Supplemental 201-frame mesh-vertex sweep includes alpha, beta and Ran, not only cargo: maximum radii in envelope slab are cargo 0.44463, alpha 0.90011, beta 0.85503 and Ran 0.35829, below the minimum pore-facing leaflet radius 0.905.",
+        "Ran approaches only at nuclear-side unloading; beta-Ran crosses back through central pore, hydrolysis begins only after cytosolic return. Alpha stays nuclear; omitted CAS export is explicit in both languages."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/34646014/",
+          "title": "The cellular environment shapes the nuclear pore complex architecture.",
+          "supports": "Human in situ cryo-ET resolves three ring substructures and an environment-sensitive NPC central channel; supports functional pore/envelope architecture, not universal exact geometry across species."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/15864302/",
+          "title": "Structural basis for nuclear import complex dissociation by RanGTP.",
+          "supports": "Primary yeast importin-beta/RanGTP structure explains nuclear RanGTP-driven disassembly of alpha/beta cargo complexes."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "401 frames/configuration plus irregular seeks; all approach/cross/unload/recycle boundaries traced in source; no modulus motion.",
+        "findings": [],
+        "limits": [
+          "Ran nucleotide marker visibility changes at .96 intentionally represents state change; this alone is not a motion failure.",
+          "Alpha has only about 0.00489 radial margin against the conservative minimum leaflet radius, so rendered clearance still merits inspection."
+        ]
+      },
+      "limitations": [
+        "No browser, screenshots or rendered continuous playback in Phase A; integrator must verify visible motion and label readability.",
+        "Functional molecular surfaces and sizes are schematic, not fitted coordinates or measured motion.",
+        "Some Nature/NCBI pages returned cookie/recaptcha errors; primary-paper abstracts were retrieved live from Europe PMC core API and saved, rather than treating an inaccessible page as read.",
+        "Generic conserved architecture is shown, not a species-specific atomic NPC. FG barrier interactions and alpha CAS return are intentionally omitted."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "motorTransport",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Animal cytoplasmic kinesin-1 and activated dynein/dynactin/adaptor carrying one membrane cargo; 2 motors x 2 ATP states.",
+      "checks": [
+        "Actual registered roots read from processesByRoot; no additional neuron/muscle/erythrocyte registration for these four IDs.",
+        "Bilingual intro, all stages, control labels, labels, entry summary, source metadata and external conditionNotes read; no per-root text overrides exist.",
+        "401 regular samples per root/condition plus six irregular repeat-seek sequences: finite world matrices, deterministic scene/labels/state and stable node/geometry/material identities.",
+        "Existing module science.test.mjs and refinement.test.mjs rerun; both passed. Passing tests do not establish rendered acceptance.",
+        "Actual kinesin/dynein foot world coordinates checked over all 6/10 step events: kinesin alternates; dynein has unequal moves, repeated-head events and a reverse step; net cargo displacement is +/-5.2.",
+        "ATP-depleted foot positions remain fixed at 1001 samples; only the early cargo docking animation proceeds.",
+        "Dynein stalk endpoint and entire axis distances measured to actual transformed tubulin triangles, exposing the attachment defect missed by stationary-foot tests.",
+        "Track is 13 protofilaments of consistently oriented alpha/beta dimers with a lumen; vesicle/adaptor/motor connections and opposing net directions traced."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/14684828/",
+          "title": "Kinesin walks hand-over-hand.",
+          "supports": "Single-head fluorescence localization supports alternating hand-over-hand kinesin steps and microtubule-bound waiting states; model does not claim measured scale or kinetics."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/31501589/",
+          "title": "Cargo adaptors regulate stepping and force generation of mammalian dynein-dynactin.",
+          "supports": "Single-molecule primary study establishes ATP-driven mammalian dynein/dynactin/adaptor motility on microtubules, variable forward steps, sideways/backward events, and cargo-adaptor activation."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-rna-01",
+          "severity": "P1",
+          "kind": "attachment/topology",
+          "file": "src/processes/modules/rna/motorTransportProcess.js",
+          "location": "lines 391-398, dynein-stalk-0 and dynein-stalk-1 lower ends; tubulin instanced geometry lines 147-189",
+          "evidence": "The shown dynein microtubule-binding stalks terminate at y=-0.42, z=+/-0.13 with radius 0.044. At 14 sampled planted-head states spanning the entire 10-event run, exact triangle closest-point/segment-triangle measurements on the rendered instanced tubulin surfaces give axis-to-surface distances 0.05166-0.08182. Subtracting a full stalk-radius envelope still leaves strictly positive clearances 0.00766-0.03782. At rest, both stalks are detached (clearance lower bounds 0.02471 and 0.01929). Existing tests verify stationary endpoints but never contact with tubulin. Full measurements: evidence/rna/diagnostic.json contacts[].",
+          "whyWrong": "Directional dynein transport needs a microtubule-bound supporting motor domain. The only displayed binding stalks remain visibly separated from the track while cargo translates, so the current geometry omits the actual mechanical connection and contradicts the depicted attached supporting foot. This is a geometric defect, not a complaint about schematic step sizes.",
+          "fix": "Give each dynein stalk a terminal microtubule-binding domain and/or align its planted tip with the actual tubulin surface, preserving continuous stalk-ring attachment, distinct dynein gait, backwards event, ATP branch and preallocated resources.",
+          "verification": "Regression must measure actual transformed binding-domain/stalk geometry against tubulin triangle surfaces throughout each planted interval and at rest/end, while the moving head detaches then returns. It should fail on current coordinates. Retain existing stationary-support, repeated-head, backwards-event, net-displacement, ATP and seek/resource checks.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/31501589/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": "401 samples for all 4 conditions, all floor/event transitions inspected, five interior samples per step in existing regression, and irregular repeated seeks.",
+        "findings": [
+          "Position formulas join continuously at event boundaries; however planted-head spatial constancy is insufficient because actual stalk-track attachment fails (20261004-rna-01)."
+        ],
+        "limits": [
+          "Foot touchdown uses a sinusoidal lift with a velocity change at event boundaries; a ground-contact transition is not itself a confirmed position discontinuity. Integrator still needs continuous rendered playback."
+        ]
+      },
+      "limitations": [
+        "No browser, screenshots or rendered continuous playback in Phase A; integrator must verify visible motion and label readability.",
+        "Functional molecular surfaces and sizes are schematic, not fitted coordinates or measured motion.",
+        "Some Nature/NCBI pages returned cookie/recaptcha errors; primary-paper abstracts were retrieved live from Europe PMC core API and saved, rather than treating an inaccessible page as read.",
+        "No exact molecular step lengths/probabilities or calibrated motor-ring structures are claimed."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "organelleImport",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Land-plant stromal precursor import via schematic TOC/TIC; transit peptide present/absent (2 configurations).",
+      "checks": [
+        "Actual registered roots read from processesByRoot; no additional neuron/muscle/erythrocyte registration for these four IDs.",
+        "Bilingual intro, all stages, control labels, labels, entry summary, source metadata and external conditionNotes read; no per-root text overrides exist.",
+        "401 regular samples per root/condition plus six irregular repeat-seek sequences: finite world matrices, deterministic scene/labels/state and stable node/geometry/material identities.",
+        "Existing module science.test.mjs and refinement.test.mjs rerun; both passed. Passing tests do not establish rendered acceptance.",
+        "Actual 76-segment backbone traced N-terminus-first from cytosol through both envelope pores; chain straightens within |x|<=0.8.",
+        "Supplemental 301-frame visible peptide/backbone/sidechain vertex sweep gives maximum radius 0.15468 inside either membrane slab, well within 0.43 pore radius. Absent-transit branch has no membrane-crossing vertices.",
+        "Entire precursor enters before .77; single junction 8 is removed during cleavage, transit piece separates and mature residues 9..76 fold only during .85-1. No duplicate mature chain is constructed.",
+        "Land-plant wording and non-universal TIC composition are explicit. Algal primary TOC/TIC structure is treated as architecture evidence, not an exact land-plant subunit template."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/36702157/",
+          "title": "Architecture of chloroplast TOC-TIC translocon supercomplex.",
+          "supports": "Primary Chlamydomonas TOC/TIC structure identifies outer/inner membrane complexes connected across envelope; confirms algal source/specimen and possible substrate routes rather than one universal land-plant atomic model."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10508853/",
+          "title": "Stromal processing peptidase binds transit peptides and initiates their ATP-dependent turnover in chloroplasts.",
+          "supports": "Primary biochemical experiments show stromal processing peptidase removes transit peptide in one endoproteolytic step, releases mature protein, and initiates subsequent transit-peptide turnover."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "401 frames for both branches, 301-frame actual-vertex membrane clearance, cleavage samples .769/.771/.775/.78/.79/.85/.9/1 and irregular seeks.",
+        "findings": [],
+        "limits": [
+          "The cleavage junction remains visible until cleave>0.05 while widening from 0.07389 to roughly 0.11; this small finite reaction transition is not established as a misleading topology or visible failure.",
+          "Transient chaperone/SPP visibility and folded-chain conformation remain rendered-review items."
+        ]
+      },
+      "limitations": [
+        "No browser, screenshots or rendered continuous playback in Phase A; integrator must verify visible motion and label readability.",
+        "Functional molecular surfaces and sizes are schematic, not fitted coordinates or measured motion.",
+        "Some Nature/NCBI pages returned cookie/recaptcha errors; primary-paper abstracts were retrieved live from Europe PMC core API and saved, rather than treating an inaccessible page as read.",
+        "TOC/TIC are functional schematics; exact receptor contacts, energy stoichiometry, import-motor identities and mature protein folding sequence are not resolved."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

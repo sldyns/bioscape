@@ -2,6 +2,7 @@ import {
   proteinDomain,
   helix,
   molecularInventory,
+  bindLabelToSurface,
 } from "./refinementGeometry.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 export default {
@@ -54,8 +55,8 @@ export default {
       at: 0.15,
       title: b("连接膜性货物", "Attach membrane cargo"),
       description: b(
-        "货物通过适配体连接马达。kinesin-1 的双头与长柄不同于 dynein 的大型 AAA+ 马达环和微管结合柄；动物胞质 dynein 的持续运输通常需 dynactin 与活化适配体。",
-        "Cargo connects through adaptors. Kinesin-1 has two heads and an extended stalk; dynein has large AAA+ motor rings and microtubule-binding stalks. Processive animal cytoplasmic dynein generally requires dynactin and an activating adaptor.",
+        "货物通过适配体连接马达。kinesin-1 具有双头与长柄；dynein 具有大型 AAA+ 马达环、细长柄和柄末端的微管结合结构域。动物胞质 dynein 的持续运输通常需 dynactin 与活化适配体。",
+        "Cargo connects through adaptors. Kinesin-1 has two heads and an extended stalk; dynein has large AAA+ motor rings and slender stalks ending in microtubule-binding domains. Processive animal cytoplasmic dynein generally requires dynactin and an activating adaptor.",
       ),
     },
     {
@@ -113,6 +114,11 @@ export default {
       title: "Kinesin walks hand-over-hand",
       url: "https://pubmed.ncbi.nlm.nih.gov/14684828/",
     },
+    {
+      title:
+        "Redwine et al. (2012): Structural basis for microtubule binding and release by dynein",
+      url: "https://pubmed.ncbi.nlm.nih.gov/22997337/",
+    },
   ],
   create({ rootId = "cell" } = {}) {
     const k = sceneKit(),
@@ -162,6 +168,8 @@ export default {
     tubA.computeBoundingSphere();
     tubB.computeBoundingSphere();
     group.add(tubA, tubB);
+    tubA.name = "microtubule-alpha";
+    tubB.name = "microtubule-beta";
     const kin = new THREE.Group(),
       dyn = new THREE.Group(),
       cargo = new THREE.Group();
@@ -249,11 +257,13 @@ export default {
           a = t * Math.PI * 8 + strand * Math.PI;
         return [Math.cos(a) * 0.065, 0.4 + t * 0.74, Math.sin(a) * 0.065];
       });
-      k.tube(points, 0.035, strand ? pale : violet, kin, 120);
+      const coil = k.tube(points, 0.035, strand ? pale : violet, kin, 120);
+      coil.name = `kinesin-coil-${strand}`;
     }
     const dh = [],
       ds = [],
-      dt = [];
+      dt = [],
+      db = [];
     for (let i = 0; i < 2; i++) {
       const r = new THREE.Group();
       dyn.add(r);
@@ -284,6 +294,33 @@ export default {
       ds.push(k.segment([0, 0, 0], [0, 1, 0], 0.044, violet, dyn));
       ds[i].name = `dynein-stalk-${i}`;
       dt.push(k.segment([0, 0, 0], [0, 1, 0], 0.072, pale, dyn));
+      // The stalk transmits changes to a terminal globular MT-binding domain.
+      // Its binding face reaches the curved tubulin surface while planted;
+      // the same complete domain lifts with the stalk during a swing.
+      const binding = new THREE.Group();
+      binding.name = `dynein-binding-domain-${i}`;
+      dyn.add(binding);
+      db.push(binding);
+      const surface = proteinDomain(
+        k,
+        binding,
+        [0, 0, 0],
+        [0.105, 0.12, 0.105],
+        i ? pale : violet,
+        i,
+      );
+      surface.name = `dynein-binding-surface-${i}`;
+      for (const y of [-0.025, 0.045])
+        helix(
+          k,
+          binding,
+          [-0.055, y, 0.084],
+          [0.055, y + 0.015, 0.084],
+          0.013,
+          2,
+          i ? violet : pale,
+          0.009,
+        );
     }
     k.segment([-0.58, 1.16, 0], [0.58, 1.16, 0], 0.065, teal, dyn);
     for (let i = 0; i < 7; i++)
@@ -295,7 +332,17 @@ export default {
         i % 2 ? teal : blue,
         i,
       );
-    helix(k, dyn, [-0.5, 1.27, 0.06], [0.52, 1.27, 0.06], 0.04, 5, gold, 0.023);
+    const dynactin = helix(
+      k,
+      dyn,
+      [-0.5, 1.27, 0.06],
+      [0.52, 1.27, 0.06],
+      0.04,
+      5,
+      gold,
+      0.023,
+    );
+    dynactin.name = "dynactin-adaptor-helix";
     const lumen = k.mesh(
       new THREE.CylinderGeometry(0.365, 0.365, 7.02, 40, 1, true),
       k.material("#5d827d", { side: THREE.DoubleSide }),
@@ -328,6 +375,19 @@ export default {
       ),
       k.label([0, 0.58, 0.5], "Kinesin-1", "Kinesin-1", 2),
     ];
+    const kinesinText = labels[4].text;
+    const dyneinText = b("Dynein + dynactin", "Dynein + dynactin");
+    const updateLabelAnchors = [
+      bindLabelToSurface(labels[0], tubA, 0, 3 * 14),
+      bindLabelToSurface(labels[1], tubB, 0, 3 * 14 + 13),
+      bindLabelToSurface(labels[2], vesicle),
+      bindLabelToSurface(labels[3], tubA, 0, 3 * 14 + 6),
+    ];
+    const updateKinesinAnchor = bindLabelToSurface(
+      labels[4],
+      kin.getObjectByName("kinesin-coil-0"),
+    );
+    const updateDyneinAnchor = bindLabelToSurface(labels[4], dynactin);
     // An illustrative mammalian dynein–dynactin run, not sampled kinetics.
     // Repeated-head events and a backward step distinguish it from kinesin.
     const dyneinEvents = [
@@ -390,6 +450,7 @@ export default {
         link(kl[i], [offset, -0.3 + lift, i ? 0.1 : -0.1], [0, 0.42, 0], 0.06);
         const dx = offset + sign * 0.23;
         dh[i].position.set(dx, 0.25 + lift, i ? 0.13 : -0.13);
+        db[i].position.set(offset, -0.42 + lift, i ? 0.13 : -0.13);
         link(
           ds[i],
           [dx, 0.2 + lift, i ? 0.13 : -0.13],
@@ -398,11 +459,10 @@ export default {
         );
         link(dt[i], [dx, 0.52 + lift, i ? 0.13 : -0.13], [0, 1.16, 0], 0.072);
       }
-      labels[2].position[0] = center;
-      labels[4].position[0] = center;
-      labels[4].text = isDynein
-        ? b("Dynein + dynactin", "Dynein + dynactin")
-        : b("Kinesin-1", "Kinesin-1");
+      for (const updateAnchor of updateLabelAnchors) updateAnchor();
+      if (isDynein) updateDyneinAnchor();
+      else updateKinesinAnchor();
+      labels[4].text = isDynein ? dyneinText : kinesinText;
       group.userData = {
         rootId,
         motor: isDynein ? "cytoplasmic-dynein" : "kinesin-1",

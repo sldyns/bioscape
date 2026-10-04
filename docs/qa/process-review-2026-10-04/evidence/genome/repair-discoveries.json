@@ -1,0 +1,90 @@
+{
+  "group": "genome",
+  "phase": "supplementary source/geometry label review requested by root after Phase B; Phase A unchanged",
+  "issues": [
+    {
+      "issueId": "20261004-genome-04",
+      "modelId": "replication",
+      "severity": "P2",
+      "kind": "misleading annotation anchor",
+      "evidence": "CMG channel label was 1.0153 units from channel center; primer, daughter-strand and ligase labels used layout offsets rather than existing visible rails or enzyme positions.",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js"
+      ],
+      "whyWrong": "label.position is the leader target, so text layout offsets can point at empty space or another biological object.",
+      "repairPlan": "Use actual enzyme/rail/mesh coordinates, update moving targets, and suppress labels for absent or not-yet-delivered material.",
+      "status": "fixed",
+      "verification": "labelAnchors.test.mjs: 140 actual-anchor states covering every registered root and condition; detailed prior coordinates in label-baseline.json."
+    },
+    {
+      "issueId": "20261004-genome-05",
+      "modelId": "dnaRepair",
+      "severity": "P2",
+      "kind": "misleading annotation anchor",
+      "evidence": "UV-photoproduct label was 0.2231 units outside the lesion bounds at p=.4; moving patch, excised strand and ligase annotations retained static layout coordinates.",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js"
+      ],
+      "whyWrong": "label.position is the leader target, so text layout offsets can point at empty space or another biological object.",
+      "repairPlan": "Use actual enzyme/rail/mesh coordinates, update moving targets, and suppress labels for absent or not-yet-delivered material.",
+      "status": "fixed",
+      "verification": "labelAnchors.test.mjs: 140 actual-anchor states covering every registered root and condition; detailed prior coordinates in label-baseline.json."
+    },
+    {
+      "issueId": "20261004-genome-06",
+      "modelId": "transduction",
+      "severity": "P2",
+      "kind": "misleading annotation anchor",
+      "evidence": "Particle label targeted a point .65 above the capsid center; donor/cargo/entry annotations did not track their named targets. Delivered-DNA label could activate before cargo passed the inner envelope.",
+      "files": [
+        "src/processes/modules/genome/transductionProcess.js"
+      ],
+      "whyWrong": "label.position is the leader target, so text layout offsets can point at empty space or another biological object.",
+      "repairPlan": "Use actual enzyme/rail/mesh coordinates, update moving targets, and suppress labels for absent or not-yet-delivered material.",
+      "status": "fixed",
+      "verification": "labelAnchors.test.mjs: 140 actual-anchor states covering every registered root and condition; detailed prior coordinates in label-baseline.json."
+    },
+    {
+      "issueId": "20261004-genome-07",
+      "modelId": "bacterialSporulation",
+      "severity": "P2",
+      "kind": "misleading annotation anchor",
+      "evidence": "Coat label was .6698 units outside the coat bounds at p=.7; septum, engulfment, cortex and core-DNA labels used off-object layout positions.",
+      "files": [
+        "src/processes/modules/genome/bacterialSporulationProcess.js"
+      ],
+      "whyWrong": "label.position is the leader target, so text layout offsets can point at empty space or another biological object.",
+      "repairPlan": "Use actual enzyme/rail/mesh coordinates, update moving targets, and suppress labels for absent or not-yet-delivered material.",
+      "status": "fixed",
+      "verification": "labelAnchors.test.mjs: 140 actual-anchor states covering every registered root and condition; detailed prior coordinates in label-baseline.json."
+    },
+    {
+      "issueId": "20261004-genome-08",
+      "modelId": "transduction",
+      "severity": "P2",
+      "kind": "cutaway tail-tube backface culling",
+      "evidence": "Native full-b1-002-transduction-phage-stage-6.webp (p=.915) and p=1 sheet show a blank gap between contracted P1 sheath and surface baseplate. The open back-half tail tube exists but its inner faces are culled by FrontSide material.",
+      "files": [
+        "src/processes/modules/genome/transductionProcess.js"
+      ],
+      "whyWrong": "The rendered default view presents an apparently disconnected entry pathway after sheath contraction.",
+      "repairPlan": "Use a dedicated DoubleSide material on existing open cutaway tube/conduit meshes; preserve positions, radius, lumen, mesh identity and DNA path. Add fitted-default-camera triangle-ray regression and frozen pre-fix rejection.",
+      "status": "fixed in source; targeted native replay pending",
+      "verification": "tailVisibility.test.mjs: 16 fitted-camera states/144 material-sensitive rays pass; same regression rejects frozen pre-fix source. tail-visibility-preservation.json confirms all scene geometry/transforms unchanged. Owned smoke and integrated science exit 0. Original rendered evidence unchanged; recapture pending."
+    },
+    {
+      "issueId": "20261004-genome-09",
+      "modelId": "dnaRepair",
+      "severity": "P2",
+      "kind": "incision label contradicts actual event state",
+      "evidence": "conditions-final-a-012-dnaRepair-cell-end.webp shows both Two incisions on one strand and Incision blocked - lesion retained while the damaged backbone remains uncut. Same blocked finding in plant/yeast sheets; active p=.325 also labels two cuts before they occur.",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js"
+      ],
+      "whyWrong": "The annotation activates at local p=.3 although actual dual incision starts at p=.43, and blocked local time stops at .4. It therefore falsely announces completed cuts in the arrested branch.",
+      "repairPlan": "Use the actual dual-incision event state for cut geometry metadata and label activation; keep cut-site anchor/geometry unchanged. Add both-branch, all-root boundary and arbitrary-seek regression with frozen pre-fix rejection.",
+      "status": "fixed; fresh all-root active/blocked stage-image review passed",
+      "verification": "incisionLabel.test.mjs: 96 boundary states/672 arbitrary seeks pass; same regression rejects frozen source. incision-label-preservation.json confirms all geometry, anchors and biological state unchanged in 96 states. Fresh owned smoke/science exit 0; subsequent native image review is complete. Fresh conditions-final-c Chinese raw960 review passed for all six repair conditions; details in genome-rendered-all-cases.md."
+    }
+  ]
+}

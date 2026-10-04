@@ -3,6 +3,7 @@ import {
   proteinDomain,
   helix,
   molecularInventory,
+  bindLabelToSurface,
 } from "./refinementGeometry.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 export default {
@@ -109,6 +110,7 @@ export default {
       cleaveMat = k.material("#9eaf8d");
     // Both envelope membranes have paired leaflets and a front inspection wedge.
     const lipidCore = k.material("#c3c0a1", { side: THREE.DoubleSide });
+    const channelAnchors = {};
     for (const [x, mat] of [
       [-0.55, tocMat],
       [0.55, ticMat],
@@ -139,12 +141,16 @@ export default {
               Math.sin(ang) * 0.43,
             ]);
           }
-          k.tube(pts, 0.049, mat, group, 24);
+          const wall = k.tube(pts, 0.049, mat, group, 24);
+          if (i === 3) {
+            wall.name = "toc-channel-wall";
+            channelAnchors.toc = wall;
+          }
         }
       } else {
         for (let i = 0; i < 8; i++) {
           const a = (i * Math.PI) / 4;
-          helix(
+          const wall = helix(
             k,
             group,
             [x - 0.23, Math.cos(a) * 0.43, Math.sin(a) * 0.43],
@@ -154,6 +160,10 @@ export default {
             mat,
             0.025,
           );
+          if (i === 2) {
+            wall.name = "tic-channel-wall";
+            channelAnchors.tic = wall;
+          }
         }
       }
     }
@@ -199,6 +209,7 @@ export default {
     );
     k.segment([-0.68, 0.43, 0], [-0.9, 0.62, 0], 0.1, tocMat);
     const chaperone = new THREE.Group();
+    chaperone.name = "stromal-chaperone";
     group.add(chaperone);
     proteinDomain(
       k,
@@ -251,6 +262,7 @@ export default {
       segments.push(
         k.segment([0, 0, 0], [0, 1, 0], 0.051, i < 9 ? transitMat : chainMat),
       );
+      segments[i].name = `import-chain-${i}`;
       if (i % 3 === 0)
         beads.push({
           i,
@@ -284,6 +296,14 @@ export default {
         1,
       ),
       k.label([2.8, -1.1, 0], "成熟基质蛋白", "Mature stromal protein", 2),
+    ];
+    beads[0].mesh.name = "transit-peptide-n-terminus";
+    const updateLabelAnchors = [
+      bindLabelToSurface(labels[2], channelAnchors.toc),
+      bindLabelToSurface(labels[3], channelAnchors.tic),
+      bindLabelToSurface(labels[5], beads[0].mesh),
+      bindLabelToSurface(labels[6], chaperone.children[0]),
+      bindLabelToSurface(labels[7], segments[44]),
     ];
     function update(value, parameters = {}) {
       const p = clamp(value),
@@ -353,10 +373,9 @@ export default {
       spp.position.set(3.65, 0.5, 0);
       spp.visible = targeted && p >= 0.73 && p < 0.89;
       labels[5].active = targeted;
-      labels[5].position[0] = lead - 0.15 + cleave * 0.25;
-      labels[5].position[1] = 0.65 + cleave * 1.15;
       labels[6].active = chaperone.visible;
       labels[7].active = fold > 0.2;
+      for (const updateAnchor of updateLabelAnchors) updateAnchor();
       group.userData = {
         rootId,
         destination: "chloroplast-stroma",

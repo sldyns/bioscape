@@ -56,8 +56,30 @@ function create() {
     body.name = "enzyme-subunits-and-nucleic-acid-binding-cleft";
     return root;
   }
-  const polIV = protein([-3.5, 2.1, 0.1], enzymeMat, 0.42),
-    rdr = protein([-2.8, 1.23, 0.03], k.material("#8ea79d"), 0.28);
+  const polIV = protein([-3.05, 2.1, 0.1], enzymeMat, 0.42),
+    rdr = protein([-2.72, 1.45, 0.1], k.material("#8ea79d"), 0.28);
+  polIV.name = "Pol-IV-coupled-producer";
+  rdr.name = "RDR2-coupled-producer";
+  // Keep the nascent 3′ end in Pol IV, then backtrack that same end through
+  // the interpolymerase channel. These ports belong to the actual complexes.
+  const polPort = k.ring([0, -0.35, 0.12], 0.075, 0.018, enzymeMat, polIV);
+  polPort.name = "Pol-IV-RNA-3prime-port";
+  const templatePort = k.ring([-0.1, 0.1, 0.12], 0.075, 0.018, enzymeMat, rdr);
+  templatePort.name = "RDR2-template-entry-port";
+  const productPort = k.ring([-0.1, -0.12, 0.12], 0.075, 0.018, enzymeMat, rdr);
+  productPort.name = "RDR2-RNA-3prime-port";
+  for (const port of [polPort, templatePort, productPort])
+    port.rotation.y = Math.PI / 2;
+  const polExit = polPort.position.clone().add(polIV.position),
+    templateEntry = templatePort.position.clone().add(rdr.position);
+  for (const side of [-1, 1]) {
+    const from = polExit.clone(),
+      to = templateEntry.clone();
+    from.z += side * 0.065;
+    to.z += side * 0.065;
+    k.segment(from.toArray(), to.toArray(), 0.024, enzymeMat).name =
+      "Pol-IV-RDR2-transfer-channel-edge";
+  }
   const polV = protein([3.35, -1.56, 0.12], enzymeMat, 0.38);
   const dcl = new THREE.Group();
   group.add(dcl);
@@ -189,10 +211,16 @@ function create() {
   const scaffoldDetails = nucleotideDetails(k, group, 34, "#d6bb8d", 0.03);
   const rails = [];
   for (let fragment = 0; fragment < 2; fragment++)
-    for (let strand = 0; strand < 2; strand++)
-      rails.push(
-        dynamicTube(group, strand === 0 ? rnaMat : complementMat, 75, 0.035),
+    for (let strand = 0; strand < 2; strand++) {
+      const rail = dynamicTube(
+        group,
+        strand === 0 ? rnaMat : complementMat,
+        75,
+        0.035,
       );
+      rail.mesh.name = `precursor-RNA-fragment-${fragment}-strand-${strand}`;
+      rails.push(rail);
+    }
   const basePairs = [];
   for (let i = 0; i < 48; i++)
     basePairs.push(k.mesh(k.cylinder, k.material("#c7b998")));
@@ -200,7 +228,12 @@ function create() {
   const matchBars = [];
   for (let i = 0; i < 24; i++)
     matchBars.push(k.mesh(k.cylinder, k.material("#beb090")));
-  let p = 0;
+  let p = 0,
+    polGrowth = 0,
+    dsGrowth = 0,
+    handoff = 0,
+    delivery = 0;
+  const productionPort = new THREE.Vector3();
   const fragmentSample = (s, out, fragment, strand) => {
     const cut = ease(p, 0.34, 0.43),
       load = ease(p, 0.43, 0.56),
@@ -220,7 +253,55 @@ function create() {
         1.62 * (s - 0.5) * Math.sin(Math.PI * dock) +
         (strand === 1 ? 0.65 * load : 0);
     }
-    return out.set(x, y, z + 0.12);
+    out.set(x, y, z + 0.12);
+    if (delivery < 1) {
+      // q is one material coordinate through both prebuilt fragments. During
+      // Pol IV synthesis q=polGrowth is the attached 3′ end. After handoff,
+      // RDR2 draws the same template through its entry while the opposite
+      // strand grows from q=1 toward q=0, with its 3′ end at the product port.
+      const q = (fragment + s) / 2;
+      if (p <= 0.28) {
+        const attachedCoordinate = p < 0.16 ? polGrowth : 1 - dsGrowth;
+        const angle = Math.PI * (q - attachedCoordinate);
+        const radius = 3.24 / Math.PI;
+        productionPort.copy(polExit).lerp(templateEntry, handoff);
+        out.set(
+          productionPort.x + (radius - strand * 0.22) * Math.sin(angle),
+          productionPort.y +
+            radius * (Math.cos(angle) - 1) -
+            strand * 0.22 * Math.cos(angle),
+          productionPort.z + 0.04 * Math.sin(angle * 2),
+        );
+      } else {
+        // Release and unbend the completed material path before DCL3 cutting.
+        // Interpolating two opposed strand positions would cross the strands;
+        // decreasing curvature instead keeps their separation normal to RNA.
+        const angle = Math.PI * (1 - delivery) * q;
+        const sinc =
+          Math.abs(angle) < 0.001
+            ? 1 - (angle * angle) / 6
+            : Math.sin(angle) / angle;
+        const bend =
+          Math.abs(angle) < 0.001
+            ? angle / 2 - (angle * angle * angle) / 24
+            : (1 - Math.cos(angle)) / angle;
+        out.set(
+          templateEntry.x +
+            (-2.4 - templateEntry.x) * delivery +
+            3.24 * q * sinc -
+            strand * 0.22 * Math.sin(angle),
+          templateEntry.y +
+            (1.26 - templateEntry.y) * delivery -
+            3.24 * q * bend -
+            strand * 0.22 * Math.cos(angle),
+          templateEntry.z +
+            (0.12 - templateEntry.z) * delivery +
+            0.04 * Math.sin(q * Math.PI * 2) * (1 - delivery) +
+            0.05 * Math.sin(q * Math.PI * 8) * delivery,
+        );
+      }
+    }
+    return out;
   };
   const a = new THREE.Vector3(),
     b = new THREE.Vector3(),
@@ -234,8 +315,8 @@ function create() {
     ),
     k.label(
       [-2.85, 0.4, 0.1],
-      "RDR2 · 双链 RNA",
-      "RDR2 · double-stranded RNA",
+      "RDR2 · 与 Pol IV 耦合",
+      "RDR2 · coupled to Pol IV",
       7,
     ),
     k.label([-0.7, 2.1, 0.1], "DCL3 · 切割", "DCL3 · cleavage", 8),
@@ -259,15 +340,16 @@ function create() {
   function update(value, parameters = {}) {
     p = clamp(value);
     const active = parameters.drm2 !== "inactive";
-    const pol = ease(p, 0.02, 0.16),
-      ds = ease(p, 0.13, 0.29),
+    polGrowth = ease(p, 0.02, 0.12);
+    handoff = ease(p, 0.12, 0.16);
+    dsGrowth = ease(p, 0.16, 0.28);
+    delivery = ease(p, 0.28, 0.34);
+    const pol = polGrowth,
+      ds = dsGrowth,
       cut = ease(p, 0.34, 0.43),
       load = ease(p, 0.43, 0.56),
       dock = ease(p, 0.57, 0.76),
       recruit = ease(p, 0.74, 0.84);
-    polIV.position.x = -3.5 + 0.55 * pol;
-    rdr.position.x = 0.84 - 3.24 * ds;
-    rdr.position.y = 0.73;
     jaws[0].rotation.z = 0.35 * (1 - cut);
     jaws[1].rotation.z = -0.35 * (1 - cut);
     dcl.position.z = 0.55 * ease(p, 0.43, 0.52);
@@ -304,25 +386,15 @@ function create() {
     ago.scale.set(1, 0.78, 1);
     const scaffoldGrowth = ease(p, 0.45, 0.63);
     scaffold.mesh.visible = scaffoldGrowth > 0;
-    scaffold.update((s, out) =>
+    const sampleScaffold = (s, out) =>
       out.set(
         3.4 - 2.36 * scaffoldGrowth * (1 - s),
         -0.96 + 0.06 * Math.sin(s * 8) * (1 - dock),
         0.17,
-      ),
-    );
+      );
+    scaffold.update(sampleScaffold);
     scaffoldDetails.root.visible = scaffoldGrowth > 0;
-    scaffoldDetails.update(
-      (s, out) =>
-        out.set(
-          3.4 - 2.36 * scaffoldGrowth * (1 - s),
-          -0.96 + 0.06 * Math.sin(s * 8) * (1 - dock),
-          0.17,
-        ),
-      1,
-      false,
-      1,
-    );
+    scaffoldDetails.update(sampleScaffold, 1, false, 1);
     for (let i = 0; i < 24; i++) {
       const x = 1.2 + (1.62 * i) / 23;
       a.set(x, -0.68, 0.17);
@@ -337,8 +409,25 @@ function create() {
     cytosine.quaternion.copy(baseOrientation).multiply(flipRotation);
     methylGroup.visible = active && p > 0.89;
     const markCount = methylGroup.visible ? 1 : 0;
-    labels[3].position[0] = ago.position.x;
-    labels[3].position[1] = ago.position.y + 0.8;
+    // Name the actual rendered domains/strands; the label layer places text.
+    polIV.children[0].children[2]
+      .getWorldPosition(scratch)
+      .toArray(labels[0].position);
+    rdr.children[0].children[1]
+      .getWorldPosition(scratch)
+      .toArray(labels[1].position);
+    jaws[0].children[0].getWorldPosition(scratch).toArray(labels[2].position);
+    ago.children[0].children[2]
+      .getWorldPosition(scratch)
+      .toArray(labels[3].position);
+    polV.children[0].children[2]
+      .getWorldPosition(scratch)
+      .toArray(labels[4].position);
+    base.getWorldPosition(scratch).toArray(labels[5].position);
+    sampleScaffold(0.5, scratch).toArray(labels[6].position);
+    drm.children[0].children[2]
+      .getWorldPosition(scratch)
+      .toArray(labels[8].position);
     labels[3].active = p > 0.39;
     labels[6].active = p > 0.53;
     labels[8].active = p > 0.72;
@@ -356,6 +445,8 @@ function create() {
       guideLengthNt: 24,
       guideScaffoldOrientation: "antiparallel",
       dsRNAGenerated: ds > 0.99,
+      precursorReleased: p > 0.28,
+      precursorAtDCL3: delivery >= 1,
       guideLoaded: load > 0.99,
       scaffoldPaired: dock > 0.98,
       drm2Recruited: recruit > 0.99,
@@ -400,16 +491,16 @@ export default {
       at: 0,
       title: B("Pol IV 产生前体 RNA", "Pol IV produces precursor RNA"),
       description: B(
-        "在可被该途径识别的来源位点，Pol IV 转录 DNA。这里将来源和靶区分开展示以便阅读；它们可以属于同一基因组区域。所有 RNA 合成均为 5′→3′。",
-        "Pol IV transcribes DNA at a locus engaged by this pathway. Source and target regions are separated for readability; they can belong to the same genomic region. All RNA synthesis proceeds 5′→3′.",
+        "在来源位点，Pol IV 转录 DNA，新生 RNA 的 3′端保持在聚合酶内。随后该端通过相连通道交给 RDR2。来源和靶区分开展示以便阅读；它们可以属于同一基因组区域。所有 RNA 合成均为 5′→3′。",
+        "At the source locus, Pol IV transcribes DNA with the nascent RNA 3′ end retained in the polymerase. That end then passes through the connecting channel to RDR2. Source and target are separated for readability but may belong to the same genomic region. All RNA synthesis proceeds 5′→3′.",
       ),
     },
     {
       at: 0.16,
       title: B("RDR2 合成互补链", "RDR2 makes the complementary strand"),
       description: B(
-        "与 Pol IV 协作的 RNA 依赖性 RNA 聚合酶 RDR2 合成互补链，形成反向平行的双链 RNA 前体。上方短条表示配对的 RNA，而不是新 DNA。",
-        "RNA-dependent RNA polymerase RDR2 cooperates with Pol IV to make the complementary strand of an antiparallel dsRNA precursor. Upper rungs represent paired RNA, not newly synthesized DNA.",
+        "RDR2 与 Pol IV 组成耦合复合物，读取送入的 RNA 并合成互补链；新链的 3′端保持在 RDR2 内。完成后的反向平行双链 RNA 才释放并移向 DCL3。短条表示配对的 RNA，不是新 DNA；通道和弯曲路径均为示意。",
+        "RDR2 forms a coupled complex with Pol IV, reads the transferred RNA, and makes its complementary strand with the new 3′ end retained in RDR2. The completed antiparallel dsRNA is then released and moves to DCL3. Rungs represent paired RNA, not new DNA; channels and curved paths are schematic.",
       ),
     },
     {
@@ -461,6 +552,11 @@ export default {
   ],
   create,
   sources: [
+    {
+      title:
+        "Fukudome et al. (2021), Structure and RNA template requirements of Arabidopsis RDR2",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8713982/",
+    },
     {
       title:
         "Fang et al. (2021), Substrate deformation regulates DRM2-mediated DNA methylation",

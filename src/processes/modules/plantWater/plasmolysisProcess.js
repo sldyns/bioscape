@@ -219,6 +219,7 @@ const process = {
         ),
       );
     }
+    gapSolutes.forEach((m) => (m.name = "impermeant bath-gap solute"));
     const water = [];
     for (let i = 0; i < 18; i++)
       water.push(
@@ -248,7 +249,18 @@ const process = {
       const high =
         ease(p, 0.1, 0.18) * (1 - (recover ? ease(p, 0.64, 0.69) : 0));
       external.forEach((m, i) => (m.visible = i < 8 || high > 0.12));
-      gapSolutes.forEach((m) => (m.visible = shrink > 0.45 && high > 0.12));
+      // Use the complete outer-head silhouette, including head radius. These
+      // raised cut-face markers must stay outside the membrane in section.
+      const membraneOuterX = (4.73 / 2 + 0.065 / 2 + 0.021) * sx,
+        wallInnerX = 4.9 / 2,
+        gapX = (membraneOuterX + wallInnerX) / 2;
+      gapSolutes.forEach((m, i) => {
+        m.position.x = (i % 2 ? -1 : 1) * gapX;
+        m.visible =
+          shrink > 0.45 &&
+          high > 0.12 &&
+          wallInnerX - membraneOuterX > 2 * 0.055 + 0.04;
+      });
       const outward = p > 0.18 && p < 0.49,
         inward = recover && p > 0.68 && p < 0.93;
       water.forEach((m, i) => {

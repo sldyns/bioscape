@@ -882,6 +882,7 @@ const rules = [
     processId: "diffusion",
     when: {
       gradient: "equal",
+      route: "oxygen",
     },
     kind: "condition",
     body: {
@@ -891,6 +892,19 @@ const rules = [
     title: {
       zh: "双向交换，无净扩散",
       en: "Bidirectional exchange without net diffusion",
+    },
+  },
+  {
+    processId: "diffusion",
+    when: { gradient: "equal", route: "water" },
+    kind: "condition",
+    body: {
+      zh: "两侧水活度相等时，水分子仍经水通道双向随机交换，但没有由水活度差驱动的净水通量。",
+      en: "Equal water activity retains bidirectional random exchange through aquaporins, with no net water flux driven by a water-activity difference.",
+    },
+    title: {
+      zh: "水活度相等，双向交换",
+      en: "Equal water activity, bidirectional exchange",
     },
   },
   {

@@ -65,9 +65,162 @@ function create() {
 
   // A genuine open shell: both leaflets and the cut edge enclose a lumen.
   // The opening faces +Z. It is a viewing cut, not a biological aperture.
-  const shell = (parent, radii, innerRadii, cut, outer, inner) => {
+  const shell = (parent, radii, innerRadii, cut, outer, inner, port = null) => {
     const n = 72,
       m = 28;
+    if (port) {
+      // A side opening is part of the shell's topology. Clip the separate
+      // anterior observation window in common unit coordinates, so both
+      // leaflets retain corresponding boundaries and a real bilayer cut edge.
+      const direction = v(port.direction),
+        vertical = new THREE.Vector3(0, 1, 0),
+        lateral = v(port.lateral),
+        opening = 0.32,
+        cutZ = Math.cos(cut);
+      const unit = (theta, phi) =>
+        direction
+          .clone()
+          .multiplyScalar(Math.cos(theta))
+          .addScaledVector(vertical, Math.sin(theta) * Math.cos(phi))
+          .addScaledVector(lateral, Math.sin(theta) * Math.sin(phi));
+      const units = [],
+        indices = [],
+        lookup = new Map(),
+        cutSegments = new Map();
+      const key = (p) =>
+        p
+          .toArray()
+          .map((x) => (Math.abs(x) < 1e-10 ? 0 : x).toFixed(11))
+          .join(",");
+      const indexOf = (p) => {
+        const id = key(p);
+        if (!lookup.has(id)) {
+          lookup.set(id, units.length);
+          units.push(p);
+        }
+        return lookup.get(id);
+      };
+      const triangle = (points) => {
+        const polygon = [];
+        for (let i = 0; i < points.length; i++) {
+          const a = points[i],
+            b = points[(i + 1) % points.length],
+            insideA = a.z <= cutZ,
+            insideB = b.z <= cutZ;
+          if (insideA) polygon.push(a);
+          if (insideA !== insideB)
+            polygon.push(a.clone().lerp(b, (cutZ - a.z) / (b.z - a.z)));
+        }
+        if (polygon.length < 3) return;
+        const cutPoints = polygon.filter((p) => Math.abs(p.z - cutZ) < 1e-9);
+        if (
+          cutPoints.length === 2 &&
+          cutPoints[0].distanceTo(cutPoints[1]) > 1e-9
+        )
+          cutSegments.set(cutPoints.map(key).sort().join("/"), cutPoints);
+        for (let i = 1; i + 1 < polygon.length; i++) {
+          const a = polygon[0],
+            b = polygon[i],
+            c = polygon[i + 1];
+          const outward =
+            b
+              .clone()
+              .sub(a)
+              .cross(c.clone().sub(a))
+              .dot(a.clone().add(b).add(c)) >= 0;
+          indices.push(
+            indexOf(a),
+            indexOf(outward ? b : c),
+            indexOf(outward ? c : b),
+          );
+        }
+      };
+      for (let j = 0; j < m; j++)
+        for (let i = 0; i < n; i++) {
+          const t0 = opening + ((Math.PI - opening) * j) / m,
+            t1 = opening + ((Math.PI - opening) * (j + 1)) / m,
+            a = unit(t0, (i * TAU) / n),
+            b = unit(t1, (i * TAU) / n),
+            c = unit(t0, ((i + 1) * TAU) / n),
+            d = unit(t1, ((i + 1) * TAU) / n);
+          triangle([a, b, c]);
+          triangle([b, d, c]);
+        }
+      const scaled = (p, r) => p.clone().multiply(v(r));
+      for (const [r, mat, reverse, suffix] of [
+        [radii, outer, false, "outer"],
+        [innerRadii, inner, true, "inner"],
+      ]) {
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute(
+          "position",
+          new THREE.Float32BufferAttribute(
+            units.flatMap((p) => scaled(p, r).toArray()),
+            3,
+          ),
+        );
+        const order = indices.slice();
+        if (reverse)
+          for (let i = 0; i < order.length; i += 3)
+            [order[i + 1], order[i + 2]] = [order[i + 2], order[i + 1]];
+        geo.setIndex(order);
+        geo.computeVertexNormals();
+        mesh(parent, geo, mat).name = `${parent.name}-${suffix}-leaflet`;
+      }
+      const edgePositions = [],
+        edgeIndices = [];
+      for (const [a, b] of cutSegments.values()) {
+        const offset = edgePositions.length / 3;
+        edgePositions.push(
+          ...scaled(a, radii),
+          ...scaled(b, radii),
+          ...scaled(a, innerRadii),
+          ...scaled(b, innerRadii),
+        );
+        edgeIndices.push(
+          offset,
+          offset + 1,
+          offset + 2,
+          offset + 2,
+          offset + 1,
+          offset + 3,
+        );
+      }
+      const edge = new THREE.BufferGeometry();
+      edge.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(edgePositions, 3),
+      );
+      edge.setIndex(edgeIndices);
+      edge.computeVertexNormals();
+      mesh(parent, edge, outer).name = `${parent.name}-viewing-cut-edge`;
+      return {
+        parent,
+        outer: Array.from({ length: n }, (_, i) =>
+          scaled(unit(opening, (i * TAU) / n), radii),
+        ),
+        inner: Array.from({ length: n }, (_, i) =>
+          scaled(unit(opening, (i * TAU) / n), innerRadii),
+        ),
+        tangents: (r) =>
+          Array.from({ length: n }, (_, i) =>
+            direction
+              .clone()
+              .multiplyScalar(Math.sin(opening))
+              .addScaledVector(
+                vertical,
+                -Math.cos(opening) * Math.cos((i * TAU) / n),
+              )
+              .addScaledVector(
+                lateral,
+                -Math.cos(opening) * Math.sin((i * TAU) / n),
+              )
+              .multiply(v(r)),
+          ),
+        radii,
+        innerRadii,
+      };
+    }
     const point = (r, theta, phi) => [
       r[0] * Math.sin(theta) * Math.cos(phi),
       r[1] * Math.sin(theta) * Math.sin(phi),
@@ -148,12 +301,23 @@ function create() {
   const thylakoids = new THREE.Group();
   thylakoids.name = "thylakoid-membranes-and-lumina";
   group.add(thylakoids);
+  const bridgeDirection = new THREE.Vector3(
+    1.09 / 0.83,
+    0,
+    -0.81 / 0.63,
+  ).normalize();
+  const bridgeLateral = new THREE.Vector3(
+    -bridgeDirection.z,
+    0,
+    bridgeDirection.x,
+  );
+  const ports = [[], []];
   for (let stack = 0; stack < 2; stack++) {
     const granum = new THREE.Group();
     granum.position.set(
-      stack ? -0.75 : -1.64,
+      stack ? -0.55 : -1.64,
       stack ? -0.05 : 0,
-      stack ? -0.58 : 0.13,
+      stack ? -0.68 : 0.13,
     );
     granum.scale.setScalar(stack ? 0.64 : 1);
     thylakoids.add(granum);
@@ -161,14 +325,26 @@ function create() {
       const disc = new THREE.Group();
       disc.position.y = -0.59 + i * 0.29;
       granum.add(disc);
-      shell(
+      const connection = i === 1 ? 0 : i === (stack ? 4 : 3) ? 1 : -1;
+      disc.name = `thylakoid-${stack ? "destination" : "source"}-${i}`;
+      const port = shell(
         disc,
         [0.83, 0.116, 0.63],
         [0.79, 0.071, 0.584],
         stack ? 0.38 : 0.95,
         membrane,
         lumen,
+        connection >= 0
+          ? {
+              direction: bridgeDirection
+                .clone()
+                .multiplyScalar(stack ? -1 : 1)
+                .toArray(),
+              lateral: bridgeLateral.toArray(),
+            }
+          : null,
       );
+      if (port) ports[connection][stack] = port;
       // Two phosphate leaflets and paired acyl tails at the exposed membrane cut.
       const cut = stack ? 0.38 : 0.95,
         n = 68;
@@ -213,34 +389,62 @@ function create() {
       instanceTool.finish(tails);
     }
   }
-  // Intergranal lamellae connect matching discs as flattened, hollow sacs.
-  for (const y of [-0.3, 0.28]) {
-    const points = [
-      [-1.3, y, -0.12],
-      [-1.03, y + 0.015, -0.28],
-      [-0.73, y, -0.48],
-    ];
-    const curve = new THREE.CatmullRomCurve3(points.map(v));
-    for (const [r, mat] of [
-      [0.096, membrane],
-      [0.064, lumen],
+  // Two selected lamellae join actual side ports. The same ring coordinates
+  // form the disc and lamella edges; no closed membrane remains across a lumen.
+  thylakoids.updateWorldMatrix(true, true);
+  for (let connection = 0; connection < ports.length; connection++) {
+    const [a, b] = ports[connection],
+      around = a.outer.length,
+      rings = 24;
+    for (const [layer, mat] of [
+      ["outer", membrane],
+      ["inner", lumen],
     ]) {
-      const lamella = mesh(
-        thylakoids,
-        new THREE.TubeGeometry(curve, 48, r, 16, false),
-        mat,
+      const start = a[layer].map((p) =>
+        p.clone().applyMatrix4(a.parent.matrixWorld),
       );
-      lamella.scale.y = 0.66;
-      lamella.position.y = y * 0.34;
+      const end = b[layer].map((p) =>
+        p.clone().applyMatrix4(b.parent.matrixWorld),
+      );
+      const ta = a.tangents(layer === "outer" ? a.radii : a.innerRadii);
+      const tb = b.tangents(layer === "outer" ? b.radii : b.innerRadii);
+      const positions = [],
+        indices = [];
+      for (let j = 0; j <= rings; j++) {
+        const t = j / rings,
+          t2 = t * t,
+          t3 = t2 * t;
+        for (let i = 0; i < around; i++) {
+          const length = start[i].distanceTo(end[i]) * 0.55;
+          const p = start[i]
+            .clone()
+            .multiplyScalar(2 * t3 - 3 * t2 + 1)
+            .addScaledVector(end[i], -2 * t3 + 3 * t2)
+            .addScaledVector(
+              ta[i].clone().normalize(),
+              length * (t3 - 2 * t2 + t),
+            )
+            .addScaledVector(tb[i].clone().normalize(), -length * (t3 - t2));
+          positions.push(...p);
+          if (j < rings) {
+            const x = j * around + i,
+              y = j * around + ((i + 1) % around);
+            if (layer === "outer")
+              indices.push(x, x + around, y, y, x + around, y + around);
+            else indices.push(x, y, x + around, y, y + around, x + around);
+          }
+        }
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions, 3),
+      );
+      geo.setIndex(indices);
+      geo.computeVertexNormals();
+      mesh(thylakoids, geo, mat).name =
+        `intergranal-lamella-${connection}-${layer}`;
     }
-    // Small paired cut-edge tracks make thickness readable at the bridge junction.
-    for (const zShift of [-0.065, 0.065])
-      path(
-        thylakoids,
-        points.map(([x, py, z]) => [x, py, z + zShift]),
-        0.012,
-        lipidHead,
-      );
   }
 
   // Protein complexes occupy the unstacked membrane surface; schematic shapes
@@ -281,8 +485,8 @@ function create() {
     domain(
       k,
       psii,
-      [sign * 0.12, -0.12, 0.025],
-      [0.25, 0.14, 0.26],
+      [sign * 0.12, -0.066, 0.025],
+      [0.25, 0.08, 0.26],
       lumen,
       antennaMat,
     );
@@ -341,7 +545,7 @@ function create() {
     pigmentMat,
   ); // stromal acceptor face
   const synthase = new THREE.Group();
-  synthase.position.set(-0.86, 0.6, 0.18);
+  synthase.position.set(-1.14, 0.632, -0.13);
   synthase.name = "chloroplast-ATP-synthase";
   group.add(synthase);
   const synthaseMat = material("#a7a075", {
@@ -358,8 +562,8 @@ function create() {
     helix(
       k,
       rotor,
-      [Math.cos(a) * 0.09, -0.1, Math.sin(a) * 0.09],
-      [Math.cos(a) * 0.09, 0.04, Math.sin(a) * 0.09],
+      [Math.cos(a) * 0.09, -0.042, Math.sin(a) * 0.09],
+      [Math.cos(a) * 0.09, 0.046, Math.sin(a) * 0.09],
       0.009,
       synthaseMat,
       3,
@@ -497,19 +701,30 @@ function create() {
   const flows = [];
   // Fine, directional guide paths are a diagram overlay, not physical tubes.
   const flow = (points, color, start, count = 2, radius = 0.043) => {
+    const routeIndex = flows.length;
+    const closed = v(points[0]).distanceTo(v(points.at(-1))) < 1e-8;
     const guideMat = material(color, {
       transparent: true,
       opacity: 0.2,
       depthWrite: false,
     });
     const curve = path(group, points, 0.011, guideMat);
+    group.children.at(-1).name = `explanatory-flow-${routeIndex}-guide`;
     const markerMat = material(color, {
       emissive: color,
       emissiveIntensity: 0.2,
     });
     const packets = [];
-    for (let i = 0; i < count; i++)
-      packets.push(ball(group, points[0], [radius, radius, radius], markerMat));
+    for (let i = 0; i < count; i++) {
+      const packet = ball(
+        group,
+        points[0],
+        [radius, radius, radius],
+        markerMat,
+      );
+      packet.name = `explanatory-flow-${routeIndex}-packet-${i}`;
+      packets.push(packet);
+    }
     const arrow = mesh(
       group,
       new THREE.ConeGeometry(0.059, 0.15, 12),
@@ -526,6 +741,7 @@ function create() {
       packets,
       start,
       radius,
+      closed,
       scratch: new THREE.Vector3(),
     });
     return flows.at(-1);
@@ -558,14 +774,14 @@ function create() {
       [-3.14, -0.9, 0.6],
       [-2.73, -0.54, 0.57],
       [-2.31, -0.21, 0.39],
-      [-1.91, 0.45, 0.17],
+      [-1.91, 0.574, 0.135],
     ],
     "#6f9fac",
     0.3,
   );
   flow(
     [
-      [-1.91, 0.5, 0.18],
+      [-1.91, 0.574, 0.135],
       [-2.28, 0.6, 0.67],
       [-2.81, 0.72, 0.88],
       [-3.2, 1.16, 0.85],
@@ -577,8 +793,8 @@ function create() {
   // stromal metabolic pool; NADPH is not a product of ATP synthase.
   flow(
     [
-      [-0.86, 0.99, 0.18],
-      [-0.7, 1.06, 0.23],
+      [-1.14, 1.022, -0.13],
+      [-0.8, 1.1, 0.1],
       [-0.25, 1.12, 0.3],
     ],
     "#b29152",
@@ -698,7 +914,7 @@ function create() {
       priority: 1,
     },
     {
-      position: [-0.61, 0.79, 0.33],
+      position: [-0.87, 0.84, 0.02],
       text: { zh: "ATP 合酶", en: "ATP synthase" },
       priority: 1,
     },
@@ -708,6 +924,13 @@ function create() {
       priority: 1,
     },
   );
+  const labelPoint = new THREE.Vector3();
+  const anchorObject = (index, object) =>
+    object.getWorldPosition(labelPoint).toArray(labels[index].position);
+  const anchorFlow = (index, route, at) => {
+    flows[route].curve.getPoint(at, labelPoint);
+    group.localToWorld(labelPoint).toArray(labels[index].position);
+  };
   const update = (progress) => {
     const p = clamp(progress);
     const lightActivity = ramp(p, 0.1, 0.2);
@@ -721,14 +944,44 @@ function create() {
       f.guideMat.opacity = 0.07 + 0.48 * active;
       for (let i = 0; i < f.packets.length; i++) {
         const packet = f.packets[i];
-        packet.visible = active > 0.01;
         const distance = ((p - f.start) * 3.8 + i / f.packets.length + 10) % 1;
+        // A finite pulse finishes at an open route's endpoint before a new
+        // pulse starts upstream. Closed reaction loops retain constant extent.
+        const pulse = f.closed
+          ? 1
+          : ramp(distance, 0, 0.09) * (1 - ramp(distance, 0.9, 1));
+        const extent = active * pulse;
+        packet.visible = extent > 0.001;
         f.curve.getPoint(distance, f.scratch);
         packet.position.copy(f.scratch);
-        packet.scale.setScalar(active * f.radius);
+        packet.scale.setScalar(extent * f.radius);
       }
     }
     rotor.rotation.y = TAU * 2 * ramp(p, 0.46, 1);
+    // Leader endpoints identify the actual structure or explanatory route;
+    // the shared annotation layer independently chooses each text position.
+    anchorFlow(0, 0, 0.25);
+    const labelledMembrane = thylakoids.children[0].children[2].children[0];
+    labelPoint.fromBufferAttribute(
+      labelledMembrane.geometry.attributes.position,
+      20,
+    );
+    labelledMembrane.localToWorld(labelPoint).toArray(labels[1].position);
+    thylakoids.children[0].children[2]
+      .localToWorld(labelPoint.set(0, 0, 0.1))
+      .toArray(labels[2].position);
+    anchorObject(3, psii.children[12].children[0]);
+    anchorFlow(4, 6, 0);
+    group
+      .localToWorld(labelPoint.fromArray(cycleCenter))
+      .toArray(labels[5].position);
+    anchorFlow(6, 7, 0.15);
+    anchorFlow(7, 9, 0.84);
+    anchorFlow(8, 10, 0.55);
+    anchorObject(9, psii.children[0].children[0]);
+    anchorObject(10, psi.children[0].children[0]);
+    anchorObject(11, head.children[0].children[0]);
+    anchorObject(12, rubisco.children[0].children[0]);
     // The first frame is an anatomical overview. Later flows remain concurrent;
     // seeking changes the explanation, never implies a dark-only Calvin cycle.
     group.userData.progress = p;
@@ -810,6 +1063,15 @@ export default {
     },
   ],
   sources: [
+    {
+      title: "Hahn et al. (2018) — Chloroplast ATP synthase, PDB 6FKF",
+      url: "https://www.rcsb.org/structure/6FKF",
+    },
+    {
+      title:
+        "Shimoni et al. (2005) — Three-dimensional organization of thylakoid membranes",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC1197436/",
+    },
     {
       title:
         "OpenStax Biology 2e · 8.2 The Light-Dependent Reactions of Photosynthesis",

@@ -1,0 +1,94 @@
+{
+  "group": "bacterialCore",
+  "phase": "repair-time discovery; Phase A preserved",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "transformation",
+      "findings": [
+        {
+          "issueId": "20261004-bacterialCore-03",
+          "severity": "P1",
+          "kind": "DNA_handedness",
+          "file": "src/processes/modules/bacterialCore/transformationProcess.js",
+          "location": "externalPoint original y=sin(t*17), z=cos(t*17)",
+          "evidence": "Original actual world-space external DNA cylinder endpoints have consecutive-edge scalar triple products consistently -2.01480598966e-6. The same sign convention on experimentally right-handed 1BNA phosphate samples with stride 3 gives +5245.50 to +5726.06. This is a world-space geometric reflection, not camera orientation. Both current backbones give +2.01480598966e-6 after correction.",
+          "whyWrong": "The environmental DNA duplex was drawn with left-handed helicity without a Z-DNA or other exceptional conformational scope. The natural-transformation model calls for an ordinary right-handed duplex.",
+          "fix": "Reflect only the transverse cosine component of the environmental duplex frame, preserving positive separation, strand identities and the fixed uptake-mouth endpoint. Add the primary B-DNA structural reference.",
+          "verification": "Actual-world endpoint handedness test for both strands, and a negative-control reflection that the same check rejects. Independent baseline/current/1BNA reference measurements stored alongside the audit.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1BNA",
+            "https://files.rcsb.org/download/1BNA.pdb"
+          ]
+        },
+        {
+          "issueId": "20261004-bacterialCore-07",
+          "severity": "P2",
+          "kind": "misleading_annotation_anchor",
+          "file": "src/processes/modules/bacterialCore/transformationProcess.js",
+          "location": "Labels for environmental DNA, ComEC, DprA/RecA, fragments and chromosome",
+          "evidence": "At p=.525 the ComEC label leader terminates below the drawn pore; RecA and chromosome labels use old free-space locations. At p=.575 the environmental DNA label remains active after all extracellular DNA segments disappear. Baseline-to-target measurement: 0.7830229881682913 world units; corrected gap 0.",
+          "whyWrong": "label.position is consumed as the leader endpoint. A named-object annotation must identify its actual geometry; stale text-layout offsets and absent-object labels misleadingly identify empty regions or other structures.",
+          "fix": "Anchor labels to actual external DNA, ComEC rim, DprA/RecA proteins, fragments, chromosome and heteroduplex. Hide labels without visible objects. The no-homology outcome explicitly refers to the retained chromosome and anchors there after imported DNA degradation.",
+          "verification": "208 both-condition geometry/label states and repeated seeks; actual-world target comparisons and six negative controls. Existing scientific geometry regressions retained.",
+          "sourceUrls": [],
+          "renderedEvidence": "docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-043-transformation-bacterium-stage-4.webp"
+        }
+      ]
+    },
+    {
+      "id": "bacterialExpression",
+      "findings": [
+        {
+          "issueId": "20261004-bacterialCore-04",
+          "severity": "P2",
+          "kind": "misleading_annotation_anchor",
+          "file": "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+          "location": "Label update block: DNA/template/coding, polymerase/sigma, RNA 5-prime, 70S and peptide labels",
+          "evidence": "At p=1 the 5-prime RNA label leader ended .25 world units below the actual RNA endpoint; the supplied full-resolution image also shows peptide, promoter and strand labels terminating in empty space. Baseline-to-target measurement: 0.25 world units; corrected gap 0.",
+          "whyWrong": "label.position is consumed as the leader endpoint. A named-object annotation must identify its actual geometry; stale text-layout offsets and absent-object labels misleadingly identify empty regions or other structures.",
+          "fix": "Anchor named molecular labels to the actual template/coding cylinders, RNA ends, active site, protein components and visible peptide beads. Tie RNA/ribosome/peptide labels to actual visibility.",
+          "verification": "208 both-condition geometry/label states and repeated seeks; actual-world target comparisons and six negative controls. Existing scientific geometry regressions retained.",
+          "sourceUrls": [],
+          "renderedEvidence": "docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-040-bacterialExpression-bacterium-end.webp"
+        }
+      ]
+    },
+    {
+      "id": "bacterialDivision",
+      "findings": [
+        {
+          "issueId": "20261004-bacterialCore-05",
+          "severity": "P2",
+          "kind": "misleading_annotation_anchor",
+          "file": "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+          "location": "Labels for replication forks, chromosomes, division proteins and envelope",
+          "evidence": "At p=.185 the replication-fork leader ends far above the actual fork; chromosome and daughter labels likewise retain free-space text offsets. Baseline-to-target measurement: 2.006588545993094 world units; corrected gap 0.",
+          "whyWrong": "label.position is consumed as the leader endpoint. A named-object annotation must identify its actual geometry; stale text-layout offsets and absent-object labels misleadingly identify empty regions or other structures.",
+          "fix": "Anchor forks, DNA, FtsZ, FtsWI and daughter chromosome labels to actual meshes; anchor envelope/division-site descriptions to dynamic membrane vertices and suppress scaffold labels before visible filaments exist.",
+          "verification": "208 both-condition geometry/label states and repeated seeks; actual-world target comparisons and six negative controls. Existing scientific geometry regressions retained.",
+          "sourceUrls": [],
+          "renderedEvidence": "docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-041-bacterialDivision-bacterium-stage-2.webp"
+        }
+      ]
+    },
+    {
+      "id": "conjugation",
+      "findings": [
+        {
+          "issueId": "20261004-bacterialCore-06",
+          "severity": "P2",
+          "kind": "misleading_annotation_anchor",
+          "file": "src/processes/modules/bacterialCore/conjugationProcess.js",
+          "location": "Labels for pilus, TraI-leading T strand, oriT, junction and new DNA strands",
+          "evidence": "At p=.505 the T-strand 5-prime leader ends above the actual TraI-leading tip; at p=0 the pilus label is active although the pilus is not extended. Replacement-strand leaders terminate below the cells. Baseline-to-target measurement: 1.2594106122404267 world units; corrected gap 0.",
+          "whyWrong": "label.position is consumed as the leader endpoint. A named-object annotation must identify its actual geometry; stale text-layout offsets and absent-object labels misleadingly identify empty regions or other structures.",
+          "fix": "Anchor labels to pilus/junction/oriT/TraI and replacement/complement geometry. Gate the pilus by actual extension and blocked-transfer labels by object visibility; describe completed strands as objects rather than permanently ongoing synthesis.",
+          "verification": "208 both-condition geometry/label states and repeated seeks; actual-world target comparisons and six negative controls. Existing scientific geometry regressions retained.",
+          "sourceUrls": [],
+          "renderedEvidence": "docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-042-conjugation-bacterium-stage-4.webp"
+        }
+      ]
+    }
+  ]
+}

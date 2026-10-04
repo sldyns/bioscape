@@ -1,0 +1,252 @@
+{
+  "group": "turnover",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-turnover-01",
+      "status": "fixed",
+      "changes": "TNRC6 and CCR4-NOT now enter over p=0.38-0.43 with smooth opacity while keeping native geometry and the existing recruitment trajectory. Labels activate after the effector becomes substantially visible. Only the seed branch recruits these factors. Each assembly owns cloned fade materials created before update, so shared AGO/RNA appearances remain unchanged.",
+      "files": [
+        "src/processes/modules/turnover/rnaSilencingProcess.js",
+        "src/processes/modules/turnover/molecularDetail.js",
+        "src/processes/modules/turnover/continuity.test.mjs",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "New continuity regression failed against the original model with effector contribution tends to zero at entry; it now passes.",
+        "Actual mesh opacity converges to zero at p=0.38 +/- 1e-7, is intermediate at p=0.405, and returns to native full opacity at p=0.53 without scaling down the protein geometry.",
+        "The actual AGO, target-backbone and guide-backbone materials remain fully opaque during effector entry; both effectors remain absent under slice and mismatch.",
+        "All prior guide/target register, connected-backbone, slicing and pairing lifecycle regressions pass unchanged."
+      ],
+      "limitations": [
+        "Root still owns rendered continuous-playback acceptance; these checks validate actual model state and geometry rather than framebuffer pixels."
+      ]
+    },
+    {
+      "issueId": "20261004-turnover-02",
+      "status": "fixed",
+      "changes": "The smoke enumerates all roots from processesByRoot and full control cross-products. Its untagged proteasome branch requires unchanged world transforms and visibility for all 42 substrate residues and 41 peptide bonds, no visible product peptide, no visible ubiquitin chain and no substrate-ubiquitin linkage. Motion distinctness remains required for other branches. No product geometry or false motion was added.",
+      "files": [
+        "src/processes/modules/turnover/smoke.mjs"
+      ],
+      "verification": [
+        "node src/processes/modules/turnover/smoke.mjs exits 0 and explicitly reports all 20 registered root/condition combinations.",
+        "Every cell/plant/yeast root covers both tag conditions crossed with cutaway/whole shell views, including arbitrary repeated seeks and NaN clamping.",
+        "Smoke serialization now includes opacity, transparent and depthWrite, so the new appearance state is included in deterministic-seek validation.",
+        "No existing science assertion was removed or weakened; science.test.mjs only gains the new continuity import."
+      ],
+      "limitations": [
+        "This repairs an incorrect test invariant; proteasome molecular geometry was qualified-pass and remains unchanged."
+      ]
+    },
+    {
+      "issueId": "20261004-turnover-03",
+      "status": "fixed",
+      "changes": "Each of the fifteen RecA subunits smoothly appears over its own assembly interval and is fully formed by p=0.35. RNAP enters over p=0.60-0.635, before bubble opening and RNA elongation. Cleaved LexA domains disperse and fade over p=0.72-0.86 instead of vanishing as one stationary set at p=0.84. Noncleavable LexA retains its repressive branch. Native protein folds are retained.",
+      "files": [
+        "src/processes/modules/turnover/bacterialRepairProcess.js",
+        "src/processes/modules/turnover/molecularDetail.js",
+        "src/processes/modules/turnover/continuity.test.mjs",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "New regression failed against the original model with RecA must not appear at 88% size in one frame; all continuity checks now pass.",
+        "RecA contribution tends to zero at the first assembly boundary. RNAP opacity is intermediate at p=0.6175, with no finite jump at the old p=0.63 threshold.",
+        "Actual LexA domain world positions move during clearance and opacity is intermediate at p=0.79. The former p=0.84 full-size disappearance has no finite-opacity jump; clearance completes at p=0.86.",
+        "Noncleavable LexA stays fully visible, RNAP remains absent and no transcript backbone appears.",
+        "Existing SOS bubble, RNA-template pairing, connected RNA 3-prime attachment and 1001-frame strand-separation regressions pass unchanged."
+      ],
+      "limitations": [
+        "Opacity and dispersal illustrate entry/clearance; their timing is not an experimental kinetic measurement. Root must inspect blended surfaces and labels during playback."
+      ]
+    },
+    {
+      "issueId": "20261004-turnover-R01",
+      "status": "fixed",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/turnover/repair-discoveries.json",
+      "changes": "RNA leader anchors now follow actual AGO/guide/cap, surviving target-UTR backbone and poly(A) residues, moving TNRC6/CCR4-NOT cores and the cleavage marker. Target/cap/tail labels derive activity from their actual visible geometry.",
+      "files": [
+        "src/processes/modules/turnover/rnaSilencingProcess.js",
+        "src/processes/modules/turnover/labelAnchors.js",
+        "src/processes/modules/turnover/labels.test.mjs",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "All three pairing branches and 15 progress/irregular-seek samples assert each active RNA/effector leader against real named mesh centers, retained RNA segment centers or visible residue centers. Terminal cap/UTR labels are inactive; fully degraded slicing tail label is inactive.",
+        "The four new original-defect regressions all failed before product repair and pass after repair. A fifth test preserves label and position-array identity, finite anchors, deterministic arbitrary seeking and stable scene resources."
+      ],
+      "limitations": [
+        "Geometry regressions verify true object points, not rendered overlap/legibility. Root still owns renewed bilingual/branch stage capture and native playback acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-turnover-R02",
+      "status": "fixed",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/turnover/repair-discoveries.json",
+      "changes": "Proteasome leaders now point to the actual Rpn11 core, oscillating ATPase core, always-visible core subunit fold, exposed catalytic site, moving substrate residue, ubiquitin core and peptide curve. Product label activity derives from the peptide object visibility. Follow-up after full-b1 visual review: the chamber leader now uses actual beta catalytic site 1 (beta2), which is exposed through the default cutaway, replacing the real but occluded beta5 site 2.",
+      "files": [
+        "src/processes/modules/turnover/proteasomeProcess.js",
+        "src/processes/modules/turnover/labelAnchors.js",
+        "src/processes/modules/turnover/labels.test.mjs",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "All 3 roots crossed with 2 tag conditions and 2 shell views at 15 progress samples verify actual object or peptide-curve anchor positions; cutaway catalytic-chamber label remains absent for the whole shell, and absent product/tag labels remain inactive.",
+        "The four new original-defect regressions all failed before product repair and pass after repair. A fifth test preserves label and position-array identity, finite anchors, deterministic arbitrary seeking and stable scene resources.",
+        "Native 960x640 capture viewpoint reproduced from the exact ProcessScene 36-degree, 9-sample plus stage bounds, 1.12 framing fit. Direction matches the recorded full-b1 camera; its position is [5.27186605041139,3.1629799952616313,13.302443612241031].",
+        "Actual ray-triangle intersections showed previous site 2 at pixel [539.28,401.42] blocked first by 20S protein volume 1 0. Site 1 at [479.16,386.17] is the first ray hit itself at all seven recorded stages. Complete six-site diagnostic: evidence/turnover/proteasome-chamber-ray.json.",
+        "The previous direct exact-object R02 identity assertion is retained and now names beta catalytic site 1 (beta2); it is not replaced by a nearest-point or broad-bounds test.",
+        "New first-hit ray regression failed before repair on the foreground wall and passes after repair across 3 roots, 2 tag conditions and 107 times (642 default-view cases). It also explicitly preserves the old-site-occlusion reproduction at p=0 and the original whole-shell inactivity check."
+      ],
+      "limitations": [
+        "The default-view first-hit geometry is verified. Root must re-capture a native image to confirm resulting line/text placement; arbitrary camera directions are not guaranteed by the fixed anchor."
+      ]
+    },
+    {
+      "issueId": "20261004-turnover-R03",
+      "status": "fixed",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/turnover/repair-discoveries.json",
+      "changes": "Cas9/HNH/RuvC/crRNA/tracrRNA anchors follow parent and local transforms. PAM points at an actual DNA PAM cube. DNA direction and displaced-strand labels end on their own strand geometry.",
+      "files": [
+        "src/processes/modules/turnover/crisprProcess.js",
+        "src/processes/modules/turnover/labelAnchors.js",
+        "src/processes/modules/turnover/labels.test.mjs",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "All 3 target conditions at 15 progress samples verify exact HNH/RuvC core identity, actual DNA PAM center, native tracrRNA curve point, guide backbone and correct DNA endpoints/rail. Elevated pre-docking and rejected Cas9 retain correct label identity.",
+        "The four new original-defect regressions all failed before product repair and pass after repair. A fifth test preserves label and position-array identity, finite anchors, deterministic arbitrary seeking and stable scene resources."
+      ],
+      "limitations": [
+        "Geometry regressions verify true object points, not rendered overlap/legibility. Root still owns renewed bilingual/branch stage capture and native playback acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-turnover-R04",
+      "status": "fixed",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/turnover/repair-discoveries.json",
+      "changes": "SOS molecular labels follow actual operator, RecA core, LexA catalytic fragment, polymerase lobe, coding/template endpoints and visible response-RNA 5-prime endpoint. The damage-gap caption is explicitly a regional anchor inside the missing-complement gap. RNA-label absence follows transcript visibility, including noncleavable LexA.",
+      "files": [
+        "src/processes/modules/turnover/bacterialRepairProcess.js",
+        "src/processes/modules/turnover/labelAnchors.js",
+        "src/processes/modules/turnover/labels.test.mjs",
+        "src/processes/modules/turnover/science.test.mjs"
+      ],
+      "verification": [
+        "Both LexA conditions at 15 progress samples and the recorded p=.795 frame assert actual RNA/protein/operator/strand points. The moving 5-prime RNA endpoint remains on the real transcript as it exits RNAP; absent transcripts cannot leave an active RNA label.",
+        "The four new original-defect regressions all failed before product repair and pass after repair. A fifth test preserves label and position-array identity, finite anchors, deterministic arbitrary seeking and stable scene resources."
+      ],
+      "limitations": [
+        "Geometry regressions verify true object points, not rendered overlap/legibility. Root still owns renewed bilingual/branch stage capture and native playback acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-turnover-R05",
+      "status": "fixed-by-root",
+      "owner": "root / regulation (shared capture layout)",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/turnover/repair-discoveries.json",
+      "changes": "No turnover product fix attempted. Root will coordinate shared sceneCapture label layout, preserving molecular anchors.",
+      "files": [],
+      "verification": [
+        "Read-only inspection of 25 original full-b1 Chinese stage images confirms label-box/model overlap in RNA p=.575 and SOS as detailed in resolutions/turnover-rendered-final.md."
+      ],
+      "limitations": [
+        "Shared layout and renewed captures remain pending with root."
+      ],
+      "sharedResolution": "docs/qa/process-review-2026-10-04/resolutions/player-label-layout.json",
+      "renderedVerification": "Three original Chinese 960x640 screenshots reviewed; original-pixel overlap 3205/1761/2770 to 0 with all 7/5/8 labels retained."
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node --test src/processes/modules/turnover/continuity.test.mjs (before product repair)",
+      "result": "Expected exit 1; two defect reproductions, one existing resource/determinism pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/continuity-before.log"
+    },
+    {
+      "command": "node --test src/processes/modules/turnover/continuity.test.mjs (after product repair)",
+      "result": "Exit 0; 3 tests pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/continuity-after.log"
+    },
+    {
+      "command": "node src/processes/modules/turnover/smoke.mjs",
+      "result": "Exit 0; all 4 models and 20 root/condition combinations, bundle, finite geometry, inventories, static negative control and deterministic seeks pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/smoke-after.log"
+    },
+    {
+      "command": "node src/processes/modules/turnover/science.test.mjs",
+      "result": "Exit 0; existing scientific geometry regressions, five 1001-frame bubble branches, and all three new continuity regressions pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/science-after.log"
+    },
+    {
+      "command": "prettier --write on the six changed/new turnover JS/MJS files only",
+      "result": "Completed; no shared or unowned file formatted."
+    },
+    {
+      "command": "git diff --check -- src/processes/modules/turnover",
+      "result": "Exit 0."
+    },
+    {
+      "command": "node --test src/processes/modules/turnover/labels.test.mjs (before label repair)",
+      "result": "Expected exit 1; all four molecular-anchor defects reproduced without relying on missing newly named objects.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/labels-before.log"
+    },
+    {
+      "command": "node --test src/processes/modules/turnover/labels.test.mjs (after label repair)",
+      "result": "Exit 0; 5 tests pass, including all 20 root/control combinations and arbitrary-seek identity/resource checks.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/labels-after.log"
+    },
+    {
+      "command": "node src/processes/modules/turnover/smoke.mjs (after label repair)",
+      "result": "Exit 0; all 20 combinations and previous invariants pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/smoke-labels-after.log"
+    },
+    {
+      "command": "node src/processes/modules/turnover/science.test.mjs (after label repair)",
+      "result": "Exit 0; previous science/bubble checks and all 8 continuity/label tests pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/science-labels-after.log"
+    },
+    {
+      "command": "node docs/qa/process-review-2026-10-04/evidence/turnover/proteasome-chamber-ray.mjs",
+      "result": "Exit 0; six real catalytic sites tested at seven stages with default 960x640 framing. Sites 1 and 4 are exposed; old site 2 is blocked by right wall.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/proteasome-chamber-ray.json"
+    },
+    {
+      "command": "node --test src/processes/modules/turnover/labels.test.mjs (before chamber follow-up)",
+      "result": "Expected exit 1; original five tests pass while new first-hit ray test fails on 20S protein volume 1 0.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/chamber-ray-before.log"
+    },
+    {
+      "command": "node --test src/processes/modules/turnover/labels.test.mjs (after chamber follow-up)",
+      "result": "Exit 0; all six tests pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/chamber-ray-after.log"
+    },
+    {
+      "command": "node src/processes/modules/turnover/science.test.mjs (after chamber follow-up)",
+      "result": "Exit 0; original scientific/bubble assertions and all 9 continuity/label tests pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/science-chamber-after.log"
+    },
+    {
+      "command": "node src/processes/modules/turnover/smoke.mjs (after chamber follow-up)",
+      "result": "Exit 0; all 20 root/control combinations and prior invariants pass.",
+      "evidence": "docs/qa/process-review-2026-10-04/evidence/turnover/smoke-chamber-after.log"
+    }
+  ],
+  "sourcesAdded": [],
+  "sourcesReviewed": [
+    "https://www.nature.com/articles/nsmb.2149?error=cookies_not_supported",
+    "https://www.nature.com/articles/s41594-024-01317-3?error=cookies_not_supported",
+    "https://www.rcsb.org/structure/6ALF",
+    "https://www.lander-lab.com/pdfs/30309908.pdf"
+  ],
+  "remainingLimits": [
+    "Seven unique turnover product/test issues have fixes; new unique R05 shared-layout issue is pending root/regulation. R02 follow-up remains within its existing issue record. Root rendered and shared-clock acceptance remain separate.",
+    "The shared player scheduling peer report is read-only evidence owned for repair by root; no shared player/renderer or shared test runner was modified.",
+    "No full-workspace suite, browser, publication, device or GPU benchmark was run by this reviewer."
+  ],
+  "annotationOnlyModels": [
+    "proteasome",
+    "crispr"
+  ]
+}

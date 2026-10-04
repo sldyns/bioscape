@@ -1,4 +1,4 @@
-import { leafletEdge } from "./structuralDetail.js";
+import { leafletEdge, anchorLabel } from "./structuralDetail.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 function create() {
   const k = sceneKit(),
@@ -27,18 +27,24 @@ function create() {
   const wallPanel = k.mesh(box, wall, [0, 0, 0.6], patch);
   wallPanel.scale.set(5, 4, 0.85);
   // Existing extracellular fibers and cytosolic microtubules are separate layers.
+  const cortical = [];
   for (let i = 0; i < 7; i++) {
     const y = -1.8 + i * 0.6;
     k.segment([-2.42, y, 0.9], [2.42, y + 0.12, 0.9], 0.045, cellulose, patch);
     if (i < 6)
-      k.segment(
-        [-2.45, y + 0.25, -0.28],
-        [2.45, y + 0.25, -0.28],
-        0.032,
-        micro,
-        patch,
+      cortical.push(
+        k.segment(
+          [-2.45, y + 0.25, -0.28],
+          [2.45, y + 0.25, -0.28],
+          0.032,
+          micro,
+          patch,
+        ),
       );
   }
+  cortical.forEach((m) => {
+    m.name = "Cortical microtubule";
+  });
   leafletEdge(k, patch, cesa);
   // Twisted glucan bundles reinforce the wall; matrix tethers cross between bundles.
   for (let row = 0; row < 7; row++)
@@ -131,6 +137,7 @@ function create() {
         ]);
       }
       const m = k.tube(points, 0.017, newCellulose, patch, 128);
+      m.name = "Deposited cellulose microfibril";
       fibers.push(m);
     }
     const outlet = k.segment(
@@ -219,9 +226,17 @@ function create() {
       a.visible = p >= 0.55 && yielding;
       a.position.y = (i ? 1 : -1) * (1.25 + extension);
     });
-    labels[0].position[1] = 2.35 * (1 + extension);
-    labels[1].position[1] = -2.28 * (1 + extension);
-    labels[3].position[0] = -2.15 + 4.3 * deposition;
+    anchorLabel(labels[0], wallPanel, group);
+    labels[1].position.splice(0, 3, 0, -1.7 * (1 + extension), 0.05);
+    anchorLabel(labels[2], cortical[3], group);
+    anchorLabel(labels[3], machines[0].machine.children[0], group);
+    anchorLabel(
+      labels[4],
+      machines[4].fibers[1],
+      group,
+      Math.floor(machines[4].fibers[1].geometry.attributes.position.count / 2),
+    );
+    labels[5].position.splice(0, 3, 0, 0, -0.6);
     labels[4].active = p >= 0.2;
     labels[5].active = p >= 0.46;
     group.userData = {

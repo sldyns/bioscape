@@ -1,4 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
+import { gameteFusionSurface } from "./fusionSurface.js";
+import { anchorLabel } from "./structuralDetail.js";
 function create() {
   const k = sceneKit(),
     { group } = k;
@@ -23,6 +25,7 @@ function create() {
     tubeMat = k.material("#b5a17b");
   // A cutaway ovule is maternal multicellular tissue, not a single generic cell.
   const tissueMats = [k.material("#bec69d"), k.material("#aeba92")];
+  const integumentCells = [];
   for (let layer = 0; layer < 2; layer++)
     for (let cell = 0; cell < 28; cell++) {
       const a = -Math.PI * 0.38 + (cell / 28) * Math.PI * 1.76,
@@ -55,6 +58,7 @@ function create() {
         [0, 0, -0.18],
       );
       mesh.name = "Individual maternal integument cell";
+      integumentCells.push(mesh);
       const mid = a + span / 2,
         r = (ri + ro) / 2;
       k.ball(
@@ -64,8 +68,30 @@ function create() {
       );
     }
   k.ball([0, 0.2, -0.12], [1.38, 2.05, 0.36], sac);
-  const centralCell = k.ball([0, 0.63, -0.06], [1.15, 1.36, 0.27], sac);
-  const egg = k.ball([-0.22, -1.02, 0.12], [0.47, 0.53, 0.28], eggMat);
+  const spermMembrane = k.material("#c99d84", {
+    transparent: true,
+    opacity: 0.44,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  const eggFusion = gameteFusionSurface(
+    k,
+    [eggMat, spermMembrane],
+    [-0.22, -1.02, 0.12],
+    [0.47, 0.53, 0.28],
+    [0.45, 0.85, 0.26],
+    "Egg plasma membrane with continuous sperm fusion neck",
+  );
+  const centralFusion = gameteFusionSurface(
+    k,
+    [sac, spermMembrane],
+    [0, 0.63, -0.06],
+    [1.15, 1.36, 0.27],
+    [0.3, -0.83, 0.47],
+    "Central-cell plasma membrane with continuous sperm fusion neck",
+  );
+  const egg = eggFusion.mesh,
+    centralCell = centralFusion.mesh;
   const synergids = [-1, 1].map((side) =>
     k.ball([side * 0.66, -1.58, 0.12], [0.28, 0.46, 0.22], synergidMat),
   );
@@ -88,16 +114,35 @@ function create() {
         20,
       );
   }
-  const eggNucleus = k.ball([-0.22, -0.92, 0.37], 0.18, maternal);
-  const centralNucleus = k.ball([0, 0.65, 0.2], 0.27, maternal);
+  const nuclearEnvelope = k.material("#a297b5", {
+    transparent: true,
+    opacity: 0.3,
+    depthWrite: false,
+  });
+  const eggNucleus = k.ball(
+    [-0.22, -0.92, 0.1],
+    [0.18, 0.18, 0.13],
+    nuclearEnvelope,
+  );
+  eggNucleus.name = "Egg maternal nucleus inside female gamete";
+  const centralNucleus = k.ball(
+    [0, 0.65, -0.06],
+    [0.24, 0.24, 0.17],
+    nuclearEnvelope,
+  );
+  centralNucleus.name = "Central maternal nucleus inside female gamete";
   const maternalMarks = [
-    k.ball([-0.27, -0.92, 0.48], 0.055, maternal),
-    k.ball([-0.1, 0.65, 0.4], 0.064, maternal),
-    k.ball([0.1, 0.65, 0.4], 0.064, maternal),
+    k.ball([-0.28, -0.92, 0.1], 0.05, maternal),
+    k.ball([-0.075, 0.69, -0.02], 0.05, maternal),
+    k.ball([0.075, 0.69, -0.02], 0.05, maternal),
+  ];
+  const nuclearTargets = [
+    new THREE.Vector3(-0.17, -0.92, 0.1),
+    new THREE.Vector3(0, 0.57, -0.01),
   ];
   const spermMarkers = [
-    k.ball([0, 0, 0], 0.07, paternal),
-    k.ball([0, 0, 0], 0.07, paternal),
+    k.ball([0, 0, 0], 0.055, paternal),
+    k.ball([0, 0, 0], 0.055, paternal),
   ];
   spermMarkers.forEach(
     (m) => (m.name = "Paternal nuclear contribution after fusion"),
@@ -135,22 +180,23 @@ function create() {
   );
   tube.name = "Pollen tube open-front wall and lumen";
   const vegetativeNucleus = k.ball([0, 0, 0], [0.06, 0.1, 0.05], maternal);
-  const sperm = [
-    k.ball([0, 0, 0], 0.12, paternal),
-    k.ball([0, 0, 0], 0.12, paternal),
-  ];
+  const sperm = [new THREE.Group(), new THREE.Group()];
+  const spermShells = [];
   for (const cell of sperm) {
-    cell.material = k.material("#c99d84", {
-      transparent: true,
-      opacity: 0.44,
-      depthWrite: false,
-    });
-    const nucleus = k.ball([0, 0, 0.45], [0.63, 0.66, 0.4], paternal, cell);
+    group.add(cell);
+    const shell = k.ball([0, 0, 0], 0.12, spermMembrane, cell);
+    shell.name = "Separate sperm plasma membrane before plasmogamy";
+    const nucleus = k.ball([0, 0, 0], 0.055, paternal, cell);
     nucleus.name = "Paternal nucleus carried by sperm";
-    const rim = k.ring([0, 0, 0.15], 0.92, 0.045, paternal, cell);
+    const rim = k.ring([0, 0, 0.018], 0.11, 0.0054, paternal, cell);
     rim.name = "Sperm plasma membrane cut edge";
+    spermShells.push([shell, rim]);
   }
   const sample = new THREE.Vector3();
+  const approach = new THREE.Vector3(),
+    docking = new THREE.Vector3(),
+    entry = new THREE.Vector3();
+  let membranePhase = -1;
   const embryo = new THREE.Group();
   group.add(embryo);
   embryo.name = "Asymmetric two-cell Arabidopsis embryo";
@@ -206,9 +252,18 @@ function create() {
     const p = clamp(value),
       arrival = ease(p, 0, 0.3),
       release = ease(p, 0.3, 0.45),
-      fusion = ease(p, 0.48, 0.72),
       development = ease(p, 0.82, 1),
       swapped = parameters.assignment === "frontCentral";
+    const nextMembranePhase = p < 0.49 ? -1 : p >= 0.62 ? 1 : p;
+    if (membranePhase !== nextMembranePhase) {
+      for (const surface of [eggFusion, centralFusion])
+        surface.update(
+          ease(p, 0.49, 0.53),
+          ease(p, 0.56, 0.62),
+          p >= 0.49 && p < 0.62,
+        );
+      membranePhase = nextMembranePhase;
+    }
     tubeGeometry.setDrawRange(
       0,
       Math.max(3, Math.floor((arrival * tubeGeometry.index.count) / 3) * 3),
@@ -229,23 +284,32 @@ function create() {
     });
     sperm.forEach((m, i) => {
       const eggTarget = (i === 0) !== swapped;
-      const tx = eggTarget ? -0.22 : 0,
-        ty = eggTarget ? -0.92 : 0.65;
+      const targetIndex = eggTarget ? 0 : 1;
+      const surface = eggTarget ? eggFusion : centralFusion;
+      approach.copy(surface.contact).addScaledVector(surface.normal, 0.195);
+      docking.copy(surface.contact).addScaledVector(surface.normal, 0.12);
+      entry.copy(surface.contact).addScaledVector(surface.normal, -0.09);
       if (p < 0.3) {
         path.getPoint(Math.max(0, arrival - 0.13 - 0.07 * i), sample);
         m.position.copy(sample);
       } else {
         path.getPoint(0.87 - 0.07 * i, sample);
-        m.position.set(
-          sample.x * (1 - release) + (0.08 + i * 0.13) * release,
-          sample.y * (1 - release) - 0.49 * release,
-          sample.z * (1 - release) + 0.25 * release,
-        );
-        m.position.x += (tx - m.position.x) * fusion;
-        m.position.y += (ty - m.position.y) * fusion;
+        m.position.lerpVectors(sample, approach, release);
+        if (p >= 0.45)
+          m.position.lerpVectors(approach, docking, ease(p, 0.45, 0.49));
+        if (p >= 0.515)
+          m.position.lerpVectors(docking, entry, ease(p, 0.515, 0.56));
+        if (p >= 0.56)
+          m.position.lerpVectors(
+            entry,
+            nuclearTargets[targetIndex],
+            ease(p, 0.56, 0.72),
+          );
       }
       m.visible = p < 0.72;
-      m.scale.setScalar(0.12 * (1 - 0.65 * ease(p, 0.65, 0.72)));
+      spermShells[i].forEach((shell) => {
+        shell.visible = p < 0.49;
+      });
     });
     synergids[1].scale.set(
       0.28 * (1 - 0.35 * release),
@@ -257,8 +321,8 @@ function create() {
     centralNucleus.visible = p < 0.86;
     egg.visible = p < 0.9;
     centralCell.visible = true;
-    spermMarkers[0].position.set(-0.13, -0.92, 0.49);
-    spermMarkers[1].position.set(0, 0.77, 0.43);
+    spermMarkers[0].position.copy(nuclearTargets[0]);
+    spermMarkers[1].position.copy(nuclearTargets[1]);
     spermMarkers.forEach((m) => (m.visible = p >= 0.72 && p < 0.86));
     maternalMarks.forEach((m) => {
       m.visible = p < 0.86;
@@ -275,6 +339,16 @@ function create() {
     labels[4].active = p < 0.48;
     labels[5].active = p >= 0.72;
     labels[6].active = p >= 0.72;
+    anchorLabel(labels[0], integumentCells[18], group);
+    anchorLabel(labels[1], centralNucleus, group);
+    anchorLabel(labels[2], egg, group, 8 * 49 + 24);
+    anchorLabel(labels[3], synergids[1], group);
+    const tubeIndex = tubeGeometry.index.getX(
+      Math.max(0, Math.floor(tubeGeometry.drawRange.count / 2)),
+    );
+    anchorLabel(labels[4], tube, group, tubeIndex);
+    anchorLabel(labels[5], p < 0.9 ? eggNucleus : embryo.children[0], group);
+    anchorLabel(labels[6], p < 0.86 ? centralNucleus : endosperm[0], group);
     group.userData = {
       mechanism: "angiosperm double fertilization",
       species: "Arabidopsis thaliana",
@@ -352,8 +426,8 @@ export default {
       at: 0.5,
       title: b("分别融合", "One sperm for each female gamete"),
       description: b(
-        "一个精细胞与卵融合，另一个与中央细胞融合。两精细胞的前后位置不预先限定命运，两次融合也没有固定先后。",
-        "One sperm fuses with the egg and the other with the central cell. Their original front/back positions do not fix their fate, and the two fusions have no obligatory order.",
+        "精细胞膜分别与卵和中央细胞膜融合，精核随后进入雌配子并移向母核。前后精细胞不预先限定命运，两次融合没有固定先后。",
+        "Sperm membranes fuse with the egg and central-cell membranes, then paternal nuclei enter the female gametes and move toward maternal nuclei. Front/back position does not fix fate, and the two fusions have no obligatory order.",
       ),
     },
     {
@@ -374,6 +448,11 @@ export default {
     },
   ],
   sources: [
+    {
+      title:
+        "Kawashima et al. (2014), Dynamic F-actin movement is essential for fertilization in Arabidopsis thaliana",
+      url: "https://elifesciences.org/articles/04501",
+    },
     {
       title:
         "Kimata et al. (2016), Cytoskeleton dynamics control the first asymmetric cell division in Arabidopsis zygote",

@@ -1,6 +1,11 @@
 import * as THREE from "three";
 import { sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { pittedVesselWall, chloroplastFactory } from "./structuralDetail.js";
+import {
+  bindPointLabel,
+  bindVertexLabel,
+  nearestSurfaceVertex,
+} from "./labelAnchors.js";
 const process = {
   id: "plantLongDistanceTransport",
   title: b("木质部运输与蒸腾", "Xylem transport and transpiration"),
@@ -74,6 +79,11 @@ const process = {
     {
       title: "OpenStax Biology 2e — Transport of Water and Solutes in Plants",
       url: "https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants",
+    },
+    {
+      title:
+        "Wheeler and Stroock — The transpiration of water at negative pressures in a synthetic tree",
+      url: "https://www.nature.com/articles/nature07226",
     },
   ],
   create() {
@@ -149,25 +159,46 @@ const process = {
     }
     pitMembranes.instanceMatrix.needsUpdate = true;
     pitMembranes.computeBoundingSphere();
-    k.segment([-0.85, -2.56, 0], [-0.85, 2.79, 0], 0.33, waterMat).name =
-      "continuous liquid water column";
-    k.tube(
-      [
-        [-0.85, 2.65, 0],
-        [-0.35, 2.78, 0],
-        [0.45, 2.8, 0],
-        [1.25, 2.77, 0],
-      ],
-      0.19,
+    const waterColumn = k.segment(
+      [-0.85, -2.56, 0],
+      [-0.85, 2.79, 0],
+      0.33,
       waterMat,
     );
+    waterColumn.name = "continuous liquid water column";
+    // The leaf delivery branch exits through an actual membrane-backed pit in
+    // the third element, rather than crossing the lignified secondary wall.
+    const outletAngle = 0.35 + Math.PI * 1.7 * 0.25,
+      outletY = -1.65 + 2 * 1.84 - 0.7 + 4 * 0.35,
+      outletPoint = (radius) => [
+        -0.85 + radius * Math.sin(outletAngle),
+        outletY,
+        radius * Math.cos(outletAngle),
+      ];
+    k.tube(
+      [
+        outletPoint(0.26),
+        outletPoint(0.38),
+        outletPoint(0.49),
+        outletPoint(0.62),
+        [0.35, 2.72, 0.04],
+        [0.95, 2.7, 0.04],
+        [1.5, 2.84, 0],
+        [1.7, 2.9, 0],
+      ],
+      0.025,
+      waterMat,
+    ).name = "liquid delivery through lateral pit to wet mesophyll wall";
     // Root tissue: multiple living cortical cells and a narrow hair contacting soil water.
+    const rootCells = [];
     for (let i = 0; i < 4; i++) {
-      k.mesh(new THREE.BoxGeometry(0.67, 0.89, 0.56), cellMat, [
-        -3.65 + i * 0.73,
-        -2.66,
-        0,
-      ]);
+      const rootCell = k.mesh(
+        new THREE.BoxGeometry(0.67, 0.89, 0.56),
+        cellMat,
+        [-3.65 + i * 0.73, -2.66, 0],
+      );
+      rootCell.name = "root cortical cell";
+      rootCells.push(rootCell);
       const edges = new THREE.LineSegments(
         new THREE.EdgesGeometry(new THREE.BoxGeometry(0.67, 0.89, 0.56)),
         new THREE.LineBasicMaterial({ color: "#a2af8b" }),
@@ -201,7 +232,8 @@ const process = {
     for (let i = 0; i < 4; i++) {
       const x = 0.5 + (i % 2) * 1.2,
         y = 1.4 + Math.floor(i / 2) * 2;
-      k.ball([x, y, 0], [0.54, 0.5, 0.34], cellMat);
+      k.ball([x, y, 0], [0.54, 0.5, 0.34], cellMat).name =
+        "mesophyll cell surface";
       for (let j = 0; j < 4; j++) {
         const t = (j * Math.PI) / 2;
         const plastid = makeChloroplast(group, 0.29);
@@ -213,18 +245,23 @@ const process = {
         plastid.rotation.x = Math.PI / 2;
       }
     }
-    k.tube(
-      [
-        [0.2, 2.75, 0.05],
-        [0.65, 2.9, 0.05],
-        [1.15, 2.75, 0.05],
-        [1.6, 2.92, 0.05],
-      ],
-      0.046,
-      k.material("#72a6bc"),
-    );
+    // Wet film lies on the lower surface of the upper-right mesophyll cell.
+    // Every vapor path starts on this same surface before entering the air.
+    const wetPoint = (angle) =>
+        new THREE.Vector3(
+          1.7 + 0.54 * Math.sin(angle),
+          3.4 - 0.5 * Math.cos(angle),
+          0,
+        ),
+      wetPoints = [];
+    for (let i = 0; i <= 32; i++)
+      wetPoints.push(wetPoint(-0.8 + (i / 32) * 1.6).toArray());
+    const wetFilm = k.tube(wetPoints, 0.046, k.material("#72a6bc"));
+    wetFilm.name = "wet mesophyll wall film";
     const guardTop = k.ball([3.16, 2.88, 0], [0.32, 0.3, 0.26], wallMat),
       guardBottom = k.ball([3.16, 1.88, 0], [0.32, 0.3, 0.26], wallMat);
+    guardTop.name = "upper leaf guard cell";
+    guardBottom.name = "lower leaf guard cell";
     k.segment([3.17, 3.48, 0], [3.17, 4.05, 0], 0.08, k.material("#c1c7a8"));
     k.segment([3.17, 0.74, 0], [3.17, 1.33, 0], 0.08, k.material("#c1c7a8"));
     const xylem = [];
@@ -235,9 +272,30 @@ const process = {
     const uptake = [];
     for (let i = 0; i < 6; i++)
       uptake.push(k.ball([0, 0, 0], 0.05, k.material("#5b98bb")));
-    const vapor = [];
-    for (let i = 0; i < 15; i++)
-      vapor.push(k.ball([0, 0, 0], 0.052, k.material("#a9c6d4")));
+    const vapor = [],
+      vaporPaths = [],
+      vaporMaterial = k.material("#a9c6d4", {
+        transparent: true,
+        opacity: 1,
+        depthWrite: false,
+      });
+    for (let i = 0; i < 15; i++) {
+      const birth = wetPoint(-0.65 + (i / 14) * 1.3);
+      vaporPaths.push(
+        new THREE.CatmullRomCurve3([
+          birth,
+          new THREE.Vector3(birth.x + 0.12, birth.y - 0.24, 0.1),
+          new THREE.Vector3(2.4, 2.37, 0.15),
+          new THREE.Vector3(3.16, 2.37, 0.15),
+          new THREE.Vector3(4.62, 2.62, 0.15),
+        ]),
+      );
+      // Separate materials are prebuilt so cohorts can fade independently.
+      const material = i === 0 ? vaporMaterial : vaporMaterial.clone();
+      const tracer = k.ball([0, 0, 0], 0.052, material);
+      tracer.name = "water-vapor tracer";
+      vapor.push(tracer);
+    }
     const labels = [
       k.label(
         [-3.5, -3.34, 0.6],
@@ -251,9 +309,23 @@ const process = {
         "Xylem: continuous liquid water",
         3,
       ),
-      k.label([0.45, 3.9, 0.6], "叶肉组织 · 湿壁", "Mesophyll · wet walls", 2),
-      k.label([1.75, 2.12, 0.6], "胞间气隙", "Intercellular air space", 2),
+      k.label(
+        [0.45, 3.9, 0.6],
+        "湿叶肉壁 · 蒸发界面",
+        "Wet mesophyll wall · evaporation",
+        2,
+      ),
+      k.label([2.15, 2.37, 0.1], "胞间气隙", "Intercellular air space", 2),
       k.label([3.6, 1.25, 0.6], "气孔 → 空气", "Stoma → atmosphere", 3),
+    ];
+    const updateLabelAnchors = [
+      bindPointLabel(labels[0], rootCells[0], [0, 0, 0.28]),
+      bindPointLabel(labels[1], waterColumn, [0, 0, 1]),
+      bindVertexLabel(
+        labels[2],
+        wetFilm,
+        nearestSurfaceVertex(wetFilm, [1.7, 2.9, 0.046]),
+      ),
     ];
     const point = new THREE.Vector3();
     function update(value, parameters = {}) {
@@ -272,6 +344,13 @@ const process = {
         distance = 4 * p - (close ? 3.32 * integral : 0);
       guardTop.position.y = 2.94 - 0.25 * closure;
       guardBottom.position.y = 1.8 + 0.25 * closure;
+      // This annotation names the outlet region between the two real cells.
+      labels[4].position[0] =
+        (guardTop.position.x + guardBottom.position.x) / 2;
+      labels[4].position[1] =
+        (guardTop.position.y + guardBottom.position.y) / 2;
+      labels[4].position[2] = 0.15;
+      updateLabelAnchors.forEach((updateAnchor) => updateAnchor());
       xylem.forEach((m, i) => {
         m.visible = p > 0.28;
         m.position.set(
@@ -287,14 +366,15 @@ const process = {
       });
       vapor.forEach((m, i) => {
         const t = (distance + i / 15) % 1;
-        m.visible = p > 0.14 && (closure < 0.7 || i < 3);
-        m.position.set(
-          1.25 + t * 3.37,
-          2.36 +
-            Math.sin(i * 2) * 0.1 * (1 - 0.9 * closure) +
-            (t > 0.65 ? (t - 0.65) * 0.7 : 0),
-          0.15 + Math.cos(i) * 0.09,
-        );
+        vaporPaths[i].getPoint(t, m.position);
+        // Smooth density reduction preserves in-flight continuity while the
+        // integrated travel distance slows. Endpoint fades also hide recycling.
+        const cohort = i < 3 ? 1 : 1 - ease(closure, 0.35, 0.95);
+        m.material.opacity =
+          ease(p, 0.14, 0.18) *
+          cohort *
+          ease(t, 0, 0.045) *
+          (1 - ease(t, 0.92, 1));
       });
       group.userData = {
         process: "plantLongDistanceTransport",

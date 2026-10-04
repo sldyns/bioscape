@@ -1,0 +1,197 @@
+{
+  "group": "division",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "mitosis",
+      "roots": [
+        "cell"
+      ],
+      "conditions": [
+        "normal",
+        "unattached"
+      ],
+      "auditVerdict": "qualified_pass",
+      "additionalRepair": "20261004-division-03"
+    },
+    {
+      "id": "meiosis",
+      "roots": [
+        "cell"
+      ],
+      "conditions": [],
+      "auditVerdict": "confirmed_issue"
+    }
+  ],
+  "issues": [
+    {
+      "issueId": "20261004-division-01",
+      "status": "fixed",
+      "changes": "Fit all three actomyosin belts to the same piecewise-linear tetrahedral inner-membrane level set that is actually rendered. Keep 3 x 100 x 8 tube tracks and all 28 motors per belt; regenerate normals in existing arrays, and reset hidden belts to canonical rest geometry for deterministic seeks.",
+      "files": [
+        "src/processes/modules/division/meiosisProcess.js",
+        "src/processes/modules/division/divisionShapes.js",
+        "src/processes/modules/division/germCellMembrane.js"
+      ],
+      "verification": [
+        "New cortical-ring.test.mjs samples actual tube cross-section centres against real inner-membrane triangles at early/middle/late poses of both contractions. Maximum sampled cortical gap .037536; bound .065 rejects the original .34-.52 separation.",
+        "The same assertion rejects retained baseline source (cortical-ring-baseline-rejection.log).",
+        "All original contact, checkpoint, chromatid allocation, open bridge/manifold and irregular playback tests remain unchanged and pass.",
+        "All geometry/normal/instance arrays and resource identities restore after irregular seeks."
+      ],
+      "sources": [
+        "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001599",
+        "https://pubmed.ncbi.nlm.nih.gov/16549803/"
+      ],
+      "limitations": [
+        "Bounded geometric samples are not an assertion about every real-valued progress value. Root continuous rendered review remains separate."
+      ]
+    },
+    {
+      "issueId": "20261004-division-02",
+      "status": "fixed",
+      "changes": "Retain the exact 64 x 56 x 18 grid and both isovalues. Reuse squared coordinate terms, scan active cells once for both leaflets, cache unique tetrahedral-edge intersections per level, update only active buffer prefixes, and use conservative static bounds.",
+      "files": [
+        "src/processes/modules/division/germCellMembrane.js"
+      ],
+      "verification": [
+        "Nine distinct field states x two membrane layers have identical draw ranges and bit-identical full position/normal arrays versus retained baseline: maximum difference 0.",
+        "Bounded complete model.update median: first furrow 29.9757 to 15.4387 ms; second furrow 28.4644 to 12.5356 ms; stable membrane .2342 to .2363 ms.",
+        "Separate membrane-only median 31.5189 to 8.2605 ms; complete raw samples retained.",
+        "No membrane/grid detail reduction; existing ray/manifold and DNA allocation checks pass."
+      ],
+      "timings": {
+        "firstFurrow": {
+          "baseline": {
+            "medianMs": 29.975708000000054,
+            "maxMs": 32.98695900000007
+          },
+          "current": {
+            "medianMs": 15.438709000000017,
+            "maxMs": 19.342832999999928
+          }
+        },
+        "secondFurrow": {
+          "baseline": {
+            "medianMs": 28.464375000000018,
+            "maxMs": 37.16816700000027
+          },
+          "current": {
+            "medianMs": 12.53558299999986,
+            "maxMs": 15.402916999999889
+          }
+        },
+        "stableMembrane": {
+          "baseline": {
+            "medianMs": 0.2341670000000704,
+            "maxMs": 0.4390000000003056
+          },
+          "current": {
+            "medianMs": 0.23624999999992724,
+            "maxMs": 0.3399580000000242
+          }
+        }
+      },
+      "limitations": [
+        "Measured synchronous CPU work only, with uncontrolled machine activity; not browser FPS, sustained smoothness or a physical-device benchmark.",
+        "Complete model first-furrow maximum was 19.3428 ms in this bounded run. The optimization removes most repeated work but does not establish a guaranteed 16.7 ms frame budget.",
+        "Root must separately judge continuous playback through both changing-membrane intervals."
+      ]
+    },
+    {
+      "issueId": "20261004-division-03",
+      "status": "fixed",
+      "changes": "Bind every division leader to a live rendered vertex in world space. The unattached label follows the eighth outer kinetochore plate; the bridge label lies on the retained channel; chromosome/crossover, spindle, ring, specimen and product anchors follow actual targets and visibility.",
+      "files": [
+        "src/processes/modules/division/labelAnchors.js",
+        "src/processes/modules/division/mitosisProcess.js",
+        "src/processes/modules/division/meiosisProcess.js",
+        "src/processes/modules/division/divisionShapes.js"
+      ],
+      "verification": [
+        "226 active surface checks across both attachment conditions, fourteen timeline poses and identity/transformed roots; all actual anchor-to-named-vertex distances below 1e-6.",
+        "Arbitrary seeks restore all label positions and active flags.",
+        "The new assertion rejects the retained pre-repair mitosis coordinates (label-anchors-baseline-rejection.log).",
+        "Measured original spindle/kinetochore/bridge nearest-surface gaps .3570/.8887/.8246 are now 0 (label-before.json and label-after.json)."
+      ],
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/division/repair-discoveries.json",
+      "limitations": [
+        "Root reviews on-screen label placement/collision and accessibility; these tests check the leader target rather than projected text layout."
+      ]
+    }
+  ],
+  "changedFiles": [
+    "src/processes/modules/division/divisionShapes.js",
+    "src/processes/modules/division/germCellMembrane.js",
+    "src/processes/modules/division/meiosisProcess.js",
+    "src/processes/modules/division/mitosisProcess.js",
+    "src/processes/modules/division/labelAnchors.js",
+    "src/processes/modules/division/cortical-ring.test.mjs",
+    "src/processes/modules/division/label-anchors.test.mjs",
+    "src/processes/modules/division/science.test.mjs"
+  ],
+  "tests": [
+    {
+      "command": "node src/processes/modules/division/science.test.mjs",
+      "result": "passed",
+      "log": "docs/qa/process-review-2026-10-04/evidence/division/science-phase-b-final.log"
+    },
+    {
+      "command": "node src/processes/modules/division/division.smoke.mjs",
+      "result": "passed",
+      "log": "docs/qa/process-review-2026-10-04/evidence/division/smoke-phase-b-final.log"
+    },
+    {
+      "command": "npx prettier --write <owned product and test files>",
+      "result": "passed; exact files recorded in changedFiles"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2199954/",
+      "title": "Rieder et al. (1995): The checkpoint delaying anaphase in response to chromosome monoorientation",
+      "supports": "Opened primary article: laser ablation experiments identify unattached kinetochores as the source of an anaphase-inhibitory signal in PtK1 mammalian cells."
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/8253845/",
+      "title": "Mastronarde et al. (1993): Interpolar spindle microtubules in PTK cells",
+      "supports": "Publisher/PMC open was blocked; the primary abstract was retrieved directly through Europe PMC REST and saved in evidence/division/primary-source-abstracts.json. Serial EM reconstructions show antiparallel interdigitating populations, rather than a single strand spanning both poles. Detailed ipMT minus-end distributions are outside the schematic."
+    },
+    {
+      "url": "https://www.informatics.jax.org/silver/chapters/5-2.shtml",
+      "title": "Mouse Genetics: The mouse karyotype",
+      "supports": "Opened JAX scientific resource: standard mouse autosomes are telocentric; species has 19 autosomal pairs, so the stated two-pair subset must not be read as a karyotype."
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34758289/",
+      "title": "Ogushi et al. (2021): Loss of sister kinetochore co-orientation and peri-centromeric cohesin protection",
+      "supports": "Opened primary abstract and figure captions: co-orientation and pericentromeric cohesion preserve sisters through I; loss in II permits sister disjunction. The experiment uses mouse oocytes; used only for conserved chromosome mechanics, not male-specific cytokinesis."
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/16549803/",
+      "title": "Greenbaum et al. (2006): TEX14 is essential for intercellular bridges and fertility in male mice",
+      "supports": "Primary abstract retrieved through Europe PMC REST after PMC/PubMed opens were blocked; saved locally. Mouse germ-cell cytokinesis retains permanent cytoplasmic channels; loss of TEX14 eliminates bridges."
+    },
+    {
+      "url": "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001599",
+      "title": "Delivery of ceramide phosphoethanolamine lipids to the cleavage furrow through the endocytic pathway is essential for male meiotic cytokinesis (2022)",
+      "supports": "Opened primary article, Figure 4 and associated live-imaging results: normal actomyosin ring/furrow constriction remains coupled; membrane detachment accompanies failed cytokinesis. Drosophila experiments support the generic coupling invariant only; no insect lipid/mutant mechanism is transferred to the mouse model."
+    }
+  ],
+  "evidenceIntegrity": {
+    "notice": "docs/qa/process-review-2026-10-04/evidence/division/evidence-recovery.md",
+    "detail": "Phase A diagnostics.json was inadvertently overwritten while running its original script during repair. Original audit and diagnostics.log were preserved. Deterministic baseline geometry records were regenerated from retained baseline source, and old summary timings restored from original diagnostics.log; missing original timing sample arrays were not fabricated. This is explicitly a recovery, not untouched raw Phase A evidence. New final evidence uses distinct paths."
+  },
+  "finalEvidence": [
+    "docs/qa/process-review-2026-10-04/evidence/division/full-update-phase-b-final.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/membrane-comparison-phase-b-final.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/label-before.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/label-after.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/repair-discoveries.json"
+  ],
+  "remainingAcceptance": [
+    "Root browser review of both models, both mitosis conditions, label placement and continuous constrictions.",
+    "No full-workspace verification, publication, deployment or physical-device acceptance was performed by this reviewer."
+  ],
+  "codeFrozen": true
+}

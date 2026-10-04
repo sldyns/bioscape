@@ -1,0 +1,175 @@
+{
+  "group": "genome",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-genome-01",
+      "status": "fixed",
+      "changes": "Added bounded real recipient-envelope aperture, withdrawable gates, receptor-associated functional conduit and open tail lumen; engagement precedes injection. P1 tip reaches y=.86 and lambda y=.90 with zero wall hits at the entry axis.",
+      "files": [
+        "transductionProcess.js",
+        "envelopeDetail.js"
+      ],
+      "verification": [
+        "review20261004.test.mjs: 32 actual entry states; cargo avoids remaining membrane triangles and fits lumen.",
+        "Frozen original source fails the same entry invariant with tip y=1.04."
+      ],
+      "limitations": [
+        "Exact molecular composition of the trans-envelope apparatus remains schematic; source text distinguishes lambda receptor recognition from the LamB sugar pore."
+      ]
+    },
+    {
+      "issueId": "20261004-genome-02",
+      "status": "fixed",
+      "changes": "The same paired DNA contours occupy the donor locus from p=0 and continuously extract, package and inject. Removed material is never duplicated in donor rails. Monotone packaging curves and rotating duplex frames prevent self-crossing during the morph.",
+      "files": [
+        "transductionProcess.js",
+        "envelopeDetail.js"
+      ],
+      "verification": [
+        "36 boundary checks, deterministic arbitrary seeks, 202 sampled paired-backbone clearance states.",
+        "p=.23 +/-1e-7 maximum displacement is 1.32e-6 P1 / 2.54e-6 lambda; both visible throughout.",
+        "Frozen original source fails the source-locus ownership/visibility invariant."
+      ],
+      "limitations": [
+        "Illustrated contours and time scales are schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-genome-03",
+      "status": "fixed",
+      "changes": "Unified radial dimensions of inner/outer membranes, growing cortex, coat, cut edges and coat ridges. Actual rear ray order is .72 < .81 < .87 < .99 at maturity.",
+      "files": [
+        "bacterialSporulationProcess.js",
+        "sporulationTopology.js",
+        "envelopeDetail.js",
+        "sporeGeometry.js"
+      ],
+      "verification": [
+        "10 maturation states check all shell/rim/weave/ridge vertices plus multiple actual triangle-ray directions; blocked branch remains immature.",
+        "Frozen original source fails cortex containment at p=.570001."
+      ],
+      "limitations": [
+        "Shapes remain teaching cutaways; root rendered playback review remains separate."
+      ]
+    },
+    {
+      "issueId": "20261004-genome-04",
+      "status": "fixed",
+      "changes": "Use actual enzyme/rail/mesh coordinates, update moving targets, and suppress labels for absent or not-yet-delivered material.",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs: every registered root/control; actual enzyme, instance or mesh-vertex coordinates."
+      ],
+      "limitations": [
+        "Layout/readability still requires native rendered review."
+      ]
+    },
+    {
+      "issueId": "20261004-genome-05",
+      "status": "fixed",
+      "changes": "Use actual enzyme/rail/mesh coordinates, update moving targets, and suppress labels for absent or not-yet-delivered material.",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs: every registered root/control; actual enzyme, instance or mesh-vertex coordinates."
+      ],
+      "limitations": [
+        "Layout/readability still requires native rendered review."
+      ]
+    },
+    {
+      "issueId": "20261004-genome-06",
+      "status": "fixed",
+      "changes": "Use actual enzyme/rail/mesh coordinates, update moving targets, and suppress labels for absent or not-yet-delivered material.",
+      "files": [
+        "src/processes/modules/genome/transductionProcess.js"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs: every registered root/control; actual enzyme, instance or mesh-vertex coordinates."
+      ],
+      "limitations": [
+        "Layout/readability still requires native rendered review."
+      ]
+    },
+    {
+      "issueId": "20261004-genome-07",
+      "status": "fixed",
+      "changes": "Use actual enzyme/rail/mesh coordinates, update moving targets, and suppress labels for absent or not-yet-delivered material.",
+      "files": [
+        "src/processes/modules/genome/bacterialSporulationProcess.js"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs: every registered root/control; actual enzyme, instance or mesh-vertex coordinates."
+      ],
+      "limitations": [
+        "Layout/readability still requires native rendered review."
+      ]
+    },
+    {
+      "issueId": "20261004-genome-08",
+      "status": "fixed; targeted and all-root condition stage imagery passed",
+      "changes": "Give only the existing open half-cylinder tail tube and trans-envelope conduit a dedicated DoubleSide material so the default camera can see their inner wall. Closed sheath/rims retain their original material. No geometry, positions, radius, lumen or DNA path changed.",
+      "files": [
+        "src/processes/modules/genome/transductionProcess.js",
+        "src/processes/modules/genome/tailVisibility.test.mjs",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "Same ray regression rejects frozen pre-fix source: default camera cannot see the tail tube inner wall.",
+        "16 fitted-default-camera states (2 roots x 2 routes x 4 stages), 144 material-sensitive triangle rays pass. Exposed tube has unobstructed rays after contraction.",
+        "16 pre/post scene hashes match for every object name, visibility, transform and vertex/index/instance buffer.",
+        "Owned smoke and integrated science both exit 0; formatting and diff checks pass.",
+        "genome-rendered-final.md: repaired phage/P1 .725/.915/1 raw960 English and .915/1 Chinese pass. genome-rendered-all-cases.md: both roots/routes stage sheets pass."
+      ],
+      "limitations": [
+        "Stage-image visual acceptance is complete for the reviewed root/route cases; this does not claim full-video human review of every case."
+      ]
+    },
+    {
+      "issueId": "20261004-genome-09",
+      "status": "fixed; all-root active/blocked fresh stage-image review passed",
+      "changes": "Compute the actual dual-incision event once and use it for existing backbone gaps, exposed ends, metadata and incision-label activation. The label now appears only after both real cuts exist, and never in the blocked branch. Existing text, cut-site anchor, geometry and biological timing remain unchanged.",
+      "files": [
+        "src/processes/modules/genome/nuclearModels.js",
+        "src/processes/modules/genome/incisionLabel.test.mjs",
+        "src/processes/modules/genome/science.test.mjs"
+      ],
+      "verification": [
+        "96 boundary states and 672 arbitrary seeks across cell/plant/yeast and active/blocked pass, including the real exposed ends and missing backbone segments.",
+        "The same regression rejects frozen pre-fix source at active p=.3: annotation claims cuts before the event (0 != 2).",
+        "All 96 pre/post scene hashes match for object names, mesh visibility, transforms, vertex/index/instance buffers, every label anchor and biological model state.",
+        "Fresh owned smoke and integrated science exit 0; prettier and git diff checks pass.",
+        "conditions-final-c fresh Chinese images: all six repair cases viewed at .325/.495 in raw960 plus active .905 or blocked end. Annotation matches actual incision state. All 18 group stage sheets/126 frames pass; see genome-rendered-all-cases.md."
+      ],
+      "limitations": [
+        "Visual acceptance covers reviewed native stage/critical frames at the default camera; it is not full-video human review of all cases."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/genome/smoke.mjs",
+    "node src/processes/modules/genome/science.test.mjs (now imports review20261004.test.mjs and labelAnchors.test.mjs)",
+    "GENOME_CHECK=entry|extraction|layers GENOME_MODULE_ROOT=<frozen baseline> node src/processes/modules/genome/review20261004.test.mjs (all three expected failures)",
+    "npx prettier --check <owned changed files>",
+    "git diff --check -- src/processes/modules/genome",
+    "node src/processes/modules/genome/tailVisibility.test.mjs",
+    "GENOME_MODULE_ROOT=docs/qa/process-review-2026-10-04/evidence/genome/tail-visibility-baseline/src/processes/modules/genome node src/processes/modules/genome/tailVisibility.test.mjs (expected assertion failure)",
+    "node src/processes/modules/genome/incisionLabel.test.mjs",
+    "GENOME_MODULE_ROOT=docs/qa/process-review-2026-10-04/evidence/genome/incision-label-baseline/src/processes/modules/genome node src/processes/modules/genome/incisionLabel.test.mjs (expected assertion failure)"
+  ],
+  "sourcesAdded": [
+    "https://pubmed.ncbi.nlm.nih.gov/21745674/",
+    "https://www.nature.com/articles/s41467-024-48686-3",
+    "https://www.nature.com/articles/s41467-024-45770-6"
+  ],
+  "evidence": "docs/qa/process-review-2026-10-04/evidence/genome/",
+  "acceptanceLimits": [
+    "No browser or full-workspace suite operated by this reviewer.",
+    "No performance, physical-device or publication acceptance claimed."
+  ]
+}

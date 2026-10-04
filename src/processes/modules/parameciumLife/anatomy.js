@@ -54,6 +54,7 @@ export function addParamecium(kit) {
     [0.46, 0.73, 0.23],
     kit.material("#a5a0b5", { transparent: true, opacity: 0.6 }),
   );
+  macro.name = "feeding-macronucleus";
   nuclearDetail(kit, macro, true);
   for (let i = 0; i < 4; i++) {
     const mic = kit.ball(
@@ -73,5 +74,5 @@ export function addParamecium(kit) {
     ],
     { rows: 15, columns: 19 },
   );
-  return { cilia };
+  return { cilia, macro };
 }

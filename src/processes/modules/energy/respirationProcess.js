@@ -1,5 +1,5 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { energyDetails } from "./detailKit.js";
+import { energyDetails, carrierPhase, flowScale } from "./detailKit.js";
 
 const stages = [
   {
@@ -72,7 +72,7 @@ function create({ rootId = "cell" } = {}) {
   });
   const atpMat = material("#b49fc2"),
     pale = material("#dad2c8");
-  details.bilayer({
+  const membrane = details.bilayer({
     length: 9,
     depth: 1.65,
     holes: [
@@ -87,24 +87,44 @@ function create({ rootId = "cell" } = {}) {
   group.add(ci);
   ci.position.x = -3.25;
   ci.name = yeast ? "matrix-peripheral-Ndi1" : "transmembrane-complex-I";
+  let entryLabelTarget;
   if (yeast) {
-    details.fold(ci, [0, -0.4, 0], [0.83, 0.61, 0.8], protein);
+    entryLabelTarget = details.fold(
+      ci,
+      [0, -0.4, 0],
+      [0.83, 0.61, 0.8],
+      protein,
+    ).children[0];
   } else {
     details.bundle(ci, [-0.27, 0, 0], [1.3, 1, 1.05], protein, 7);
-    details.bundle(ci, [0.3, 0, 0], [0.85, 0.9, 0.9], teal, 5);
+    details.bundle(ci, [0.3, 0, 0], [0.85, 0.9, 0.9], teal, 5).name =
+      "complex-I-proton-transfer-domain";
     details.fold(ci, [-0.24, -0.65, -0.06], [0.9, 1.1, 0.86], protein);
-    details.fold(ci, [-0.32, -1.08, 0.04], [0.8, 0.52, 0.75], teal);
+    entryLabelTarget = details.fold(
+      ci,
+      [-0.32, -1.08, 0.04],
+      [0.8, 0.52, 0.75],
+      teal,
+    ).children[0];
     const centers = material("#baa989");
     for (let i = 0; i < 5; i++)
       ball([-0.33 + i * 0.07, -1.05 + i * 0.2, 0.35], 0.055, centers, ci);
   }
-  details.fold(group, [-1.8, -0.55, -0.1], [0.7, 0.88, 0.75], teal);
+  entryLabelTarget.name = "NADH-entry-label-surface";
+  const complexII = details.fold(
+    group,
+    [-1.8, -0.55, -0.1],
+    [0.7, 0.88, 0.75],
+    teal,
+  );
   details.bundle(group, [-1.8, -0.05, -0.1], [0.8, 0.65, 0.8], teal, 4);
   for (const x of [-0.45, 0.08]) {
-    details.bundle(group, [x, 0, 0], [0.87, 1.12, 1], copper, 7);
+    const domain = details.bundle(group, [x, 0, 0], [0.87, 1.12, 1], copper, 7);
+    if (x === -0.45) domain.name = "complex-III-proton-transfer-domain";
     details.fold(group, [x, 0.53, -0.03], [0.67, 0.6, 0.8], copper);
   }
-  details.bundle(group, [1.35, 0, 0], [0.9, 1.1, 0.95], teal, 7);
+  details.bundle(group, [1.35, 0, 0], [0.9, 1.1, 0.95], teal, 7).name =
+    "complex-IV-proton-transfer-domain";
   details.bundle(group, [1.74, 0, -0.03], [0.56, 0.95, 0.75], protein, 4);
   // Exposed cofactor pockets make the terminal oxidase distinct from complex III.
   for (const y of [-0.12, 0.15]) {
@@ -140,12 +160,16 @@ function create({ rootId = "cell" } = {}) {
   segment([0, 0.3, 0], [0, -0.3, 0], 0.045, hmat, leak);
   // Direction arrows have a real membrane-side meaning, not a generic pathway tube.
   const coneGeo = new THREE.ConeGeometry(0.12, 0.22, 18);
-  for (const x of yeast ? [-0.2, 1.5] : [-3.25, -0.2, 1.5]) {
-    segment([x + 0.32, -0.8, 0.6], [x + 0.32, 0.85, 0.6], 0.018, hmat);
-    k.mesh(coneGeo, hmat, [x + 0.32, 0.86, 0.6]);
+  // Cross inside the corresponding membrane domain. Front-offset paths would
+  // cross intact lipids even though their projection looks near the protein.
+  const pumpXs = yeast ? [-0.45, 1.35] : [-2.95, -0.45, 1.35];
+  for (const x of pumpXs) {
+    segment([x, -0.8, 0], [x, 0.85, 0], 0.018, hmat);
+    k.mesh(coneGeo, hmat, [x, 0.86, 0]);
   }
-  segment([2.7, 0.85, 0.55], [2.7, -0.8, 0.55], 0.018, hmat);
-  const down = k.mesh(coneGeo, hmat, [2.7, -0.85, 0.55]);
+  // Fo flow is at the a/c interface, beside the rotor rather than beside Fo.
+  segment([3.49, 0.85, 0], [3.49, -0.8, 0], 0.018, hmat);
+  const down = k.mesh(coneGeo, hmat, [3.49, -0.85, 0]);
   down.rotation.z = Math.PI;
   // TCA context occupies the matrix, apart from the membrane machinery.
   const tca = new THREE.Group();
@@ -158,6 +182,8 @@ function create({ rootId = "cell" } = {}) {
   const supply = ball([-3.2, -1.8, 0.15], 0.13, electronMat);
   const q = ball([-1.45, 0, 0.55], [0.16, 0.11, 0.12], electronMat);
   const cytc = ball([0.68, 0.85, 0], 0.19, copper);
+  q.name = "ubiquinone-carrier";
+  cytc.name = "cytochrome-c-carrier";
   const electronPath = [
     [-3.3, -0.9, 0.5],
     [-3.25, 0, 0.5],
@@ -171,10 +197,11 @@ function create({ rootId = "cell" } = {}) {
   const electrons = Array.from({ length: 7 }, () =>
     ball([0, 0, 0], 0.065, electronMat),
   );
-  const pumpXs = yeast ? [-0.2, 1.5] : [-3.25, -0.2, 1.5];
-  const pumps = Array.from({ length: pumpXs.length * 3 }, () =>
-    ball([0, 0, 0], 0.085, hmat),
-  );
+  const pumps = Array.from({ length: pumpXs.length * 3 }, (_, i) => {
+    const o = ball([0, 0, 0], 0.085, hmat);
+    o.name = `pumped-proton-${i}`;
+    return o;
+  });
   const reservoir = Array.from({ length: 16 }, (_, i) =>
     ball(
       [
@@ -186,9 +213,11 @@ function create({ rootId = "cell" } = {}) {
       hmat,
     ),
   );
-  const returning = Array.from({ length: 4 }, () =>
-    ball([0, 0, 0], 0.085, hmat),
-  );
+  const returning = Array.from({ length: 4 }, (_, i) => {
+    const o = ball([0, 0, 0], 0.085, hmat);
+    o.name = `Fo-return-proton-${i}`;
+    return o;
+  });
   const leaking = Array.from({ length: 4 }, () => ball([0, 0, 0], 0.085, hmat));
   const atp = Array.from({ length: 3 }, () =>
     details.adenylate(group, [0, 0, 0], 0.46),
@@ -224,6 +253,27 @@ function create({ rootId = "cell" } = {}) {
     label([0.65, 1.13, 0], "细胞色素 c", "Cytochrome c", 1),
     label([4.3, -1.1, 0], "质子泄漏", "Proton leak", 1),
   ];
+  details.anchorNearestInstance(
+    labels[2],
+    membrane.getObjectByName("upper-leaflet-heads"),
+    [-4.3, 0.205, 0.4],
+  );
+  details.anchor(labels[3], entryLabelTarget);
+  details.anchor(labels[4], complexII.children[0]);
+  details.anchor(
+    labels[5],
+    group.getObjectByName("complex-III-proton-transfer-domain").children[2],
+  );
+  details.anchor(
+    labels[6],
+    group.getObjectByName("complex-IV-proton-transfer-domain").children[2],
+  );
+  details.anchor(labels[7], group.getObjectByName("F1-label-surface"));
+  details.anchor(labels[8], group.getObjectByName("Fo-label-surface"));
+  details.anchor(labels[9], tca.children[1]);
+  details.anchor(labels[10], q);
+  details.anchor(labels[11], cytc);
+  details.anchor(labels[12], leakRing);
   const update = (progress, parameters = {}) => {
     const p = clamp(progress),
       uncoupled = parameters.coupling === "leak";
@@ -233,10 +283,12 @@ function create({ rootId = "cell" } = {}) {
     labels[12].active = uncoupled;
     const gradient = flow * (1 - 0.9 * leakOn),
       synthesis = ease(p, 0.55, 0.8) * (1 - leakOn);
-    supply.position.set(-3.2, -2 + 0.9 * ((p * 3) % 1), 0.2);
+    const supplyPhase = (p * 3) % 1;
+    supply.position.set(-3.2, -2 + 0.9 * supplyPhase, 0.2);
+    supply.scale.setScalar(0.13 * flowScale(supplyPhase) * ease(p, 0.1, 0.14));
     supply.visible = p > 0.1;
-    q.position.x = -1.6 + 1.15 * ((p * 3) % 1);
-    cytc.position.x = 0.3 + 1.03 * ((p * 3) % 1);
+    q.position.x = -1.6 + 1.15 * carrierPhase(p, 3);
+    cytc.position.x = 0.3 + 1.03 * carrierPhase(p, 3);
     for (let i = 0; i < electrons.length; i++) {
       const u = ((p * 2 + i / 7) % 1) * 7,
         j = Math.floor(u),
@@ -248,11 +300,15 @@ function create({ rootId = "cell" } = {}) {
         a[1] + (c[1] - a[1]) * t,
         a[2],
       );
+      electrons[i].scale.setScalar(
+        0.065 * flowScale(u / 7) * ease(p, 0.16, 0.2),
+      );
       electrons[i].visible = p > 0.16;
     }
     pumps.forEach((o, i) => {
       const t = (p * 3 + (i % 3) / 3) % 1;
-      o.position.set(pumpXs[Math.floor(i / 3)] + 0.32, -0.8 + 1.75 * t, 0.6);
+      o.position.set(pumpXs[Math.floor(i / 3)], -0.8 + 1.75 * t, 0);
+      o.scale.setScalar(0.085 * flowScale(t) * ease(p, 0.3, 0.35));
       o.visible = p > 0.3;
     });
     reservoir.forEach((o, i) => {
@@ -260,12 +316,14 @@ function create({ rootId = "cell" } = {}) {
     });
     returning.forEach((o, i) => {
       const t = (p * 3 + i / 4) % 1;
-      o.position.set(3.1, 0.95 - 2.05 * t, 0.44);
+      o.position.set(3.49, 0.95 - 2.05 * t, 0);
+      o.scale.setScalar(0.085 * flowScale(t) * ease(synthesis, 0.04, 0.14));
       o.visible = synthesis > 0.04;
     });
     leaking.forEach((o, i) => {
       const t = (p * 4 + i / 4) % 1;
       o.position.set(4.25, 0.95 - 1.9 * t, 0.12);
+      o.scale.setScalar(0.085 * flowScale(t) * ease(leakOn, 0.1, 0.3));
       o.visible = leakOn > 0.1;
     });
     const motorTime = Math.max(0, p - 0.55);
@@ -276,10 +334,12 @@ function create({ rootId = "cell" } = {}) {
     atp.forEach((o, i) => {
       const t = (p * 2 + i / 3) % 1;
       o.position.set(3.15 - 0.9 * t, -1.8 - 0.4 * t, 0.3);
+      o.scale.setScalar(0.46 * flowScale(t) * ease(synthesis, 0.2, 0.35));
       o.visible = synthesis > 0.2;
     });
     water.visible = p > 0.48;
     water.scale.setScalar(0.12 + 0.05 * ease(p, 0.48, 0.7));
+    details.syncLabelAnchors();
     group.userData = {
       process: "respiration",
       rootId,
@@ -372,6 +432,10 @@ export default {
     },
   },
   sources: [
+    {
+      title: "Structure and function of the S. pombe III–IV–cyt c supercomplex",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC10655221/",
+    },
     {
       title: "Paramecium ATP synthase dimer · 26 Å map EMD-3441",
       url: "https://www.ebi.ac.uk/emdb/EMD-3441",

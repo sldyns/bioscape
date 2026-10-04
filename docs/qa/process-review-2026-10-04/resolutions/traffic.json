@@ -1,0 +1,93 @@
+{
+  "group": "traffic",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-traffic-01",
+      "status": "fixed",
+      "changes": "The connected pit contains a real membrane neck. Neck radius, dynamin placement and collar recruitment/disassembly share the constriction state; the donor membrane retracts after scission. Receptor/cargo positions remain continuous through the sealed-carrier handoff.",
+      "files": [
+        "src/processes/modules/traffic/endocytosisProcess.js",
+        "src/processes/modules/traffic/review20261004.test.mjs",
+        "src/processes/modules/traffic/science.test.mjs"
+      ],
+      "verification": [
+        "Actual dynamin bead vertices remain outside the rendered neck outer leaflet at recruitment/constriction samples; minimum measured clearance .01499999.",
+        "Actual membrane radius decreases over .39..43 rather than remaining frozen. Collar is absent at sealed-carrier state .43.",
+        "Existing receptor-anchor, luminal-cargo, resource stability, finite-buffer and deterministic-seek checks pass."
+      ],
+      "limitations": [
+        "Root owns rendered continuous-playback, bilingual label-layout and final integration acceptance. No browser, full-workspace suite or performance benchmark was run by this reviewer."
+      ]
+    },
+    {
+      "issueId": "20261004-traffic-02",
+      "status": "fixed",
+      "changes": "Map lysosomal anchor coordinates to their corresponding right-lobe coordinates on the initial fused surface, then follow the same material coordinates through fusion and rounding.",
+      "files": [
+        "src/processes/modules/traffic/autophagyProcess.js",
+        "src/processes/modules/traffic/review20261004.test.mjs"
+      ],
+      "verification": [
+        "World-space anchor displacement converges to zero across .65 +/- epsilon at epsilon 1e-4,1e-6,1e-8; the former 2.369646/.892791 jumps are rejected.",
+        "All seven glycan bases and V-ATPase anchor remain within .002 of the actual rendered paired-leaflet midprofile across fusion and rounding.",
+        "Existing inner-membrane barrier/enzymatic access and complete-hydrolase containment regressions remain passing."
+      ],
+      "limitations": [
+        "Root owns rendered continuous-playback, bilingual label-layout and final integration acceptance. No browser, full-workspace suite or performance benchmark was run by this reviewer."
+      ]
+    },
+    {
+      "issueId": "20261004-traffic-labels-01",
+      "status": "fixed",
+      "changes": "Bind LDL, clathrin hub, recycling receptor and dynamin leaders to actual moving subjects; put the endosome label in its lumen and synchronize lifecycle visibility.",
+      "files": [
+        "src/processes/modules/traffic/endocytosisProcess.js",
+        "src/processes/modules/traffic/review20261004.test.mjs"
+      ],
+      "verification": [
+        "Labels are compared to actual composed clathrin instance centers, LDL/receptor objects and dynamin subunit world positions through arbitrary seeks.",
+        "Extracellular LDL label deactivates at scission, clathrin/dynamin follow subject visibility, sorting label begins with the sorting stage. Label objects and position arrays remain stable."
+      ],
+      "limitations": [
+        "Root owns rendered continuous-playback, bilingual label-layout and final integration acceptance. No browser, full-workspace suite or performance benchmark was run by this reviewer."
+      ]
+    },
+    {
+      "issueId": "20261004-traffic-labels-02",
+      "status": "fixed",
+      "changes": "Track actual backbone vertices and current membrane/cut-edge vertices; place compartment labels in lumina, suppress absent cargo and retain the label on visible proteases.",
+      "files": [
+        "src/processes/modules/traffic/autophagyProcess.js",
+        "src/processes/modules/traffic/review20261004.test.mjs"
+      ],
+      "verification": [
+        "Cargo/protease labels coincide with actual transformed backbone vertices within 2e-6, including cargo shrinkage and protease motion.",
+        "Phagophore and inner-membrane labels coincide with rendered mesh vertices. Degraded cargo loses its label while retained proteases keep theirs. Stable label/array identity is asserted."
+      ],
+      "limitations": [
+        "Root owns rendered continuous-playback, bilingual label-layout and final integration acceptance. No browser, full-workspace suite or performance benchmark was run by this reviewer."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/traffic/review20261004.test.mjs",
+    "node src/processes/modules/traffic/science.test.mjs",
+    "node src/processes/modules/traffic/smoke.mjs",
+    "node src/processes/modules/traffic/fusionProfiles.test.mjs",
+    "npx prettier --write (explicit owned files only)"
+  ],
+  "sourcesAdded": [],
+  "sourcesUsed": [
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265984/",
+    "https://www.nature.com/articles/s41467-024-52049-3"
+  ],
+  "evidence": [
+    "evidence/traffic/science-after.log",
+    "evidence/traffic/review-after.log",
+    "evidence/traffic/smoke-after.log",
+    "evidence/traffic/fusion-after.log",
+    "evidence/traffic/repair-discoveries.json"
+  ]
+}

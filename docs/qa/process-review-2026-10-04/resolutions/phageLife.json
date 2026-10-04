@@ -1,0 +1,158 @@
+{
+  "group": "phageLife",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-phageLife-01",
+      "status": "fixed",
+      "changes": [
+        "A single mutable duplex travels from the lambda capsid through an open, curved tail into the host, then closes its ends. The generic packaged genome is disabled.",
+        "Host attachment arms and the same viral loop deform through a common strand-matched recombination junction; integration and excision no longer overlap complete independent genomes. Excision transfers exclusive drawing ownership to a clone sharing the same updated DNA buffers.",
+        "The lambda portal vertex, tail lumen, outlet and ring orientations support the actual transfer path. Existing T4 geometry and both daughter-fate invariants remain intact."
+      ],
+      "files": [
+        "src/processes/modules/phageLife/lambdaTopology.js",
+        "src/processes/modules/phageLife/geometry.js",
+        "src/processes/modules/phageLife/phageLysogenicProcess.js",
+        "src/processes/modules/phageLife/continuity.test.mjs",
+        "src/processes/modules/phageLife/science.test.mjs"
+      ],
+      "verification": [
+        "Actual visible DNA backbone segments do not intersect capsid/tail-wall triangles during transfer; contiguous sampled centerline and schematic contour-length range <0.025 scene units.",
+        "Both strands match actual host-arm endpoints to <1e-6 during recombination; closed circles and resealed host junctions are verified.",
+        "At ten conversion boundaries +/-1e-6, corresponding polymer positions move <0.001; integrated/excised complete representations are never simultaneously effective.",
+        "Existing daughter chromosome/prophage/CI/envelope and T4 entry regressions still pass."
+      ],
+      "limitations": [
+        "The loop/junction trajectory and cohesive-end closure remain schematic, not an atomistic recombination simulation or exact kinetic model."
+      ]
+    },
+    {
+      "issueId": "20261004-phageLife-02",
+      "status": "fixed",
+      "changes": [
+        "Removed separate preview duplicates. Six prebuilt physical fibers assemble at independent sites, retain full length during installation and move continuously into their baseplate binding positions.",
+        "Per-fiber transforms compensate rotation/scale about actual binding roots; shortest orientation changes are used during final docking.",
+        "The mature-particle label starts only when all roots have attached at progress .99; inactive gp21 still allows independent tail/fiber assembly while blocking the head."
+      ],
+      "files": [
+        "src/processes/modules/phageLife/assemblyGeometry.js",
+        "src/processes/modules/phageLife/phageAssemblyProcess.js",
+        "src/processes/modules/phageLife/continuity.test.mjs"
+      ],
+      "verification": [
+        "All six root-to-tip lengths remain constant through docking in both protease conditions.",
+        "Actual roots coincide with baseplate attachment coordinates to <1e-6 at maturity.",
+        "Root world displacement across .93/.94/.95/.99 +/-1e-6 is <0.001; no full-size set appears at the former .93 switch."
+      ],
+      "limitations": [
+        "Root-rendered views must verify fiber staging clarity and label legibility."
+      ]
+    },
+    {
+      "issueId": "20261004-phageLife-03",
+      "status": "fixed",
+      "changes": [
+        "Corrected the exterior dsDNA angular progression and matching rung positions to form a right-handed helix.",
+        "Preserved ATP absence stall, loading, headful cut, motor departure and neck sealing."
+      ],
+      "files": [
+        "src/processes/modules/phageLife/phagePackagingProcess.js",
+        "src/processes/modules/phageLife/continuity.test.mjs"
+      ],
+      "verification": [
+        "Signed twist from actual world-space cylinder endpoints is positive at multiple visible DNA positions in both ATP conditions.",
+        "Both backbones remain antipodally paired; ATP-absent branch retains zero loaded fraction with no cut or seal."
+      ],
+      "limitations": [
+        "The DNA packing path, scale and ATP cycles remain schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-phageLife-04",
+      "status": "fixed",
+      "changes": [
+        "Anchor named structures to actual moving mesh vertices, domain centers, visible duplex buffers and instance centers; keep whole-cell/lumen/cytoplasm labels as explicit region annotations. Hide labels with their target where relevant.",
+        "Added stable in-place label-coordinate updates and visibility checks; preserved source label objects/position arrays."
+      ],
+      "files": [
+        "src/processes/modules/phageLife/labelAnchors.js",
+        "src/processes/modules/phageLife/labelAnchors.test.mjs",
+        "src/processes/modules/phageLife/phageLyticProcess.js",
+        "src/processes/modules/phageLife/phageLysogenicProcess.js",
+        "src/processes/modules/phageLife/phageAssemblyProcess.js",
+        "src/processes/modules/phageLife/phagePackagingProcess.js",
+        "src/processes/modules/phageLife/science.test.mjs"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs: 481 actual-geometry checks, 140 states, all seven root/condition combinations; all four retained pre-label models fail physical-target assertions.",
+        "All label positions/visibility are deterministic under non-monotonic seeks."
+      ],
+      "limitations": [
+        "Native/export visual label collisions still require root review."
+      ]
+    },
+    {
+      "issueId": "20261004-phageLife-05",
+      "status": "fixed",
+      "changes": [
+        "Preserve each fragment base scale and multiply all axes by a bounded smooth appearance/removal envelope. Fragments shrink to zero at both visibility boundaries."
+      ],
+      "files": [
+        "src/processes/modules/phageLife/phageAssemblyProcess.js",
+        "src/processes/modules/phageLife/renderedMechanics.test.mjs",
+        "src/processes/modules/phageLife/science.test.mjs"
+      ],
+      "verification": [
+        "renderedMechanics.test.mjs rejects retained original model; corrected model passes seven clearance samples, both +/-1e-6 boundary checks, fixed anisotropy, bounded dimensions and gp21-inactive absence."
+      ],
+      "limitations": [
+        "Post-repair 960x640 render confirmation is still pending; pre-repair full-b3 sheets are not final visual acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-phageLife-06",
+      "status": "fixed",
+      "changes": [
+        "Smoothly lower the severed downstream product during completed cleavage so it remains outside the entire portal/neck axial envelope, including subsequent seal growth. Preserve the internal genome, ATP stall and motor departure."
+      ],
+      "files": [
+        "src/processes/modules/phageLife/phagePackagingProcess.js",
+        "src/processes/modules/phageLife/renderedMechanics.test.mjs",
+        "src/processes/modules/phageLife/science.test.mjs"
+      ],
+      "verification": [
+        "Retained original model fails actual-geometry clearance checks. Corrected six completed-cleavage samples have axial clearance .280607 to .515807 and terminal-to-surface distance .348701 to .564300; completed seal clearance .295335. Translation stays continuous at .79/.82/.85/.92 and ATP absence keeps no cut/seal."
+      ],
+      "limitations": [
+        "Post-repair 960x640 render confirmation is still pending; pre-repair full-b3 sheets are not final visual acceptance."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "preservation": [
+    "The phageLytic mechanism remains unchanged; its only process-level change is the label correction discovered during repair.",
+    "No shared renderer, catalog, browser, or full-suite changes/runs. Existing Phase A records are unchanged."
+  ],
+  "commands": [
+    "node src/processes/modules/phageLife/science.test.mjs",
+    "node src/processes/modules/phageLife/continuity.test.mjs",
+    "node src/processes/modules/phageLife/labelAnchors.test.mjs",
+    "esbuild: all four process entry points, bundle=true, write=false",
+    "prettier --check src/processes/modules/phageLife/*.js src/processes/modules/phageLife/*.mjs",
+    "git diff --check -- src/processes/modules/phageLife",
+    "node src/processes/modules/phageLife/renderedMechanics.test.mjs"
+  ],
+  "sourcesAdded": [
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC1976217/",
+    "https://www.nature.com/articles/nature03657",
+    "https://www.nature.com/articles/ncomms8548",
+    "https://www.rcsb.org/structure/1BNA"
+  ],
+  "evidenceDirectory": "docs/qa/process-review-2026-10-04/evidence/phageLife",
+  "remainingLimits": [
+    "Root owns rendered continuous-playback, export/label legibility and performance review. Local regressions do not establish those gates.",
+    "Broader overview transitions recorded as limits in Phase A were not promoted to invented additional defects.",
+    "Rendered follow-up discoveries 05/06 are code/test fixed; request three post-repair frames: assembly .345, packaging .85 and 1."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "group": "player",
+  "discoveredDuring": "Final all-context native exported annotation review",
+  "phaseAAuditsUnchanged": true,
+  "issues": [
+    {
+      "issueId": "20261004-shared-capture-leader-layer-01",
+      "severity": "P2",
+      "kind": "exported-annotation-layering",
+      "models": ["plantGenome"],
+      "scope": "shared exported canvas annotations",
+      "title": "Later exported annotation leaders cross earlier caption text",
+      "evidence": [
+        "evidence/player/leader-layer-discovery.json",
+        "evidence/browser/conditions-final-a-037-plantGenome-plant-stage-4.webp",
+        "evidence/player/capture-leader-layer-negative.log"
+      ],
+      "repair": "Two paint passes: all leaders and transparent halos first, then all caption backgrounds, borders and text. Layout and label data are unchanged.",
+      "status": "fixed-and-native-rendered-verified",
+      "resolution": "resolutions/player-label-layer.json",
+      "boundary": "Confirmed on plantGenome, repaired in the shared export painter; no duplicate turnover R05 finding."
+    }
+  ]
+}

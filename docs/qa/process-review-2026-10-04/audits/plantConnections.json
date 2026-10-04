@@ -1,0 +1,255 @@
+{
+  "group": "plantConnections",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "reviewer": "review_plant_connections",
+  "phase": "A",
+  "readOnlyProduct": true,
+  "issueCount": 3,
+  "distinctGeometricCauses": 2,
+  "models": [
+    {
+      "id": "plantTransport",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Arabidopsis companion-cell plasma-membrane proton export and SUC2 sucrose uptake; energy=available/depleted; full 0–1 interval.",
+      "checks": [
+        "Traced actual ten pump helices, cytosolic catalytic domains, twelve SUC-family helices, alternating loop sides and dynamic cytoplasmic interdomain linker; unsupported pump peptide connectors remain omitted.",
+        "Single tracked proton exports through pump x=-1.75 and returns at SUC2 x≈1.48; one ATP terminal phosphate separates. Membrane footprints, apoplastic wall and cytosolic domains are on consistent sides.",
+        "No-ATP/no-initial-gradient condition stops proton export and net sugar uptake while sugar may approach outside-facing site; conserved proton path has no positional jump at p=.43.",
+        "Read both languages: intro, six stages, eight labels, energy control, entry summary and sources. No contexts or legend overrides; actual catalog only registers plant.",
+        "Smoke covers both controls, finite geometry/bounds, deterministic irregular seeks and stable node/material/geometry identity; 412 motion samples per condition including stage epsilon neighbors."
+      ],
+      "sources": [
+        {
+          "url": "https://www.esalq.usp.br/lepse/imgs/conteudo_thumb/Crystal-structure-of-the-plasma-membrane-proton-pump-1.pdf",
+          "title": "Pedersen et al. (2007), Crystal structure of the plasma membrane proton pump",
+          "supports": "Opened primary-paper PDF: AHA2 has ten transmembrane helices plus cytosolic catalytic domains and couples ATP hydrolysis to proton transport."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10281868/",
+          "title": "Bavnhøj et al. (2023), Structure and sucrose binding mechanism of the plant SUC1 sucrose transporter",
+          "supports": "Opened full text: Results and Fig. 1 show two six-helix domains and a cytoplasmic linker; uptake depends on protons. Family-level support, not direct SUC2 atomic coordinates."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18650401/",
+          "title": "Srivastava et al. (2008), Functional characterization of Arabidopsis AtSUC2 by tissue-specific complementation",
+          "supports": "Opened primary abstract: complementation supports the essential collection-phloem loading role; no whole-plant pressure-flow model is implied."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "No positional discontinuity established from smoothstep trajectory formulas or sampled visible-node transforms. The background gradient is qualitative, not a proton-count measurement.",
+          "SUC lobe tilts are a schematic alternating-access illustration; no atomistic steric or sugar stereochemistry acceptance is claimed."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered continuous-playback acceptance was performed; root owns that gate.",
+        "Enzyme folds, organelles, time and molecule scales are schematics rather than atomic structures or measured kinetics."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "plasmodesmata",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "One widened-sleeve Arabidopsis root-cell plasmodesma; gate=open/callose; full 0–1 interval.",
+      "checks": [
+        "Read actual wall/middle lamella slabs, two pore leaflets, ER tube/cortical continuity, cytoplasmic cargo sleeve, tethers and callose neck geometry.",
+        "Small cargo remains outside the desmotubule: first particle crosses before callose rise; remaining three complete only in open condition. Bulky untargeted cargo remains excluded in both conditions.",
+        "Read both languages: intro, six stages, eight labels, control, entry summary and sources; wording avoids a universal protein/RNA size cutoff.",
+        "Measured actual pore vertex inside the closed indexed collar mesh with ray parity and point-to-triangle distance; checked p=.35/.5/.6/1.",
+        "Smoke passes both branches; 412 visible-transform samples each retain stable resources."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22172675/",
+          "title": "Vatén et al. (2011), Callose biosynthesis regulates symplastic trafficking during root development",
+          "supports": "Opened primary abstract: Arabidopsis CALS3 gain of function increases callose at PD, decreases aperture and reduces intercellular traffic."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41477-026-02294-9",
+          "title": "In situ architecture of plasmodesmata in Physcomitrium patens resolved by cryo-electron tomography (2026)",
+          "supports": "Opened full text, Results and Fig. 2: plasma membrane lines the wall cavity; callose-rich material belongs to cell wall around necks. Used for membrane/wall boundary, not moss-specific closure kinetics in Arabidopsis."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/28604682/",
+          "title": "Nicolas et al. (2017), Architecture and permeability of post-cytokinesis plasmodesmata lacking cytoplasmic sleeves",
+          "supports": "Opened primary abstract: ER-PM separation and tethers depend on differentiation; a widened sleeve is one structural state, not all plasmodesmata."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantConnections-01",
+          "severity": "P1",
+          "kind": "membrane_topology",
+          "file": "src/processes/modules/plantConnections/plasmodesmataProcess.js",
+          "location": "update(), lines 312–331 and 386–405",
+          "evidence": "At p=.6 and p=1, gate=callose, actual cytosolic-leaflet vertex 649 is [0.6625000238,0.7549144030,-0.2841519415]. A ray from it intersects the actual right collar triangles once, proving it is inside the closed collar solid; nearest collar triangle is 0.0747897835 away. At p=.35 it is outside. Torus thickening to .52 is incompatible with the independent |x/1.06|^5 neck profile.",
+          "whyWrong": "Callose is wall-side material. A continuous plasma membrane must remain the boundary between it and the cytoplasmic sleeve. The generated callose collar engulfs the membrane on its flanks and occupies part of the sleeve, contrary to the stage text and depicted topology.",
+          "fix": "Use one coupled neck profile for wall-facing callose surface and both membrane leaflets so the thickening displaces the entire membrane profile without crossing it; retain the open central sleeve and both cargo outcomes.",
+          "verification": "Sweep callose progress and actual collar/membrane surfaces, including the flank witness near x=.6625. No cytosolic-leaflet surface point may lie inside callose; no triangle intersections. Retain first-particle passage, later blockage, bulky-cargo exclusion, deterministic seeks and resource stability.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/22172675/",
+            "https://www.nature.com/articles/s41477-026-02294-9"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "Transforms and deformation are continuous; the hard stop for late cargo is an intentional exclusion boundary, not a demonstrated teleport.",
+          "The topology finding is static during late callose accumulation, not evidence of a dropped animation frame."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered continuous-playback acceptance was performed; root owns that gate.",
+        "Enzyme folds, organelles, time and molecule scales are schematics rather than atomic structures or measured kinetics."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "photorespiration",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis mesophyll main C2 route; glyk=active/absent; four carbons from two oxygenation products; full 0–1 interval.",
+      "checks": [
+        "Four persistent carbon spheres retain identity; two 2C skeletons become one 3C skeleton plus one CO2 at mitochondrial step; serine then returns via peroxisome as glycerate to chloroplast.",
+        "GLYK absent clamps the final glycerate trajectory at p=.83 and prevents ATP-phosphate transfer; active transfer proceeds .85–.97. Nitrogen/cofactor omission is stated, and initial accompanying 3-PGA is explicitly outside the tracked pool.",
+        "Read both languages: intro, seven stages, eight labels and control. Intro/stages correctly distinguish salvage from net carbon fixation or ATP production.",
+        "Examined actual cutaway envelopes and transport markers; molecule trajectories are front-section schematic transfers, not literal resolved membrane transport events.",
+        "Measured actual crista junction meshes, independently of the helper comment and userData.",
+        "Smoke and 414 visible-transform samples per condition pass; bond/CO2/ammonia visibility at .53 changes reaction identity deliberately, with continuous carbon positions."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1182498/",
+          "title": "Boldt et al. (2005), D-GLYCERATE 3-KINASE, the Last Unknown Enzyme in the Photorespiratory Cycle in Arabidopsis",
+          "supports": "Opened full text: two 2C substrates yield a 3C product and CO2, via chloroplast/peroxisome/mitochondrial steps; chloroplastic GLYK completes glycerate phosphorylation; knockout accumulates glycerate."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/9245766/",
+          "title": "Perkins et al. (1997), Electron tomography of neuronal mitochondria: three-dimensional structure and organization of cristae and membrane contacts",
+          "supports": "Opened primary abstract: cristae are invaginations of the inner membrane connected through narrow crista junctions. Used only for conserved inner-membrane continuity, not neuronal dimensions or plant-specific architecture."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantConnections-02",
+          "severity": "P1",
+          "kind": "membrane_topology",
+          "file": "src/processes/modules/plantConnections/anatomy.js",
+          "location": "mitochondrion(), lines 233–265; photorespirationProcess.js:19",
+          "evidence": "The helper creates ten short cylinder necks. Eight complete actual neck meshes lie strictly inside a sphere that itself lies inside every triangle of the inner-envelope mesh, so they cannot meet that envelope. Inner-envelope triangle inradius is 0.9970928723 in inner-membrane local coordinates; central neck 5 has maximum rendered vertex radius 0.8516170022, leaving at least 0.1454758702 separation. This is a whole-mesh bounding proof, not nearest-vertex distance or userData. See evidence/plantConnections/diagnostic.json cristae.",
+          "whyWrong": "Normal cristae are continuous invaginations of the inner boundary membrane. The explicitly constructed necks instead terminate freely in the matrix, contradicting their intended structural role. This is independent of otherwise correct carbon chemistry.",
+          "fix": "Derive each crista junction/neck endpoint from the actual inner-envelope surface, with attached membrane/lumen contours; keep connections confined to inner membrane and preserve the double-envelope separation. Update the owned shared anatomy helper for both affected models.",
+          "verification": "Measure actual rendered neck-to-inner-envelope attachment for all ten junctions in photorespiration and CAM after transforms; original central-neck geometry must fail. Check the full crista contour and lumen continuity, no outer-envelope crossing, finite geometry and stable resources.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/9245766/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "No demonstrated carbon-position jump; bond identity changes and coproduct appearance are schematic chemistry events.",
+          "Transporter-level membrane passage and reaction-center atomic geometry are not resolved; no claim that the cutaway routes are complete physical transport simulations."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered continuous-playback acceptance was performed; root owns that gate.",
+        "Enzyme folds, organelles, time and molecule scales are schematics rather than atomic structures or measured kinetics.",
+        "PLGG1 full text/PubMed repeatedly returned access checks during this run; the opened GLYK primary paper supports the reviewed compartment route. No unsupported transporter stoichiometry claim was added."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "c4cam",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Maize main NADP-ME C4 branch versus mature Kalanchoe fedtschenkoi mitochondrial NAD-ME CAM branch; strategy=c4/cam; full 0–1 interval.",
+      "checks": [
+        "PEPC acts in mesophyll cytosol with a 3C acceptor plus one incoming carbon. C4 oxaloacetate-to-malate waypoint lies in mesophyll chloroplast section, malate crosses the outbound symplastic pore, CO2 releases near bundle-sheath chloroplast, 3C pyruvate returns through a distinct pore for PPDK regeneration.",
+        "Independently swept 1001 C4 frames using actual carbon positions and radii against drawn torus/pore/desmotubule parameters; checked complete particle radius, not center alone.",
+        "CAM nocturnal capture precedes vacuolar storage (.32–.49); day transition .47–.57 closes guard-cell inset; mitochondrial malate decarboxylation precedes movement of released carbon toward chloroplast. Mature-leaf NAD-ME evidence is specific to K. fedtschenkoi.",
+        "Read both languages: intro, six stages, C4 and CAM labels, strategy options, entry summary, sources. Additional C4 routes and four-phase CAM complexity are explicitly omitted; no generic-plant universal claim.",
+        "Measured owned helper's actual CAM mitochondrial necks and confirmed same structural defect as photorespiration.",
+        "Smoke passes both branches; 412 visible-transform samples each, deterministic arbitrary seeks, stable inventories. Hidden alternate branch excluded from visible-motion interpretation."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/24254314/",
+          "title": "Bellasio and Griffiths (2014), The operation of two decarboxylases and partitioning of maize C4 metabolism",
+          "supports": "Opened primary abstract: maize distributes carbon-concentrating metabolism between mesophyll and bundle sheath; more than one decarboxylation route exists, consistent with the model's explicit main-branch scope."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12228671/",
+          "title": "Cook et al. (1995), Decarboxylation of Malate in Bryophyllum (Kalanchoe) fedtschenkoi: Role of NAD-Malic Enzyme",
+          "supports": "Opened primary abstract using slashless URL: isolated mature-leaf mitochondria decarboxylate malate to pyruvate more rapidly in daytime, supporting the shown mitochondrial NAD-ME route."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/32051209/",
+          "title": "Boxall et al. (2020), Kalanchoë PPC1 is essential for CAM",
+          "supports": "Opened primary abstract: PPC capture, vacuolar acid accumulation and daytime decarboxylation; experiment is K. laxiflora, used only for general CAM context, not direct K. fedtschenkoi evidence."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/9245766/",
+          "title": "Perkins et al. (1997), Electron tomography of neuronal mitochondria: three-dimensional structure and organization of cristae and membrane contacts",
+          "supports": "Opened primary abstract: cristae are invaginations of the inner membrane connected through narrow crista junctions. Used only for conserved inner-membrane continuity, not neuronal dimensions or plant-specific architecture."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantConnections-03",
+          "severity": "P1",
+          "kind": "membrane_topology",
+          "file": "src/processes/modules/plantConnections/anatomy.js",
+          "location": "mitochondrion(), lines 233–265; c4camProcess.js:282 (CAM branch)",
+          "evidence": "The helper creates ten short cylinder necks. Eight complete actual neck meshes lie strictly inside a sphere that itself lies inside every triangle of the inner-envelope mesh, so they cannot meet that envelope. Inner-envelope triangle inradius is 0.9970928723 in inner-membrane local coordinates; central neck 5 has maximum rendered vertex radius 0.8516170022, leaving at least 0.1454758702 separation. This is a whole-mesh bounding proof, not nearest-vertex distance or userData. See evidence/plantConnections/diagnostic.json cristae.",
+          "whyWrong": "Normal cristae are continuous invaginations of the inner boundary membrane. The explicitly constructed necks instead terminate freely in the matrix, contradicting their intended structural role. This is independent of otherwise correct carbon chemistry.",
+          "fix": "Derive each crista junction/neck endpoint from the actual inner-envelope surface, with attached membrane/lumen contours; keep connections confined to inner membrane and preserve the double-envelope separation. Update the owned shared anatomy helper for both affected models.",
+          "verification": "Measure actual rendered neck-to-inner-envelope attachment for all ten junctions in photorespiration and CAM after transforms; original central-neck geometry must fail. Check the full crista contour and lumen continuity, no outer-envelope crossing, finite geometry and stable resources.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/9245766/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "Bond removal at C4 .58/CAM .70 and day/night icon change are intentional representation switches, not independently established playback failure.",
+          "Vacuolar storage background markers are a qualitative store, not extra counted atoms. Tonoplast and organelle transfer occurs in the cutaway schematic; transporter-scale permeation is not resolved."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered continuous-playback acceptance was performed; root owns that gate.",
+        "Enzyme folds, organelles, time and molecule scales are schematics rather than atomic structures or measured kinetics.",
+        "The 2020 PPC1 experiment uses K. laxiflora; it was not treated as direct evidence for the illustrated K. fedtschenkoi route. Its dedicated NAD-ME primary paper was opened separately."
+      ],
+      "confidence": "high"
+    }
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/smoke.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/diagnostic.mjs",
+    "docs/qa/process-review-2026-10-04/evidence/plantConnections/diagnostic.json"
+  ],
+  "commands": [
+    "node src/processes/modules/plantConnections/smoke.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/plantConnections/diagnostic.mjs"
+  ],
+  "phaseB": "Awaiting explicit root release. No product/test files changed."
+}

@@ -1,0 +1,21 @@
+{
+  "group": "original-transcription",
+  "issues": [
+    {
+      "issueId": "20261004-original-transcription-labels-01",
+      "status": "fixed",
+      "changes": "Attach all four DNA terminal labels to actual strand endpoints, RNA labels to retained nucleotide endpoints, polymerase label to its actual upper lobe, promoter to its torus marker and reading direction to its arrow.",
+      "verification": [
+        "Actual instanced cylinder/sphere endpoints and enzyme-lobe regression across dense/irregular states; identical mechanism geometry in 101 before/after states.",
+        "tests/original-transcription-labels.mjs passes; preserved pre-fix module fails the same invariant. Float32 matrix tolerance is 5e-7, far smaller than original 0.33-unit offset."
+      ],
+      "files": [
+        "src/processes/transcriptionProcess.js",
+        "tests/original-transcription-labels.mjs"
+      ]
+    }
+  ],
+  "remainingLimits": [
+    "Final rendered label spacing awaits integrated recapture; source mechanism is unchanged."
+  ]
+}

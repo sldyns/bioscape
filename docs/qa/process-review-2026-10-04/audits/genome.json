@@ -1,0 +1,249 @@
+{
+  "group": "genome",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "replication",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Conserved local eukaryotic nuclear fork; active/absent ligase, complete p in [0,1].",
+      "checks": [
+        "Read complete Chinese/English intro, all stage descriptions, controls, labels and entries; no contexts overrides or legends are present.",
+        "Resolved live processesByRoot rather than relying only on entries; no extra neuron/muscleFibre/erythrocyte routes apply.",
+        "Fresh smoke.mjs and science.test.mjs passed; diagnostics.mjs additionally covered every registered root/control combination at 62 progress inputs, including NaN/out-of-range clamping and stage boundary +/- 1e-6.",
+        "No product or test files edited in Phase A; logs, diagnostic source and measurements retained in evidence/genome.",
+        "Traced upper/lower antiparallel labels, 5-prime-to-3-prime leading/right and lagging/left growth, parental/daughter identity, RNA-DNA replacement and final retained nicks.",
+        "Inspected actual CMG pore threading/excluded lagging template, leading growing tip, all five lagging-fragment cycles, floor switches, enzyme recruitment opacity, endpoint states and strand clearances.",
+        "Science regression sampled 2,412 combined replication/repair strand states and 9,062,661 nearby cross-strand segment pairs; minimum surface clearance 0.20357. Current regression provides geometry evidence but not rendered acceptance."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/5U8T",
+          "title": "Structure of eukaryotic CMG helicase at a replication fork (Georgescu et al., 2017; deposited cryo-EM structure)",
+          "supports": "Opened entry and primary-paper abstract: leading-template ssDNA traverses the central CMG motor channel; yeast CMG contains Mcm2-7 and accessory factors. Used for channel/exclusion/direction review, not as coordinates for the schematic protein."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": [
+          "All fragment floor boundaries 0.36/0.48/0.60/0.72; recruitment/release fades are zero before relocation.",
+          "Full interval equations and primer/ligation visibility thresholds 0.91/0.92; coarse fragment maturation is a stated schematic omission."
+        ],
+        "findings": [],
+        "limits": [
+          "No browser rendering or real-time playback operated by reviewer; root must verify continuous rendered playback and perception.",
+          "Discrete visibility is assessed by mechanism and geometric continuity, not automatically treated as an error.",
+          "Fixed DNA-length sampling can add a segment per step; no large spatial jump established in currently visible polymerase motion."
+        ]
+      },
+      "limitations": [
+        "Protein domains are functional schematics, not fitted experimental coordinates; one yeast CMG structure supports conserved topology, not identical eukaryote subunit morphology.",
+        "Initiation, chromatin, torsional stress, individual primer-processing enzymes and literal nucleotide stoichiometry are intentionally omitted.",
+        "Maturation/ligation colors and enzyme visibility are simplified timed events; no exact kinetics or molecular diffusion path is claimed."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "dnaRepair",
+      "roots": [
+        "cell",
+        "plant",
+        "yeast"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Eukaryotic global-genome nucleotide excision repair schematic; incision active/blocked, full progress.",
+      "checks": [
+        "Read complete Chinese/English intro, all stage descriptions, controls, labels and entries; no contexts overrides or legends are present.",
+        "Resolved live processesByRoot rather than relying only on entries; no extra neuron/muscleFibre/erythrocyte routes apply.",
+        "Fresh smoke.mjs and science.test.mjs passed; diagnostics.mjs additionally covered every registered root/control combination at 62 progress inputs, including NaN/out-of-range clamping and stage boundary +/- 1e-6.",
+        "No product or test files edited in Phase A; logs, diagnostic source and measurements retained in evidence/genome.",
+        "Confirmed lesion marker is within one damaged strand rather than an interstrand crosslink, complementary backbone remains intact, two incision sites flank damage, detached segment follows lesion, repair patch extends left-to-right from labeled 3-prime end and ligase seals the remaining nick.",
+        "Blocked branch clamps effective progress at 0.4 before incision at 0.43; no excision or patch is generated.",
+        "Inspected open-bubble angular interpolation, all visibility transitions 0.43/0.48/0.64/0.8/0.89/0.97 and final continuous rail. Cross-strand clearance tested with replication as above."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2683701/",
+          "title": "Coordination of dual incision and repair synthesis in human nucleotide excision repair (2009)",
+          "supports": "Opened primary experimental paper, Results/Discussion: 5-prime incision creates the extendable 3-prime OH; repair synthesis can begin before the second incision. Model explicitly separates steps for teaching and does not claim obligatory complete excision before synthesis."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/23749995/",
+          "title": "Nucleotide excision repair in human cells: fate of the excised oligonucleotide carrying DNA damage in vivo (2013)",
+          "supports": "Opened primary-paper abstract: dual incision produces an oligonucleotide containing the lesion; excised oligonucleotide is released with repair factors. Supports same-strand removal and retaining the opposite template."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": [
+          "Detached segment starts at the already-open position with release=0 at p=0.48; no positional jump introduced by detachment.",
+          "Patch growth and bubble reclosure use smooth bounded parameters; substrate remains anchored at left 3-prime end.",
+          "Whole excised product is retired after moving away; enzyme occupancy changes are schematic functional steps."
+        ],
+        "findings": [],
+        "limits": [
+          "No browser rendering or real-time playback operated by reviewer; root must verify continuous rendered playback and perception.",
+          "Discrete visibility is assessed by mechanism and geometric continuity, not automatically treated as an error."
+        ]
+      },
+      "limitations": [
+        "Recognition-factor identities vary among animal, plant and yeast roots; the model uses shared functional labels.",
+        "The sampled event ordering is explicitly separated for teaching; real incision and synthesis can overlap, as primary experiments show.",
+        "No claim of exact nucleotide count, atomic UV-photoproduct shape, or literal complex conformation."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "transduction",
+      "roots": [
+        "phage",
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "E. coli donor/recipient; P1 generalized and lambda specialized route, full progress.",
+      "checks": [
+        "Read complete Chinese/English intro, all stage descriptions, controls, labels and entries; no contexts overrides or legends are present.",
+        "Resolved live processesByRoot rather than relying only on entries; no extra neuron/muscleFibre/erythrocyte routes apply.",
+        "Fresh smoke.mjs and science.test.mjs passed; diagnostics.mjs additionally covered every registered root/control combination at 62 progress inputs, including NaN/out-of-range clamping and stage boundary +/- 1e-6.",
+        "No product or test files edited in Phase A; logs, diagnostic source and measurements retained in evidence/genome.",
+        "Read route-dependent chromosomal/phage colors, P1 nonintegrated starting scope, lambda neighboring gal, helper-function omissions, capsid-vs-tail morphology, donor lysis, travel, injection and terminal nonestablishment warning.",
+        "Verified 96 cargo segments retain one continuous contour and all final endpoints are in recipient cytoplasm; P1 one cargo color vs lambda two.",
+        "Examined recipient envelope actual triangles and tail endpoints, not metadata-only delivered flag."
+      ],
+      "sources": [
+        {
+          "url": "https://journals.asm.org/doi/full/10.1128/jb.186.21.7032-7068.2004",
+          "title": "Genome of Bacteriophage P1 (2004)",
+          "supports": "Opened primary genome paper: P1 lysogenizes as a low-copy plasmid and supports generalized transduction; tail is a tube surrounded by a contractile sheath with six fibers."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/21745674/",
+          "title": "Visualization of bacteriophage P1 infection by cryo-electron tomography of tiny Escherichia coli (2011)",
+          "supports": "Opened primary abstract and figure captions: contractile P1 tail tube penetrates the outer envelope into periplasm. The paper leaves aspects of inner-membrane DNA entry unresolved; no claim is made here that P1 must literally pierce the inner membrane."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41467-024-48686-3.pdf",
+          "title": "Structural mechanism of bacteriophage lambda tail’s interaction with the bacterial receptor (2024)",
+          "supports": "Opened primary PDF: LamB interaction opens the central tail apparatus; DNA passage needs a trans-envelope route. The paper distinguishes LamB recognition from passage through its small maltose pore, and leaves parts of trans-envelope architecture uncertain."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-genome-01",
+          "severity": "P1",
+          "kind": "misleading membrane-transfer topology",
+          "file": "src/processes/modules/genome/transductionProcess.js",
+          "location": "tail shaft construction 170-177; update 267-292; envelopeDetail.js rodCutaway 4-77",
+          "evidence": "During injection at p=0.8, both branches have tube-tip world position [2.65,1.04,0], while actual recipient triangle ray intersections are y=0.9 and y=0.8325. The tube stops 0.14 above the outer surface. DNA crosses the intact cutaway envelope at the same axis; no receptor/trans-envelope aperture or connecting conduit is drawn. See evidence/genome/diagnostics.json (p=0.8).",
+          "whyWrong": "The displayed transfer is through the bare envelope after leaving a disconnected tail. P1 must engage and penetrate the outer envelope; lambda requires an attached receptor-triggered entry apparatus. Exact inner-membrane molecular composition need not be invented to preserve a continuous schematic route.",
+          "fix": "Join each route’s tail/entry apparatus to an explicit recipient entry opening before injection. Provide a bounded schematic trans-envelope conduit consistent with P1 vs lambda morphology; open only that envelope region and preserve the cutaway, DNA continuity and cargo identity. Do not assert that the ordinary LamB maltose pore itself passes DNA.",
+          "verification": "At sampled injection states for both roots and routes, actual transformed cargo endpoints traverse a connected tail-to-envelope route, recipient membrane triangles do not intersect the cargo path outside the intended entry opening, and DNA reaches cytoplasm while capsid stays outside. Repeated arbitrary seeks retain resources.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/21745674/",
+            "https://www.nature.com/articles/s41467-024-48686-3.pdf"
+          ]
+        },
+        {
+          "issueId": "20261004-genome-02",
+          "severity": "P2",
+          "kind": "visible extraction discontinuity",
+          "file": "src/processes/modules/genome/transductionProcess.js",
+          "location": "update 238,253-266,299-311; envelopeDetail.js nucleoidDuplex present()",
+          "evidence": "At p=0.23 the donor locus disappears by a binary present() test and a separate straight cargo contour appears at another pose. The computed extract=ease(p,0.16,0.33) is unused. Across 0.23 +/- 1e-7, every donor gold rail-center sample has a positive distance to the nearest gold cargo segment center: P1 min/mean/max 0.194/0.439/0.610, lambda 0.484/0.591/0.694 world units (evidence/genome/continuity.json).",
+          "whyWrong": "The highlighted material the user is tracking switches directly from a donor chromosomal arc to a spatially separated straight line; this is an object handoff jump, not nucleotide-scale growth or a biologically intentional pause. The model explicitly teaches movement from donor locus into transferred cargo.",
+          "fix": "Use one continuous, identity-preserving extraction-to-packaging path. Start transferred cargo on the donor locus, detach/morph continuously over the extraction interval, and hand off between contour representations only at matching positions without duplicated donor DNA.",
+          "verification": "Dense samples around extraction start/end and the former 0.23 threshold must have no finite displacement as delta-progress tends to zero; ensure the donor locus and cargo are neither both present as duplicated substrate nor simultaneously absent. Check P1 and lambda color identity and world-space contour continuity.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/full/10.1128/jb.186.21.7032-7068.2004"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": [
+          "All intervals and hard boundaries 0.17/0.23/0.31/0.34/0.48/0.54/0.55/0.70/0.73/0.83/0.91.",
+          "Cargo path branches meet at u=0 and u=-0.22; this part of injection is spatially continuous."
+        ],
+        "findings": [
+          "20261004-genome-02"
+        ],
+        "limits": [
+          "No browser rendering or real-time playback operated by reviewer; root must verify continuous rendered playback and perception.",
+          "Discrete visibility is assessed by mechanism and geometric continuity, not automatically treated as an error."
+        ]
+      },
+      "limitations": [
+        "Exact trans-envelope channel protein arrangement is not completely settled; correction should show a clearly identified schematic route without inventing receptor-pore details.",
+        "Rare transduction event is enlarged; ordinary progeny and stable recombination are outside the declared scene.",
+        "Some original PMC URLs returned browser challenges; accessible primary publisher/PubMed/PDF copies were opened and used above."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "bacterialSporulation",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Bacillus subtilis endospore development; normal/blocked engulfment, full progress.",
+      "checks": [
+        "Read complete Chinese/English intro, all stage descriptions, controls, labels and entries; no contexts overrides or legends are present.",
+        "Resolved live processesByRoot rather than relying only on entries; no extra neuron/muscleFibre/erythrocyte routes apply.",
+        "Fresh smoke.mjs and science.test.mjs passed; diagnostics.mjs additionally covered every registered root/control combination at 62 progress inputs, including NaN/out-of-range clamping and stage boundary +/- 1e-6.",
+        "No product or test files edited in Phase A; logs, diagnostic source and measurements retained in evidence/genome.",
+        "Checked two closed replicated chromosomes, one continuous translocating copy, polar septum apertures, blocked progress at 0.43, mother-connected engulfing profile, completion/fission, one released spore, nonreproductive wording.",
+        "Actual existing regression verifies chromosome chain closures and septum passage through drawn translocases, plus engulfing membrane edge attachment.",
+        "Independently measured actual membrane/cortex/coat surface order, including rear triangle ray intersections and all layer vertices."
+      ],
+      "sources": [
+        {
+          "url": "https://rudnerlab.med.harvard.edu/assets/publications/Doan_2013_GD.pdf",
+          "title": "FisB mediates membrane fission during sporulation in Bacillus subtilis (2013)",
+          "supports": "Opened primary paper PDF: polar septation, membrane migration around forespore, final neck fission; SpoIIIE moves chromosome into the forespore. Used for staged topology and translocase interpretation."
+        },
+        {
+          "url": "https://www.nature.com/articles/s41467-024-45770-6.pdf",
+          "title": "Ultrastructure of macromolecular assemblies contributing to bacterial spore resistance revealed by in situ cryo-electron tomography (2024)",
+          "supports": "Opened primary cryo-ET paper PDF, pp. 1-2: cortex is synthesized in intermembrane space; coat assembles on the surface of the outer forespore membrane. Observed cutaways must preserve that radial order."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-genome-03",
+          "severity": "P1",
+          "kind": "incorrect nested spore layer topology",
+          "file": "src/processes/modules/genome/bacterialSporulationProcess.js",
+          "location": "146-168 and update 240-250; sporulationTopology.js 171-182",
+          "evidence": "Mature inner/outer membrane rear radii are 0.72/0.87, but cortex/coat rear surfaces are at 0.70/0.85. Actual triangle ray intersections at p=1 from spore center along -z are inner 0.72000003, cortex 0.70000000, outer 0.87000000, coat 0.85000000. 47/1025 cortex vertices lie inside the inner ellipsoid and 41/1025 coat vertices lie inside the outer ellipsoid. At p=0.58 the cortex rear is already only 0.594 while inner membrane remains 0.72. See evidence/genome/diagnostics.json and continuity.json.",
+          "whyWrong": "The labeled cortex must lie between the forespore membranes and the coat outside the outer membrane. Different y/z aspect ratios cause actual surface crossing on the retained rear half of the cutaway, reversing radial order; this is not a camera-only occlusion or nearest-vertex proxy.",
+          "fix": "Derive all visible membrane, cortex, coat shells and edge details from compatible nested profiles throughout maturation. Keep the cortex outside the inner membrane and inside the outer membrane at every visible point; keep coat outside the outer membrane. Preserve continuous engulfment attachment and existing layer detail.",
+          "verification": "Actual transformed triangle or analytic surface containment/ray-order checks for multiple rear directions across p=0.57..1, plus arbitrary seeks and the blocked branch. Require inner < cortex < outer < coat with positive clearance whenever each is visible; old chromosome/translocase/engulfment invariants must remain passing.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/s41467-024-45770-6.pdf"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": [
+          "All formation, wrap, maturation and release intervals, especially 0.13/0.24/0.32/0.43/0.56/0.57/0.63/0.89/0.92/0.93.",
+          "Engulfment reaches a closed profile; terminal coordinate resampling is not itself evidence of a surface jump because the continuous surface is unchanged except the intended neck fission.",
+          "Blocked branch preserves immature geometry and withholds cortex/coat/spore release."
+        ],
+        "findings": [],
+        "limits": [
+          "No browser rendering or real-time playback operated by reviewer; root must verify continuous rendered playback and perception.",
+          "Discrete visibility is assessed by mechanism and geometric continuity, not automatically treated as an error.",
+          "Shell visibility/growth styling still needs normal-speed rendered review after the topology fix."
+        ]
+      },
+      "limitations": [
+        "Membrane profiles are schematic; biochemical signaling, detailed septal peptidoglycan remodeling and coat protein identities are intentionally omitted.",
+        "Timing sequentially emphasizes overlapping biological events, explicitly explained in both languages."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

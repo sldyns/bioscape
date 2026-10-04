@@ -1,0 +1,34 @@
+{
+  "group": "division-and-original-infection",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "stage": "Phase B supplementary label review before label repair",
+  "evidence": "label-before.json",
+  "findings": [
+    {
+      "issueId": "20261004-division-03",
+      "models": ["mitosis", "meiosis"],
+      "severity": "P2",
+      "kind": "annotation-anchor",
+      "files": ["src/processes/modules/division/mitosisProcess.js", "src/processes/modules/division/meiosisProcess.js"],
+      "evidence": "ProcessScene projects label.position directly in world space. At mitosis p=.43/unattached, spindle-pole leader misses the rendered centrosome surface by .3570 and the unattached-kinetochore leader misses the eighth outer plate by .8887. At meiosis p=1, the retained-bridge leader is .8246 from the rendered outer membrane; its positive-z .8 position is outside the retained cutaway bridge.",
+      "whyWrong": "Named structure annotations visually identify empty space instead of the actual moving or retained structure.",
+      "fix": "Bind all structure-specific division leaders to live rendered vertices, including the specified unattached kinetochore and retained bridge.",
+      "verification": "Check actual world-space mesh vertices in all conditions and across stage boundaries, including translated/rotated model roots and irregular seeks.",
+      "sourceUrls": [],
+      "sourceScope": "This finding concerns directly measured rendering coordinates; it introduces no new biological mechanism claim. Existing division primary-source support is retained in audits/division.json."
+    },
+    {
+      "issueId": "20261004-original-infection-labels-01",
+      "models": ["infection"],
+      "severity": "P2",
+      "kind": "annotation-anchor",
+      "file": "src/processes/phageProcess.js",
+      "evidence": "The model root translates down .24 but membrane label coordinates omit that transform. The static capsid leader is .4241 from the actual head surface at p=0 and .7729 away at p=.6 and p=1 while the head translates during attachment and contraction.",
+      "whyWrong": "The annotation leaders identify neither the rendered membranes nor the moving capsid surface.",
+      "fix": "Anchor labels to actual capsid, membrane and cytoplasm surfaces and transform through their live object matrices.",
+      "verification": "Test world-space surface anchors across the complete infection timeline, external root transforms and arbitrary seeks.",
+      "sourceUrls": [],
+      "sourceScope": "Direct rendering-coordinate evidence; T4 scientific mechanism sources are unchanged."
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "provenance": "Generated once from the root-frozen pre-optimization source, not from current output. Full Float32 position/normal arrays and Float64 draw-range/bounding data are hashed.",
+  "sources": {
+    "germCellMembrane.js": "edc58c5edd90aad9e5beac5b23ad77da379f1bb2c644eb684f99e494c37a7d71",
+    "divisionShapes.js": "07006c20a7235b7ebca66fbfffd909b8680d19298916f24e6b02970090efccb7"
+  },
+  "states": [
+    {
+      "parameters": [0, 0],
+      "layers": [
+        "6f9369480ef2df33ff5a335acf9f9eff8d271f1e908c2d1989c72c3ddb58f957",
+        "2f5a8f1980eb059681fafb929dcbd192e47ad7b449c22eea11da1d413e59bd0b"
+      ]
+    },
+    {
+      "parameters": [0.000001, 0],
+      "layers": [
+        "366bb2091666f9aeee066c7c69cb862e27117860b0fce151d625a16b8331a7a4",
+        "637cdf35cf140467b6567951fb8c6f6fc6089a40e336cee2052d382138c62954"
+      ]
+    },
+    {
+      "parameters": [0.123456789, 0],
+      "layers": [
+        "b9a14aa0144b587c6652d9c9594fdd7e921d6b2797b083c4fd649808adbd18e3",
+        "85b11f55ca22264720944e71777e47618a00fa8595ad0325b998f21bcbeb2157"
+      ]
+    },
+    {
+      "parameters": [0.5, 0],
+      "layers": [
+        "6e9a44a1a061c74e5a9279f44f5019047afce48d51ad054668b5d3ba7f708126",
+        "235c80747d2506e6b494a786218255c16c494fb0dd317ebf6e1d9c1d1d76139c"
+      ]
+    },
+    {
+      "parameters": [0.817392, 0],
+      "layers": [
+        "7a7f6cfe9a59ccb5c1058a0d8504a646a99751a89ce1333dfdfd22e308932416",
+        "5a4759dad57fc74cabc632b4865196b1487919be03e03ca0fc9f79ba2f1cbee6"
+      ]
+    },
+    {
+      "parameters": [0.999999, 0],
+      "layers": [
+        "a1d6520b367813e8d7271768b119be72e1e3ddd73b6db3119732d77eff3df21d",
+        "7521d10b74cd8ce80c31c8995814a31d19fd93ca14c6eb7090ea703d333226a4"
+      ]
+    },
+    {
+      "parameters": [1, 0],
+      "layers": [
+        "068b8e7ead38bc6acdc2926abf424739563fb0aa8f0a9606e600c58fc629cad1",
+        "97987bd32d561d8831c2d8b30eb5ed2a0db44b228b3a16d77512e8a9c2178700"
+      ]
+    },
+    {
+      "parameters": [1, 0.000001],
+      "layers": [
+        "241a65fd290a09e1d2542a71bff07eea10c17230e9e49b1ba455041ac9009e7c",
+        "b868fe869f813e542b5c08b0f0c9c77344ee906ef2dae878b7917558efcd6e48"
+      ]
+    },
+    {
+      "parameters": [1, 0.213748],
+      "layers": [
+        "da431f9df5b507e44e6ca36835805025ab66c827aa8aeaaa5e75397eef630b00",
+        "02f570b4266a476521756e98dcbca6a9a0c63244067d1beda71766be23324e2b"
+      ]
+    },
+    {
+      "parameters": [1, 0.5],
+      "layers": [
+        "62db0c75da4f64e4b8799e2f8961cefeaf14eb83b609e2b4fbd42915b240f65b",
+        "8a274f1858e1d8d8c5087ad2f6d412a4086a66250f8d38370e75390eaf675b56"
+      ]
+    },
+    {
+      "parameters": [1, 0.8654321],
+      "layers": [
+        "4d78c16ab50b7297748cff88c794de8a40bf7d88ab14f72d0470fb640e226efa",
+        "737260370b7da4145fcd326c0b46619fb51e30af7f17a309dc2badded88e4c6a"
+      ]
+    },
+    {
+      "parameters": [1, 0.999999],
+      "layers": [
+        "f2b0335781ec09fc6ace621908d8a0e670e677e0b783684f3f1f589f1f19b38d",
+        "e74a120c5a34a5b0b87fb5e69cf94daf85980df6822dc5aa30d806f7117fc9a7"
+      ]
+    },
+    {
+      "parameters": [1, 1],
+      "layers": [
+        "36b38c9bcd18050c7b47b7c73d03a556763350a0187795719a6ba21f1e6c7da9",
+        "dad037908939d7fa35e05cdd06eb5a9fe472ae984aca3bb88650965c0f010d53"
+      ]
+    },
+    {
+      "parameters": [0.371, 0.629],
+      "layers": [
+        "702b3ba46db2714283ff87ac166d6056c83f4ed26d8dae7e21c5865feb179532",
+        "b42c95c542ee42ad1abdcbe8d64df5ae548bb8045a8c302f0dddaffa2fe01909"
+      ]
+    },
+    {
+      "parameters": [0.12, 0.95],
+      "layers": [
+        "e072570e2e5709a1dad606ae9e24a1603190104919ef07e6aa4533c854ae63a6",
+        "244eddfe7d4274a2374f7dbe980ccd6b1d2007626ca715ecd4a3fa5d1203800b"
+      ]
+    }
+  ]
+}

@@ -91,10 +91,135 @@ function wrapText(text, maxWidth, measure) {
   return lines;
 }
 
+// Read the alpha already returned by the export pass; no additional GPU pass
+// or canvas readback is needed. Every visible pixel contributes conservatively
+// to a grid bounded to about 480 columns, including thin/translucent geometry.
+export function createCaptureLabelMask(pixels, width, height, scale = 1) {
+  const cell = Math.max(1, Math.ceil(width / 480));
+  const columns = Math.ceil(width / cell),
+    rows = Math.ceil(height / cell);
+  const occupied = new Uint8Array(columns * rows);
+  for (let y = 0; y < height; y++) {
+    const row = Math.floor(y / cell) * columns;
+    for (let x = 0; x < width; x++)
+      if (pixels[(y * width + x) * 4 + 3] > 8)
+        occupied[row + Math.floor(x / cell)] = 1;
+  }
+  const stride = columns + 1;
+  const integral = new Uint32Array(stride * (rows + 1));
+  for (let y = 0; y < rows; y++) {
+    let sum = 0;
+    for (let x = 0; x < columns; x++) {
+      sum += occupied[y * columns + x];
+      integral[(y + 1) * stride + x + 1] = integral[y * stride + x + 1] + sum;
+    }
+  }
+  return (left, top, boxWidth, boxHeight) => {
+    const x0 = Math.max(
+      0,
+      Math.min(columns, Math.floor((left * scale) / cell)),
+    );
+    const y0 = Math.max(0, Math.min(rows, Math.floor((top * scale) / cell)));
+    const x1 = Math.max(
+      x0,
+      Math.min(columns, Math.ceil(((left + boxWidth) * scale) / cell)),
+    );
+    const y1 = Math.max(
+      y0,
+      Math.min(rows, Math.ceil(((top + boxHeight) * scale) / cell)),
+    );
+    return (
+      integral[y1 * stride + x1] -
+      integral[y0 * stride + x1] -
+      integral[y1 * stride + x0] +
+      integral[y0 * stride + x0]
+    );
+  };
+}
+
+// Place the complete chosen column in anchor order. Dynamic programming first
+// minimizes occupied model cells, then movement from the original leader y.
+// Prefix minima make this O(labels * height), with constant-time rectangle cost.
+// Even a full silhouette keeps every chosen caption: it finds least occlusion.
+function avoidCaptureGeometry(items, height, margin, gap, occupied) {
+  if (!items.length) return;
+  // labelScale can make logical coordinates much larger than physical pixels.
+  // Bound the search grid even then; normal exports retain one-pixel steps.
+  const step = Math.max(1, Math.ceil(height / 4096));
+  const first = Math.ceil(margin / step) * step,
+    count = Math.max(1, Math.floor((height - margin - first) / step) + 1);
+  const parents = [];
+  let previousOverlap, previousMovement;
+  for (let index = 0; index < items.length; index++) {
+    const item = items[index];
+    const overlap = new Float64Array(count).fill(Infinity);
+    const movement = new Float64Array(count).fill(Infinity);
+    const parent = new Int32Array(count).fill(-1);
+    const last = Math.floor((height - margin - item.height - first) / step);
+    const clearance = item.fontSize * 0.2;
+    let best = -1,
+      cursor = 0;
+    for (let row = 0; row <= last; row++) {
+      if (index) {
+        const limit = Math.floor(row - (items[index - 1].height + gap) / step);
+        while (cursor <= limit) {
+          if (
+            best < 0 ||
+            previousOverlap[cursor] < previousOverlap[best] ||
+            (previousOverlap[cursor] === previousOverlap[best] &&
+              previousMovement[cursor] < previousMovement[best])
+          )
+            best = cursor;
+          cursor++;
+        }
+        if (best < 0 || !Number.isFinite(previousOverlap[best])) continue;
+      }
+      const top = first + row * step;
+      overlap[row] =
+        (index ? previousOverlap[best] : 0) +
+        occupied(
+          item.left - clearance,
+          top - clearance,
+          item.width + clearance * 2,
+          item.height + clearance * 2,
+        );
+      movement[row] =
+        (index ? previousMovement[best] : 0) +
+        (top + item.height / 2 - item.y) ** 2;
+      parent[row] = best;
+    }
+    parents.push(parent);
+    previousOverlap = overlap;
+    previousMovement = movement;
+  }
+  let best = -1;
+  for (let row = 0; row < count; row++)
+    if (
+      best < 0 ||
+      previousOverlap[row] < previousOverlap[best] ||
+      (previousOverlap[row] === previousOverlap[best] &&
+        previousMovement[row] < previousMovement[best])
+    )
+      best = row;
+  // Retain the already-valid layout if an unusually tiny canvas cannot fit the
+  // integer-pixel search grid. No annotation is removed to avoid the model.
+  if (best < 0 || !Number.isFinite(previousOverlap[best])) return;
+  for (let index = items.length - 1; index >= 0; index--) {
+    items[index].top = first + best * step;
+    best = parents[index][best];
+  }
+}
+
 // Captions use the same source anchors as the live annotations. Export can have
 // a different aspect ratio, so lay them out anew instead of scaling DOM pixels.
-export function layoutCaptureLabels(labels, width, height, measure) {
-  if (width < 64 || height < 64) return [];
+export function layoutCaptureLabels(labels, width, height, measure, occupied) {
+  if (
+    !Number.isFinite(width) ||
+    !Number.isFinite(height) ||
+    width < 64 ||
+    height < 64
+  )
+    return [];
   const fontSize = Math.max(12, width / (width < height ? 40 : 65));
   const margin = fontSize * 0.65;
   const padding = fontSize * 0.45;
@@ -142,6 +267,7 @@ export function layoutCaptureLabels(labels, width, height, measure) {
       top = item.top + item.height + gap;
       remaining -= item.height + gap;
     }
+    if (occupied) avoidCaptureGeometry(chosen, height, margin, gap, occupied);
   }
   return result;
 }
@@ -154,13 +280,14 @@ export function captureLabelPalette(background) {
   return { line: luminance < 0.18 ? "#d3dce9" : "#4a505d", halo: null };
 }
 
-function drawCaptureLabels(
+export function drawCaptureLabels(
   context,
   sources,
   camera,
   width,
   height,
   background,
+  occupied,
 ) {
   const projected = [];
   for (const label of sources) {
@@ -181,10 +308,16 @@ function drawCaptureLabels(
   }
   const family =
     'system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
-  const labels = layoutCaptureLabels(projected, width, height, (text, size) => {
-    context.font = `500 ${size}px ${family}`;
-    return context.measureText(text).width;
-  });
+  const labels = layoutCaptureLabels(
+    projected,
+    width,
+    height,
+    (text, size) => {
+      context.font = `500 ${size}px ${family}`;
+      return context.measureText(text).width;
+    },
+    occupied,
+  );
   const palette = captureLabelPalette(background);
   const lineWidth = Math.max(1, width / 1100);
   context.lineWidth = lineWidth;
@@ -202,6 +335,10 @@ function drawCaptureLabels(
       context.lineWidth = lineWidth;
     }
     context.stroke();
+  }
+  // All leaders belong below every caption. Interleaving a later leader with
+  // an earlier caption can otherwise strike through that caption's text.
+  for (const label of labels) {
     context.fillStyle = "rgba(255,255,255,.94)";
     context.beginPath();
     context.roundRect(
@@ -457,6 +594,7 @@ export function createSceneCapture({
             width / scale,
             height / scale,
             background,
+            createCaptureLabelMask(pixels, width, height, scale),
           );
         } finally {
           context.restore();

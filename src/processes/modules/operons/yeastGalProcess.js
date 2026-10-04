@@ -9,6 +9,7 @@ import {
   materialInventory,
 } from "./structuralDetails.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
+import { labelAnchors } from "./labelAnchors.js";
 const model = {
   id: "yeastGal",
   title: b(
@@ -144,7 +145,14 @@ const model = {
       k.ball([x, 0, 0.1], [0.2, 0.22, 0.19], green, gal4);
       k.segment([x, 0.06, 0.1], [x * 0.3, 0.73, 0.1], 0.07, green, gal4);
     }
-    k.ball([0, 0.84, 0.1], [0.36, 0.18, 0.22], green, gal4);
+    gal4.children[0].name = "Gal4 DNA-binding domain";
+    const gal4Activation = k.ball(
+      [0, 0.84, 0.1],
+      [0.36, 0.18, 0.22],
+      green,
+      gal4,
+    );
+    gal4Activation.name = "Gal4 activation domain";
     for (const x of [-0.23, 0.23]) {
       helix(k, gal4, [x * 0.5, 0.41, 0.16], green, {
         length: 0.62,
@@ -155,6 +163,7 @@ const model = {
       for (const z of [-0.045, 0.045]) k.ball([x, z, 0.25], 0.04, gold, gal4);
     }
     const gal80 = k.ball([-1.8, 0.57, 0.16], [0.47, 0.3, 0.27], plum);
+    gal80.name = "Gal80 protein surface";
     for (let i = 0; i < 4; i++)
       helix(k, gal80, [(i - 1.5) * 0.33, 0, 0.75], plum, {
         length: 1.35,
@@ -168,6 +177,7 @@ const model = {
       k.ball([-0.3, 0, 0], [0.31, 0.39, 0.28], blue, gal3),
       k.ball([0.3, 0, 0], [0.31, 0.39, 0.28], blue, gal3),
     ];
+    halves.forEach((mesh, i) => (mesh.name = `Gal3 ligand-sensor lobe ${i}`));
     halves.forEach((h, j) => {
       for (let i = 0; i < 3; i++)
         helix(k, h, [(i - 1) * 0.37, 0, 0.75], blue, {
@@ -184,6 +194,8 @@ const model = {
         gal3,
       ),
       atp = k.ball([0, -0.15, 0.23], 0.085, salmon, gal3);
+    sugar.name = "Gal3-bound galactose";
+    atp.name = "Gal3-bound ATP";
     const mig1 = k.ball([-0.1, 1.65, 0.1], [0.25, 0.32, 0.23], plum),
       corepressor = new THREE.Group();
     group.add(corepressor);
@@ -194,6 +206,8 @@ const model = {
         plum,
         corepressor,
       );
+    corepressor.children[0].name = "Cyc8-Tup1 corepressor surface";
+    mig1.name = "Mig1 repressor surface";
     for (let i = 0; i < 4; i++) {
       const r = k.ring(
         [((i % 2) - 0.5) * 0.24, Math.floor(i / 2) * 0.22, 0.16],
@@ -210,6 +224,7 @@ const model = {
       turns: 3,
     });
     const mediator = k.ring([-0.65, 0.45, 0.05], 0.36, 0.11, gold);
+    mediator.name = "Gal4 coactivator ring";
     mediator.scale.set(1.3, 0.65, 1);
     const polymerase = new THREE.Group();
     group.add(polymerase);
@@ -225,8 +240,9 @@ const model = {
       group,
       72,
     );
+    rna.name = "GAL1 transcript";
     const rnaDetail = nucleotideDetail(k, rna);
-    const bridge = nascentBridge(k, salmon);
+    const bridge = nascentBridge(k, salmon, rna);
     const labels = [
       k.label([-1.8, -1.3, 0], "UAS · Gal4", "UAS · Gal4", 2),
       k.label([0.65, -1.3, 0], "启动子", "Promoter", 1),
@@ -251,6 +267,10 @@ const model = {
       k.label([-3.5, -0.25, 0], "5′ / 3′", "5′ / 3′", 1),
       k.label([3.5, -0.25, 0], "3′ / 5′", "3′ / 5′", 1),
     ];
+    const anchors = labelAnchors(labels),
+      dnaPhosphates = detailedDNA.group.getObjectByName("DNA phosphates 0"),
+      promoterSite = anchors.nearestX(dnaPhosphates, 0.65),
+      geneSite = anchors.nearestX(dnaPhosphates, 2.2);
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         gal = parameters.galactose !== "absent",
@@ -258,6 +278,7 @@ const model = {
         induced = gal && !glucose,
         ligand = gal ? ease(p, 0.15, 0.3) : 0,
         release = gal ? ease(p, 0.35, 0.55) : 0;
+      labels.forEach((label) => (label.active = true));
       halves[0].position.x = -0.34 + 0.15 * ligand;
       halves[1].position.x = 0.34 - 0.15 * ligand;
       sugar.visible = gal && p > 0.15;
@@ -275,33 +296,36 @@ const model = {
       mig1.position.set(-0.12, 1.65 - 1.95 * repress, 0.17);
       corepressor.position.set(0.21, 1.8 - 1.73 * repress, 0.08);
       mediator.visible = induced && p > 0.67;
-      polymerase.visible = induced && p > 0.71 && p < 0.97;
+      polymerase.visible = induced && p > 0.68 && p < 0.97;
       polymerase.position.set(0.65 + 2.55 * ease(p, 0.72, 0.96), -0.38, 0.16);
       rna.visible = induced && p > 0.72;
       rna.geometry.setDrawRange(
         0,
         Math.floor((rna.geometry.index.count * ease(p, 0.72, 0.97)) / 6) * 6,
       );
-      detailedDNA.update(polymerase.position.x, polymerase.visible ? 1 : 0);
+      detailedDNA.update(
+        polymerase.position.x,
+        induced ? ease(p, 0.68, 0.72) * (1 - ease(p, 0.96, 1)) : 0,
+      );
       rnaDetail.update();
       bridge.update(
         rna.geometry.parameters.path,
         ease(p, 0.72, 0.97),
         polymerase,
-        polymerase.visible,
+        rna.visible,
+        ease(p, 0.97, 1),
+        ease(p, 0.72, 0.755),
       );
-      labels[3].position[0] = gal80.position.x;
-      labels[3].position[1] = gal80.position.y + 0.52;
       labels[3].text =
         release > 0.9
           ? b("Gal3–Gal80 复合体", "Gal3–Gal80 complex")
           : b("Gal80 遮挡激活域", "Gal80 masks activation domain");
-      labels[4].position[0] = gal3.position.x;
-      labels[4].text = gal
-        ? b("Gal3 · 半乳糖 · ATP", "Gal3 · galactose · ATP")
-        : b("Gal3：无诱导物", "Gal3: no inducer");
+      labels[4].text = !gal
+        ? b("Gal3：无诱导物", "Gal3: no inducer")
+        : sugar.visible && atp.visible
+          ? b("Gal3 · 半乳糖 · ATP", "Gal3 · galactose · ATP")
+          : b("Gal3：配体结合前", "Gal3: before ligand binding");
       labels[5].active = glucose;
-      labels[5].position[1] = corepressor.position.y + 0.7;
       labels[6].active = mediator.visible;
       labels[7].active = rna.visible;
       labels[9].active = p > 0.57;
@@ -310,6 +334,23 @@ const model = {
         : gal
           ? b("Gal4 激活域可用", "Gal4 activation domain available")
           : b("Gal80 抑制", "Gal80 repression");
+      group.updateMatrixWorld(true);
+      anchors.surface(0, gal4.children[0]);
+      anchors.instance(1, dnaPhosphates, promoterSite);
+      anchors.instance(2, dnaPhosphates, geneSite);
+      anchors.surface(3, gal80);
+      anchors.surface(4, halves[0]);
+      anchors.surface(5, corepressor.children[0]);
+      anchors.surface(6, mediator);
+      anchors.tube(7, rna);
+      anchors.point(8, group, -3.3, 1.5, 0, "region");
+      anchors.surface(
+        9,
+        glucose ? mig1 : gal ? gal4Activation : gal80,
+        "state",
+      );
+      anchors.instance(10, dnaPhosphates, 0, "notation");
+      anchors.instance(11, dnaPhosphates, dnaPhosphates.count - 1, "notation");
       group.userData = {
         rootId,
         species: "Saccharomyces cerevisiae",

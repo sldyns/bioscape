@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { chloroplastFactory } from "./structuralDetail.js";
+import { bindPointLabel } from "./labelAnchors.js";
 const process = {
   id: "chloroplastMovement",
   title: b("叶绿体光定位运动", "Chloroplast photorelocation"),
@@ -162,6 +163,21 @@ const process = {
       k.label([-0.6, 0.5, 1.4], "中央液泡", "Central vacuole", 1),
       k.label([-2.55, -1.8, 1.6], "皮层内的叶绿体", "Cortical chloroplasts", 2),
     ];
+    const representative = chloroplasts[14],
+      grana = representative.getObjectByName(
+        "three grana, five flattened thylakoids each",
+      ),
+      instance = new THREE.Matrix4();
+    // Top face of the central granum, in the real instanced-mesh coordinates.
+    grana.getMatrixAt(9, instance);
+    const granumAnchor = new THREE.Vector3(0, 0.5, 0).applyMatrix4(instance);
+    const updateLabelAnchors = [
+      bindPointLabel(labels[0], rays[0], [0, -0.55, 0]),
+      bindPointLabel(labels[1], bottom, [-0.9, -0.5, 0]),
+      bindPointLabel(labels[2], plasmaMembrane, [2.5, 0.8, 0.4]),
+      bindPointLabel(labels[3], vac, [0, 0, 1]),
+      bindPointLabel(labels[4], grana, granumAnchor.toArray()),
+    ];
     // A rounded cortical path accounts for the complete finite-size plastid,
     // not just its center. Its tangent turns the disk before either wall.
     const sideX = 2.26,
@@ -224,6 +240,7 @@ const process = {
           -0.4,
         );
       });
+      updateLabelAnchors.forEach((updateAnchor) => updateAnchor());
       group.userData = {
         process: "chloroplastMovement",
         specimen: "Arabidopsis mesophyll",

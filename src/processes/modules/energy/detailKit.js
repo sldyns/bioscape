@@ -1,9 +1,68 @@
 import { THREE } from "../../kit.js";
 
+// A carrier remains the same molecule on the return leg. Flow glyphs instead
+// represent repeated reaction events and become zero-sized at their recycle cut.
+export const carrierPhase = (progress, cycles) =>
+  0.5 - 0.5 * Math.cos(progress * cycles * Math.PI * 2);
+export function flowScale(t) {
+  const ramp = (v) => {
+    const u = Math.max(0, Math.min(1, v));
+    return u * u * (3 - 2 * u);
+  };
+  return ramp(t / 0.12) * ramp((1 - t) / 0.12);
+}
+
 // Schematic folds, not fitted atomic coordinates. Resolved c-ring repeats use an
 // explicitly supplied, source-backed count; null preserves an unresolved contour.
 export function energyDetails(k) {
   const { group, material, mesh, ball, segment, tube } = k;
+  const labelAnchors = [],
+    labelPoint = new THREE.Vector3();
+  // Label positions are leader endpoints. Bind object labels to real geometry;
+  // text placement is handled by the shared renderer, never by an offset here.
+  function anchor(label, target, localPosition = null) {
+    const binding = {
+      label,
+      target,
+      local: localPosition ? new THREE.Vector3(...localPosition) : null,
+    };
+    labelAnchors.push(binding);
+    return binding;
+  }
+  function anchorNearestInstance(label, target, desired) {
+    const matrix = new THREE.Matrix4(),
+      center = new THREE.Vector3(),
+      aim = new THREE.Vector3(...desired);
+    let nearest = 0,
+      distance = Infinity;
+    for (let i = 0; i < target.count; i++) {
+      target.getMatrixAt(i, matrix);
+      center.setFromMatrixPosition(matrix);
+      if (center.distanceToSquared(aim) < distance) {
+        distance = center.distanceToSquared(aim);
+        nearest = i;
+      }
+    }
+    target.getMatrixAt(nearest, matrix);
+    center
+      .fromBufferAttribute(target.geometry.attributes.position, 0)
+      .applyMatrix4(matrix);
+    return anchor(label, target, center.toArray());
+  }
+  function syncLabelAnchors() {
+    for (const binding of labelAnchors) {
+      const { label, target, local } = binding;
+      target.updateWorldMatrix(true, false);
+      if (local) labelPoint.copy(local);
+      else if (target.geometry)
+        labelPoint.fromBufferAttribute(target.geometry.attributes.position, 0);
+      else labelPoint.set(0, 0, 0);
+      labelPoint.applyMatrix4(target.matrixWorld);
+      label.position[0] = labelPoint.x;
+      label.position[1] = labelPoint.y;
+      label.position[2] = labelPoint.z;
+    }
+  }
   const helixPoints = Array.from({ length: 73 }, (_, i) => {
     const t = i / 72,
       a = t * Math.PI * 12;
@@ -302,7 +361,8 @@ export function energyDetails(k) {
     fixed.position.set(...origin);
     parent.add(fixed);
     fixed.name = "stationary-a-subunit-and-peripheral-stator";
-    bundle(fixed, [0.5, 0, -0.02], [0.7, 0.85, 0.8], tmA, 5);
+    const aSubunit = bundle(fixed, [0.5, 0, -0.02], [0.7, 0.85, 0.8], tmA, 5);
+    aSubunit.children[1].name = "Fo-label-surface";
     for (const z of [-0.12, 0.06])
       tube(
         [
@@ -325,6 +385,7 @@ export function energyDetails(k) {
         i % 2 ? tmA : material("#91a2b5"),
       );
       g.rotation.y = -a;
+      if (i === 1) g.children[0].name = "F1-label-surface";
     }
     for (let i = 0; i < 3; i++) {
       const a = ((i * 2 + 0.5) * Math.PI) / 3;
@@ -338,6 +399,9 @@ export function energyDetails(k) {
     return fixed;
   }
   return {
+    anchor,
+    anchorNearestInstance,
+    syncLabelAnchors,
     helix,
     bundle,
     fold,

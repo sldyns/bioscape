@@ -248,6 +248,201 @@ console.log(
   "DNA: both regulatory duplexes and all six matrix duplexes are right-handed; paired links and single RNA retained",
 );
 
+// Darnton et al. (2007): semicoiled filaments retain approximately the normal
+// radius but have half its pitch. Measure the actual distal mesh centerline.
+function distalPitch(scene, p, environment, deformation) {
+  scene.update(p, { environment });
+  const points = [];
+  for (let j = 60; j < 84; j++) {
+    const point = endpoint(named(scene, `flagellum-0-segment-${j}`), -1),
+      trail = (j / 84 - 0.45) / 0.55,
+      centerY = -0.93 * (1 - trail) - 2 * (0.055 + deformation * 0.565) * trail;
+    points.push({
+      x: point.x,
+      angle: Math.atan2(point.y - centerY, -(point.z - 0.1)),
+      radius: Math.hypot(point.y - centerY, point.z - 0.1),
+    });
+  }
+  let angle = 0;
+  for (let j = 1; j < points.length; j++) {
+    let difference = points[j].angle - points[j - 1].angle;
+    if (difference > Math.PI) difference -= Math.PI * 2;
+    if (difference < -Math.PI) difference += Math.PI * 2;
+    angle += difference;
+  }
+  return {
+    pitch: Math.abs((2 * Math.PI * (points.at(-1).x - points[0].x)) / angle),
+    radius:
+      points.reduce((sum, point) => sum + point.radius, 0) / points.length,
+  };
+}
+for (const environment of ["gradient", "uniform"]) {
+  const centers = environment === "gradient" ? [0.79] : [0.3, 0.56, 0.79];
+  for (const center of centers) {
+    const normal = distalPitch(chemo, center - 0.07, environment, 0),
+      semicoiled = distalPitch(chemo, center, environment, 1),
+      recovered = distalPitch(chemo, center + 0.07, environment, 0);
+    assert(Math.abs(semicoiled.pitch / normal.pitch - 0.5) < 1e-8);
+    assert(Math.abs(semicoiled.radius - normal.radius) < 1e-8);
+    assert(Math.abs(recovered.pitch - normal.pitch) < 1e-8);
+  }
+}
+
+// The transfer-site marker must belong to a drawn residue of the kinase,
+// in addition to satisfying the existing donor/acceptor encounter tests.
+const sidechain = named(two, "NarX-His-sidechain"),
+  donorAtom = named(two, "NarX-His-donor-atom"),
+  donorHelix = named(two, "NarX-His-bearing-helix");
+for (const nitrate of ["present", "absent"])
+  for (const p of [0, 0.1, 0.18, 0.27, 0.35, 0.46, 0.54, 0.62, 0.8, 1]) {
+    two.update(p, { nitrate });
+    two.group.updateMatrixWorld(true);
+    const start = sidechain.geometry.parameters.path
+        .getPoint(0)
+        .applyMatrix4(sidechain.matrixWorld),
+      end = sidechain.geometry.parameters.path
+        .getPoint(1)
+        .applyMatrix4(sidechain.matrixWorld),
+      scaffold = donorHelix.geometry.parameters.path
+        .getPoint(0.5)
+        .applyMatrix4(donorHelix.matrixWorld);
+    assert(
+      start.distanceTo(scaffold) < 1e-9,
+      "His side chain joins the actual kinase helix",
+    );
+    assert(
+      end.distanceTo(world(donorAtom)) < 1e-9,
+      "drawn side chain reaches its donor tip",
+    );
+    assert(
+      world(donor).distanceTo(world(donorAtom)) < 1e-9,
+      "His site follows the physical residue",
+    );
+    assert.equal(sidechain.parent, donorHelix.parent);
+    assert.equal(donor.parent, donorHelix.parent);
+  }
+
+// Test actual recognition-helix vertices against triangles of the instanced
+// DNA duplex in the lux-box region. A nearest-vertex proxy can miss contact.
+function luxBoxTriangles(scene) {
+  const triangles = [],
+    local = new THREE.Matrix4(),
+    transform = new THREE.Matrix4(),
+    center = v();
+  for (const strand of [0, 1]) {
+    const mesh = named(scene, `DNA-${strand}-backbone`),
+      vertices = mesh.geometry.attributes.position,
+      indices = mesh.geometry.index;
+    for (let i = 0; i < mesh.count; i++) {
+      mesh.getMatrixAt(i, local);
+      transform.multiplyMatrices(mesh.matrixWorld, local);
+      center.setFromMatrixPosition(transform);
+      if (center.x < -0.1 || center.x > 0.8) continue;
+      for (let j = 0; j < indices.count; j += 3)
+        triangles.push(
+          new THREE.Triangle(
+            ...[0, 1, 2].map((offset) =>
+              v()
+                .fromBufferAttribute(vertices, indices.getX(j + offset))
+                .applyMatrix4(transform),
+            ),
+          ),
+        );
+    }
+  }
+  return triangles;
+}
+function meshToTriangleDistance(mesh, triangles) {
+  const point = v(),
+    nearest = v(),
+    vertices = mesh.geometry.attributes.position;
+  let distance = Infinity;
+  for (let i = 0; i < vertices.count; i++) {
+    point.fromBufferAttribute(vertices, i).applyMatrix4(mesh.matrixWorld);
+    for (const triangle of triangles) {
+      triangle.closestPointToPoint(point, nearest);
+      distance = Math.min(distance, point.distanceTo(nearest));
+    }
+  }
+  return distance;
+}
+const qs = quorumSensing.create(),
+  recognition = [];
+qs.group.traverse((node) => {
+  if (node.name.startsWith("LuxR-DNA-binding-helix-")) recognition.push(node);
+});
+assert.equal(recognition.length, 4);
+for (const p of [0.68, 0.72, 0.8, 1]) {
+  qs.update(p, { exchange: "retained" });
+  qs.group.updateMatrixWorld(true);
+  assert(qs.group.userData.luxBoxOccupied);
+  const triangles = luxBoxTriangles(qs);
+  for (const helix of recognition)
+    assert(
+      meshToTriangleDistance(helix, triangles) < 0.005,
+      "each actual LuxR recognition helix contacts lux-box DNA",
+    );
+}
+qs.update(1, { exchange: "diluted" });
+qs.group.updateMatrixWorld(true);
+assert(!qs.group.userData.luxBoxOccupied);
+for (const helix of recognition)
+  assert(meshToTriangleDistance(helix, luxBoxTriangles(qs)) > 0.25);
+
+// Follow the same carriers on both sides of every former modulus reset.
+function visibleWraps(scene, carriers, control, options, speed, spacing) {
+  let checked = 0;
+  for (const option of options)
+    for (let i = 0; i < carriers.length; i++)
+      for (let cycle = 1; cycle <= 3; cycle++) {
+        const p = (cycle - i * spacing) / speed;
+        if (p <= 0 || p >= 1) continue;
+        const parameters = { [control]: option };
+        scene.update(p - 1e-7, parameters);
+        scene.group.updateMatrixWorld(true);
+        const before = world(carriers[i]),
+          wasVisible = carriers[i].visible;
+        scene.update(p + 1e-7, parameters);
+        scene.group.updateMatrixWorld(true);
+        if (wasVisible && carriers[i].visible) {
+          assert(
+            before.distanceTo(world(carriers[i])) < 0.0001,
+            `${control}: same visible carrier remains continuous`,
+          );
+          checked++;
+        }
+      }
+  assert(checked > 0);
+}
+const cheYs = named(chemo, "chemotactic-cell").children.filter(
+  (node) =>
+    node.isMesh &&
+    Math.abs(node.scale.x - 0.09) < 1e-9 &&
+    Math.abs(node.scale.y - 0.09) < 1e-9,
+);
+assert.equal(cheYs.length, 5);
+visibleWraps(chemo, cheYs, "environment", ["gradient", "uniform"], 2, 0.19);
+const ahls = qs.group.children.filter(
+  (node) =>
+    node.isGroup &&
+    node.children.length === 2 &&
+    node.children[0].geometry?.type === "TorusGeometry",
+);
+assert.equal(ahls.length, 26);
+visibleWraps(
+  qs,
+  ahls.slice(0, 5),
+  "exchange",
+  ["retained", "diluted"],
+  0.75,
+  0.137,
+);
+console.log(
+  "2026-10-04: semicoiled pitch, physical His attachment, actual LuxR-DNA contact and carrier continuity passed",
+);
+
 // Existing group regression checks finite buffers/bounds, deterministic absolute
 // seeking, stable scene/geometries/materials, both controls and local bundling.
 await import("./smoke.test.mjs");
+
+await import("./labels.test.mjs");

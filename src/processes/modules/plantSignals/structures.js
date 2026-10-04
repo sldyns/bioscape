@@ -26,7 +26,7 @@ export function helix(k, parent, from, to, radius, material, turns = 4) {
         new THREE.Vector3(
           Math.cos(t * Math.PI * 2 * turns) * radius,
           (t - 0.5) * length,
-          Math.sin(t * Math.PI * 2 * turns) * radius,
+          -Math.sin(t * Math.PI * 2 * turns) * radius,
         ),
       );
     }
@@ -218,4 +218,48 @@ export function flexibleLink(k, parent, name, material) {
     }
   }
   return { group, update };
+}
+
+// A label position is a leader endpoint. Choose an actual triangle-surface
+// point once, then follow its object/instance transform without frame allocations.
+export function bindSurfaceLabel(label, mesh, hint, instanceIndex = null) {
+  const query = new THREE.Vector3(...hint),
+    surface = new THREE.Vector3(),
+    candidate = new THREE.Vector3(),
+    triangle = new THREE.Triangle(),
+    positions = mesh.geometry.attributes.position,
+    index = mesh.geometry.index;
+  let closest = Infinity;
+  for (let i = 0; i < (index ? index.count : positions.count); i += 3) {
+    for (const [point, offset] of [
+      [triangle.a, 0],
+      [triangle.b, 1],
+      [triangle.c, 2],
+    ])
+      point.fromBufferAttribute(
+        positions,
+        index ? index.getX(i + offset) : i + offset,
+      );
+    triangle.closestPointToPoint(query, candidate);
+    const distance = query.distanceToSquared(candidate);
+    if (distance < closest) {
+      closest = distance;
+      surface.copy(candidate);
+    }
+  }
+  const instance = new THREE.Matrix4(),
+    world = new THREE.Matrix4(),
+    anchor = new THREE.Vector3();
+  return () => {
+    mesh.updateWorldMatrix(true, false);
+    world.copy(mesh.matrixWorld);
+    if (instanceIndex !== null) {
+      mesh.getMatrixAt(instanceIndex, instance);
+      world.multiply(instance);
+    }
+    anchor.copy(surface).applyMatrix4(world);
+    label.position[0] = anchor.x;
+    label.position[1] = anchor.y;
+    label.position[2] = anchor.z;
+  };
 }

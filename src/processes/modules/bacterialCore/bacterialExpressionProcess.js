@@ -1,6 +1,7 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
 import { instances } from "./bacterialGeometry.js";
+import { anchorObject, anchorSegment } from "./labelAnchors.js";
 
 const process = {
   id: "bacterialExpression",
@@ -141,9 +142,11 @@ const process = {
       k.material("#dcc895", { transparent: true, opacity: 0.58 }),
       [-2.68, 0.59, -0.1],
     );
+    promoter.name = "sigma70-promoter-region";
     for (const x of [-3.07, -2.37])
       k.ball([x, 0.58, 0.02], [0.09, 0.08, 0.49], amberLight);
     const polymerase = new THREE.Group();
+    polymerase.name = "bacterial-RNAP";
     group.add(polymerase);
     // Open-front beta/beta-prime cleft: DNA remains visible between jaws.
     for (const [x, y, z, sx, sy, sz] of [
@@ -193,6 +196,7 @@ const process = {
     );
     activeSite.name = "RNAP-active-3prime";
     const sigma = new THREE.Group();
+    sigma.name = "sigma70-factor";
     group.add(sigma);
     k.ball([0, 0, 0], [0.31, 0.18, 0.2], sigmaMat, sigma);
     k.ball([0.23, 0.11, 0], [0.21, 0.13, 0.17], sigmaMat, sigma);
@@ -488,35 +492,29 @@ const process = {
           );
         }
       }
-      labels[3].position.splice(
-        0,
-        3,
-        polymerase.position.x,
-        polymerase.position.y + 0.95,
-        0,
-      );
+      anchorObject(labels[0], promoter, 0, 0.04, 0.43);
+      anchorSegment(labels[1], strands[0][10]);
+      anchorSegment(labels[2], strands[1][85]);
+      anchorObject(labels[3], polymerase.children[2]);
       labels[3].text = !available
         ? b("核心 RNA 聚合酶", "Core RNA polymerase")
         : elongation > 0.1
           ? b("RNA 聚合酶", "RNA polymerase")
           : b("RNA 聚合酶全酶", "RNA polymerase holoenzyme");
       labels[4].active = available;
-      labels[4].position.splice(
-        0,
-        3,
-        sigma.position.x - 0.3,
-        sigma.position.y + 0.3,
-        0.1,
-      );
+      anchorObject(labels[4], sigma.children[0]);
       labels[5].active = transcript;
-      labels[5].position.splice(0, 3, ...rnaPoint(1, px, length));
-      labels[5].position[1] -= 0.25;
+      anchorSegment(labels[5], rna.at(-1), 1);
       labels[6].active = transcript;
-      labels[6].position.splice(0, 3, ...rnaPoint(0, px, length));
+      anchorObject(labels[6], activeSite);
       labels[7].active = ribosome.visible;
-      labels[7].position.splice(0, 3, rp[0] - 0.55, rp[1] - 0.7, 0.2);
-      labels[8].active = peptideGrowth > 0.1;
-      labels[8].position.splice(0, 3, rp[0] + 0.9, rp[1] - 1.35, 0.2);
+      anchorObject(labels[7], large.children[0]);
+      const visiblePeptideCount = Math.floor(peptideGrowth * peptide.length);
+      labels[8].active = visiblePeptideCount > 0;
+      anchorObject(
+        labels[8],
+        peptide[Math.max(0, Math.floor((visiblePeptideCount - 1) / 2))],
+      );
       group.userData = {
         process: "bacterialExpression",
         structuralDetail:

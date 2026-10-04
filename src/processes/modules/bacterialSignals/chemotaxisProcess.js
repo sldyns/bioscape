@@ -1,6 +1,7 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
 import { helix, beadInstances } from "./structuralDetails.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 export default {
   id: "chemotaxis",
@@ -121,6 +122,7 @@ export default {
       cell,
     );
     envelope.scale.set(1.65, 0.7, 0.55);
+    envelope.name = "chemotactic-cell-envelope";
     const lipidHeads = [];
     for (let i = 0; i < 100; i++) {
       const angle = (i * Math.PI * 2) / 100;
@@ -159,13 +161,21 @@ export default {
           0.012,
           teal,
         );
-        k.ball([1.67, yy, 0.27 + dz], [0.085, 0.033, 0.033], teal, cell);
+        const tip = k.ball(
+          [1.67, yy, 0.27 + dz],
+          [0.085, 0.033, 0.033],
+          teal,
+          cell,
+        );
+        if (i === 3 && dz > 0) tip.name = "MCP-ligand-binding-tip";
       }
       k.segment([0.95, yy, 0.27], [0.87, yy * 0.8, 0.31], 0.027, ink, cell);
     }
     const cheA = k.ball([0.85, 0, 0.38], [0.2, 0.3, 0.15], violet, cell);
+    cheA.name = "CheA";
     k.ball([1.08, 0.2, 0.35], 0.105, ink, cell); // CheW, cytoplasmic receptor coupling.
     const cheZ = k.ball([0.05, 0.35, 0.38], [0.2, 0.12, 0.13], pale, cell);
+    cheZ.name = "CheZ";
     for (const side of [-1, 1]) {
       k.ball([0.78, side * 0.19, 0.42], [0.13, 0.12, 0.1], violet, cell);
       helix(
@@ -206,6 +216,7 @@ export default {
           cell,
         );
         ring.rotation.x = Math.PI / 2;
+        if (f === 0 && layer === 0) ring.name = "flagellar-basal-motor";
       }
       k.segment([x, y - 0.16, 0.1], [x, y + 0.16, 0.1], 0.026, ink, cell);
       for (let n = 0; n < 9; n++) {
@@ -244,6 +255,7 @@ export default {
     const cheYs = Array.from({ length: 5 }, (_, i) =>
       k.ball([0.5 - i * 0.3, -0.17, 0.6], 0.09, gold, cell),
     );
+    cheYs.forEach((m, i) => (m.name = `CheY-P-${i}`));
     const ligands = Array.from({ length: 12 }, (_, i) =>
       k.ball(
         [2.15 + (i % 3) * 0.43, -0.45 + Math.floor(i / 3) * 0.43, 0.1],
@@ -269,8 +281,9 @@ export default {
       [-0.85, -2.0],
     ];
     const paths = [trackGradient, trackUniform];
-    const traces = paths.map((points) => {
+    const traces = paths.map((points, index) => {
       const g = new THREE.Group();
+      g.name = `illustrative-track-${index === 0 ? "gradient" : "uniform"}`;
       group.add(g);
       for (let j = 0; j < points.length - 1; j++)
         k.segment(
@@ -305,6 +318,9 @@ export default {
         1,
       ),
     ];
+    const anchors = labelAnchors(labels),
+      receptorTip = cell.getObjectByName("MCP-ligand-binding-tip"),
+      basalMotor = cell.getObjectByName("flagellar-basal-motor");
     const axis = new THREE.Vector3(0, 1, 0),
       a = new THREE.Vector3(),
       z = new THREE.Vector3(),
@@ -332,7 +348,9 @@ export default {
       // Along the decreasing-x tail, +twist with z=-cos is left-handed.
       // Phase decreases for CCW viewed from behind (-x toward +x).
       const amplitude = 0.12 * Math.min(1, t * 5),
-        twist = f === 0 ? 36 - 60 * deformation : 36,
+        // The right-handed semicoiled form has half the normal pitch at
+        // approximately the same radius (Darnton et al., 2007).
+        twist = f === 0 ? 36 - 108 * deformation : 36,
         angle = t * twist + phase + f;
       out.set(
         x,
@@ -362,8 +380,14 @@ export default {
       cheA.material = response && !tumble ? pale : violet;
       cheZ.scale.set(0.2, 0.12, 0.13);
       for (let i = 0; i < cheYs.length; i++) {
-        const q = (p * 2 + i * 0.19) % 1;
-        cheYs[i].position.set(0.65 - 1.35 * q, -0.1 - 0.38 * q, 0.6);
+        // A closed representative diffusion path preserves each visible
+        // particle's identity without jumping back to the receptor cluster.
+        const angle = (p * 2 + i * 0.19) * Math.PI * 2;
+        cheYs[i].position.set(
+          -0.025 + 0.675 * Math.cos(angle),
+          -0.29 + 0.19 * Math.cos(angle) + 0.13 * Math.sin(angle),
+          0.6,
+        );
         cheYs[i].visible = i < Math.ceil(cheYLevel * 5);
       }
       for (let i = 0; i < ligands.length; i++) {
@@ -396,6 +420,13 @@ export default {
         path[step + 1][1] - path[step][1],
         path[step + 1][0] - path[step][0],
       );
+      anchors[0].surface(envelope);
+      anchors[1].surface(receptorTip);
+      anchors[2].surface(cheA);
+      anchors[3].surface(cheZ);
+      anchors[4].surface(cheYs[0]);
+      anchors[5].surface(basalMotor);
+      anchors[6].surface(traces[gradient ? 0 : 1].children[2]);
       group.userData = {
         species: "Escherichia coli",
         environment: gradient ? "gradient" : "uniform",

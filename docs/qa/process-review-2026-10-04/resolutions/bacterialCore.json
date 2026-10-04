@@ -1,0 +1,214 @@
+{
+  "group": "bacterialCore",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-bacterialCore-01",
+      "status": "fixed",
+      "changes": [
+        "Added 16 prebuilt ssDNA segments between the retained external strand and the imported strand through the actual ComEC lumen.",
+        "Continuous endpoint clipping trims the external and imported chains, while leading and trailing ends traverse the pore without whole-connector appearance or disappearance.",
+        "Corrected unmatched-condition visibility so imported segment 0 remains visible before degradation. The second environmental DNA strand remains outside."
+      ],
+      "files": [
+        "src/processes/modules/bacterialCore/transformationProcess.js",
+        "src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "276 condition/time states check real tube endpoints, one crossing per actual torus mouth, protein-rim clearance, and the other strand remaining outside.",
+        "Independent 242-state measurement: maximum complete-backbone joint gap 8.90587502353e-16; minimum DNA surface clearance to ComEC torus rim .0200129662.",
+        "Deleting the connecting DNA is rejected by the same world-geometry regression."
+      ],
+      "limitations": [
+        "Atomistic DNA translocation kinetics and molecular motor action remain schematic. Root rendered/continuous-playback review is pending."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialCore-02",
+      "status": "fixed",
+      "changes": [
+        "Replaced the pairing-front offset with a fixed-width smooth transition that can extend beyond the material endpoint, so the final end approaches the chromosome continuously.",
+        "Kept local contact-before-resident-displacement and exact final heteroduplex boundary geometry."
+      ],
+      "files": [
+        "src/processes/modules/bacterialCore/transformationProcess.js",
+        "src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs"
+      ],
+      "verification": [
+        "Actual last-cylinder endpoint converges for epsilon 1e-3 through 1e-7 around p=.87; the former .18 step is absent.",
+        "World endpoint coordinates at .8699999 and .87 now match to displayed numeric precision.",
+        "Reintroducing the .18 jump into actual last-cylinder geometry is rejected. Prior D-loop contact, intact resident and final boundary regressions pass."
+      ],
+      "limitations": [
+        "Rendering and perceptual smoothness remain the root review gate."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialCore-03",
+      "status": "fixed",
+      "discoveredDuring": "Phase B, documented separately in evidence/bacterialCore/repair-discoveries.json",
+      "changes": [
+        "Corrected the environmental double helix to right-handed B-DNA while retaining duplex separation, molecular identity and uptake endpoints.",
+        "Added opened primary experimental B-DNA reference 1BNA to process sources."
+      ],
+      "files": [
+        "src/processes/modules/bacterialCore/transformationProcess.js",
+        "src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs"
+      ],
+      "verification": [
+        "Original actual world geometry had signed triple product -2.01480598966e-6; corrected strands each have +2.01480598966e-6.",
+        "Same-sign convention independently checked against 1BNA phosphate coordinates; stride-3 products are all positive.",
+        "A reflected-world-geometry negative control is rejected by the new handedness test."
+      ],
+      "limitations": [
+        "The scene is not an atomistic reconstruction of 1BNA or a sequence-specific B. subtilis DNA structure."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialCore-04",
+      "status": "fixed",
+      "discoveredDuring": "Integration-stage rendered review",
+      "changes": [
+        "Anchor named molecular labels to the actual template/coding cylinders, RNA ends, active site, protein components and visible peptide beads. Tie RNA/ribosome/peptide labels to actual visibility."
+      ],
+      "files": [
+        "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+        "src/processes/modules/bacterialCore/labelAnchors.js",
+        "src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "Reviewed every supplied stage sheet (7 frames for this process) and the listed 960x640 original.",
+        "Actual target gap now 0; label regression and full owned-group science suite pass.",
+        "Old annotation offset mutation is rejected; pilus/environment ghost-label negative controls are also rejected."
+      ],
+      "limitations": [
+        "Root must refresh rendered frames after the code freeze; this worker did not operate a browser."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialCore-05",
+      "status": "fixed",
+      "discoveredDuring": "Integration-stage rendered review",
+      "changes": [
+        "Anchor forks, DNA, FtsZ, FtsWI and daughter chromosome labels to actual meshes; anchor envelope/division-site descriptions to dynamic membrane vertices and suppress scaffold labels before visible filaments exist."
+      ],
+      "files": [
+        "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+        "src/processes/modules/bacterialCore/labelAnchors.js",
+        "src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "Reviewed every supplied stage sheet (7 frames for this process) and the listed 960x640 original.",
+        "Actual target gap now 0; label regression and full owned-group science suite pass.",
+        "Old annotation offset mutation is rejected; pilus/environment ghost-label negative controls are also rejected."
+      ],
+      "limitations": [
+        "Root must refresh rendered frames after the code freeze; this worker did not operate a browser."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialCore-06",
+      "status": "fixed",
+      "discoveredDuring": "Integration-stage rendered review",
+      "changes": [
+        "Anchor labels to pilus/junction/oriT/TraI and replacement/complement geometry. Gate the pilus by actual extension and blocked-transfer labels by object visibility; describe completed strands as objects rather than permanently ongoing synthesis."
+      ],
+      "files": [
+        "src/processes/modules/bacterialCore/conjugationProcess.js",
+        "src/processes/modules/bacterialCore/labelAnchors.js",
+        "src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "Reviewed every supplied stage sheet (7 frames for this process) and the listed 960x640 original.",
+        "Actual target gap now 0; label regression and full owned-group science suite pass.",
+        "Old annotation offset mutation is rejected; pilus/environment ghost-label negative controls are also rejected."
+      ],
+      "limitations": [
+        "Root must refresh rendered frames after the code freeze; this worker did not operate a browser."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialCore-07",
+      "status": "fixed",
+      "discoveredDuring": "Integration-stage rendered review",
+      "changes": [
+        "Anchor labels to actual external DNA, ComEC rim, DprA/RecA proteins, fragments, chromosome and heteroduplex. Hide labels without visible objects. The no-homology outcome explicitly refers to the retained chromosome and anchors there after imported DNA degradation."
+      ],
+      "files": [
+        "src/processes/modules/bacterialCore/transformationProcess.js",
+        "src/processes/modules/bacterialCore/labelAnchors.js",
+        "src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+        "src/processes/modules/bacterialCore/science.test.mjs"
+      ],
+      "verification": [
+        "Reviewed every supplied stage sheet (7 frames for this process) and the listed 960x640 original.",
+        "Actual target gap now 0; label regression and full owned-group science suite pass.",
+        "Old annotation offset mutation is rejected; pilus/environment ghost-label negative controls are also rejected."
+      ],
+      "limitations": [
+        "Root must refresh rendered frames after the code freeze; this worker did not operate a browser."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "npx prettier --write src/processes/modules/bacterialCore/transformationProcess.js src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs src/processes/modules/bacterialCore/science.test.mjs",
+      "result": "Passed; only owned files formatted."
+    },
+    {
+      "command": "node src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs",
+      "result": "Passed: 276 states, pore crossings, terminal convergence, handedness and 3 mutation negative controls."
+    },
+    {
+      "command": "node src/processes/modules/bacterialCore/science.test.mjs",
+      "result": "Passed: original group regressions, finite buffers, deterministic seeks, stable resources, bundle checks and prior 7 mutation checks retained. Final log evidence/bacterialCore/phase-b-science-final.log."
+    },
+    {
+      "command": "node docs/qa/process-review-2026-10-04/evidence/bacterialCore/phase-b-probe.mjs",
+      "result": "Passed; baseline/current world geometry, reference coordinate sign and repaired attachments written to phase-b-probe-results.json."
+    },
+    {
+      "command": "node src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+      "result": "PASS: 208 states, actual world targets, both conditions, deterministic seeks and six negative controls."
+    },
+    {
+      "command": "node src/processes/modules/bacterialCore/science.test.mjs",
+      "result": "PASS after rendered-review repairs; log evidence/bacterialCore/rendered-repair-science.log."
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.rcsb.org/structure/1BNA",
+      "title": "Structure of a B-DNA dodecamer: conformation and dynamics",
+      "supports": "Experimental right-handed B-DNA; reference coordinates and SHA256 retained in phase-b-probe-results.json."
+    }
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/bacterialCore/phase-b-science-final.log",
+    "docs/qa/process-review-2026-10-04/evidence/bacterialCore/phase-b-probe-results.json",
+    "docs/qa/process-review-2026-10-04/evidence/bacterialCore/repair-discoveries.json",
+    "docs/qa/process-review-2026-10-04/evidence/bacterialCore/labels-probe-results.json",
+    "docs/qa/process-review-2026-10-04/evidence/bacterialCore/rendered-repair-science.log"
+  ],
+  "remainingGates": [
+    "Root rendered and continuous playback review, including both homology options at capture, uptake, tail release and pairing completion."
+  ],
+  "publication": "Not performed",
+  "integrationAnnotationRepair": {
+    "models": [
+      "bacterialExpression",
+      "bacterialDivision",
+      "conjugation",
+      "transformation"
+    ],
+    "reviewedFrames": 28,
+    "fullResolutionWitnesses": 4,
+    "mechanismBoundary": "The three earlier qualified-pass mechanisms retain their geometry; integration changes only their annotation anchors/wording/visibility and object names.",
+    "report": "docs/qa/process-review-2026-10-04/resolutions/bacterialCore-rendered.md"
+  }
+}

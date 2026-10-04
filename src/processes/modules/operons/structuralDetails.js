@@ -511,7 +511,7 @@ export function lipidRim(k, parent, { rx = 3.9, ry = 2.7, count = 160 } = {}) {
   return { heads, tails };
 }
 
-export function nascentBridge(k, material) {
+export function nascentBridge(k, material, transcript) {
   const group = new THREE.Group();
   group.name = "Continuous nascent RNA exit from polymerase";
   k.group.add(group);
@@ -535,21 +535,35 @@ export function nascentBridge(k, material) {
     { length: segments + 1 },
     () => new THREE.Vector3(),
   );
-  function update(curve, t, polymerase, visible) {
+  function update(curve, t, polymerase, visible, release = 0, emergence = 1) {
     group.visible = visible;
     curve.getPointAt(Math.max(0, Math.min(1, t)), a);
     b.copy(polymerase.position);
     b.y -= 0.13;
     b.z += 0.07;
+    // At initiation the short transcript emerges beside the exit. Translate
+    // its connected visible prefix together with the bridge's first point,
+    // then let it settle onto the displayed RNA row as the strand grows.
+    transcript.position
+      .copy(b)
+      .sub(a)
+      .multiplyScalar(1 - emergence);
+    a.add(transcript.position);
+    // The exit strand is part of the RNA, not a disposable association line.
+    // After polymerase release its 3' end relaxes alongside the transcript;
+    // every prebuilt backbone segment and nucleotide remains in the chain.
+    b.x += (a.x + 0.5 - b.x) * release;
+    b.y += (a.y + 0.04 - b.y) * release;
+    b.z += (a.z + 0.04 - b.z) * release;
     for (let i = 0; i <= segments; i++) {
       const f = i / segments,
         q = points[i];
       q.copy(a).lerp(b, f);
-      q.x += 0.18 * Math.sin(Math.PI * f);
-      q.z += 0.06 * Math.sin(Math.PI * f);
+      q.x += 0.18 * Math.sin(Math.PI * f) * emergence;
+      q.z += 0.06 * Math.sin(Math.PI * f) * emergence;
       pose.position.copy(q);
       pose.quaternion.identity();
-      pose.scale.setScalar(0.033);
+      pose.scale.setScalar(0.033 * emergence);
       pose.updateMatrix();
       phosphates.setMatrixAt(i, pose.matrix);
       if (i) {
@@ -560,7 +574,11 @@ export function nascentBridge(k, material) {
           .add(points[i - 1])
           .multiplyScalar(0.5);
         pose.quaternion.setFromUnitVectors(up, d.normalize());
-        pose.scale.set(0.024, Math.max(len, 0.0001), 0.024);
+        pose.scale.set(
+          0.024 * emergence,
+          Math.max(len, 0.0001),
+          0.024 * emergence,
+        );
         pose.updateMatrix();
         backbone.setMatrixAt(i - 1, pose.matrix);
       }

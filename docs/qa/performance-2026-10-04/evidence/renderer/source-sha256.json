@@ -1,0 +1,7 @@
+{
+  "src/CellScene.jsx": "f888c89cfbea283d7ad31300e68a38eaabf7f9e9c9e4fb49b38b76d8eb739eb1",
+  "src/scene/framingDistanceCache.js": "4943d3058ff8b4287d465eee9b590c3a0a543f1dc26a40e5f8b29cd0a2f49d92",
+  "src/processes/ProcessScene.jsx": "917ff5f85efc3d2a457d9084dae435ad0c842f407ebed06c1cc41ab629c4066b",
+  "tests/framing-distance-cache.mjs": "19a13a3914e8fa3848054f6e6fb6f358228ca35c3ba487e3bbfc7403592d4988",
+  "tests/process-annotation-visibility.mjs": "96d0b4bf4145dda481c3e53ab81fe66d39e2da73a0c9410c16b6ad4475ccb39f"
+}

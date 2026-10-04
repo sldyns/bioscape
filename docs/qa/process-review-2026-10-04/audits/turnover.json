@@ -1,0 +1,124 @@
+{
+  "group": "turnover",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "rnaSilencing",
+      "roots": ["cell"],
+      "verdict": "confirmed_issue",
+      "scope": "Animal cytosol; mature AGO-miRNA starts already loaded. All seed/slice/mismatch options, bilingual metadata, labels, actual backbone/base geometry and end states reviewed. No root-specific overrides or explicit legend.",
+      "checks": [
+        "Actual guide numbering runs right to left (22 to 1), mRNA left to right, with 22 guide and 28 target sites. Seven seed pairs and four supplementary pairs map to actual base tips; the central bulge has connected target backbone.",
+        "AGO2 branch cuts backbone 14 opposite guide 11/10. Pair connectors disappear on cleavage; cap and tail move with the corresponding target fragment. Mismatch retains intact RNA and rejects the complex.",
+        "RNA body/tail removal is an explicitly schematic turnover depiction, not an atom-balanced hydrolysis reaction. No quantitative residue or reaction-rate claim is inferred.",
+        "101 frames per condition plus irregular seeks are finite and deterministic with stable node/geometry/material inventories. Existing science regression passes actual endpoint and cleavage-register checks."
+      ],
+      "sources": [
+        {"url":"https://link.springer.com/article/10.15252/embj.2018101153","title":"Sheu-Gruttadauria et al. 2019, Beyond the seed","supports":"Opened primary abstract and synopsis: guide positions 2-8 support seed recognition, positions 13-16 supplementary recognition, with adjacent chambers joined by an unstructured target loop."},
+        {"url":"https://www.nature.com/articles/nsmb.2149?error=cookies_not_supported","title":"Fabian et al. 2011, miRNA-mediated deadenylation is orchestrated by GW182","supports":"Opened primary abstract: human GW182 recruits CCR4-NOT and supports processive target poly(A) removal; this supports effector recruitment as a physical step."}
+      ],
+      "findings": [
+        {
+          "issueId":"20261004-turnover-01",
+          "severity":"P2",
+          "kind":"visible_motion_discontinuity",
+          "file":"src/processes/modules/turnover/rnaSilencingProcess.js",
+          "location":"update lines 416-419, TNRC6 and CCR4-NOT recruitment",
+          "evidence":"At p=0.3799999 both effector groups have zero visible meshes; at p=0.38 they appear at full scale without an entrance transition. Actual TNRC6 bounds are 1.7291 x 0.8263 x 0.4811 (13 meshes), CCR4-NOT 1.14 x 0.76 x 0.60 (8 meshes). Positions and size are unchanged across the epsilon boundary. See evidence/turnover/diagnostics.json.",
+          "whyWrong":"The large molecular assemblies pop into the central scene before their already-coded recruitment movement. This is a concrete finite visible-size discontinuity during continuous playback, rather than a bond-cleavage marker or a reaction-state annotation. No molecular mechanism error is asserted.",
+          "fix":"Give each prebuilt effector an independent smoothly varying entrance visibility/opacity over a finite approach interval, retaining final native geometry and the seed-only recruitment rule.",
+          "verification":"Sample the recruitment boundary with decreasing epsilon and prove rendered contribution tends to zero at entry, then reaches unchanged final geometry; slice and mismatch must keep both effectors absent, with deterministic seek and stable material inventories.",
+          "sourceUrls":["https://www.nature.com/articles/nsmb.2149?error=cookies_not_supported"]
+        }
+      ],
+      "continuity": {"checked":"Entire 0-1 code path, 303 regular frames, irregular seeks, exact recruitment boundary; no modulus/recycling reset is present.","findings":["20261004-turnover-01"],"limits":["Discrete base-pair indicators and schematic nucleotide deletion were not automatically classified as motion errors.","Rendered camera-scale review remains with root."]},
+      "limitations":["Protein secondary structure and RNA paths are teaching geometry, not atomic fits; translation itself and biochemical degradation products are omitted.","One final poly(A) marker remains in seed mode after body turnover; treated as schematic residual product, not evidence of a conserved whole RNA. Root may evaluate end-frame readability."],
+      "confidence":"high"
+    },
+    {
+      "id":"proteasome",
+      "roots":["cell","plant","yeast"],
+      "verdict":"confirmed_issue",
+      "scope":"Conserved eukaryotic cytosolic singly capped 26S teaching model. All three actual registered roots and all four tag x shell combinations; bilingual stages/controls/labels and complete interval reviewed. The confirmed issue is in validation, not a discovered biological defect.",
+      "checks":[
+        "28 closed protein volumes form alpha7-beta7-beta7-alpha7; six ATPases and pore loops surround one axial channel. Front cutaway removes exactly eight core sectors while whole mode retains all 28. Catalytic sites face the internal beta chamber.",
+        "The 42 rendered substrate residues remain linked until progressive chamber consumption. Residue 12 brings the covalent ubiquitin attachment to Rpn11 before release. The handoff at p=0.48 is position-continuous to <3e-12 scene units across epsilon 1e-7.",
+        "Four pre-existing ubiquitin units persist through release and disassembly, with no second copy. Seven teaching peptide fragments emerge axially and stay within the intact core until exit. Untagged substrate is intentionally not recruited.",
+        "1212 additional numeric frames cover 12 root/condition combinations with finite geometry/instances, stable inventories and deterministic irregular seeks. Existing science.test.mjs passes pore contact, Rpn11 contact, full peptide-volume containment, and ray-tested closed non-cutaway surfaces."
+      ],
+      "sources":[
+        {"url":"https://www.nature.com/articles/s41586-018-0736-4","title":"Dong et al. 2019, Cryo-EM structures and dynamics of substrate-engaged human 26S proteasome","supports":"Opened primary abstract: polyubiquitylated substrate recognition, deubiquitylation, translocation and unfolding are coordinated with six ATPases."},
+        {"url":"https://www.lander-lab.com/pdfs/30309908.pdf","title":"de la Pena et al. 2018, Substrate-engaged 26S proteasome structures","supports":"Opened author-hosted primary PDF pages 1-2: pore loops contact and pull substrate through the motor into the sequestered core; the substrate-linked ubiquitin bond reaches Rpn11 during translocation."}
+      ],
+      "findings":[
+        {
+          "issueId":"20261004-turnover-02",
+          "severity":"P2",
+          "kind":"incorrect_validation_invariant",
+          "file":"src/processes/modules/turnover/smoke.mjs",
+          "location":"line 112, unconditional distinct >= 4",
+          "evidence":"Running node src/processes/modules/turnover/smoke.mjs exits 1 after rnaSilencing with distinct >= 4 false for the proteasome untagged branch. All 101 progress samples have only two serialized states because hidden ubiquitin coordinates change across p=0.48; the visible untagged substrate remains unchanged, as required by the scene's bilingual control and stage text. The current smoke also varies only controls[0], omitting shell cross-products.",
+          "whyWrong":"A negative control that should remain intact and unrecruited is incorrectly required to animate. The failing check cannot distinguish intended inhibition from broken playback and currently stops subsequent smoke checks. The geometry itself qualified-passes this audit.",
+          "fix":"Replace the untagged motion expectation with stronger actual-geometry invariants: substrate positions/bonds stay intact, no peptide becomes visible, and no ubiquitin is rendered; retain motion requirements for active branches. Enumerate the actual control cross-product rather than suppressing the assertion.",
+          "verification":"The smoke must pass all 20 registered root/condition combinations while rejecting accidental untagged translocation, peptide production or missing active-branch motion. Preserve existing science regressions unchanged.",
+          "sourceUrls":["https://www.lander-lab.com/pdfs/30309908.pdf"]
+        }
+      ],
+      "continuity":{"checked":"Entire update interval, tagged Rpn11 handoff, gate and motor activity, peptide exit, ubiquitin recycling/disassembly, terminal states and both shell modes.","findings":[],"limits":["Hidden-object coordinate jumps in the untagged branch are not a visible-motion failure.","Substrate consumption and peptide appearance are coarse catalytic events; the drawing does not claim exact peptide lengths or atomic material accounting."]},
+      "limitations":["Protein folds and ATP-driven motor motions are schematic and not experimentally fitted trajectories.","Browser continuous-playback and visual assessment remain with root."],
+      "confidence":"high"
+    },
+    {
+      "id":"crispr",
+      "roots":["bacterium"],
+      "verdict":"qualified_pass",
+      "scope":"Streptococcus pyogenes type II-A interference only. Matched, noPam and multiple PAM-proximal mismatch branches; natural crRNA/tracrRNA topology, bilingual metadata/labels and full interval reviewed.",
+      "checks":[
+        "One continuous 20-position crRNA guide joins its repeat scaffold. Distinct tracrRNA anti-repeat contacts terminate on the corresponding backbone curves.",
+        "Antiparallel target DNA/guide register uses first=15 through last=34; PAM is downstream at indices 35-37 on the non-target strand. Local opening begins adjacent to PAM and propagates toward the distal end; closed distal duplex keeps its DNA pairs.",
+        "Guide-DNA pairs terminate at actual base tips; no site simultaneously retains DNA-DNA and RNA-DNA pairing. Actual strands remain separated during opening. HNH targets the target strand and RuvC the non-target strand; only matched branch cuts backbone index 31 on both strands and retains the products.",
+        "303 additional regular numeric frames plus irregular seeks pass; existing scientific endpoint and local pairing regressions pass. Existing bubble regression checks 1001 frames per condition with positive independent capsule margins; minimum reported strand tube-center separation 0.507467."
+      ],
+      "sources":[
+        {"url":"https://www.nature.com/articles/s41586-022-05114-0?error=cookies_not_supported","title":"Pacesa et al. 2022, R-loop formation and conformational activation mechanisms of Cas9","supports":"Opened primary full text, especially introduction and R-loop progression: native dual guide RNA, downstream NGG recognition, directional 20-nt hybrid formation, target/non-target HNH/RuvC division, and position-dependent mismatch discrimination. Full R-loop formation supports nuclease activation."}
+      ],
+      "findings":[],
+      "continuity":{"checked":"Entire update path for all three conditions, local ease-window opening front, full R-loop, paired-state switches, cleavage at 0.76-0.86, retreat of noPam complex and terminal bound products.","findings":[],"limits":["Discrete pair indicators and the exact scissile-bond disappearance represent chemical state changes, not automatic defects.","Local opening is fast but continuous; camera-scale cadence requires root playback review."]},
+      "limitations":["Teaching protein folds, extended guide rails and natural dual-RNA scaffold are topology cartoons, not reconstructed atomic conformations.","The mismatch branch is a selected incompatible target, not a universal all-mismatch rejection claim."],
+      "confidence":"high"
+    },
+    {
+      "id":"bacterialRepair",
+      "roots":["bacterium"],
+      "verdict":"confirmed_issue",
+      "scope":"Escherichia coli RecA-LexA SOS induction with separate upper damage-associated ssDNA and lower promoter locus; both wildtype/noncleavable controls, bilingual text and actual full geometry/update reviewed.",
+      "checks":[
+        "Continuous upper parental ssDNA crosses the nascent-strand gap; RecA protein units wind around it. LexA dimer moves from the separate SOS operator toward RecA before domain separation. Self-cleavage wording does not depict RecA as a protease.",
+        "Noncleavable LexA returns to the operator and does not produce an RNAP bubble or RNA. Wildtype derepression precedes transcription; repair completion is explicitly outside scope.",
+        "Actual lower locus remains antiparallel and opens a traveling positive-radius bubble. RNA backbone pieces connect end-to-end; active 3-prime terminus follows RNAP and hybrid links end on actual template/RNA base tips. DNA reanneals behind the polymerase.",
+        "202 additional regular frames and irregular seeks pass inventory/finite/deterministic checks; existing science geometry regressions pass. Existing bubble regression checks 1001 frames per condition, minimum tube-center distance 0.311205, positive envelope clearance."
+      ],
+      "sources":[
+        {"url":"https://www.nature.com/articles/s41594-024-01317-3?error=cookies_not_supported","title":"Cory et al. 2024, The LexA-RecA* structure reveals a cryptic lock-and-key mechanism for SOS activation","supports":"Opened primary abstract and figure descriptions: RecA filaments form on ssDNA, interact with full-length E. coli LexA and promote its autoproteolysis; molecular interface spans three RecA subunits."},
+        {"url":"https://www.rcsb.org/structure/6ALF","title":"RCSB 6ALF, E. coli RNA polymerase elongation complex","supports":"Opened primary deposited assembly/sequence information: RNA polymerase elongation includes two DNA strands and nascent RNA in the same complex. It supports the moving RNA-DNA hybrid topology, not the cartoon's exact coordinates."}
+      ],
+      "findings":[
+        {
+          "issueId":"20261004-turnover-03",
+          "severity":"P2",
+          "kind":"visible_motion_discontinuity",
+          "file":"src/processes/modules/turnover/bacterialRepairProcess.js",
+          "location":"update lines 420-422 and 443-444, protein assembly/entry/exit",
+          "evidence":"RecA subunit 1 switches from 0 to 12 visible meshes at p=0.13 at 0.88 native scale (0.3214 x 0.4867 x 0.2912 units). Wildtype RNAP switches from 0 to 18 visible meshes at p=0.63 with unchanged 1.2157 x 0.8118 x 0.6103 bounds. Cleaved LexA fragments stay fixed after p=0.64, then all 20 visible meshes abruptly vanish at p=0.84 with unchanged 2.2331 x 1.5523 x 0.5184 bounds. Epsilon 1e-7 measurements are retained in diagnostics.json.",
+          "whyWrong":"These are full-size molecular assemblies appearing or disappearing inside the scene without approach or clearance. LexA clearance in particular removes a large stationary set in one frame after a long hold. This contradicts the requested smooth continuous playback; the signaling mechanism and bond-cleavage semantics are otherwise retained.",
+          "fix":"Smooth entry contributions for assembling RecA and incoming RNAP, and give already-cleaved LexA fragments a finite dispersal/clearance interval before hiding. Use existing prebuilt nodes and independently owned materials or transforms so neighboring DNA/proteins do not fade. Retain noncleavable repression and RNA timing.",
+          "verification":"Boundary epsilon checks must demonstrate continuous rendered contribution and unchanged completed folds; RecA completes before LexA activation, RNA remains absent under noncleavable LexA, transcript 3-prime attachment stays intact, and forward/irregular seek inventories remain stable.",
+          "sourceUrls":["https://www.nature.com/articles/s41594-024-01317-3?error=cookies_not_supported","https://www.rcsb.org/structure/6ALF"]
+        }
+      ],
+      "continuity":{"checked":"Full update interval, sequential RecA thresholds, LexA contact/cleavage/return, RNAP appearance, bubble initiation and elongation, p=0.84 clearance and terminal state.","findings":["20261004-turnover-03"],"limits":["Chemical hinge severing and base-pair indicators are not classified as motion errors on their own.","No browser or frame-time benchmark run in this ownership scope."]},
+      "limitations":["RecA/LexA/RNAP folds and DNA spacing are teaching geometry; no atomic interface reconstruction or completed repair outcome is claimed.","Rendered review of clearance visibility and labels remains with root."],
+      "confidence":"high"
+    }
+  ]
+}

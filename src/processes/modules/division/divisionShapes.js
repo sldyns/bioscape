@@ -369,6 +369,15 @@ export function divisionKit() {
         group.localToWorld(new THREE.Vector3(axis(y) + displacement(y), y, 0)),
       );
     }
+    // Query the undeformed exchange coordinate without rebuilding all three
+    // arms, their normals and their decorative instances just to reset it.
+    // Keep the same world/model roundtrip as axisPoint to preserve its rounding.
+    function restAxisPoint(y) {
+      group.updateWorldMatrix(true, false);
+      return k.group.worldToLocal(
+        group.localToWorld(new THREE.Vector3(axis(y) + 0, y, 0)),
+      );
+    }
     function setDistalMaterial(material) {
       distal.traverse((o) => {
         if (o.material) o.material = material;
@@ -383,6 +392,7 @@ export function divisionKit() {
       orientKinetochore,
       attachmentPoint,
       axisPoint,
+      restAxisPoint,
       setDeflection,
       exchangeY,
       setDistalMaterial,
@@ -429,6 +439,7 @@ export function divisionKit() {
       }),
       group,
     );
+    matrix.name = "pericentriolar-matrix";
     materials.add(matrix.material);
     return group;
   }
@@ -436,6 +447,7 @@ export function divisionKit() {
     const g = new THREE.Group();
     g.name = "actomyosin-contractile-belt";
     parent.add(g);
+    const tracks = [];
     for (let j = 0; j < 3; j++) {
       const pts = [];
       for (let i = 0; i <= 100; i++) {
@@ -443,7 +455,8 @@ export function divisionKit() {
           r = 1 + (j - 1) * 0.024;
         pts.push([Math.cos(a) * r, Math.sin(a) * r, (j - 1) * 0.028]);
       }
-      k.tube(pts, 0.013, j === 1 ? gold : outline, g, 100);
+      const track = k.tube(pts, 0.013, j === 1 ? gold : outline, g, 100);
+      tracks.push(track);
     }
     const motors = instances(
       beadGeometry,
@@ -461,6 +474,92 @@ export function divisionKit() {
       motors.setMatrixAt(i, temp.matrix);
     }
     finish(motors);
+    const contour = new Float64Array(101),
+      centers = new Float64Array(202);
+    const restTracks = tracks.map(({ geometry }) => {
+      geometry.computeBoundingBox();
+      geometry.computeBoundingSphere();
+      return {
+        position: geometry.attributes.position.array.slice(),
+        normal: geometry.attributes.normal.array.slice(),
+        box: geometry.boundingBox.clone(),
+        sphere: geometry.boundingSphere.clone(),
+      };
+    });
+    const restMotors = motors.instanceMatrix.array.slice();
+    let fitted = false;
+    // The meiosis membrane has a changing, nonelliptical neck. Reuse all three
+    // 100 x 8 tube tracks and 28 motors while fitting them to that actual neck.
+    // The outer track sits just inside the inner leaflet; the other two tracks
+    // occupy the adjacent cortex instead of drifting into free cytoplasm.
+    g.fitContour = (radiusAtAngle, changed = true) => {
+      if (fitted && !changed) return;
+      fitted = true;
+      for (let i = 0; i < 100; i++) contour[i] = radiusAtAngle((i * TAU) / 100);
+      contour[100] = contour[0];
+      for (let trackIndex = 0; trackIndex < tracks.length; trackIndex++) {
+        const geometry = tracks[trackIndex].geometry,
+          positions = geometry.attributes.position;
+        const inset = 0.025 + (2 - trackIndex) * 0.024;
+        for (let i = 0; i <= 100; i++) {
+          const angle = (i * TAU) / 100,
+            radius = contour[i] - inset;
+          centers[i * 2] = Math.cos(angle) * radius;
+          centers[i * 2 + 1] = Math.sin(angle) * radius;
+        }
+        for (let i = 0; i <= 100; i++) {
+          const before = (i + 99) % 100,
+            after = (i + 1) % 100;
+          const tx = centers[after * 2] - centers[before * 2],
+            ty = centers[after * 2 + 1] - centers[before * 2 + 1],
+            length = Math.hypot(tx, ty);
+          for (let j = 0; j <= 8; j++) {
+            const angle = (j * TAU) / 8,
+              radial = 0.013 * Math.cos(angle);
+            positions.setXYZ(
+              i * 9 + j,
+              centers[i * 2] + (ty / length) * radial,
+              centers[i * 2 + 1] - (tx / length) * radial,
+              (trackIndex - 1) * 0.028 + 0.013 * Math.sin(angle),
+            );
+          }
+        }
+        positions.needsUpdate = true;
+        geometry.computeVertexNormals();
+        geometry.computeBoundingBox();
+        geometry.computeBoundingSphere();
+      }
+      for (let i = 0; i < motors.count; i++) {
+        const a = (i * TAU) / motors.count,
+          sample = (i * 100) / motors.count,
+          lo = Math.floor(sample),
+          t = sample - lo,
+          radius = contour[lo] * (1 - t) + contour[lo + 1] * t - 0.049;
+        temp.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0.017);
+        temp.rotation.set(0, 0, a);
+        temp.scale.set(0.036, 0.014, 0.018);
+        temp.updateMatrix();
+        motors.setMatrixAt(i, temp.matrix);
+      }
+      finish(motors);
+    };
+    // Invisible rings have a fixed canonical pose. This avoids fitting three
+    // contours while only one division is visible, without making hidden buffer
+    // contents depend on the route taken through the timeline.
+    g.resetContour = () => {
+      if (!fitted) return;
+      fitted = false;
+      tracks.forEach(({ geometry }, i) => {
+        geometry.attributes.position.array.set(restTracks[i].position);
+        geometry.attributes.normal.array.set(restTracks[i].normal);
+        geometry.attributes.position.needsUpdate = true;
+        geometry.attributes.normal.needsUpdate = true;
+        geometry.boundingBox.copy(restTracks[i].box);
+        geometry.boundingSphere.copy(restTracks[i].sphere);
+      });
+      motors.instanceMatrix.array.set(restMotors);
+      finish(motors);
+    };
     return g;
   }
   function envelope(position, scale, parent = k.group) {

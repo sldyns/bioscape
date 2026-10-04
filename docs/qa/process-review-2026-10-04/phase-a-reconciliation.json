@@ -1,0 +1,246 @@
+{
+  "models": 84,
+  "verdicts": {
+    "qualified_pass": 24,
+    "confirmed_issue": 60
+  },
+  "findings": 87,
+  "uniqueIssues": 87,
+  "severities": {
+    "P1": 44,
+    "P2": 43
+  },
+  "errors": [],
+  "groups": [
+    {
+      "group": "bacterialCore",
+      "models": 4,
+      "findings": [
+        "20261004-bacterialCore-01",
+        "20261004-bacterialCore-02"
+      ]
+    },
+    {
+      "group": "bacterialSignals",
+      "models": 4,
+      "findings": [
+        "20261004-bacterialSignals-01",
+        "20261004-bacterialSignals-02",
+        "20261004-bacterialSignals-03",
+        "20261004-bacterialSignals-04",
+        "20261004-bacterialSignals-05"
+      ]
+    },
+    {
+      "group": "chromatin",
+      "models": 4,
+      "findings": [
+        "20261004-chromatin-01"
+      ]
+    },
+    {
+      "group": "division",
+      "models": 2,
+      "findings": [
+        "20261004-division-01",
+        "20261004-division-02"
+      ]
+    },
+    {
+      "group": "energy",
+      "models": 4,
+      "findings": [
+        "20261004-energy-01",
+        "20261004-energy-02",
+        "20261004-energy-03",
+        "20261004-energy-04",
+        "20261004-energy-05",
+        "20261004-energy-06"
+      ]
+    },
+    {
+      "group": "genome",
+      "models": 4,
+      "findings": [
+        "20261004-genome-01",
+        "20261004-genome-02",
+        "20261004-genome-03"
+      ]
+    },
+    {
+      "group": "membrane",
+      "models": 4,
+      "findings": [
+        "20261004-membrane-01",
+        "20261004-membrane-05",
+        "20261004-membrane-02",
+        "20261004-membrane-03",
+        "20261004-membrane-04",
+        "20261004-membrane-06"
+      ]
+    },
+    {
+      "group": "neurons",
+      "models": 4,
+      "findings": [
+        "20261004-neurons-03",
+        "20261004-neurons-02",
+        "20261004-neurons-01"
+      ]
+    },
+    {
+      "group": "operons",
+      "models": 4,
+      "findings": [
+        "20261004-operons-01",
+        "20261004-operons-02",
+        "20261004-operons-03",
+        "20261004-operons-04",
+        "20261004-operons-05",
+        "20261004-operons-06"
+      ]
+    },
+    {
+      "group": "original",
+      "models": 4,
+      "findings": [
+        "20261004-original-01",
+        "20261004-original-02",
+        "20261004-original-03",
+        "20261004-original-04",
+        "20261004-original-05"
+      ]
+    },
+    {
+      "group": "parameciumLife",
+      "models": 4,
+      "findings": [
+        "20261004-parameciumLife-01",
+        "20261004-parameciumLife-02",
+        "20261004-parameciumLife-03",
+        "20261004-parameciumLife-04",
+        "20261004-parameciumLife-05",
+        "20261004-parameciumLife-06"
+      ]
+    },
+    {
+      "group": "phageLife",
+      "models": 4,
+      "findings": [
+        "20261004-phageLife-01",
+        "20261004-phageLife-02",
+        "20261004-phageLife-03"
+      ]
+    },
+    {
+      "group": "plantConnections",
+      "models": 4,
+      "findings": [
+        "20261004-plantConnections-01",
+        "20261004-plantConnections-02",
+        "20261004-plantConnections-03"
+      ]
+    },
+    {
+      "group": "plantGrowth",
+      "models": 4,
+      "findings": [
+        "20261004-plantGrowth-01",
+        "20261004-plantGrowth-02",
+        "20261004-plantGrowth-03",
+        "20261004-plantGrowth-04",
+        "20261004-plantGrowth-05"
+      ]
+    },
+    {
+      "group": "plantSignals",
+      "models": 2,
+      "findings": [
+        "20261004-plantSignals-01",
+        "20261004-plantSignals-02",
+        "20261004-plantSignals-03",
+        "20261004-plantSignals-04",
+        "20261004-plantSignals-05"
+      ]
+    },
+    {
+      "group": "plantWater",
+      "models": 4,
+      "findings": [
+        "20261004-plantWater-01",
+        "20261004-plantWater-02",
+        "20261004-plantWater-03",
+        "20261004-plantWater-04"
+      ]
+    },
+    {
+      "group": "player",
+      "models": 0,
+      "findings": [
+        "20261004-player-01"
+      ]
+    },
+    {
+      "group": "regulation",
+      "models": 2,
+      "findings": []
+    },
+    {
+      "group": "rna",
+      "models": 4,
+      "findings": [
+        "20261004-rna-01"
+      ]
+    },
+    {
+      "group": "signals",
+      "models": 4,
+      "findings": [
+        "20261004-signals-01",
+        "20261004-signals-02",
+        "20261004-signals-03"
+      ]
+    },
+    {
+      "group": "traffic",
+      "models": 2,
+      "findings": [
+        "20261004-traffic-01",
+        "20261004-traffic-02"
+      ]
+    },
+    {
+      "group": "translation",
+      "models": 4,
+      "findings": [
+        "20261004-translation-01",
+        "20261004-translation-02",
+        "20261004-translation-03",
+        "20261004-translation-04"
+      ]
+    },
+    {
+      "group": "turnover",
+      "models": 4,
+      "findings": [
+        "20261004-turnover-01",
+        "20261004-turnover-02",
+        "20261004-turnover-03"
+      ]
+    },
+    {
+      "group": "yeastLife",
+      "models": 4,
+      "findings": [
+        "20261004-yeastLife-01",
+        "20261004-yeastLife-02",
+        "20261004-yeastLife-03",
+        "20261004-yeastLife-04",
+        "20261004-yeastLife-05",
+        "20261004-yeastLife-06",
+        "20261004-yeastLife-07",
+        "20261004-yeastLife-08"
+      ]
+    }
+  ]
+}

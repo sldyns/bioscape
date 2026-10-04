@@ -305,3 +305,7 @@ console.log(
   "PASS plantConnections-03: 10001-frame actual sphere-radius sweep fits outbound/return pore sleeve, avoids desmotubule; both strategy branches retained",
   { crossings, triangleChecks, bondChecks, minRimClearance, oldRimCollisions },
 );
+
+await import("./topology.test.mjs");
+await import("./labelAnchors.test.mjs");
+await import("./camStorage.test.mjs");

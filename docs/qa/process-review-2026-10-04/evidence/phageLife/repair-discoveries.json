@@ -1,0 +1,58 @@
+{
+  "group": "phageLife",
+  "issues": [
+    {
+      "issueId": "20261004-phageLife-04",
+      "severity": "P2",
+      "kind": "misleading-label-leader-anchor",
+      "models": [
+        "phageLytic",
+        "phageLysogenic",
+        "phageAssembly",
+        "phagePackaging"
+      ],
+      "evidence": [
+        "All four modules originally supplied text-layout offsets as label.position, but ProcessScene and sceneCapture interpret these as world-space leader endpoints.",
+        "Packaging gp20 label retained x=-1.65 even though gp20 follows the head at x=0; independent-tail label [2.1,1.2,0] was 3.38 units above its baseplate at y=-2.18.",
+        "Lambda CI annotation [0,-1.75,.2] remained below the cell while the actual CI moves with daughter separation. Lytic progeny label remained [0.3,1.82,.3] while released particles translate and rotate."
+      ],
+      "fix": "Anchor named structures to actual moving mesh vertices, domain centers, visible duplex buffers and instance centers; keep whole-cell/lumen/cytoplasm labels as explicit region annotations. Hide labels with their target where relevant.",
+      "verification": "labelAnchors.test.mjs: 481 actual-geometry checks, 140 states, all seven root/condition combinations; all four retained pre-label models fail physical-target assertions.",
+      "status": "fixed",
+      "phaseAUnchanged": true
+    },
+    {
+      "issueId": "20261004-phageLife-05",
+      "severity": "P2",
+      "kind": "scaffold-fragment-scale-overwrite",
+      "models": [
+        "phageAssembly"
+      ],
+      "evidence": [
+        "full-b3-019-phageAssembly-phage-stage-3.webp at progress .345 shows a large beige cluster obscuring the prohead.",
+        "Fragment base dimensions [.055,.09,.05] were overwritten by setScalar(1-clear*.7), producing near-unit-radius spheres."
+      ],
+      "fix": "Preserve each fragment base scale and multiply all axes by a bounded smooth appearance/removal envelope. Fragments shrink to zero at both visibility boundaries.",
+      "verification": "renderedMechanics.test.mjs rejects retained original model; corrected model passes seven clearance samples, both +/-1e-6 boundary checks, fixed anisotropy, bounded dimensions and gp21-inactive absence.",
+      "status": "fixed",
+      "phaseAUnchanged": true
+    },
+    {
+      "issueId": "20261004-phageLife-06",
+      "severity": "P2",
+      "kind": "cleaved-dna-product-overlaps-portal-seal-axial-envelope",
+      "models": [
+        "phagePackaging"
+      ],
+      "evidence": [
+        "full-b3-020-phagePackaging-phage-end.webp shows the supposed downstream cut product still emerging from the neck.",
+        "Measured original world-space axial clearance is -.169393 at .85 and -.154665 at 1; negative values mean axial-envelope overlap, not a demonstrated solid intersection.",
+        "Original terminal backbone center to actual portal/neck triangle surface distances remain positive (.103061 at .85; .102157 at 1)."
+      ],
+      "fix": "Smoothly lower the severed downstream product during completed cleavage so it remains outside the entire portal/neck axial envelope, including subsequent seal growth. Preserve the internal genome, ATP stall and motor departure.",
+      "verification": "Retained original model fails actual-geometry clearance checks. Corrected six completed-cleavage samples have axial clearance .280607 to .515807 and terminal-to-surface distance .348701 to .564300; completed seal clearance .295335. Translation stays continuous at .79/.82/.85/.92 and ATP absence keeps no cut/seal.",
+      "status": "fixed",
+      "phaseAUnchanged": true
+    }
+  ]
+}

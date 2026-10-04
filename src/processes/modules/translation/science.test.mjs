@@ -50,7 +50,8 @@ function verifyTranslationRNA(scene, progress) {
     "reaction parent hidden",
   );
   for (const name of ["P-tRNA", "A-tRNA"]) {
-    const expected = progress < (name === "P-tRNA" ? 0.81 : 0.99);
+    // The post-release P-site tRNA stays in the final unrecycled complex.
+    const expected = name === "P-tRNA" ? progress < 0.81 : true;
     const body = get(name),
       tip = get(`${name}-3prime-CCA`);
     assert.equal(

@@ -1,6 +1,7 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
 import { molecularDetail } from "./molecularDetail.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 export default {
   id: "rnaSilencing",
@@ -226,8 +227,13 @@ export default {
           target,
         ),
       );
+    tail.forEach((residue, i) => {
+      residue.name = `poly(A) residue ${i}`;
+    });
     const cap = k.ball([-4.15, 0, 0.28], [0.15, 0.19, 0.15], agoDark);
+    cap.name = "target 5-prime cap";
     const tnrc6 = new THREE.Group();
+    tnrc6.name = "TNRC6 effector scaffold";
     group.add(tnrc6);
     k.tube(
       [
@@ -241,6 +247,7 @@ export default {
       tnrc6,
     );
     const ccr = new THREE.Group();
+    ccr.name = "CCR4-NOT deadenylase";
     group.add(ccr);
     k.ball([0, 0, 0], [0.48, 0.36, 0.3], factor, ccr);
     k.ball([0.35, -0.18, 0.04], [0.31, 0.22, 0.26], decay, ccr);
@@ -249,30 +256,21 @@ export default {
       decay,
       [0, 0.04, 0.55],
     );
+    cut.name = "AGO2 cleavage marker";
     const labels = [
       k.label(
-        [-0.4, 2.5, 0],
+        [0, 0, 0],
         "Argonaute · 成熟 miRNA",
         "Argonaute · mature miRNA",
         3,
       ),
-      k.label([-3.9, -0.5, 0.3], "5′ 帽", "5′ cap", 2),
-      k.label([3.5, -0.55, 0.3], "3′ · poly(A)", "3′ · poly(A)", 2),
-      k.label(
-        [0.2, -0.7, 0.3],
-        "mRNA · 3′ UTR 靶位点",
-        "mRNA · 3′ UTR target",
-        3,
-      ),
-      k.label([2.2, 1.85, 0.2], "TNRC6 / GW182", "TNRC6 / GW182", 2),
-      k.label([3.4, 0.9, 0.3], "CCR4–NOT", "CCR4–NOT", 2),
-      k.label([0.1, 0.9, 0.7], "AGO2 切割位点", "AGO2 cleavage site", 3),
-      k.label(
-        [1.4, 0.72, 0.5],
-        "引导链 5′ → 3′ 向左",
-        "Guide 5′ → 3′ to the left",
-        1,
-      ),
+      k.label([0, 0, 0], "5′ 帽", "5′ cap", 2),
+      k.label([0, 0, 0], "3′ · poly(A)", "3′ · poly(A)", 2),
+      k.label([0, 0, 0], "mRNA · 3′ UTR 靶位点", "mRNA · 3′ UTR target", 3),
+      k.label([0, 0, 0], "TNRC6 / GW182", "TNRC6 / GW182", 2),
+      k.label([0, 0, 0], "CCR4–NOT", "CCR4–NOT", 2),
+      k.label([0, 0, 0], "AGO2 切割位点", "AGO2 cleavage site", 3),
+      k.label([0, 0, 0], "引导链 5′ → 3′ 向左", "Guide 5′ → 3′ to the left", 1),
     ];
     const gp = detail.instances(
         detail.sphere,
@@ -336,6 +334,14 @@ export default {
         ago,
         { sheetCount: 2, helixCount: 1 },
       );
+    const anchor = labelAnchors(labels),
+      agoAnchor = risc.getObjectByName("PIWI catalytic lobe").children[0],
+      tnrc6Anchor = tnrc6.getObjectByName("TNRC6 interacting domain 1")
+        .children[0],
+      ccrAnchor = ccr.getObjectByName("deadenylase catalytic pocket")
+        .children[0];
+    const revealTnrc6 = detail.fade(tnrc6),
+      revealCcr = detail.fade(ccr);
     const update = (value, parameters = {}) => {
       const p = clamp(value),
         mode = ["slice", "mismatch"].includes(parameters.pairing)
@@ -413,16 +419,32 @@ export default {
         slicing ? -cleavage * 0.28 : 0,
         0.28,
       );
-      tnrc6.visible = match && !slicing && p >= 0.38;
+      const effectorAppearance = match && !slicing ? ease(p, 0.38, 0.43) : 0;
+      revealTnrc6(effectorAppearance);
       tnrc6.position.set((1 - recruit) * 0.75, (1 - recruit) * 0.65, 0);
-      ccr.visible = tnrc6.visible;
+      revealCcr(effectorAppearance);
       ccr.position.set(3.65 - shorten * 0.9, 0.58 + (1 - recruit) * 0.8, 0.1);
       cut.visible = slicing && p > 0.54 && p < 0.74;
       cut.scale.setScalar(1 + Math.sin(cleavage * Math.PI) * 0.5);
-      labels[4].active = labels[5].active = tnrc6.visible;
+      labels[4].active = labels[5].active = effectorAppearance > 0.5;
       labels[6].active = cut.visible;
-      labels[0].position[1] = 2.3 + risc.position.y;
-      labels[7].position[1] = 0.73 + risc.position.y;
+      anchor[0](agoAnchor);
+      labels[1].active = cap.visible;
+      anchor[1](cap);
+      let tailAnchor = null;
+      for (const residue of tail) if (residue.visible) tailAnchor = residue;
+      labels[2].active = tailAnchor !== null;
+      anchor[2](tailAnchor || tail[0]);
+      // Keep this target-site label within the depicted UTR recognition region.
+      let targetAnchor = mrna[14].visible ? mrna[14] : null;
+      for (let i = 3; !targetAnchor && i < 25; i++)
+        if (mrna[i].visible) targetAnchor = mrna[i];
+      labels[3].active = targetAnchor !== null;
+      anchor[3](targetAnchor || mrna[14]);
+      anchor[4](tnrc6Anchor);
+      anchor[5](ccrAnchor);
+      anchor[6](cut);
+      anchor[7](guides[40]);
       for (let i = 0; i < 22; i++) {
         const backbone = guides[i * 2],
           base = guides[i * 2 + 1];

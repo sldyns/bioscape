@@ -1,0 +1,159 @@
+{
+  "createdAt": "2026-10-04T06:03:57.174Z",
+  "environment": {
+    "node": "v22.22.1",
+    "platform": "darwin",
+    "architecture": "arm64"
+  },
+  "method": "One warm sweep per variant; four 181-pose sweeps per variant in alternating AB/BA order in one Node process. No rendering or background task work requested. Full identical geometry and browser gates are separate.",
+  "rows": [
+    {
+      "id": "apoptosis",
+      "rootId": "cell",
+      "parameters": {
+        "condition": "stress"
+      },
+      "summary": {
+        "baseline": {
+          "medianMs": 0.005957999999964159,
+          "p95Ms": 14.078583999999864,
+          "meanMs": 3.120885690607734,
+          "maxMs": 22.666292000000112
+        },
+        "optimized": {
+          "medianMs": 0.006041000000095664,
+          "p95Ms": 3.8895420000001195,
+          "meanMs": 0.8868389102209935,
+          "maxMs": 4.385292000000163
+        }
+      },
+      "sampleCounts": {
+        "baseline": 724,
+        "optimized": 724
+      },
+      "meanReductionPercent": 71.58374262505276
+    },
+    {
+      "id": "differentiation",
+      "rootId": "cell",
+      "parameters": {
+        "program": "competent"
+      },
+      "summary": {
+        "baseline": {
+          "medianMs": 8.042250000000422,
+          "p95Ms": 12.30329200000051,
+          "meanMs": 5.7400894558011135,
+          "maxMs": 15.99579200000062
+        },
+        "optimized": {
+          "medianMs": 1.908292000000074,
+          "p95Ms": 5.300874999998996,
+          "meanMs": 1.7771806588397596,
+          "maxMs": 6.195999999999913
+        }
+      },
+      "sampleCounts": {
+        "baseline": 724,
+        "optimized": 724
+      },
+      "meanReductionPercent": 69.03914699371653
+    },
+    {
+      "id": "endocytosis",
+      "rootId": "cell",
+      "parameters": {},
+      "summary": {
+        "baseline": {
+          "medianMs": 17.389250000000175,
+          "p95Ms": 20.350750000001426,
+          "meanMs": 17.949264548342537,
+          "maxMs": 43.01879200000076
+        },
+        "optimized": {
+          "medianMs": 0.9726669999981823,
+          "p95Ms": 13.263999999999214,
+          "meanMs": 4.055731320441953,
+          "maxMs": 30.599999999998545
+        }
+      },
+      "sampleCounts": {
+        "baseline": 724,
+        "optimized": 724
+      },
+      "meanReductionPercent": 77.4044707541153
+    },
+    {
+      "id": "autophagy",
+      "rootId": "cell",
+      "parameters": {},
+      "summary": {
+        "baseline": {
+          "medianMs": 19.960167000001093,
+          "p95Ms": 20.73570800000016,
+          "meanMs": 19.98585854419898,
+          "maxMs": 21.883417000004556
+        },
+        "optimized": {
+          "medianMs": 7.564583999999741,
+          "p95Ms": 8.402125000000524,
+          "meanMs": 5.600487002762557,
+          "maxMs": 15.389625000003434
+        }
+      },
+      "sampleCounts": {
+        "baseline": 724,
+        "optimized": 724
+      },
+      "meanReductionPercent": 71.97775121655641
+    },
+    {
+      "id": "meiosis",
+      "rootId": "cell",
+      "parameters": {},
+      "summary": {
+        "baseline": {
+          "medianMs": 4.671750000001339,
+          "p95Ms": 14.589416999995592,
+          "meanMs": 4.819347672651869,
+          "maxMs": 77.1497920000038
+        },
+        "optimized": {
+          "medianMs": 0.2129999999961001,
+          "p95Ms": 12.841375000003609,
+          "meanMs": 3.6459321381216845,
+          "maxMs": 14.227375000002212
+        }
+      },
+      "sampleCounts": {
+        "baseline": 724,
+        "optimized": 724
+      },
+      "meanReductionPercent": 24.348015836020952
+    },
+    {
+      "id": "ciliaryMotion",
+      "rootId": "paramecium",
+      "parameters": {},
+      "summary": {
+        "baseline": {
+          "medianMs": 11.444917000000714,
+          "p95Ms": 11.896500000002561,
+          "meanMs": 11.488186461326077,
+          "maxMs": 15.593667000001005
+        },
+        "optimized": {
+          "medianMs": 11.448125000009895,
+          "p95Ms": 11.87933399999747,
+          "meanMs": 11.452324196132857,
+          "maxMs": 12.538458000009996
+        }
+      },
+      "sampleCounts": {
+        "baseline": 724,
+        "optimized": 724
+      },
+      "meanReductionPercent": 0.3121664617296016
+    }
+  ]
+}

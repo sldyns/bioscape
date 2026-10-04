@@ -1,5 +1,13 @@
 import { motorHead } from "./structural.js";
-import { THREE, sceneKit, clamp, phase, bilingual as b } from "../../kit.js";
+import { anchorObject, anchorInstance } from "./labelAnchors.js";
+import {
+  THREE,
+  sceneKit,
+  clamp,
+  phase,
+  ease,
+  bilingual as b,
+} from "../../kit.js";
 export default {
   id: "muscle",
   title: b("骨骼肌滑动肌丝", "Skeletal muscle sliding filaments"),
@@ -93,6 +101,8 @@ export default {
       troponins = [],
       ions = [];
     const thick = k.segment([-2.25, 0, 0], [2.25, 0, 0], 0.18, myosin);
+    thick.name = "bipolar thick filament";
+    let labelledActin;
     for (const strand of [0, Math.PI]) {
       const pts = [];
       for (let j = 0; j <= 140; j++) {
@@ -115,6 +125,8 @@ export default {
         sideGroup,
       );
       z.scale.set(0.07, 2.45, 0.15);
+      z.name = side < 0 ? "left Z disc" : "right Z disc";
+      thin.at(-1).zDisc = z;
       for (let j = 0; j < 8; j++)
         k.segment(
           [side * 3.68, -1.08 + j * 0.27, -0.2],
@@ -128,6 +140,8 @@ export default {
           last = side * 0.88;
         // Two staggered actin protofilaments, each monomer drawn with a cleft.
         const monomers = new THREE.InstancedMesh(k.sphere, actin, 36 * 2 * 2);
+        monomers.name = `actin thin filament ${side}:${y}`;
+        if (side === -1 && y < 0) labelledActin = monomers;
         const domains = new THREE.InstancedMesh(
           k.sphere,
           k.material("#95b6a7"),
@@ -215,10 +229,12 @@ export default {
             ca,
             sideGroup,
           );
+          ion.name = `muscle calcium marker ${ions.length}`;
           ions.push({ object: ion, y });
         }
         for (const anchor of [1.1, 1.62, 2.03]) {
           const pivot = new THREE.Group();
+          pivot.name = `myosin cross-bridge ${side}:${y}:${anchor}`;
           pivot.position.set(side * anchor, 0, 0.12);
           group.add(pivot);
           const arm = k.segment(
@@ -259,6 +275,7 @@ export default {
       0.12,
       k.material("#b1b8c2"),
     );
+    sr.name = "sarcoplasmic reticulum calcium store";
     const labels = [
       k.label(
         [0, 2.33, 0],
@@ -299,6 +316,11 @@ export default {
       const stroke = allowed ? phase(p, 0.43, 0.61) : 0,
         shift = 0.58 * stroke;
       const bound = allowed && p >= 0.31 && p < 0.65;
+      // Approach exposed actin before binding, then withdraw after ATP binds.
+      // Keep the bound interval unchanged without snapping the whole lever.
+      const contactReach = allowed
+        ? ease(p, 0.27, 0.31) * (1 - ease(p, 0.65, 0.675))
+        : 0;
       const reset = phase(p, 0.72, 0.8);
       const nucleotideState =
         !allowed || p < 0.43 || p >= 0.72
@@ -320,7 +342,7 @@ export default {
       heads.forEach((h) => {
         const lean = allowed ? -0.45 + 0.82 * stroke - 0.82 * reset : -0.45;
         h.pivot.rotation.z = h.side * h.sign * lean;
-        const reach = bound ? 1.08 : 0.77;
+        const reach = 0.77 + 0.31 * contactReach;
         h.pivot.scale.y = reach;
         h.atp.visible = true;
         h.ATP.visible = nucleotideState === "ATP";
@@ -334,8 +356,40 @@ export default {
       labels[8].text.en =
         "Nucleotide state: " +
         (nucleotideState === "empty" ? "nucleotide-free" : nucleotideState);
-      labels[2].position[0] = -3.75 + shift;
-      labels[3].position[0] = 3.75 - shift;
+      anchorObject(labels[0], mline, 0, 0.45, 0.5);
+      anchorObject(labels[1], sr, 0, 0, 1);
+      anchorObject(labels[2], thin[0].zDisc, 0, -0.45, 0.5);
+      anchorObject(labels[3], thin[1].zDisc, 0, -0.45, 0.5);
+      anchorInstance(labels[4], labelledActin, labelledActin.count - 1);
+      labels[4].text.zh = !allowed
+        ? "肌丝长度不变 · 未缩短"
+        : stroke === 0
+          ? "肌丝长度不变"
+          : stroke < 1
+            ? "肌丝长度不变 · 重叠增加"
+            : "肌丝长度不变 · 保留增加的重叠";
+      labels[4].text.en = !allowed
+        ? "Constant filament lengths · no shortening"
+        : stroke === 0
+          ? "Constant filament lengths"
+          : stroke < 1
+            ? "Constant filament lengths · increasing overlap"
+            : "Constant filament lengths · increased overlap retained";
+      anchorObject(labels[5], thick, 0, 0, 1);
+      anchorInstance(labels[6], labelledActin, 40);
+      labels[7].active = ions[6].object.visible;
+      labels[7].text.zh = p < 0.83 ? "Ca²⁺ → 肌钙蛋白" : "Ca²⁺ 与肌钙蛋白解离";
+      labels[7].text.en = p < 0.83 ? "Ca²⁺ → troponin" : "Ca²⁺ leaves troponin";
+      anchorObject(labels[7], ions[6].object);
+      const labelledHead = heads[7];
+      anchorObject(
+        labels[8],
+        labelledHead.ATP.visible
+          ? labelledHead.ATP
+          : labelledHead.ADP.visible
+            ? labelledHead.ADP
+            : labelledHead.head.children[2],
+      );
       group.userData = {
         process: "muscle",
         specimen: "mammalian skeletal muscle sarcomere",

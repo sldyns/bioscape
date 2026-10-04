@@ -1,6 +1,22 @@
 import { THREE } from "../../kit.js";
 // Schematic mesoscale structures, not atomically fitted coordinates.
 const vesicleResources = new WeakMap();
+const anchorPoint = new THREE.Vector3();
+const anchorInstance = new THREE.Matrix4();
+// Labels use geometry attachment points; their screen offsets belong to the
+// player. Return scene-local coordinates, even when the player wraps the model.
+export function anchorLabel(label, mesh, scene, vertex = 0) {
+  anchorPoint.fromBufferAttribute(mesh.geometry.attributes.position, vertex);
+  if (mesh.isInstancedMesh) {
+    mesh.getMatrixAt(0, anchorInstance);
+    anchorPoint.applyMatrix4(anchorInstance);
+  }
+  for (let node = mesh; node && node !== scene; node = node.parent) {
+    node.updateMatrix();
+    anchorPoint.applyMatrix4(node.matrix);
+  }
+  for (let i = 0; i < 3; i++) label.position[i] = anchorPoint.getComponent(i);
+}
 export function beads(k, parent, points, radius, mat, name) {
   const mesh = new THREE.InstancedMesh(k.sphere, mat, points.length);
   mesh.name = name;
@@ -23,26 +39,26 @@ export function vesicle(k, material, cargoMaterial) {
   g.name = "Cutaway vesicle with lumen and paired membrane rims";
   if (!vesicleResources.has(k))
     vesicleResources.set(k, {
-      shell: new THREE.SphereGeometry(
-        1,
-        20,
-        14,
-        Math.PI * 0.18,
-        Math.PI * 1.64,
-        0,
-        Math.PI,
-      ),
-      rim: new THREE.TorusGeometry(0.82, 0.07, 8, 24),
+      shell: new THREE.SphereGeometry(1, 20, 14, Math.PI, Math.PI, 0, Math.PI),
+      rim: new THREE.TorusGeometry(1, 0.035, 8, 24),
     });
   const { shell, rim } = vesicleResources.get(k);
-  k.mesh(shell, material, [0, 0, 0], g);
-  for (const z of [0.48, 0.56]) k.mesh(rim, material, [0, 0, z], g);
+  const outer = k.mesh(shell, material, [0, 0, 0], g);
+  outer.name = "Vesicle membrane shell";
+  const inner = k.mesh(shell, material, [0, 0, 0], g);
+  inner.scale.setScalar(0.91);
+  inner.name = "Vesicle membrane shell";
+  for (const radius of [0.91, 1]) {
+    const edge = k.mesh(rim, material, [0, 0, 0], g);
+    edge.scale.setScalar(radius);
+    edge.name = "Vesicle membrane rim";
+  }
   for (const p of [
-    [-0.27, 0.1, 0.38],
-    [0.28, -0.15, 0.33],
-    [0, 0.3, 0.29],
+    [-0.27, 0.1, -0.22],
+    [0.28, -0.15, -0.22],
+    [0, 0.3, -0.22],
   ])
-    k.ball(p, 0.19, cargoMaterial, g);
+    k.ball(p, 0.19, cargoMaterial, g).name = "Vesicle lumen wall cargo";
   return g;
 }
 export function chromatid(k, mat) {

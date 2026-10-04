@@ -179,6 +179,13 @@ export function hostCutaway(k, parent, scale = 1) {
   }
   return { group: g, rupture };
 }
+export const lambdaTailPoints = [
+  [0, 0, 0],
+  [0.025, -0.3, 0],
+  [0.08, -0.65, 0.02],
+  [0.15, -0.9, 0],
+  [0.13, -1.06, 0],
+];
 export function phage(k, parent, { lambda = false, scale = 1 } = {}) {
   const g = new THREE.Group();
   parent.add(g);
@@ -205,23 +212,21 @@ export function phage(k, parent, { lambda = false, scale = 1 } = {}) {
         .add(c)
         .multiplyScalar(1 / 3);
     if (center.z > 0.16) continue;
-    // Keep a real open neck in the T4 shell. Clip lower triangular faces
+    // Both phages have an open portal vertex. Clip lower triangular faces
     // instead of drawing DNA through a closed icosahedron floor.
     let face = [a, b, c];
-    if (!lambda) {
-      const neckPlane = (-0.08 - 0.35) / 1.32;
-      const clipped = [];
-      for (let j = 0; j < face.length; j++) {
-        const u = face[j],
-          v = face[(j + 1) % face.length];
-        const insideU = u.y >= neckPlane,
-          insideV = v.y >= neckPlane;
-        if (insideU) clipped.push(u);
-        if (insideU !== insideV)
-          clipped.push(u.clone().lerp(v, (neckPlane - u.y) / (v.y - u.y)));
-      }
-      face = clipped;
+    const neckPlane = lambda ? 0.01 - 0.35 : (-0.08 - 0.35) / 1.32,
+      clipped = [];
+    for (let j = 0; j < face.length; j++) {
+      const u = face[j],
+        v = face[(j + 1) % face.length];
+      const insideU = u.y >= neckPlane,
+        insideV = v.y >= neckPlane;
+      if (insideU) clipped.push(u);
+      if (insideU !== insideV)
+        clipped.push(u.clone().lerp(v, (neckPlane - u.y) / (v.y - u.y)));
     }
+    face = clipped;
     for (let j = 1; j + 1 < face.length; j++)
       for (const v of [face[0], face[j], face[j + 1]])
         vertices.push(...v.toArray());
@@ -237,6 +242,7 @@ export function phage(k, parent, { lambda = false, scale = 1 } = {}) {
           .addScaledVector(tangent, 0.025 * Math.cos(angle))
           .addScaledVector(cross, 0.025 * Math.sin(angle));
       p.y = p.y * (lambda ? 1 : 1.32) + 0.35;
+      if (lambda && p.y < 0.045) continue;
       capsomers.push({
         position: p.toArray(),
         scale: [0.018, 0.014, 0.01],
@@ -288,28 +294,33 @@ export function phage(k, parent, { lambda = false, scale = 1 } = {}) {
   const tail = new THREE.Group();
   g.add(tail);
   if (lambda) {
-    k.tube(
-      [
-        [0, 0, 0],
-        [0.025, -0.3, 0],
-        [0.08, -0.65, 0.02],
-        [0.15, -0.9, 0],
-        [0.13, -1.06, 0],
-      ],
-      0.043,
-      k.material("#9d87a9"),
-      tail,
-      40,
+    const tailCurve = new THREE.CatmullRomCurve3(
+      lambdaTailPoints.map((p) => new THREE.Vector3(...p)),
     );
-    const ringGeo = new THREE.TorusGeometry(0.047, 0.009, 7, 20),
-      ringPoses = [];
+    k.mesh(
+      new THREE.TubeGeometry(tailCurve, 80, 0.047, 16, false),
+      k.material("#9d87a9"),
+      [0, 0, 0],
+      tail,
+    ).name = "lambda-open-tail-tube";
+    k.mesh(
+      new THREE.TubeGeometry(tailCurve, 80, 0.043, 16, false),
+      k.material("#b39dbb", { side: THREE.BackSide }),
+      [0, 0, 0],
+      tail,
+    ).name = "lambda-tail-lumen-wall";
+    const ringGeo = new THREE.TorusGeometry(0.052, 0.008, 7, 20),
+      ringPoses = [],
+      unitZ = new THREE.Vector3(0, 0, 1);
     for (let i = 0; i < 23; i++) {
-      const y = -i * 0.045,
-        t = i / 22;
+      const t = i / 22;
       ringPoses.push({
-        position: [0.14 * t * t, y, 0.012 * Math.sin(t * Math.PI)],
+        position: tailCurve.getPointAt(t).toArray(),
         scale: [1, 1, 1],
-        rotation: [Math.PI / 2, 0, 0],
+        quaternion: new THREE.Quaternion().setFromUnitVectors(
+          unitZ,
+          tailCurve.getTangentAt(t),
+        ),
       });
     }
     instances(
@@ -320,7 +331,24 @@ export function phage(k, parent, { lambda = false, scale = 1 } = {}) {
       ringPoses,
       "lambda-noncontractile-tail-tube-subunits",
     );
-    k.ball([0.13, -1.08, 0], [0.08, 0.1, 0.07], k.material("#73677e"), tail);
+    hollowCylinder(
+      k,
+      tail,
+      0.1,
+      0.046,
+      0.14,
+      k.material("#b39dbb"),
+      [0, 0.01, 0],
+    ).name = "lambda-open-neck";
+    hollowCylinder(
+      k,
+      tail,
+      0.08,
+      0.043,
+      0.16,
+      k.material("#73677e"),
+      [0.13, -1.08, 0],
+    ).name = "lambda-open-tail-outlet";
     [-1, 1].forEach((s) =>
       k.tube(
         [
@@ -452,7 +480,12 @@ export function phage(k, parent, { lambda = false, scale = 1 } = {}) {
   }
   return { group: g, head, tail, genome };
 }
-export function chromosome(k, parent, mat, { integrated = false } = {}) {
+export function chromosome(
+  k,
+  parent,
+  mat,
+  { integrated = false, openJunction = false } = {},
+) {
   const g = new THREE.Group();
   parent.add(g);
   const start = 0.34,
@@ -465,7 +498,7 @@ export function chromosome(k, parent, mat, { integrated = false } = {}) {
       0.08 + Math.sin(9 * a) * 0.095,
     ];
   });
-  duplex(k, g, points, {
+  const mainDNA = duplex(k, g, points, {
     radius: 0.025,
     rail: 0.017,
     turns: 45,
@@ -474,6 +507,7 @@ export function chromosome(k, parent, mat, { integrated = false } = {}) {
     colors: [mat.color.getStyle(), "#b4c1b6"],
     name: "organized-host-nucleoid-duplex",
   });
+  if (openJunction) return { group: g, mainDNA };
   const dnaPath = (points, radius, material, parent, samples) =>
     duplex(k, parent, points, {
       radius: radius * 0.52,

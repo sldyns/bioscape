@@ -1,6 +1,11 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { addParamecium } from "./anatomy.js";
-import { fusionVacuole } from "./scientificGeometry.js";
+import {
+  fusionVacuole,
+  egestionOpening,
+  egestionOutlet,
+} from "./scientificGeometry.js";
+import { labelAnchor } from "./labelAnchors.js";
 
 const process = {
   id: "parameciumFeeding",
@@ -85,7 +90,7 @@ const process = {
   create() {
     const k = sceneKit(),
       { group } = k;
-    const { cilia } = addParamecium(k);
+    const { cilia, macro } = addParamecium(k);
     const oral = k.material("#c79872"),
       dark = k.material("#665e55");
     const oralCore = k.tube(
@@ -143,7 +148,11 @@ const process = {
     );
     grooveGeometry.setIndex(grooveIndices);
     grooveGeometry.computeVertexNormals();
-    k.mesh(grooveGeometry, k.material("#b49978", { side: THREE.DoubleSide }));
+    const groove = k.mesh(
+      grooveGeometry,
+      k.material("#b49978", { side: THREE.DoubleSide }),
+    );
+    groove.name = "feeding-oral-groove";
     // Oral membranelles run in three coordinated rows down the invaginated surface.
     const oralBasal = new THREE.InstancedMesh(
       new THREE.TorusGeometry(0.022, 0.007, 5, 10),
@@ -198,19 +207,15 @@ const process = {
       oralCilia.push({ o, angle: o.rotation.z });
     }
     const mouth = k.ring([0.4, -0.48, 0.48], 0.19, 0.04, oral);
+    mouth.name = "feeding-cytostome";
     mouth.scale.y = 0.6;
-    const cytoproct = k.ring(
-      [1.05, -1.72, 0.36],
-      0.22,
-      0.043,
-      k.material("#967d74"),
-    );
-    cytoproct.scale.set(0.38, 1, 1);
-    const fusionNeck = k.segment(
-      [0.82, -1.65, 0.43],
-      [1.06, -1.72, 0.4],
-      0.15,
-      oral,
+    const outletCenter = [1.14, -1.72, 0.45],
+      outletAngle = Math.atan2(-0.07, 0.5);
+    const cytoproct = k.ring(outletCenter, 0.185, 0.015, k.material("#967d74"));
+    cytoproct.name = "feeding-cytoproct";
+    cytoproct.quaternion.setFromUnitVectors(
+      new THREE.Vector3(0, 0, 1),
+      new THREE.Vector3(Math.cos(outletAngle), Math.sin(outletAngle), 0),
     );
     const neck = k.ball([0.4, -0.57, 0.42], [0.15, 0.28, 0.15], oral);
     const vacGroup = new THREE.Group();
@@ -226,6 +231,13 @@ const process = {
     membrane.scale.set(0.38, 0.42, 0.3);
     vacGroup.add(membrane);
     const vacLeaflets = fusionVacuole(k, membrane);
+    const outlet = egestionOutlet(
+      k,
+      group,
+      vacLeaflets,
+      outletCenter,
+      outletAngle,
+    );
     vacGroup.name = "tracked-food-vacuole";
     membrane.name = "food-vacuole-fusion-assembly";
     const enzymes = new THREE.Group();
@@ -294,13 +306,9 @@ const process = {
       ]);
     });
     const nutrients = [],
-      residue = [],
       recycle = [];
     for (let i = 0; i < 5; i++) {
       nutrients.push(k.ball([0, 0, 0], 0.042, k.material("#b8a565")));
-      residue.push(
-        k.ball([0, 0, 0], [0.05, 0.075, 0.04], k.material("#85735e")),
-      );
       recycle.push(k.ball([0, 0, 0], [0.055, 0.03, 0.025], oral));
     }
     const route = new THREE.CatmullRomCurve3(
@@ -311,7 +319,7 @@ const process = {
         [-0.88, 0.45, 0.39],
         [-0.13, 1.55, 0.38],
         [0.42, 0.57, 0.45],
-        [0.81, -1.65, 0.45],
+        [0.64, -1.65, 0.45],
       ].map((p) => new THREE.Vector3(...p)),
     );
     const loc = new THREE.Vector3(),
@@ -332,6 +340,15 @@ const process = {
       k.label([-1.0, -1.5, 0.6], "酸性小泡", "Acidosomes", 2),
       k.label([-1.1, 1.3, 0.6], "溶酶体", "Lysosomes", 2),
     ];
+    const anchors = [
+      labelAnchor(group, labels[0], groove, [0.79, 0.365, 0.25]),
+      labelAnchor(group, labels[1], mouth),
+      labelAnchor(group, labels[2], cytoproct),
+      labelAnchor(group, labels[3], macro),
+      labelAnchor(group, labels[4], vacGroup),
+      labelAnchor(group, labels[5], vacLeaflets.donor, vacLeaflets.donorAnchor),
+      labelAnchor(group, labels[6], vacLeaflets.donor, vacLeaflets.donorAnchor),
+    ];
     function update(progress) {
       const p = clamp(progress),
         forming = ease(p, 0.14, 0.28),
@@ -339,8 +356,13 @@ const process = {
         egest = ease(p, 0.88, 0.98);
       route.getPoint(travel, loc);
       vacGroup.position.copy(loc);
-      vacGroup.scale.setScalar((0.22 + 0.78 * forming) * (1 - 0.94 * egest));
-      vacGroup.visible = p < 0.99;
+      vacGroup.rotation.z = outletAngle * ease(p, 0.79, 0.88);
+      vacGroup.scale.setScalar(
+        (0.22 + 0.78 * forming) *
+          (1 - 0.94 * egest) *
+          (1 - ease(p, 0.975, 0.992)),
+      );
+      vacGroup.visible = p < 0.992;
       neck.visible = p < 0.29;
       neck.scale.set(
         0.15 * (1 - ease(p, 0.24, 0.29)),
@@ -356,33 +378,47 @@ const process = {
       enzymes.visible = p >= 0.57 && p < 0.84;
       foodMembranePumps.visible = p >= 0.34 && p < 0.87;
       vacLeaflets.update(p);
-      vacRim.visible = !(p >= 0.34 && p < 0.47) && !(p >= 0.51 && p < 0.62);
+      outlet.update(p);
+      vacRim.visible =
+        !(p >= 0.34 && p < 0.47) && !(p >= 0.51 && p < 0.62) && p < 0.88;
       food.forEach((o, i) => {
         if (p < arrivals[i])
           intakePaths[i].getPoint(ease(p, i * 0.008, arrivals[i]), o.position);
-        else
-          o.position
-            .copy(foodOffsets[i])
-            .multiplyScalar(vacGroup.scale.x)
-            .add(loc);
+        else {
+          o.position.copy(foodOffsets[i]);
+          vacGroup.localToWorld(o.position);
+          if (p >= 0.9) {
+            const transit = clamp((p - (0.9 + i * 0.004)) / 0.038);
+            if (transit < 0.35) {
+              o.position.lerp(outlet.startCenter, ease(transit, 0, 0.35));
+            } else if (transit < 0.7) {
+              o.position.copy(outlet.startCenter);
+              const t = ease(transit, 0.35, 0.7);
+              o.position.set(
+                o.position.x + (outletCenter[0] - o.position.x) * t,
+                o.position.y + (outletCenter[1] - o.position.y) * t,
+                o.position.z + (outletCenter[2] - o.position.z) * t,
+              );
+            } else {
+              const t = ease(transit, 0.7, 1);
+              o.position.set(
+                outletCenter[0] + t * (0.85 + 0.1 * i),
+                outletCenter[1] + t * Math.sin(i * 2.4) * 0.2,
+                outletCenter[2] + t * 0.1,
+              );
+            }
+          }
+        }
         o.scale
           .set(0.056, 0.095, 0.05)
           .multiplyScalar(1 - 0.75 * ease(p, 0.56, 0.74));
-        o.visible = p < 0.95;
+        o.visible = true;
       });
       nutrients.forEach((o, i) => {
         const a = i * 1.256,
           r = 0.24 + ease(p, 0.6, 0.74) * 0.65;
         o.position.set(loc.x + Math.cos(a) * r, loc.y + Math.sin(a) * r, 0.5);
         o.visible = p > 0.59 && p < 0.76;
-      });
-      residue.forEach((o, i) => {
-        o.position.set(
-          0.9 + egest * (0.95 + 0.14 * i),
-          -1.72 + Math.sin(i) * 0.18,
-          0.5,
-        );
-        o.visible = p >= 0.89;
       });
       recycle.forEach((o, i) => {
         const t = ease(p, 0.92, 1);
@@ -393,23 +429,17 @@ const process = {
         );
         o.visible = p >= 0.93;
       });
-      fusionNeck.visible = p >= 0.88 && p < 0.97;
-      cytoproct.scale.x = 0.38 + egest * 0.62;
+      cytoproct.scale.setScalar(egestionOpening(p));
       cilia.forEach(({ object, angle }, i) => {
         object.rotation.z = angle + Math.sin(p * 40 + i * 0.4) * 0.14;
       });
       oralCilia.forEach(({ o, angle }, i) => {
         o.rotation.z = angle + Math.sin(p * 60 + i * 0.4) * 0.25;
       });
-      labels[4].position[0] = loc.x;
-      labels[4].position[1] = loc.y - 0.5;
       labels[4].active = p < 0.95;
-      labels[5].position[0] = loc.x - 0.6;
-      labels[5].position[1] = loc.y + 0.5;
       labels[5].active = p >= 0.28 && p < 0.47;
-      labels[6].position[0] = loc.x - 0.6;
-      labels[6].position[1] = loc.y + 0.5;
       labels[6].active = p >= 0.47 && p < 0.62;
+      anchors.forEach((anchor) => anchor());
       group.userData = {
         species: "Paramecium multimicronucleatum",
         intakeSite: "oral groove / cytopharynx",

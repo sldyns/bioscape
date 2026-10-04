@@ -1,0 +1,65 @@
+{
+  "group": "plantConnections",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "phase": "B repair discovery",
+  "issues": [
+    {
+      "issueId": "20261004-plantConnections-04",
+      "severity": "P2",
+      "kind": "misdirected_label_anchors",
+      "models": [
+        "plantTransport",
+        "plasmodesmata",
+        "photorespiration",
+        "c4cam"
+      ],
+      "evidence": "ProcessScene live/export code treats label.position as leader target. Original sucrose label stays at [3.1,1.18,.4] while transported sucrose ends around [2.27,-1.58,.55]. The CO2 label, bulky cargo and callose label are likewise static; SUC2/GLYK/PEPC/ME labels use offset text coordinates instead of actual bodies. Several cell/organelle region anchors lie outside their drawn regions.",
+      "files": [
+        "src/processes/modules/plantConnections/plasmodesmataProcess.js",
+        "src/processes/modules/plantConnections/plantTransportProcess.js",
+        "src/processes/modules/plantConnections/photorespirationProcess.js",
+        "src/processes/modules/plantConnections/c4camProcess.js",
+        "src/processes/modules/plantConnections/labelAnchors.js",
+        "src/processes/modules/plantConnections/labelAnchors.test.mjs"
+      ],
+      "fix": "Bind named-object leaders to actual world-space mesh/vertex targets each update; place region labels inside their compartments. Add schematic bodies for the already-labeled C4 PPDK and CAM Rubisco reaction sites, and restrict moving C4 malate/pyruvate labels to their actual metabolite stages.",
+      "verification": "labelAnchors.test.mjs passes 432 actual-object comparisons across all eight conditions and non-monotonic progress, plus active-stage conditions and an original static-sucrose negative control.",
+      "status": "fixed",
+      "limits": [
+        "Labels and new reaction-site bodies still need root rendered acceptance. Phase A report is unchanged."
+      ]
+    },
+    {
+      "issueId": "20261004-plantConnections-05",
+      "severity": "P2",
+      "kind": "cam_storage_outside_vacuolar_lumen",
+      "models": [
+        "c4cam"
+      ],
+      "evidence": "conditions-final-a-174-c4cam-plant-stage-4.webp, CAM p=.525: storage-volume markers cross the tonoplast. Actual inner-leaflet world supporting planes give old peak signed clearance -0.2997818119 against the rendered back half and -0.6058931029 against the full lumen obtained by reflecting the same cutaway triangles; 2175 of 5100 marker vertices lie outside full-lumen bounds.",
+      "files": [
+        "src/processes/modules/plantConnections/c4camProcess.js",
+        "src/processes/modules/plantConnections/camStorage.test.mjs",
+        "src/processes/modules/plantConnections/science.test.mjs"
+      ],
+      "fix": "Keep 12 original 425-vertex spheres, 925-vertex inner tonoplast, materials, camera, tracked-carbon paths and uptake/release timing. Correct marker radius from .2+.8*reserve to .2+.16*reserve, hence peak .36. Minimum center-to-inner-face distance .3915494991 minus .03 safety clearance permits about .3615495; .36 is below that bound.",
+      "verification": "All 5100 repaired peak world vertices are contained, minimum clearance .0324701624 (rendered back .3395808203). 2016 branch/progress states and 24192 marker states have conservative bounding-sphere clearance >=.0315494854. Old-scale negative control fails. Owned science, smoke and dedicated regression pass; geometry precision and visible storage variation are retained.",
+      "status": "fixed",
+      "limits": [
+        "Closed within the owned module after numerical containment and targeted fresh recapture. No claim of all-condition continuous playback or project-wide acceptance."
+      ],
+      "renderedVerification": {
+        "status": "passed",
+        "method": "Read-only view_image(detail=original) of four fresh 960x640 native irregular-seek frames; no browser or product change.",
+        "images": [
+          "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-000-c4cam-plant-stage-4.webp",
+          "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-000-c4cam-plant-end.webp",
+          "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-001-c4cam-plant-stage-4.webp",
+          "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-d-001-c4cam-plant-end.webp"
+        ],
+        "result": "CAM p=.525 and end show the complete storage-marker silhouette inside and visibly separated from the vacuolar rim. The C4 counterparts show no CAM storage geometry. Issue 05 is closed within owned module scope.",
+        "scope": "Targeted recapture verification only, not all-condition full playback or whole-project acceptance."
+      }
+    }
+  ]
+}

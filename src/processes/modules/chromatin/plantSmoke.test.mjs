@@ -81,9 +81,26 @@ assert.equal(g.group.userData.organelleLocalProducts, true);
 assert.equal(g.group.userData.nuclearRNAImportedIntoOrganelles, false);
 const r = rddm.create();
 r.update(1);
-assert.equal(r.group.userData.newMethylMarks, 7);
+// The existing scientific model modifies one retained cytosine, not the
+// seven free methyl markers used before the earlier base-identity correction.
+assert.equal(r.group.userData.newMethylMarks, 1);
+const cytosine = r.group.getObjectByName("target-cytosine-glycosidic-pivot");
+const methyl = r.group.getObjectByName("cytosine-C5-methyl-group");
+assert(cytosine && methyl);
+assert.equal(methyl.parent, cytosine);
+assert.equal(methyl.visible, true);
+let methylCarbons = 0;
+r.group.traverse((o) => {
+  if (o.name === "C5-methyl-carbon") methylCarbons++;
+});
+assert.equal(methylCarbons, 1);
 r.update(1, { drm2: "inactive" });
 assert.equal(r.group.userData.newMethylMarks, 0);
+assert.equal(methyl.visible, false);
+assert.equal(
+  r.group.getObjectByName("target-cytosine-glycosidic-pivot"),
+  cytosine,
+);
 assert.equal(r.group.userData.scaffoldPaired, true);
 assert.equal(r.group.userData.drm2Recruited, true);
 assert.equal(r.group.userData.sequenceChanged, false);

@@ -16,6 +16,18 @@ export function membraneSurface(
   mesh.name = "single lipid bilayer — paired leaflets and cut edges";
   const profiles = Array.from({ length: rings }, () => [0, 0]);
   const normals = Array.from({ length: rings }, () => [0, 0]);
+  // Keep the original angle expressions and double precision: the mesh and
+  // cut-edge endpoints are compared bit for bit against the previous builder.
+  const ringSines = new Float64Array(around + 1),
+    ringCosines = new Float64Array(around + 1);
+  for (let j = 0; j <= around; j++) {
+    const angle = -2.13 + (4.26 * j) / around;
+    ringSines[j] = Math.sin(angle);
+    ringCosines[j] = Math.cos(angle);
+  }
+  const edgeSines = [Math.sin(-2.13), Math.sin(2.13)],
+    edgeCosines = [Math.cos(-2.13), Math.cos(2.13)];
+  let initialized = false;
   const skinGeo = () => {
     const g = new THREE.BufferGeometry(),
       p = new Float32Array(rings * (around + 1) * 3),
@@ -50,6 +62,9 @@ export function membraneSurface(
   mesh.add(new THREE.Mesh(capGeo, cutMaterial));
   const lipidRows = 44,
     lipidCount = lipidRows * 4;
+  const lipidProfileIndices = Array.from({ length: lipidRows }, (_, row) =>
+    Math.round((0.025 + (0.95 * row) / (lipidRows - 1)) * (rings - 1)),
+  );
   const headGeometry = new THREE.SphereGeometry(1, 10, 8),
     tailGeometry = new THREE.CylinderGeometry(1, 1, 1, 6);
   const heads = new THREE.InstancedMesh(headGeometry, material, lipidCount),
@@ -64,10 +79,10 @@ export function membraneSurface(
     direction = new THREE.Vector3();
   const aa = new THREE.Vector3(),
     bb = new THREE.Vector3();
-  const point = (u, r, a, out) =>
+  const point = (u, r, sin, cos, out) =>
     axis === "y"
-      ? out.set(r * Math.sin(a), u, -r * Math.cos(a))
-      : out.set(u, r * Math.sin(a), -r * Math.cos(a));
+      ? out.set(r * sin, u, -r * cos)
+      : out.set(u, r * sin, -r * cos);
   const finish = (g) => {
     g.attributes.position.needsUpdate = true;
     g.computeVertexNormals();
@@ -75,11 +90,21 @@ export function membraneSurface(
     g.computeBoundingBox();
   };
   function set(profile) {
+    let changed = !initialized;
     for (let i = 0; i < rings; i++) {
-      const value = profile(i / (rings - 1));
+      const value = profile(i / (rings - 1)),
+        radius = Math.max(0, value[1]);
+      // Sample the complete profile even when earlier rings are unchanged.
+      // Object.is also preserves the distinction between signed zeros.
+      if (
+        !Object.is(profiles[i][0], value[0]) ||
+        !Object.is(profiles[i][1], radius)
+      )
+        changed = true;
       profiles[i][0] = value[0];
-      profiles[i][1] = Math.max(0, value[1]);
+      profiles[i][1] = radius;
     }
+    if (!changed) return;
     for (let i = 0; i < rings; i++) {
       const a = profiles[Math.max(0, i - 1)],
         b = profiles[Math.min(rings - 1, i + 1)],
@@ -94,11 +119,11 @@ export function membraneSurface(
           r = Math.max(0, profiles[i][1] + normals[i][1] * shift),
           positions = skins[layer].attributes.position.array;
         for (let j = 0; j <= around; j++) {
-          point(u, r, -2.13 + (4.26 * j) / around, aa);
+          point(u, r, ringSines[j], ringCosines[j], aa);
           aa.toArray(positions, (i * (around + 1) + j) * 3);
         }
         for (let side = 0; side < 2; side++) {
-          point(u, r, side ? 2.13 : -2.13, aa);
+          point(u, r, edgeSines[side], edgeCosines[side], aa);
           aa.toArray(caps, (side * rings * 2 + i * 2 + layer) * 3);
         }
       }
@@ -107,20 +132,23 @@ export function membraneSurface(
     for (let side = 0; side < 2; side++)
       for (let row = 0; row < lipidRows; row++)
         for (let layer = 0; layer < 2; layer++) {
-          const i = Math.round(
-              (0.025 + (0.95 * row) / (lipidRows - 1)) * (rings - 1),
-            ),
+          const i = lipidProfileIndices[row],
             shift = ((layer ? 1 : -1) * thickness) / 2,
             u = profiles[i][0] + normals[i][0] * shift,
-            r = Math.max(0, profiles[i][1] + normals[i][1] * shift),
-            angle = side ? 2.13 : -2.13;
-          point(u, r, angle, aa);
+            r = Math.max(0, profiles[i][1] + normals[i][1] * shift);
+          point(u, r, edgeSines[side], edgeCosines[side], aa);
           temp.position.copy(aa);
           temp.quaternion.identity();
           temp.scale.setScalar(0.019);
           temp.updateMatrix();
           heads.setMatrixAt(index, temp.matrix);
-          point(profiles[i][0], profiles[i][1], angle, bb);
+          point(
+            profiles[i][0],
+            profiles[i][1],
+            edgeSines[side],
+            edgeCosines[side],
+            bb,
+          );
           direction.subVectors(bb, aa);
           const length = direction.length();
           temp.position.copy(aa).lerp(bb, 0.5);
@@ -136,6 +164,7 @@ export function membraneSurface(
       m.computeBoundingBox();
       m.computeBoundingSphere();
     }
+    initialized = true;
   }
   return {
     mesh,

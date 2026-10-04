@@ -2,6 +2,7 @@ import {
   proteinDomain,
   helix,
   molecularInventory,
+  bindLabelToSurface,
 } from "./refinementGeometry.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
@@ -102,6 +103,9 @@ export default {
     left.name = "exon-1";
     right.name = "exon-2";
     intron.name = "intron";
+    cap.name = "rna-cap";
+    splice.name = "spliceosome";
+    tail.name = "poly-a-tail";
     const sugarGeometry = new THREE.CylinderGeometry(0.073, 0.073, 0.045, 5);
     sugarGeometry.rotateX(Math.PI / 2);
     const baseGeometry = new THREE.CylinderGeometry(0.105, 0.105, 0.035, 6);
@@ -287,6 +291,14 @@ export default {
       k.label([0.1, -2, 0], "内含子套索", "Intron lariat", 1),
       k.label([2.1, -0.7, 0], "poly(A) 尾 · 3′", "Poly(A) tail · 3′", 2),
     ];
+    const updateLabelAnchors = [
+      bindLabelToSurface(labels[0], cap.children[0]),
+      bindLabelToSurface(labels[1], left.children[0], 48 * 9),
+      bindLabelToSurface(labels[2], right.children[0], 48 * 9),
+      bindLabelToSurface(labels[3], splice.children[1]),
+      bindLabelToSurface(labels[4], segs[19]),
+      bindLabelToSurface(labels[5], tailNucleotides[3].children[0]),
+    ];
     function update(value) {
       const p = clamp(value),
         loop = ease(p, 0.43, 0.55),
@@ -359,10 +371,10 @@ export default {
         tailNucleotides[i].visible = m.visible;
       });
       labels[0].active = p >= 0.2;
-      labels[2].position[0] = 2.1 - 2.2 * join;
       labels[3].active = splice.visible;
       labels[4].active = release > 0.4;
       labels[5].active = p >= 0.82;
+      for (const updateAnchor of updateLabelAnchors) updateAnchor();
       group.userData = {
         rootId,
         compartment: "nucleus",

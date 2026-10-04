@@ -2,6 +2,7 @@ import { macronuclearBridge } from "./scientificGeometry.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { nuclearCell } from "./nuclearCell.js";
 import { nuclearDetail } from "./fineStructure.js";
+import { labelAnchor } from "./labelAnchors.js";
 
 export default {
   id: "parameciumDivision",
@@ -87,11 +88,16 @@ export default {
   create() {
     const k = sceneKit(),
       { group } = k;
-    const mother = nuclearCell(k, group, { length: 3.05, width: 1.3 });
-    const daughters = [
-      nuclearCell(k, group, { length: 1.62, width: 1.05 }),
-      nuclearCell(k, group, { length: 1.62, width: 1.05 }),
-    ];
+    const bodyHalves = [-1, 1].map((fissionHalf) => {
+      const body = nuclearCell(k, group, {
+        length: 3.05,
+        width: 1.3,
+        fissionHalf,
+      });
+      body.group.name = `fission-body-half-${fissionHalf}`;
+      body.shell.name = `fission-cortex-${fissionHalf}`;
+      return body;
+    });
     const macroMat = k.material("#aa96b3", {
         transparent: true,
         opacity: 0.62,
@@ -185,7 +191,14 @@ export default {
       nuclearDetail(k, o, true);
     });
     nuclearDetail(k, micro, false);
-    micros.forEach((o) => nuclearDetail(k, o, false));
+    micros.forEach((o, i) => {
+      o.name = `daughter-micronucleus-${i}`;
+      nuclearDetail(k, o, false);
+    });
+    oral[0].name = "anterior-oral-apparatus";
+    oral[1].name = "posterior-oral-apparatus";
+    furrow.name = "transverse-cleavage-furrow";
+    bridge.group.name = "dividing-macronuclear-envelope";
     const labels = [
       k.label(
         [-0.75, 0.65, 0.75],
@@ -198,19 +211,39 @@ export default {
       k.label([-1.15, 0, 0.4], "横向分裂沟", "Transverse cleavage furrow", 3),
       k.label([-0.9, -1.8, 0.5], "后部子细胞", "Posterior daughter", 2),
     ];
+    const bridgeAnchor = [0, 0, 0],
+      posteriorAnchor = [0, -1.62, 0];
+    const microAnchors = [micro, micros[1]].map((o) =>
+        labelAnchor(group, labels[0], o),
+      ),
+      macroAnchors = [
+        labelAnchor(group, labels[1], macro),
+        labelAnchor(group, labels[1], bridge.group, bridgeAnchor),
+        labelAnchor(group, labels[1], macroDaughters[1]),
+      ],
+      oralAnchor = labelAnchor(group, labels[2], oral[0], [0.53, 0, 0.58]),
+      furrowAnchor = labelAnchor(group, labels[3], furrow, [-1.05, 0, 0]),
+      posteriorLabel = labelAnchor(
+        group,
+        labels[4],
+        bodyHalves[0].group,
+        posteriorAnchor,
+      );
     function update(progress) {
       const p = clamp(progress),
         mitosis = ease(p, 0.31, 0.53),
         partition = ease(p, 0.5, 0.75),
         pinch = ease(p, 0.71, 0.9),
-        separation = ease(p, 0.89, 1),
+        separation = ease(p, 0.91, 1),
         offset = 1.5 + 0.55 * separation;
-      mother.group.visible = p < 0.91;
-      mother.deform(pinch * 0.985, 1 + 0.11 * ease(p, 0.1, 0.6));
-      daughters.forEach((d, i) => {
-        d.group.visible = p >= 0.91;
-        d.group.position.set(i ? 0.07 : 0, (i ? 1 : -1) * offset, 0);
-      });
+      bodyHalves.forEach((body) =>
+        body.deform(
+          pinch * 0.985,
+          1 + 0.11 * ease(p, 0.1, 0.6),
+          ease(p, 0.74, 0.91),
+          separation,
+        ),
+      );
       micro.visible = p < 0.54;
       micro.position.y = 0.25 * (1 - ease(p, 0.15, 0.31));
       const elongation = ease(p, 0.25, 0.36);
@@ -270,8 +303,14 @@ export default {
       oral[1].scale.setScalar(ease(p, 0.16, 0.38));
       furrow.visible = p >= 0.7 && p < 0.91;
       furrow.scale.set(1 - pinch * 0.94, 0.43 * (1 - pinch * 0.94), 1);
-      labels[0].position[1] = p < 0.54 ? 0.65 : offset + 0.1;
-      labels[1].position[1] = p < 0.59 ? 1.1 : offset + 0.55;
+      furrow.position.x = 0.09 * ease(p, 0.74, 0.91);
+      bridgeAnchor[0] = 0.44 + partition * 1.06 + separation * 0.55;
+      posteriorAnchor[1] = -1.62 - 0.43 * separation;
+      microAnchors[p < 0.54 ? 0 : 1]();
+      macroAnchors[p < 0.59 ? 0 : p < 0.76 ? 1 : 2]();
+      oralAnchor();
+      furrowAnchor();
+      posteriorLabel();
       labels[3].active = p >= 0.7 && p < 0.91;
       labels[4].active = p >= 0.91;
       group.userData = {

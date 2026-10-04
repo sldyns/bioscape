@@ -27,6 +27,7 @@ import SceneActions from "../exploration/SceneActions.jsx";
 import "./processes.css";
 import "../exploration/processContinuity.css";
 import { processLoaders } from "./loaders.js";
+import { startPlaybackClock } from "./playbackClock.js";
 const players = Object.fromEntries(
   Object.entries(processLoaders).map(([id, load]) => [
     id,
@@ -91,6 +92,8 @@ function ProcessPlayer({
   const [resetKey, setResetKey] = useState(0);
   const [zoom, setZoom] = useState({ direction: null, key: 0 });
   const progressRef = useRef(initial.progress);
+  const sceneApi = useRef(null);
+  const stopPlayback = useRef(() => {});
   const cameraRef = useRef(initial.camera);
   const stateCallback = useRef(onStateChange);
   stateCallback.current = onStateChange;
@@ -99,11 +102,22 @@ function ProcessPlayer({
     latest.current = { ...latest.current, ...patch };
     stateCallback.current?.(latest.current, { immediate });
   }, []);
+  const pausePlayback = React.useCallback(() => {
+    stopPlayback.current();
+    setPlaying(false);
+    setProgress(progressRef.current);
+    publishState({ progress: progressRef.current }, true);
+  }, [publishState]);
   useEffect(() => {
     publishState({});
   }, [publishState]);
   const sceneReady = React.useCallback(
     (api) => {
+      sceneApi.current = api;
+      if (!api?.ready) {
+        stopPlayback.current();
+        setPlaying(false);
+      }
       setReady(Boolean(api?.ready));
       onSceneReady?.(
         api
@@ -183,7 +197,7 @@ function ProcessPlayer({
       key={item.path.join("/")}
       disabled={!onExploreStructure}
       onClick={() => {
-        setPlaying(false);
+        pausePlayback();
         onExploreStructure?.(item.path);
       }}
     >
@@ -224,52 +238,51 @@ function ProcessPlayer({
   }, [stageIndex, lang]);
 
   function seek(value) {
+    stopPlayback.current();
     setPlaying(false);
     progressRef.current = value;
     setProgress(value);
     publishState({ progress: value }, true);
+    sceneApi.current?.requestRender();
   }
   function togglePlayback() {
+    if (playing) {
+      pausePlayback();
+      return;
+    }
     if (progressRef.current >= 1) {
       progressRef.current = 0;
       setProgress(0);
       publishState({ progress: 0 }, true);
+      sceneApi.current?.requestRender();
     }
-    setPlaying((value) => !value);
+    setPlaying(true);
   }
   useEffect(() => {
-    if (suspended) setPlaying(false);
-  }, [suspended]);
+    if (suspended) pausePlayback();
+  }, [suspended, pausePlayback]);
   useEffect(() => {
     const pause = () => {
-      if (document.hidden) setPlaying(false);
+      if (document.hidden) pausePlayback();
     };
     document.addEventListener("visibilitychange", pause);
     return () => document.removeEventListener("visibilitychange", pause);
-  }, []);
+  }, [pausePlayback]);
   useEffect(() => {
     if (!playing || suspended) return;
-    let frame,
-      last,
-      published = 0;
-    const tick = (now) => {
-      if (last !== undefined)
-        progressRef.current = Math.min(
-          1,
-          progressRef.current +
-            (Math.min(now - last, 100) * speed) / (definition.duration * 1000),
-        );
-      last = now;
-      if (now - published >= 30 || progressRef.current >= 1) {
-        setProgress(progressRef.current);
-        publishState({ progress: progressRef.current });
-        published = now;
-      }
-      if (progressRef.current >= 1) setPlaying(false);
-      else frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    const stop = startPlaybackClock({
+      progress: progressRef,
+      duration: definition.duration,
+      speed,
+      onFrame: () => sceneApi.current?.requestRender(),
+      onPublish: (value) => {
+        setProgress(value);
+        publishState({ progress: value });
+      },
+      onFinish: () => setPlaying(false),
+    });
+    stopPlayback.current = stop;
+    return stop;
   }, [playing, suspended, definition, speed, publishState]);
 
   return (
@@ -280,7 +293,10 @@ function ProcessPlayer({
       >
         <button
           className="back-button process-catalog-back"
-          onClick={onBack}
+          onClick={() => {
+            pausePlayback();
+            onBack?.();
+          }}
           title={t("返回过程目录（Esc）", "Back to process catalog (Esc)")}
         >
           <ArrowLeft size={15} />
@@ -293,7 +309,7 @@ function ProcessPlayer({
           className="process-origin"
           disabled={!onStructure}
           onClick={() => {
-            setPlaying(false);
+            pausePlayback();
             onStructure?.();
           }}
         >
@@ -335,7 +351,7 @@ function ProcessPlayer({
               lang={lang}
               ready={ready}
               onStudio={() => {
-                setPlaying(false);
+                pausePlayback();
                 onStudio?.();
               }}
               onShare={onShare}
@@ -398,6 +414,7 @@ function ProcessPlayer({
             rootId={rootId}
             parameters={parameters}
             progress={progress}
+            progressSource={progressRef}
             lang={lang}
             resetKey={resetKey}
             zoom={zoom}
@@ -520,6 +537,7 @@ function ProcessPlayer({
                       ...latest.current.parameters,
                       [control.id]: event.target.value,
                     };
+                    stopPlayback.current();
                     setPlaying(false);
                     progressRef.current = 0;
                     setProgress(0);
@@ -593,7 +611,7 @@ function ProcessPlayer({
               className="continuity-overview"
               disabled={!onExploreStructure}
               onClick={() => {
-                setPlaying(false);
+                pausePlayback();
                 onExploreStructure?.(related.scope.path);
               }}
             >

@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, phase, bilingual as b } from "../../kit.js";
 import { arcLengthTracks } from "./axonemeKinematics.js";
+import { anchorObject, anchorVertex, anchorInstance } from "./labelAnchors.js";
 export default {
   id: "ciliaryMotion",
   title: b("纤毛的滑动与弯曲", "Ciliary sliding and bending"),
@@ -71,6 +72,11 @@ export default {
     description: b(dz, de),
   })),
   sources: [
+    {
+      title:
+        "Rao et al. (2021) — Outer-arm dynein arrays on microtubule doublets",
+      url: "https://www.nature.com/articles/s41594-021-00656-9",
+    },
     {
       title:
         "Novel Insights into the Development and Function of Cilia Using the Advantages of the Paramecium Cell and Its Many Cilia",
@@ -162,18 +168,27 @@ export default {
     for (let row = 1; row < 7; row++)
       for (let j = 0; j < 9; j++) {
         const a = (j * Math.PI * 2) / 9;
-        const arm = k.ball([0, 0, 0], [0.075, 0.065, 0.065], dynein.clone());
+        const arm = k.ball([0, 0, 0], [0.043, 0.065, 0.043], dynein.clone());
         const link = k.segment([0, 0, 0], [0, 1, 0], 0.019, links);
         const tail = k.segment([0, 0, 0], [0, 1, 0], 0.014, dynein);
         const stalk = k.segment([0, 0, 0], [0, 1, 0], 0.011, dynein);
         const collar = k.ring([0, 0, 0], 0.052, 0.017, k.material("#c4a7b6"));
+        tail.name = `dynein A-wall tail ${row}:${j}`;
+        stalk.name = `dynein B-wall stalk ${row}:${j}`;
         armRows.push({ arm, link, tail, stalk, collar, t: row / 7, a, j });
       }
     // Separate magnified transverse section retains explicit doublet topology.
     const cx = 2.15,
       cy = 0.1;
-    k.ring([cx, cy, 0], 1.19, 0.045, k.material("#a1b5a8"));
-    const crossArms = [];
+    const crossEnvelope = k.ring(
+      [cx, cy, 0],
+      1.19,
+      0.045,
+      k.material("#a1b5a8"),
+    );
+    crossEnvelope.name = "cross-section ciliary membrane";
+    const crossArms = [],
+      crossDoublets = [];
     for (let j = 0; j < 9; j++) {
       const a = (j * Math.PI * 2) / 9,
         x = cx + 0.85 * Math.cos(a),
@@ -188,6 +203,9 @@ export default {
         10 * 4,
       );
       group.add(tubulinA, tubulinB);
+      crossDoublets.push({ a: tubulinA, b: tubulinB });
+      tubulinA.name = `cross-section A tubulin ${j}`;
+      tubulinB.name = `cross-section B tubulin ${j}`;
       const item = new THREE.Object3D();
       for (let row = 0; row < 4; row++) {
         for (let q = 0; q < 13; q++) {
@@ -223,39 +241,92 @@ export default {
         0.019,
         links,
       );
-      const an = ((j + 1) * Math.PI * 2) / 9;
+      // With B placed counterclockwise of A, the accessible adjacent B is
+      // on the preceding doublet. The other direction crosses its A-tubule.
+      const an = ((j + 8) * Math.PI * 2) / 9;
       k.segment(
         [x, y, -0.05],
         [cx + 0.85 * Math.cos(an), cy + 0.85 * Math.sin(an), -0.05],
         0.015,
         links,
       );
+      const nx = cx + 0.85 * Math.cos(an),
+        ny = cy + 0.85 * Math.sin(an),
+        nbx = nx - 0.18 * Math.sin(an),
+        nby = ny + 0.18 * Math.cos(an);
+      // Target actual exterior tubulin subunits rather than a hollow center.
+      function transverseWallPoint(
+        centerX,
+        centerY,
+        radius,
+        beadRadius,
+        count,
+        start,
+        arc,
+        targetX,
+        targetY,
+      ) {
+        let bx = 0,
+          by = 0,
+          best = Infinity;
+        for (let q = 0; q < count; q++) {
+          const angle = start + q * arc,
+            px = centerX + radius * Math.cos(angle),
+            py = centerY + radius * Math.sin(angle),
+            distance = Math.hypot(targetX - px, targetY - py);
+          if (distance < best) {
+            best = distance;
+            bx = px;
+            by = py;
+          }
+        }
+        const dx = targetX - bx,
+          dy = targetY - by,
+          distance = Math.hypot(dx, dy);
+        return [
+          bx + (beadRadius * dx) / distance,
+          by + (beadRadius * dy) / distance,
+          0.095,
+        ];
+      }
+      const contact = transverseWallPoint(
+          nbx,
+          nby,
+          0.108,
+          0.033,
+          10,
+          an - Math.PI / 2 + 0.7,
+          (Math.PI * 2 - 1.4) / 9,
+          x,
+          y,
+        ),
+        anchor = transverseWallPoint(
+          x,
+          y,
+          0.12,
+          0.031,
+          13,
+          0,
+          (Math.PI * 2) / 13,
+          contact[0],
+          contact[1],
+        );
       const arm = k.ball(
-        [x - 0.18 * Math.sin(a), y + 0.18 * Math.cos(a), 0.13],
-        [0.1, 0.055, 0.065],
+        [(anchor[0] + contact[0]) / 2, (anchor[1] + contact[1]) / 2, 0.095],
+        [0.06, 0.05, 0.065],
         dynein.clone(),
       );
       arm.rotation.z = a;
       k.ring(
-        [arm.position.x, arm.position.y, 0.19],
+        [arm.position.x, arm.position.y, 0.155],
         0.054,
         0.018,
         k.material("#c9aebe"),
       );
-      const nx = cx + 0.85 * Math.cos(an),
-        ny = cy + 0.85 * Math.sin(an);
-      k.segment(
-        [x, y, 0.12],
-        [arm.position.x, arm.position.y, 0.13],
-        0.02,
-        dynein,
-      );
-      k.segment(
-        [arm.position.x, arm.position.y, 0.13],
-        [nx - 0.15 * Math.sin(an), ny + 0.15 * Math.cos(an), 0.13],
-        0.015,
-        dynein,
-      );
+      const tail = k.segment(anchor, arm.position.toArray(), 0.02, dynein);
+      const stalk = k.segment(arm.position.toArray(), contact, 0.015, dynein);
+      tail.name = `cross-section dynein A-wall tail ${j}`;
+      stalk.name = `cross-section dynein B-wall stalk ${j}`;
       crossArms.push({ arm, j });
     }
     k.ring([cx - 0.16, cy, 0.04], 0.105, 0.04, central);
@@ -332,7 +403,9 @@ export default {
     const materialPoint = new THREE.Vector3(),
       anchorPoint = new THREE.Vector3(),
       neighborPoint = new THREE.Vector3(),
-      contactPoint = new THREE.Vector3();
+      anchorSurface = new THREE.Vector3(),
+      contactSurface = new THREE.Vector3(),
+      neutralSurface = new THREE.Vector3();
     const v1 = new THREE.Vector3(),
       v2 = new THREE.Vector3(),
       up = new THREE.Vector3(0, 1, 0);
@@ -345,6 +418,50 @@ export default {
       v2.sub(v1);
       m.scale.set(0.019, Math.max(v2.length(), 0.00001), 0.019);
       m.quaternion.setFromUnitVectors(up, v2.normalize());
+    }
+    // Barycentric interpolation on the actual deformed CylinderGeometry
+    // triangles keeps attached ends on the displayed wall between tube rows.
+    function wallPoint(mesh, fraction, theta, out) {
+      const geometry = mesh.geometry,
+        { radialSegments, thetaStart, thetaLength } = geometry.parameters,
+        row = (1 - clamp(fraction)) * N,
+        ri = Math.min(N - 1, Math.floor(row)),
+        v = row - ri,
+        angle =
+          (((theta - thetaStart) % (Math.PI * 2)) + Math.PI * 2) %
+          (Math.PI * 2),
+        column = clamp(angle / thetaLength) * radialSegments,
+        ci = Math.min(radialSegments - 1, Math.floor(column)),
+        u = column - ci,
+        a = ri * (radialSegments + 1) + ci,
+        b = a + radialSegments + 1,
+        c = b + 1,
+        d = a + 1,
+        position = geometry.attributes.position;
+      if (u + v <= 1)
+        out.set(
+          position.getX(a) * (1 - u - v) +
+            position.getX(b) * v +
+            position.getX(d) * u,
+          position.getY(a) * (1 - u - v) +
+            position.getY(b) * v +
+            position.getY(d) * u,
+          position.getZ(a) * (1 - u - v) +
+            position.getZ(b) * v +
+            position.getZ(d) * u,
+        );
+      else
+        out.set(
+          position.getX(b) * (1 - u) +
+            position.getX(c) * (u + v - 1) +
+            position.getX(d) * (1 - v),
+          position.getY(b) * (1 - u) +
+            position.getY(c) * (u + v - 1) +
+            position.getY(d) * (1 - v),
+          position.getZ(b) * (1 - u) +
+            position.getZ(c) * (u + v - 1) +
+            position.getZ(d) * (1 - v),
+        );
     }
     function update(progress, parameters = {}) {
       const p = clamp(progress),
@@ -398,7 +515,8 @@ export default {
         const active = enabled && p >= 0.17 && Math.cos(r.a) * side > 0,
           rx = 0.4 * Math.cos(r.a),
           rz = 0.4 * Math.sin(r.a),
-          an = r.a + (Math.PI * 2) / 9,
+          neighborIndex = (r.j + 8) % 9,
+          an = (neighborIndex * Math.PI * 2) / 9,
           rx2 = 0.4 * Math.cos(an),
           rz2 = 0.4 * Math.sin(an);
         const u = motion.point(motion.track(rx), r.t, anchorPoint);
@@ -411,11 +529,25 @@ export default {
         const contactDistance =
           motion.materialAt(neighborTrack, u) -
           (active ? 0.055 * Math.min(1, cycle / 0.65) : 0);
-        motion.point(neighborTrack, contactDistance / L, contactPoint);
+        const aAngle = Math.atan2(bx - rx, bz - rz),
+          bAngle = Math.atan2(rx - bx, rz - bz);
+        wallPoint(tubes[r.j * 4].mesh, r.t, aAngle, anchorSurface);
+        wallPoint(
+          tubes[neighborIndex * 4 + 2].mesh,
+          contactDistance / L,
+          bAngle,
+          contactSurface,
+        );
+        wallPoint(
+          tubes[neighborIndex * 4 + 2].mesh,
+          motion.materialAt(neighborTrack, u) / L,
+          bAngle,
+          neutralSurface,
+        );
         r.arm.position.set(
-          anchorPoint.x * 0.65 + neighborPoint.x * 0.35,
-          anchorPoint.y * 0.65 + neighborPoint.y * 0.35,
-          rz * 0.65 + rz2 * 0.35,
+          (anchorSurface.x + neutralSurface.x) * 0.5,
+          (anchorSurface.y + neutralSurface.y) * 0.5,
+          (anchorSurface.z + neutralSurface.z) * 0.5,
         );
         r.arm.material.color.copy(active ? activeColor : idleColor);
         setSegment(
@@ -431,9 +563,9 @@ export default {
         r.collar.position.z += 0.03;
         setSegment(
           r.tail,
-          anchorPoint.x,
-          anchorPoint.y,
-          rz,
+          anchorSurface.x,
+          anchorSurface.y,
+          anchorSurface.z,
           r.arm.position.x,
           r.arm.position.y,
           r.arm.position.z,
@@ -441,19 +573,14 @@ export default {
         r.tail.scale.x = r.tail.scale.z = 0.014;
         // Contact is on the neighboring B-tubule surface; material rows slide
         // past one another. A minus-end stroke is followed by detached reset.
-        const surfaceZ = bz - 0.035 * Math.cos(an),
-          surfaceX =
-            contactPoint.x + 0.035 * Math.sin(an) * Math.cos(contactPoint.z),
-          surfaceY =
-            contactPoint.y - 0.035 * Math.sin(an) * Math.sin(contactPoint.z);
         setSegment(
           r.stalk,
           r.arm.position.x,
           r.arm.position.y,
           r.arm.position.z,
-          surfaceX,
-          surfaceY,
-          surfaceZ,
+          contactSurface.x,
+          contactSurface.y,
+          contactSurface.z,
         );
         r.stalk.scale.x = r.stalk.scale.z = 0.011;
         r.stalk.visible = engaged;
@@ -465,6 +592,13 @@ export default {
             : idleColor,
         ),
       );
+      anchorVertex(labels[0], tubes.at(-1).mesh, 14);
+      anchorInstance(labels[1], crossDoublets[2].a, 39 + 3);
+      anchorObject(labels[2], crossEnvelope, 0, -1.19, 0);
+      anchorObject(labels[3], basal);
+      anchorObject(labels[4], crossArms[0].arm);
+      labels[5].active = enabled && gain > 0;
+      anchorObject(labels[5], armRows[27].arm);
       group.userData = {
         process: "ciliaryMotion",
         specimen: "Paramecium motile cilium",

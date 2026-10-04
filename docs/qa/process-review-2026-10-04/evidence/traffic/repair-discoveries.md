@@ -1,0 +1,23 @@
+# Supplemental label discoveries · 2026-10-04
+
+Phase A is unchanged. Root authorized this supplementary inspection and repair. `ProcessScene` uses label positions as leader endpoints, while label layout handles text placement separately.
+
+## 20261004-traffic-labels-01 · Endocytosis labels retain text offsets rather than subject anchors
+
+Early-endosome lumen label is 1.369306 from the lumen center although radius is only 1.05. Clathrin/dynamin leaders retain static unrelated offsets; extracellular LDL label remains active after internalization. Exact pre-repair coordinates are in label-anchor-before.json.
+
+Repair: Bind LDL, clathrin hub, recycling receptor and dynamin leaders to actual moving subjects; put the endosome label in its lumen and synchronize lifecycle visibility.
+
+## 20261004-traffic-labels-02 · Autophagy leaders miss cargo, protease and membrane subjects
+
+Initial Cathepsin-D label is 1.224500 from lysosome center, exceeding radius .92. At p=.9 the cargo leader lies 1.609575 outside actual cargo bounds; it also outlives the aggregate. Membrane/compartment leaders retain old text offsets.
+
+Repair: Track actual backbone vertices and current membrane/cut-edge vertices; place compartment labels in lumina, suppress absent cargo and retain the label on visible proteases.
+
+## 20261004-original-photosynthesis-labels-01 · Photosynthesis leaders target offsets instead of proteins and reaction routes
+
+PSII and PSI labels are .1952 and .162 outside actual object bounds; ATP-synthase and Rubisco labels are also outside their bounds. ProcessScene projects label.position directly as the leader endpoint.
+
+Repair: Anchor protein labels to current subunit mesh centers, membrane label to an actual leaflet vertex, lumen label inside the sac, and relationship labels to their explicit explanatory curves.
+
+All before measurements are retained in `label-anchor-before.json`. New regressions inspect live world positions and lifecycle visibility; rendered readability remains with root.

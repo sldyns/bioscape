@@ -1,0 +1,69 @@
+{
+  "group": "yeastLife",
+  "phase": "Supplementary label review explicitly requested by integrator after interruption recovery",
+  "baseline": "Post original-eight repair, pre-label source fixtures in label-anchor-baseline/",
+  "issues": [
+    {
+      "issueId": "20261004-yeastLife-R01",
+      "modelId": "yeastBudding",
+      "severity": "P2",
+      "kind": "misleading annotation anchor / named-state visibility",
+      "evidence": "Bud, mother, neck and nuclear-envelope leader anchors contain text-placement offsets. At p=.15 the bud leader is 1.286 scene units beyond actual bud bounds; the envelope label stays at [-1.1,.8,.6] while the nucleus changes shape and position.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastBuddingProcess.js"
+      ],
+      "whyWrong": "Native and exported leader lines use label.position as the model target, not as a text layout suggestion. Offsets can identify empty space or a different structure; named chemical labels must follow the drawn chemical state.",
+      "repairPlan": "Bind cell/envelope leaders to actual surface vertices, and track the bud and mother/neck through growth/separation."
+    },
+    {
+      "issueId": "20261004-yeastLife-R02",
+      "modelId": "yeastFermentation",
+      "severity": "P2",
+      "kind": "misleading annotation anchor / named-state visibility",
+      "evidence": "PDC/ADH and named metabolites use fixed off-body anchors. PDC is .737 units outside enzyme bounds at p=.5. At p=.72 the ethanol label is active while reduction=.550 and the encoded carbonyl double bond remains; glucose, pyruvate and CO2 visibility also uses unrelated coarse time thresholds.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastFermentationProcess.js"
+      ],
+      "whyWrong": "Native and exported leader lines use label.position as the model target, not as a text layout suggestion. Offsets can identify empty space or a different structure; named chemical labels must follow the drawn chemical state.",
+      "repairPlan": "Bind each named compound/cofactor/enzyme to its actual persistent geometry. Align compound visibility with the encoded bond-change state and add a neutral glycolysis-carbon transition label instead of prematurely calling the intermediate glucose/pyruvate/ethanol."
+    },
+    {
+      "issueId": "20261004-yeastLife-R03",
+      "modelId": "yeastMating",
+      "severity": "P2",
+      "kind": "misleading annotation anchor / named-state visibility",
+      "evidence": "Parental-cell and nuclear/fusion leaders retain detached layout positions. At p=.7 the nuclear-congression leader is .719 units outside the moving left nuclear envelope bounds; plasmogamy and zygote labels likewise terminate away from their named structure.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastMatingProcess.js"
+      ],
+      "whyWrong": "Native and exported leader lines use label.position as the model target, not as a text layout suggestion. Offsets can identify empty space or a different structure; named chemical labels must follow the drawn chemical state.",
+      "repairPlan": "Anchor cell-type labels to their cell envelope surfaces, fusion to the real junction, and nuclear congression/fusion to a continuous parent-to-fused-envelope site."
+    },
+    {
+      "issueId": "20261004-yeastLife-R04",
+      "modelId": "yeastSporulation",
+      "severity": "P2",
+      "kind": "misleading annotation anchor / named-state visibility",
+      "evidence": "Replication/MI/MII, prospore membrane and mature spore labels point at static text offsets. At p=.72 the PSM leader is 1.171 units outside the selected growing membrane bounds; the static top caption also omits that a/alpha diploid is the starting state.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastSporulationProcess.js"
+      ],
+      "whyWrong": "Native and exported leader lines use label.position as the model target, not as a text layout suggestion. Offsets can identify empty space or a different structure; named chemical labels must follow the drawn chemical state.",
+      "repairPlan": "Anchor chromosome action labels to inherited chromatid centromeres, PSM to its actual leading edge, and mature spore to a visible wall layer. Clarify starting diploid scope and retain regional condition notes."
+    },
+    {
+      "issueId": "20261004-yeastLife-R05",
+      "modelId": "yeastSporulation",
+      "severity": "P2",
+      "kind": "rendered nuclear membrane handoff discontinuity",
+      "evidence": "Default yeast/EN critical-final .799 shows one broad circular common NE; .801 replaces it with four small isolated nuclei over 0.002 progress (~72 ms of 36 s duration). Source pinch multiplies only z so x/y silhouette never divides. Original images and two source fixtures hashed in nuclear-handoff-baseline/manifest.json.",
+      "files": [
+        "src/processes/modules/yeastLife/yeastSporulationProcess.js"
+      ],
+      "whyWrong": "The visible late-meiotic nuclear envelope must partition around the inherited nuclei; a broad undivided surface disappearing at a visibility threshold omits the represented membrane remodeling and creates an abrupt contour jump.",
+      "repairPlan": "Create a real continuous four-lobed constriction whose terminal surface matches daughter nuclear envelopes; retain correct closed meiotic nuclear envelope, inherited chromatids, real SPB/PSM surface attachment, nutrient controls and arbitrary seek. No static hiding or global fidelity reduction."
+    }
+  ],
+  "sharedEvidence": "ProcessScene.jsx projectLabels consumes label.position for line x1/y1; full source and checksums retained in this evidence folder.",
+  "sourceLimit": "Implementation and annotation corrections; no new biological mechanism introduced. Original Phase A files remain unchanged."
+}

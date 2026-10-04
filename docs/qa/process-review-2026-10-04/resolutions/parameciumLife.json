@@ -1,0 +1,230 @@
+{
+  "group": "parameciumLife",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-parameciumLife-01",
+      "status": "fixed",
+      "changes": [
+        "The tracked food vacuole now opens a paired-membrane aperture that shares both boundary curves with an open passage and the cytoproct surface. The original seven ingested particles pass through it as residues; membrane is retrieved toward the cytoplasm."
+      ],
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+        "src/processes/modules/parameciumLife/scientificGeometry.js",
+        "src/processes/modules/parameciumLife/review20261004.test.mjs",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Actual shared outer/inner terminal curves, unobstructed exit rays at six egestion times, lumen-center transit for original cargo, and seven external end-state residues."
+      ],
+      "limitations": [
+        "Local geometry regression is not rendered acceptance. Root owns native continuous playback and final review. Timing, molecular density and scale remain schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-parameciumLife-02",
+      "status": "fixed",
+      "changes": [
+        "All six canals, ampullae, inlets, bladder ports and water routes use the same radial frame. Ampullae are open paired membrane tubes with fixed attached ends and a changing central bulge."
+      ],
+      "files": [
+        "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+        "src/processes/modules/parameciumLife/scientificGeometry.js",
+        "src/processes/modules/parameciumLife/review20261004.test.mjs",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Both conditions, all six arms: distal inlet/ampulla boundary equality; ampulla/canal center and radius agreement with actual canal vertices; open-ended canal geometry. Previous bladder aperture/isolation regressions remain intact."
+      ],
+      "limitations": [
+        "Local geometry regression is not rendered acceptance. Root owns native continuous playback and final review. Timing, molecular density and scale remain schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-parameciumLife-03",
+      "status": "fixed",
+      "changes": [
+        "Entry, radial and discharged water shrink to zero before deterministic reuse. Radial rerouting around disconnection and cycle reset also occurs while markers are absent. Bladder rounding relaxes before cycle rollover; ampullary bulges vary smoothly."
+      ],
+      "files": [
+        "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+        "src/processes/modules/parameciumLife/review20261004.test.mjs",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Both conditions: every radial, entry and discharge modulo reset has negligible visible size; isolation/rerouting boundary samples reject visible teleports."
+      ],
+      "limitations": [
+        "Local geometry regression is not rendered acceptance. Root owns native continuous playback and final review. Timing, molecular density and scale remain schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-parameciumLife-04",
+      "status": "fixed",
+      "changes": [
+        "Two preallocated cortical hemispheres share the mother equator and deform into complete daughter cells. Their common ring closes to a pole before separation, avoiding the old whole-body swap. Cortical rows, basal bodies and cilia use the same map."
+      ],
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+        "src/processes/modules/parameciumLife/nuclearCell.js",
+        "src/processes/modules/parameciumLife/fineStructure.js",
+        "src/processes/modules/parameciumLife/review20261004.test.mjs",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Same vertex buffers are continuous across p=.74/.9/.91/.95; actual seam rings match throughout constriction and daughter poles separate only after closure. Original closed micronuclear mitosis and macronuclear bridge tests remain passing."
+      ],
+      "limitations": [
+        "Local geometry regression is not rendered acceptance. Root owns native continuous playback and final review. Timing, molecular density and scale remain schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-parameciumLife-05",
+      "status": "fixed",
+      "changes": [
+        "The exchange channel now has open inner/outer half-cylinder walls and real cortical openings attached to both partner oral regions. The lumen and migrating nuclei share one spatial frame."
+      ],
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+        "src/processes/modules/parameciumLife/review20261004.test.mjs",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Seventeen exchange samples check actual complete nuclear-envelope vertices against the actual passage lumen; no cap blocks an axial ray; both opening positions match their partner attachment coordinates."
+      ],
+      "limitations": [
+        "Local geometry regression is not rendered acceptance. Root owns native continuous playback and final review. Timing, molecular density and scale remain schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-parameciumLife-06",
+      "status": "fixed",
+      "changes": [
+        "The same eight preallocated envelope patches deform from one synkaryon through two, four and eight nuclei. Daughter surfaces close before separation; detailed nuclear contents emerge at parent loci. Four posterior envelopes grow into anlagen and three anterior candidates shrink during nutritional selection."
+      ],
+      "files": [
+        "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+        "src/processes/modules/parameciumLife/nuclearLineage.js",
+        "src/processes/modules/parameciumLife/review20261004.test.mjs",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "verification": [
+        "Actual envelope vertices form generation-specific 1/2/4/8 sphere surfaces; fourteen old/new boundary samples reject vertex jumps; final geometry retains four anlagen and one micronucleus. Late irregular seeks hash identically after 1/0.13/NaN/0.54/0."
+      ],
+      "limitations": [
+        "Local geometry regression is not rendered acceptance. Root owns native continuous playback and final review. Timing, molecular density and scale remain schematic."
+      ]
+    }
+  ],
+  "repairDiscoveries": "docs/qa/process-review-2026-10-04/repair-discoveries/parameciumLife.json",
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/parameciumLife/science.test.mjs",
+    "node src/processes/modules/parameciumLife/refinementSmoke.mjs",
+    "prettier --write src/processes/modules/parameciumLife/*.{js,mjs}"
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/parameciumLife/science-repair.log",
+    "docs/qa/process-review-2026-10-04/evidence/parameciumLife/refinement-repair.log"
+  ],
+  "sourcesAdded": [],
+  "sourceSupport": "Uses the opened primary sources recorded in immutable Phase A. Repairs change geometry, lineage continuity and label anchors; no new biological mechanism or quantitative timing claims.",
+  "acceptanceBoundary": "No browser, full-workspace suite, deployment or physical-device checks by this reviewer.",
+  "additionalRepairs": [
+    {
+      "issueId": "20261004-parameciumLife-07",
+      "status": "fixed",
+      "changes": [
+        "Bind specific labels to actual structure/lumen coordinates with full parent transforms and switch targets as nuclei divide or differentiate. Explicit environment/partner-region labels remain compartment anchors."
+      ],
+      "changedFiles": [
+        "src/processes/modules/parameciumLife/labelAnchors.js",
+        "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+        "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+        "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+        "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+        "src/processes/modules/parameciumLife/scientificGeometry.js",
+        "src/processes/modules/parameciumLife/review20261004.test.mjs",
+        "src/processes/modules/parameciumLife/science.test.mjs"
+      ],
+      "tests": [
+        {
+          "command": "node src/processes/modules/parameciumLife/science.test.mjs",
+          "result": "passed",
+          "coverage": "Owned review20261004.test.mjs compares actual food/nuclear/canal/pore world coordinates, moving donor lumen centers and changing conjugation targets at six stages. Imported by owned science.test.mjs."
+        },
+        {
+          "command": "node src/processes/modules/parameciumLife/refinementSmoke.mjs",
+          "result": "passed",
+          "coverage": "All four models: finite geometry, stable resource counts and browser bundling."
+        }
+      ],
+      "evidence": [
+        "docs/qa/process-review-2026-10-04/repair-discoveries/parameciumLife.json",
+        "docs/qa/process-review-2026-10-04/evidence/parameciumLife/science-repair.log",
+        "docs/qa/process-review-2026-10-04/evidence/parameciumLife/refinement-repair.log"
+      ],
+      "limitations": [
+        "Root rendered playback acceptance remains separate from these local checks.",
+        "Geometry and existing player leader-endpoint contract; no new biological claim. Phase A remains unchanged."
+      ]
+    },
+    {
+      "issueId": "20261004-parameciumLife-08",
+      "status": "fixed",
+      "changes": [
+        "Grow new meiotic nuclei from the parent locus; originate migratory pronuclei at the retained nuclear locus; shrink fusing pronuclei to zero; show the synkaryon from zero size; fragment the maternal macronucleus through continuous size transfer. Preserve haploid/diploid identities and persistent fragments."
+      ],
+      "changedFiles": [
+        "src/processes/modules/parameciumLife/parameciumConjugationProcess.js"
+      ],
+      "tests": [
+        {
+          "command": "node src/processes/modules/parameciumLife/science.test.mjs",
+          "result": "passed",
+          "coverage": "Old nutrient/identity regressions remain; late arbitrary seeking and finite geometry checks pass. This smoothing changes illustration timing, not biological counts. Root rendered validation remains required."
+        },
+        {
+          "command": "node src/processes/modules/parameciumLife/refinementSmoke.mjs",
+          "result": "passed",
+          "coverage": "All four models: finite geometry, stable resource counts and browser bundling."
+        }
+      ],
+      "evidence": [
+        "docs/qa/process-review-2026-10-04/repair-discoveries/parameciumLife.json",
+        "docs/qa/process-review-2026-10-04/evidence/parameciumLife/science-repair.log",
+        "docs/qa/process-review-2026-10-04/evidence/parameciumLife/refinement-repair.log"
+      ],
+      "limitations": [
+        "Root rendered playback acceptance remains separate from these local checks.",
+        "Same already-opened primary conjugation/nuclear sources as Phase A; no expanded mechanism claims."
+      ]
+    },
+    {
+      "issueId": "20261004-parameciumLife-09",
+      "status": "fixed",
+      "changes": [
+        "For .14 <= p < .30, show 小核 · 减数分裂中 / Micronucleus · meiosis in progress. Show haploid meiotic products after the second division completes at p=.30. Geometry and actual anchor targets are unchanged."
+      ],
+      "changedFiles": [
+        "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+        "src/processes/modules/parameciumLife/review20261004.test.mjs"
+      ],
+      "tests": [
+        {
+          "command": "node src/processes/modules/parameciumLife/science.test.mjs",
+          "result": "passed",
+          "coverage": "Owned science regression checks Chinese/English identities at .14/.22/.30 boundaries and neighboring values, p=.155/.265/.335 and NaN, after resets 1/.725/0/.815/NaN. The original implementation failed at p=.14 after seek 1; the corrected owned science test passes."
+        }
+      ],
+      "evidence": [
+        "docs/qa/process-review-2026-10-04/evidence/browser/full-b3-016-parameciumConjugation-paramecium-stage-2.webp",
+        "docs/qa/process-review-2026-10-04/evidence/parameciumLife/rendered-label-identity-before.log",
+        "docs/qa/process-review-2026-10-04/evidence/parameciumLife/rendered-label-identity-after.log"
+      ],
+      "limitations": [
+        "The rendered defect was observed in existing full-b3 evidence. The corrected wording awaits the final integrated capture."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "group": "chromatin",
+  "phase": "additional discoveries from integrated native-player render review",
+  "baseline": "post-20261004-chromatin-01 repair; pre-label-repair source fixtures retained in label-anchor-baseline/",
+  "issues": [
+    {
+      "issueId": "20261004-chromatin-02",
+      "modelId": "chromatinAccess",
+      "severity": "P2",
+      "kind": "misleading annotation anchor",
+      "evidence": "In the original 960x640 start capture, the ISWI label leader crosses the brown DNA-binding factor at about x374,y132; the green remodeler is centered near x410,y210. Code uses remodeler.position.y + .7 for the leader anchor; histone, sequence-site and binding-factor anchors similarly contain text-placement offsets.",
+      "files": ["src/processes/modules/chromatin/chromatinAccessProcess.js"],
+      "capture": "../browser/full-a-retry-002-chromatinAccess-cell-start.webp",
+      "whyWrong": "Both native and exported leader lines use label.position as the target. Offsetting this coordinate can assign a label to the wrong molecular body.",
+      "repairPlan": "Anchor core, remodeler and factor to existing rendered subunit mesh positions and anchor the sequence label to its actual dynamic marked centerline; keep the nuclear schematic note as a region caption. Verify all three roots and both ATP conditions."
+    },
+    {
+      "issueId": "20261004-chromatin-03",
+      "modelId": "tad",
+      "severity": "P2",
+      "kind": "CTCF/locus identity confusion through leader anchors",
+      "evidence": "At p=.635 the CTCF leaders visually meet the gold within-domain locus markers around y380, while the green CTCF proteins occupy the loop mouth near y430. Code adds +/- .55 in x and +.7 in y to CTCF position. The cohesin label also uses a fixed off-body point, and the contact label floats .4 above the dashed connector.",
+      "files": ["src/processes/modules/chromatin/tadProcess.js"],
+      "capture": "../browser/full-a-retry-003-tad-cell-stage-4.webp",
+      "whyWrong": "The annotation visually conflates boundary proteins with the selected gold loci, even though the underlying molecular positions are correct.",
+      "repairPlan": "Anchor CTCF to the actual CTCF body, the deleted-site condition to its remaining site marker, cohesin to its hinge, and the contact relationship to its actual dashed connector. Preserve explicit area captions and the depletion explanation. Verify all three conditions."
+    },
+    {
+      "issueId": "20261004-chromatin-04",
+      "modelId": "plantGenome",
+      "severity": "P2",
+      "kind": "object/cargo label anchors outside named geometry",
+      "evidence": "The cytosolic-ribosome leader terminates in empty space between the two ribosomes and crosses the nuclear vicinity. TOC/TIC and TOM/TIM anchors are about one scene unit above/below their membrane channels. Static cargo labels remain inside organelles even when the removed-targeting condition retains cargo in the cytosol.",
+      "files": ["src/processes/modules/chromatin/plantGenomeProcess.js"],
+      "capture": "../browser/full-a-retry-004-plantGenome-plant-end.webp",
+      "whyWrong": "Leader targets identify neither the named channels/ribosomes nor the conditional cargo location. This becomes a condition-dependent compartment annotation error.",
+      "repairPlan": "Anchor genome labels to actual DNA loci inside each organelle, use an actual ribosome target for each cytosolic ribosome, anchor translocase labels to actual pore geometry and track each precursor's actual mid-chain location only while visible. Preserve the Arabidopsis cutaway region caption. Verify both targeting conditions."
+    },
+    {
+      "issueId": "20261004-chromatin-05",
+      "modelId": "plantRdDM",
+      "severity": "P2",
+      "kind": "enzyme/RNA labels retain obsolete or off-body anchors",
+      "evidence": "The DCL3 leader crosses source DNA at y138 while the jaws are near x405,y225. The RDR2 label remains at y294/326, below the coupled RDR2 near y196. AGO4 uses a +.8 offset; DRM2 retains a static anchor despite recruitment; target/scaffold RNA labels also use offset positions.",
+      "files": ["src/processes/modules/chromatin/plantRdDMProcess.js"],
+      "capture": "../browser/full-a-retry-005-plantRdDM-plant-stage-2.webp",
+      "whyWrong": "The labels can misidentify the source DNA as DCL3 and fail to follow the repaired producer and recruited enzyme geometry.",
+      "repairPlan": "Use actual rendered subunit centers for Pol IV, RDR2, DCL3, AGO4, Pol V and DRM2; track the original target cytosine and actual scaffold midpoint; keep the canonical-Arabidopsis note as a region caption. Verify both DRM2 conditions and moving recruitment frames."
+    }
+  ],
+  "sharedEvidence": "Root confirmed native/export leaders both consume label.position as the geometry target; ProcessScene.jsx passes those coordinates directly to capture labels.",
+  "sourceLimit": "These are implementation/render annotation failures. No new biological mechanism claim or external science source is introduced."
+}

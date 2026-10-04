@@ -1,0 +1,26 @@
+{
+  "command": "npm run check",
+  "startedAt": "2026-10-04T03:29:37.962Z",
+  "finishedAt": "2026-10-04T03:37:33.731Z",
+  "exitCode": 0,
+  "log": "evidence/final-check.log",
+  "baselineHead": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "currentHead": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "codeFilesChecked": 198,
+  "changedDuringCheck": [],
+  "addedDuringCheck": [],
+  "removedFromChangedSet": [],
+  "sourceSetStable": true,
+  "before": "evidence/final-code-before-check.json",
+  "after": "evidence/final-code-after-check.json",
+  "gates": [
+    "format:check",
+    "verify",
+    "build",
+    "check:release"
+  ],
+  "limitations": [
+    "Local verification; not a commit, push, hosted deployment or physical-device result.",
+    "finishedAt records observed command completion."
+  ]
+}

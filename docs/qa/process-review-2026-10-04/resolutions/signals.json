@@ -1,0 +1,159 @@
+{
+  "group": "signals",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "phase": "B",
+  "issues": [
+    {
+      "issueId": "20261004-signals-01",
+      "status": "fixed",
+      "changes": "All nuclear-envelope layers now end at the same real open portal. The detailed pore and the complete ERK assembly remain; import aligns and traverses the opening with clearance. Inactive receptor controls retain cytosolic ERK.",
+      "files": [
+        "src/processes/modules/signals/signalTransductionProcess.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "All ERK meshes tested against every envelope/rim/pore mesh at intermediate import samples in all three receptor conditions; no triangle intersections.",
+        "Pre/post nuclear compartment and original inactive, exchange-contact, deterministic-seek checks pass."
+      ],
+      "sourceUrls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC124259/"
+      ],
+      "limitations": [
+        "The route is a teaching schematic, not a resolved NPC transport simulation; root rendered inspection required."
+      ]
+    },
+    {
+      "issueId": "20261004-signals-02",
+      "status": "fixed",
+      "changes": "Moved the complete GATA1 assembly and its short regulatory path into the nuclear compartment without reducing or hiding protein structure.",
+      "files": [
+        "src/processes/modules/signals/differentiationProcess.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "23,320 actual GATA1 vertices are inside the nuclear envelope; actual mesh triangle checks detect no NE intersection.",
+        "Original 1,556,064 DNA surface vertex checks and 144 triangle-pair checks pass."
+      ],
+      "sourceUrls": [
+        "https://academic.oup.com/ajcp/article/147/4/420/3072332"
+      ],
+      "limitations": [
+        "Nuclear localization is supported; exact mouse molecular trajectory and timing remain schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-signals-03",
+      "status": "fixed",
+      "changes": "Replaced overlapping closed ER/carrier/target walls with one full-resolution cutaway membrane field that buds, separates and fuses. MHC remains membrane-inserted while its extracellular domain and peptide stay in the ER/carrier lumen, then face the extracellular space. Peptide TAP entry/loading are continuous and clear the channel; the adjacent compressed Golgi schematic no longer intersects cargo.",
+      "files": [
+        "src/processes/modules/signals/immuneResponseProcess.js",
+        "src/processes/modules/signals/secretoryMembrane.js",
+        "src/processes/modules/signals/science.test.mjs"
+      ],
+      "verification": [
+        "259,204 actual cargo vertices are luminal and actual cargo triangles do not intersect lipid walls; only the specifically named MHC stalk/transmembrane helix are exempted for intended insertion.",
+        "Both epitope branches preserve peptide identity and groove attachment. Piecewise positions are continuous at boundaries. ER bud neck connected at p=.5 and separated at p=.65; extracellular fusion is open at p=.78.",
+        "At p=.819999 to .82 removal of the fused carrier leaves membrane draw count and complete geometry hash unchanged."
+      ],
+      "sourceUrls": [
+        "https://www.rcsb.org/structure/1AO7",
+        "https://www.rcsb.org/structure/1AKJ",
+        "https://www.rcsb.org/structure/1M2V"
+      ],
+      "limitations": [
+        "Secretory routing is explicitly compressed; COPII protein coat details and full ER/Golgi compartments are not reconstructed. Root should inspect budding, lumen orientation, fusion and recognition in continuous playback."
+      ]
+    }
+  ],
+  "additionalRepairs": [
+    {
+      "issueId": "20261004-signals-04",
+      "status": "fixed",
+      "report": "docs/qa/process-review-2026-10-04/evidence/signals/repair-discoveries.json"
+    },
+    {
+      "issueId": "20261004-signals-05",
+      "status": "fixed; fresh English critical and Chinese stage event labels verified",
+      "report": "docs/qa/process-review-2026-10-04/evidence/signals/repair-discoveries.json"
+    },
+    {
+      "issueId": "20261004-signals-06",
+      "status": "fixed; actual-geometry regression and fresh critical images pass; both parent-operated native playback records complete",
+      "report": "docs/qa/process-review-2026-10-04/evidence/signals/repair-discoveries.json"
+    }
+  ],
+  "optimization": {
+    "changes": [
+      "Exact membrane field input cache skips unchanged remesh and GPU buffer version updates.",
+      "Preallocated tetrahedron classification slots retain resolution [40,32,16], triangle emission order and all membrane position/normal buffers.",
+      "Nuclear deformation uses the same vertex transform with analytic inverse-transpose normals and conservative one-time bounds, avoiding repeated whole-mesh normal/bounds scans.",
+      "Secretory membrane precomputes static field values, reuses classification and geometry buffers, and caches equal states at fixed [164,138] resolution."
+    ],
+    "verification": [
+      "Baseline vs optimized complete membrane position and normal arrays byte-identical for single, connected-neck and separated surfaces.",
+      "617,589 deformed-vertex checks verify original position transform, conservative bounds and finite unit normals.",
+      "Smoke/science checks retain finite geometry, fixed object/geometry/material resources, arbitrary-seek byte determinism and original biological regressions."
+    ],
+    "cpuTiming": {
+      "description": "Bounded Node CPU-only diagnostic, eight samples after warmup per state; other agents may be active. Not browser FPS, sustained performance or hardware-normalized comparison.",
+      "sameStateMs": {
+        "apoptosisStress": 0.051922,
+        "differentiationCompetent": 0.018599,
+        "immuneMatched": 0.039458
+      },
+      "changingMs": {
+        "apoptosisStress": 16.325781,
+        "differentiationCompetent": 11.011703,
+        "immuneMatched": 2.970031
+      },
+      "changingRanges": {
+        "apoptosisAndDifferentiation": [
+          0.825,
+          0.881
+        ],
+        "immuneResponse": [
+          0.52,
+          0.576
+        ]
+      },
+      "source": "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-timing.json"
+    }
+  },
+  "verificationCommands": [
+    "node src/processes/modules/signals/science.test.mjs",
+    "node src/processes/modules/signals/smoke.mjs",
+    "node src/processes/modules/signals/labelAnchors.test.mjs",
+    "node src/processes/modules/signals/deformation.test.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/signals/phase-b-optimization.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/signals/phase-b-timing.mjs",
+    "git diff --check -- src/processes/modules/signals",
+    "node src/processes/modules/signals/labelEvents.test.mjs",
+    "node src/processes/modules/signals/apoptosomeCytosol.test.mjs"
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-science.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-smoke.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-labels.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-deformation.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-optimization.json",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-timing.json",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-before.json",
+    "docs/qa/process-review-2026-10-04/evidence/signals/repair-discoveries.json",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-events-before.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-events-apaf-before.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/phase-b-label-events-after.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/apaf-cytosol-before.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/apaf-cytosol-after.log",
+    "docs/qa/process-review-2026-10-04/evidence/signals/apaf-cytosol-after.json",
+    "docs/qa/process-review-2026-10-04/evidence/signals/final-f-rendered-review.json",
+    "docs/qa/process-review-2026-10-04/evidence/browser/conditions-final-f-manifest.json",
+    "docs/qa/process-review-2026-10-04/evidence/browser/full-final-apoptosis-manifest.json"
+  ],
+  "limitations": [
+    "No browser or full workspace suite was run by this owner. The owner inspected saved images and raw fresh apoptosis replay records; root operated native playback and owns integrated tests and broader sustained-performance acceptance.",
+    "Apoptosis active membrane morph still costs about 16.3 ms in the bounded CPU sample; a smooth browser result cannot be inferred from the cache improvement.",
+    "Original Phase A audit and diagnostic evidence preserved. No deployment or commit performed.",
+    "Original full-b3 apoptosis images precede repair 05 and conditions-final-b-016 precedes repair 06; they are retained discovery evidence. Fresh final-f English critical and full-final-apoptosis Chinese images now verify the corrected event labels and Apaf path.",
+    "Fresh closure covers 4 apoptosis sheets / 36 saved images / 13 original-resolution inspections, plus actual-geometry tests and parent-operated completion records. This does not assert personal review of every live frame, every device or all 235 global contexts."
+  ]
+}

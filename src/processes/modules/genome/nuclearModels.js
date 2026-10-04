@@ -7,6 +7,18 @@ const label = (position, zh, en, priority = 2) => ({
 });
 const N = 240,
   STEP = 8 / N;
+function railAnchor(item, mesh, last = false) {
+  const array = mesh.instanceMatrix.array;
+  for (let n = 0; n < mesh.count; n++) {
+    const i = (last ? mesh.count - 1 - n : n) * 16;
+    if (Math.hypot(array[i], array[i + 1], array[i + 2]) < 1e-8) continue;
+    item.position[0] = array[i + 12];
+    item.position[1] = array[i + 13];
+    item.position[2] = array[i + 14];
+    return true;
+  }
+  return false;
+}
 export function createReplication({ rootId = "cell" } = {}) {
   const group = new THREE.Group(),
     k = molecularKit(group);
@@ -215,12 +227,18 @@ export function createReplication({ rootId = "cell" } = {}) {
     point(lx, 3, a);
     ligase.position.copy(a);
     ligase.visible = ligaseActive && progress > 0.9 && progress < 0.99;
-    labels[6].position[0] = fork - 0.8;
-    labels[6].position[1] = 2.0;
+    point(-4, 0, a).toArray(labels[0].position);
+    point(4, 0, a).toArray(labels[1].position);
+    point(-4, 1, a).toArray(labels[2].position);
+    point(4, 1, a).toArray(labels[3].position);
+    labels[4].active = railAnchor(labels[4], strands[2].rail, true);
+    labels[5].active =
+      railAnchor(labels[5], strands[3].rail) ||
+      railAnchor(labels[5], primer.rail);
+    helicase.position.toArray(labels[6].position);
     labels[6].active = helicase.visible;
-    labels[7].position[0] = right - 0.15;
-    labels[7].active = progress > 0.24 && progress < 0.91;
-    labels[8].position[0] = lx;
+    labels[7].active = railAnchor(labels[7], primer.rail);
+    ligase.position.toArray(labels[8].position);
     labels[8].active = ligase.visible;
     group.userData = {
       rootId,
@@ -331,7 +349,8 @@ export function createRepair({ rootId = "cell" } = {}) {
     opened = 0,
     released = 0,
     fill = 0,
-    seal = 0;
+    seal = 0,
+    incisions = 0;
   const left = -4 / 3,
     right = 4 / 3;
   function point(x, strand, out, detached = false) {
@@ -361,7 +380,7 @@ export function createRepair({ rootId = "cell" } = {}) {
       const incision =
         !replacement &&
         strand === 0 &&
-        p >= 0.43 &&
+        incisions === 2 &&
         ((Math.abs(center - left) < 0.05 && p < 0.64) ||
           (Math.abs(center - right) < 0.05 && p < 0.97));
       if (replacement && center > right - 0.07 && seal < 1) visible = false;
@@ -394,6 +413,7 @@ export function createRepair({ rootId = "cell" } = {}) {
     const raw = clamp(progress),
       blocked = parameters.incision === "blocked";
     p = blocked ? Math.min(raw, 0.4) : raw;
+    incisions = p >= 0.43 ? 2 : 0;
     opened = ease(p, 0.15, 0.34) * (1 - ease(p, 0.64, 0.88));
     released = ease(p, 0.48, 0.63);
     fill = ease(p, 0.64, 0.87);
@@ -419,7 +439,7 @@ export function createRepair({ rootId = "cell" } = {}) {
     for (let i = 0; i < 4; i++) {
       const x = (i < 2 ? left : right) + (i % 2 ? 1 : -1) * 0.06;
       point(x, 0, a);
-      k.bead(cutEnds, i, a, p >= 0.43 && p < 0.64 ? 0.09 : 0);
+      k.bead(cutEnds, i, a, incisions === 2 && p < 0.64 ? 0.09 : 0);
     }
     k.finish(cutEnds);
     const tip = left + (right - left) * fill;
@@ -430,11 +450,21 @@ export function createRepair({ rootId = "cell" } = {}) {
     ligase.position.copy(a);
     ligase.visible = p >= 0.89 && p < 0.99;
     labels[4].active = p < 0.43;
-    labels[6].active = p >= 0.3 && p < 0.54;
+    point(-4, 0, a).toArray(labels[0].position);
+    point(4, 0, a).toArray(labels[1].position);
+    point(-4, 1, a).toArray(labels[2].position);
+    point(4, 1, a).toArray(labels[3].position);
+    lesion.position.toArray(labels[4].position);
+    point(0, 1, a).toArray(labels[5].position);
+    point(left, 0, a).toArray(labels[6].position);
+    labels[6].active = incisions === 2 && p < 0.54;
+    point(0, 0, a, true).toArray(labels[7].position);
     labels[7].active = p >= 0.54 && p < 0.8;
     labels[8].active = polymerase.visible;
-    labels[8].position[0] = tip;
+    polymerase.position.toArray(labels[8].position);
+    ligase.position.toArray(labels[9].position);
     labels[9].active = ligase.visible;
+    lesion.position.toArray(labels[10].position);
     labels[10].active = blocked && raw > 0.4;
     group.userData = {
       rootId,
@@ -443,7 +473,7 @@ export function createRepair({ rootId = "cell" } = {}) {
       damagedStrand: "upper-5prime-to-3prime",
       intactTemplate: true,
       incisionBlocked: blocked,
-      incisions: p >= 0.43 ? 2 : 0,
+      incisions,
       excised: released === 1,
       replacementFraction: fill,
       synthesisDirection: "5-prime-to-3-prime",

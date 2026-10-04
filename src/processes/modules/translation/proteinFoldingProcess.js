@@ -1,6 +1,7 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { ribosomeAssembly } from "./ribosomeAssembly.js";
 import { articulatedChain } from "./mechanics.js";
+import { labelAnchors, surfacePoint } from "./labelAnchors.js";
 import {
   cutawayLobe,
   helix,
@@ -46,6 +47,8 @@ function create({ rootId = "cell" } = {}) {
   continuation.name = "nascent-chain-unshown-upstream-continuation";
   const n = 76,
     chain = articulatedChain(k, n, 0.07, chainMat);
+  chain.beads.forEach((o, i) => (o.name = `folding-chain-residue-${i}`));
+  chain.links.forEach((o, i) => (o.name = `folding-chain-backbone-${i}`));
   const updatePeptideDetails = peptideSidechains(k, chain);
   // A short hydrophobic client segment, highlighted without assigning a real sequence.
   for (let i = 37; i <= 44; i++) {
@@ -82,7 +85,7 @@ function create({ rootId = "cell" } = {}) {
     if (t < 0.32) {
       const u = t / 0.32;
       x = 0.75 + u * 1.7;
-      y = 0.45 + 0.43 * Math.sin(u * 6 * Math.PI);
+      y = 0.45 - 0.43 * Math.sin(u * 6 * Math.PI);
       z = 0.25 + 0.43 * Math.cos(u * 6 * Math.PI);
     } else if (t < 0.42) {
       const u = (t - 0.32) / 0.1;
@@ -113,11 +116,12 @@ function create({ rootId = "cell" } = {}) {
     folded.push(new THREE.Vector3(x, y, z));
   }
   const hsp = new THREE.Group();
+  hsp.name = "Hsp70-chaperone";
   group.add(hsp);
   // Open substrate groove at x≈0.15 and a distinct nucleotide-binding domain below.
   const domainShell = k.material("#86a69a", { side: THREE.DoubleSide });
   // Beta-sandwich substrate-binding domain: two pleated faces leave its groove open.
-  sheet(
+  const substrateSheet = sheet(
     k,
     hsp,
     [0.16, -0.73, 0.23],
@@ -126,6 +130,7 @@ function create({ rootId = "cell" } = {}) {
     7,
     k.material("#73a095", { side: THREE.DoubleSide }),
   );
+  substrateSheet.name = "Hsp70-substrate-sheet";
   sheet(
     k,
     hsp,
@@ -186,6 +191,7 @@ function create({ rootId = "cell" } = {}) {
     hsp,
   );
   const lid = new THREE.Group();
+  lid.name = "Hsp70-alpha-lid";
   hsp.add(lid);
   lid.position.set(-0.51, -0.39, -0.3);
   for (let j = 0; j < 3; j++) {
@@ -194,26 +200,36 @@ function create({ rootId = "cell" } = {}) {
       const t = i / 36;
       points.push([
         0.12 + t * 1.25,
-        0.1 + j * 0.115 + 0.052 * Math.sin(t * 12 * Math.PI),
+        0.1 + j * 0.115 - 0.052 * Math.sin(t * 12 * Math.PI),
         0.05 + 0.065 * Math.cos(t * 12 * Math.PI),
       ]);
     }
-    k.tube(points, 0.036, lidMat, lid, 50);
+    const lidHelix = k.tube(points, 0.036, lidMat, lid, 50);
+    lidHelix.name = `Hsp70-lid-helix-${j}`;
   }
   const nucleotide = new THREE.Group();
+  nucleotide.name = "Hsp70-nucleotide";
   hsp.add(nucleotide);
   nucleotide.position.set(-0.44, -1.57, 0.31);
-  k.ball([-0.17, 0, 0], [0.13, 0.16, 0.07], k.material("#a99bb9"), nucleotide);
+  const nucleotideBase = k.ball(
+    [-0.17, 0, 0],
+    [0.13, 0.16, 0.07],
+    k.material("#a99bb9"),
+    nucleotide,
+  );
+  nucleotideBase.name = "Hsp70-nucleotide-base";
   const phosphate = [];
   for (let j = 0; j < 3; j++)
     phosphate.push(
       k.ball([0.04 + j * 0.15, 0, 0], 0.08, k.material("#d1b05f"), nucleotide),
     );
   const jProtein = new THREE.Group();
+  jProtein.name = "folding-J-protein";
   group.add(jProtein);
   k.ball([0, 0, 0], [0.21, 0.48, 0.24], k.material("#a99abc"), jProtein);
   k.ball([0.17, 0.4, 0], [0.27, 0.22, 0.26], k.material("#a99abc"), jProtein);
   const nef = new THREE.Group();
+  nef.name = "folding-exchange-factor";
   group.add(nef);
   k.ball([0, 0, 0], [0.28, 0.49, 0.23], k.material("#8ba3bd"), nef);
   k.ball([0.27, 0.3, 0], [0.27, 0.23, 0.23], k.material("#8ba3bd"), nef);
@@ -308,6 +324,17 @@ function create({ rootId = "cell" } = {}) {
       1,
     ),
   );
+  const updateLabelAnchors = labelAnchors([
+    [labels[0], ribosome],
+    [labels[1], chain.beads[75]],
+    [labels[2], chain.beads[40]],
+    [labels[3], substrateSheet, surfacePoint(substrateSheet)],
+    [labels[4], jProtein],
+    [labels[5], nef],
+    [labels[6], chain.beads[12]],
+    [labels[7], chain.beads[0]],
+    [labels[8], nucleotideBase],
+  ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       held = parameters.cycle === "hold";
@@ -349,13 +376,12 @@ function create({ rootId = "cell" } = {}) {
     });
     labels[1].active = p < 0.7 || held;
     labels[2].active = p < 0.72 || held;
-    labels[3].position[1] = -2.5 - 1.0 * exchange;
     labels[4].active = jProtein.visible;
     labels[5].active = nef.visible;
     labels[6].active = fold > 0.8;
     labels[7].active = p < 0.5;
     labels[8].active = bind > 0.8 && exchange < 0.6;
-    labels[8].position[1] = -1.5 - 0.75 * (1 - bind) - exchange;
+    updateLabelAnchors();
     group.userData = {
       process: "proteinFolding",
       rootId,
@@ -469,6 +495,14 @@ export default {
     },
   ],
   sources: [
+    {
+      title: "EMBL-EBI · Alpha helix: handedness and protein geometry",
+      url: "https://www.ebi.ac.uk/training/online/courses/foundations-protein-structure/principles-of-protein-folding-and-architecture/secondary-structure-%CE%B1-helices-and-%CE%B2-sheets/%CE%B1-helix/",
+    },
+    {
+      title: "Human HSP70 substrate-binding domain with peptide substrate",
+      url: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0103518",
+    },
     {
       title: "RCSB 4UG0 · Human 80S ribosome",
       url: "https://www.rcsb.org/structure/4UG0",

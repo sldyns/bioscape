@@ -1,0 +1,34 @@
+{
+  "group": "plantGrowth",
+  "issues": [
+    {
+      "issueId": "20261004-plantGrowth-06",
+      "severity": "P2",
+      "kind": "label_anchor_misdirection",
+      "models": [
+        "plantDivision",
+        "cellWallGrowth",
+        "doubleFertilization",
+        "fungalHyphae"
+      ],
+      "evidence": "Legacy label.position values placed words away from geometry. Examples: plantDivision duplicated chromosome label [.2,1.65,.75] while early chromosomes lie near y=0; CESA label y=.35 while its selected moving rosette is at y=-1.55; central nucleus label [1.52,.82,.3] rather than its actual nucleus; Spitzenkorper label followed tip-.6 at y=.78,z=.7 while the cluster is tip-.27 near y=z=0. The player uses these coordinates as leader endpoints.",
+      "fix": "Bind named labels to actual target vertices with complete local hierarchy/instance transforms, switching biological targets when the process identity changes. Bind apical fusion to the current actual membrane surface.",
+      "verification": "fusion.test.mjs actual world-coordinate assertions in all four models and condition branches; imported by science.test.mjs.",
+      "status": "fixed",
+      "sourceBoundary": "Confirmed by model geometry and known player label endpoint contract; no new biological claim and no change to Phase A."
+    },
+    {
+      "issueId": "20261004-plantGrowth-07",
+      "severity": "P2",
+      "kind": "stage_identity_label",
+      "models": [
+        "plantDivision"
+      ],
+      "evidence": "full-b3-009-plantDivision-plant-stage-3.webp at p=.335 shows two separated daughter chromosome groups while the visible label still reads 已复制的染色体. Code begins separation after p=.13 but originally left labels[1].text unchanged.",
+      "fix": "Keep the current real chromosome anchor and geometry. Mutate the existing bilingual text object to 子染色体 / Daughter chromosomes when separation > 0, restoring 已复制的染色体 / Duplicated chromosomes when seeking back to p<=.13.",
+      "verification": "New fusion.test.mjs regression fails against the old code at p=.130001, then passes with the fix across .129999/.13/.130001 and nonmonotonic seeks. Full owned science and smoke pass.",
+      "status": "fixed",
+      "sourceBoundary": "Observed default zh image plus exact separation code; no new biological mechanism or geometry. Recorded after immutable Phase A."
+    }
+  ]
+}

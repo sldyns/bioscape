@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { dynamicSegments, chloroplastFactory } from "./structuralDetail.js";
+import { bindPointLabel, bindVertexLabel } from "./labelAnchors.js";
 // Smooth kidney-shaped swept surfaces. Geometry buffers are allocated only at construction.
 function kidneyGeometry(side, cutaway = false) {
   const g = new THREE.BufferGeometry(),
@@ -170,6 +171,12 @@ const process = {
       url: "https://www.nature.com/articles/nature06608",
     },
   ],
+  legend: [
+    { color: "#a698b2", text: b("K⁺ 示踪", "K⁺ tracers") },
+    { color: "#baa574", text: b("配对阴离子示踪", "Counter-anion tracers") },
+    { color: "#659ebc", text: b("水示踪", "Water tracers") },
+    { color: "#cd9478", text: b("H⁺ 示踪", "H⁺ tracers") },
+  ],
   create() {
     const k = sceneKit(),
       { group } = k;
@@ -234,6 +241,10 @@ const process = {
       ions.push(
         k.ball([0, 0, 0], 0.066, k.material(i % 2 ? "#baa574" : "#a698b2")),
       );
+      ions.at(-1).name =
+        i % 2
+          ? "guard-cell counter-anion tracer"
+          : "guard-cell potassium tracer";
       water.push(k.ball([0, 0, 0], 0.05, k.material("#659ebc")));
     }
     for (let i = 0; i < 8; i++)
@@ -258,10 +269,30 @@ const process = {
       ),
       k.label([0, -0.05, 0.65], "气孔孔隙", "Stomatal pore", 3),
       k.label([1.35, -2.15, 0.6], "向孔侧厚壁", "Thick pore-facing wall", 2),
-      k.label([-3.05, 0.2, 0.7], "K⁺ / 阴离子", "K⁺ / counter-anions", 2),
-      k.label([2.8, 1.15, 0.6], "水 · 膨压", "Water · turgor", 2),
+      k.label(
+        [-3.05, 0.2, 0.7],
+        "离子通量 · K⁺ / 阴离子",
+        "Ion flux · K⁺ / anions",
+        2,
+      ),
+      k.label(
+        [2.8, 1.15, 0.6],
+        "液泡水分 · 膨压",
+        "Vacuolar water · turgor",
+        2,
+      ),
       k.label([-2.65, 2.75, 0.8], "蓝光", "Blue light", 1),
       k.label([2.65, 2.65, 0.8], "ABA", "ABA", 2),
+    ];
+    const updateLabelAnchors = [
+      bindVertexLabel(labels[0], cells[0].body, 8 * 25 + 12),
+      bindVertexLabel(labels[2], cells[1].wall, 44 * 9 + 2),
+      // A flux-region anchor belongs at the membrane crossing; it does not
+      // pretend that one transient tracer is the whole mixed-ion cohort.
+      bindVertexLabel(labels[3], cells[0].body, 32 * 25),
+      bindVertexLabel(labels[4], cells[1].vac, 26 * 25 + 6),
+      bindPointLabel(labels[5], light, [0, 0, 0]),
+      bindPointLabel(labels[6], aba, [0, 0, 0]),
     ];
     function update(value, parameters = {}) {
       const p = clamp(value),
@@ -323,8 +354,9 @@ const process = {
         efflux = hasABA && p > 0.66 && p < 0.93;
       ions.forEach((m, i) => {
         m.visible = influx || efflux;
-        const s = i % 2 ? -1 : 1,
-          t = (p * 5 + i / 8) % 1,
+        // Both ion classes occur on each side of the guard-cell pair.
+        const s = i < 8 ? -1 : 1,
+          t = (p * 5 + (i % 8) / 8) % 1,
           inner = 0.6 + 0.68 * o;
         m.position.set(
           s * (efflux ? inner + (2.85 - inner) * t : 2.85 - (2.85 - inner) * t),
@@ -356,6 +388,8 @@ const process = {
       aba.visible = hasABA && p >= 0.61;
       labels[5].active = light.visible;
       labels[6].active = aba.visible;
+      labels[3].active = influx || efflux;
+      updateLabelAnchors.forEach((updateAnchor) => updateAnchor());
       group.userData = {
         process: "stomata",
         specimen: "Arabidopsis dicot guard-cell pair",

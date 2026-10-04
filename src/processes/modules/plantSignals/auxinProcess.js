@@ -1,6 +1,12 @@
 import { tir1Pocket } from "./tir1Pocket.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { helix, lrr, domain, instances, instanceWriter } from "./structures.js";
+import {
+  helix,
+  domain,
+  instances,
+  instanceWriter,
+  bindSurfaceLabel,
+} from "./structures.js";
 
 export default {
   id: "auxin",
@@ -94,6 +100,16 @@ export default {
         "Spartz et al. (2014) SAUR inhibition of PP2C-D phosphatases activates plasma membrane H+-ATPases",
       url: "https://pubmed.ncbi.nlm.nih.gov/24858935/",
     },
+    {
+      title:
+        "Korasick et al. (2014) Molecular basis for AUXIN RESPONSE FACTOR protein interaction and the control of auxin response repression",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3986151/",
+    },
+    {
+      title:
+        "de la Peña et al. (2018) Substrate-engaged 26S proteasome structures reveal mechanisms for ATP-hydrolysis-driven translocation",
+      url: "https://www.lander-lab.com/pdfs/30309908.pdf",
+    },
   ],
   create() {
     const k = sceneKit(),
@@ -117,7 +133,10 @@ export default {
     receptor.name = "tir1-receptor";
     receptor.position.set(-2.3, 1.25, 0.15);
     group.add(receptor);
-    tir1Pocket(k, receptor, { material: teal, name: "tir1-pocket-surface" });
+    const receptorAtoms = tir1Pocket(k, receptor, {
+      material: teal,
+      name: "tir1-pocket-surface",
+    });
     domain(k, receptor, [-0.35, -0.56, -0.1], [0.43, 0.42, 0.6], teal, green); // F-box attachment
     domain(k, group, [-2.83, 0.52, -0.18], [0.65, 0.45, 0.7], green, cream); // ASK1 adaptor
     // Curved cullin scaffold: serial helical domains bridge receptor to RING/E2.
@@ -145,7 +164,7 @@ export default {
     const auxin = new THREE.Group();
     auxin.name = "auxin-ligand";
     group.add(auxin);
-    tir1Pocket(k, auxin, {
+    const auxinAtoms = tir1Pocket(k, auxin, {
       part: "auxin",
       material: gold,
       name: "auxin-2p1q-atoms",
@@ -175,11 +194,28 @@ export default {
       ];
     };
     const arf = new THREE.Group();
+    arf.name = "arf";
     arf.position.set(-1.8, -1.56, 0);
     group.add(arf);
-    domain(k, arf, [-0.2, -0.12, -0.05], [0.76, 0.68, 0.75], green, teal);
+    const arfDNA = domain(
+      k,
+      arf,
+      [-0.2, -0.12, -0.05],
+      [0.76, 0.68, 0.75],
+      green,
+      teal,
+    );
+    arfDNA.name = "arf-dna-domain";
     domain(k, arf, [0.22, -0.11, -0.08], [0.68, 0.62, 0.7], green, teal);
-    domain(k, arf, [0.36, 0.27, 0.02], [0.47, 0.45, 0.5], green, cream); // PB1 interaction domain
+    const arfPB1 = domain(
+      k,
+      arf,
+      [0.36, 0.27, 0.02],
+      [0.47, 0.45, 0.5],
+      green,
+      cream,
+    );
+    arfPB1.name = "arf-pb1";
     k.tube(
       [
         [0.07, 0.12, 0],
@@ -200,7 +236,7 @@ export default {
       name: "iaa7-degron",
     });
     const bodyOffset = new THREE.Vector3(0.55, 0.1, 1.15);
-    domain(
+    const repressorBody = domain(
       k,
       repressor,
       bodyOffset.toArray(),
@@ -208,6 +244,7 @@ export default {
       purple,
       k.material("#c5b0ce"),
     );
+    repressorBody.name = "aux-iaa-body";
     k.tube(
       [
         [0.22, 0.08, 1.18],
@@ -260,6 +297,7 @@ export default {
       tagUp = new THREE.Vector3(0, 1, 0);
     // 20S barrel: alpha7-beta7-beta7-alpha7 with a visible front cutaway.
     const proteasome = new THREE.Group();
+    proteasome.name = "26s-proteasome";
     proteasome.position.set(0.83, 1.04, -0.02);
     group.add(proteasome);
     const protSub = new THREE.SphereGeometry(1, 20, 14),
@@ -313,17 +351,26 @@ export default {
           teal,
         );
     }
-    const unfoldedSubstrate = k.tube(
-      [
-        [0.83, 2.45, 0.04],
-        [0.87, 2.22, 0.06],
-        [0.8, 1.99, 0.04],
-        [0.83, 1.72, 0.01],
-        [0.83, 1.3, 0],
-      ],
-      0.033,
-      purple,
-    );
+    // Reveal one connected substrate from the remaining compact domain into
+    // the axial pore, then feed its tail through the core. Rounded joints keep
+    // the 64-segment cartoon smooth without allocating anything during update.
+    const unfoldedSubstrate = new THREE.Group();
+    unfoldedSubstrate.name = "unfolded-aux-iaa";
+    group.add(unfoldedSubstrate);
+    const substrateSegments = instances(
+        unfoldedSubstrate,
+        k.cylinder,
+        purple,
+        64,
+        "unfolded-aux-iaa-backbone",
+      ),
+      substrateJoints = instances(
+        unfoldedSubstrate,
+        k.sphere,
+        purple,
+        65,
+        "unfolded-aux-iaa-joints",
+      );
     const fragments = Array.from({ length: 6 }, (_, i) =>
       k.ball([0.75, 1.1, 0], 0.055, purple),
     );
@@ -368,13 +415,14 @@ export default {
           [0, 0, 0],
           g,
         );
+        wall.name = `shoot-cell-wall-${c}-${r}`;
         const edges = new THREE.LineSegments(
           new THREE.EdgesGeometry(wall.geometry),
           new THREE.LineBasicMaterial({ color: c ? "#84976e" : "#a7b096" }),
         );
         g.add(edges);
         k.ball([0.09, -0.13, 0.03], [0.07, 0.085, 0.07], green, g);
-        cells.push({ g, c, r });
+        cells.push({ g, c, r, wall });
       }
     const labels = [
       k.label(
@@ -399,13 +447,52 @@ export default {
         1,
       ),
       k.label(
-        [-3.4, -2.9, 0],
+        [-2.75, -2.55, -0.25],
         "核内 · 拟南芥幼茎",
         "Nucleus · Arabidopsis shoot",
         1,
       ),
       k.label([-3.1, 2.85, 0.1], "生长素", "Auxin", 1),
     ];
+    const atomMatrix = new THREE.Matrix4();
+    const frontAtom = (mesh) => {
+      let selected = 0,
+        front = -Infinity;
+      for (let i = 0; i < mesh.count; i++) {
+        mesh.getMatrixAt(i, atomMatrix);
+        const z = atomMatrix.elements[14] + atomMatrix.elements[10];
+        if (z > front) {
+          front = z;
+          selected = i;
+        }
+      }
+      return selected;
+    };
+    const proteasomeFront = proteasome.children
+      .filter((o) => o.geometry === protSub)
+      .reduce(
+        (front, o) => (!front || o.position.z > front.position.z ? o : front),
+        null,
+      );
+    const labelAnchors = [
+      bindSurfaceLabel(
+        labels[0],
+        receptorAtoms,
+        [0, 0, 1],
+        frontAtom(receptorAtoms),
+      ),
+      bindSurfaceLabel(labels[1], proteasomeFront, [0, 0, 1]),
+      bindSurfaceLabel(labels[2], arfDNA.children[0], [0, 0, 1]),
+      bindSurfaceLabel(labels[3], repressorBody.children[0], [0, 0, 1]),
+      bindSurfaceLabel(labels[4], rnaNucleotides, [0, 0, 1], 39),
+      bindSurfaceLabel(
+        labels[5],
+        cells.find(({ c, r }) => c === 1 && r === 2).wall,
+        [0.255, 0.3, 0.175],
+      ),
+      bindSurfaceLabel(labels[7], auxinAtoms, [0, 0, 1], frontAtom(auxinAtoms)),
+    ];
+    // Label 6 describes the open nuclear region/specimen, not a molecule.
     return {
       group,
       camera: { position: [0, 1.1, 12.4], target: [-0.15, 0, 0] },
@@ -420,6 +507,8 @@ export default {
           detach = on ? ease(p, 0.61, 0.63) : 0,
           tx = on ? ease(p, 0.71, 0.88) : 0,
           growth = on ? ease(p, 0.88, 1) : 0;
+        const unfold = on ? ease(p, 0.625, 0.645) : 0,
+          tailFeed = ease(loss, 0.72, 1);
         auxin.visible = on;
         auxin.position.set(
           -3.25 + bind * 0.95,
@@ -429,11 +518,13 @@ export default {
         const substrateScale = Math.max(0.001, 1 - loss);
         repressor.position.set(
           -1.99 - bind * 0.31 + carry * 2.58,
-          -1.39 + bind * 2.64 + carry * 0.75,
+          -0.96 + bind * 2.21 + carry * 0.75,
           -1.13 + bind * 1.28 - carry * 1.18,
         );
         // Hold the compact domain at the entrance while only substrate unfolds.
         repressor.position.addScaledVector(bodyOffset, 1 - substrateScale);
+        repressor.position.y -= tailFeed * 0.8;
+        repressor.position.z -= tailFeed * 0.12;
         repressor.scale.setScalar(substrateScale);
         repressor.visible = loss < 0.995;
         corepressor.visible = bind < 0.5;
@@ -468,9 +559,30 @@ export default {
           Math.max(tagLength, 0.00001),
           0.025,
         );
-        unfoldedSubstrate.visible = loss > 0.02 && loss < 0.98;
-        unfoldedSubstrate.scale.y = 1 - loss * 0.2;
-        unfoldedSubstrate.position.y = loss * 0.2;
+        const threadWeight =
+            ease(unfold, 0, 0.08) * (1 - ease(tailFeed, 0.92, 1)),
+          threadRadius = 0.033 * threadWeight;
+        unfoldedSubstrate.visible = on && threadWeight > 0;
+        const substratePoint = (t) => [
+          tagA.x +
+            (0.83 - tagA.x) * t * unfold +
+            0.022 * Math.sin(t * Math.PI * 2) * unfold * (1 - tailFeed),
+          tagA.y + (1.3 - tagA.y) * t * unfold,
+          tagA.z * (1 - t * unfold),
+        ];
+        for (let i = 0; i <= 64; i++) {
+          writer.bead(substrateJoints, i, substratePoint(i / 64), threadRadius);
+          if (i < 64)
+            writer.segment(
+              substrateSegments,
+              i,
+              substratePoint(i / 64),
+              substratePoint((i + 1) / 64),
+              threadRadius,
+            );
+        }
+        writer.finish(substrateSegments);
+        writer.finish(substrateJoints);
         for (let i = 0; i < fragments.length; i++) {
           const f = fragments[i];
           f.visible = loss > 0.05 && p < 0.83;
@@ -552,14 +664,10 @@ export default {
           g.scale.y = stretch;
           g.position.y = -1.2 + r * 0.67 * stretch;
         }
-        labels[3].position = [
-          repressor.position.x,
-          repressor.position.y + 0.48,
-          0.35,
-        ];
-        labels[3].active = loss < 0.95;
-        labels[4].active = tx > 0.08;
-        labels[7].active = on;
+        for (const anchor of labelAnchors) anchor();
+        labels[3].active = repressor.visible && substrateScale > 0.05;
+        labels[4].active = rnaNucleotides.visible && tx > 0.08;
+        labels[7].active = auxin.visible;
         group.userData = {
           process: "auxin",
           species: "Arabidopsis thaliana",

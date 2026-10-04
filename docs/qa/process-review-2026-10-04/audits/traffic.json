@@ -1,0 +1,146 @@
+{
+  "group": "traffic",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "endocytosis",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian LDL receptor-mediated uptake through initial early-endosome sorting; one default scenario and no controls.",
+      "checks": [
+        "Read process implementation and refinement contracts plus both science review standards.",
+        "Read both language introductions, every stage, legend, labels and current entries; no context overrides or condition controls exist.",
+        "Resolved actual processesByRoot at runtime: cell is the sole root for each model, including inspection of specialized-root registrations.",
+        "Traced local membrane, fusion profile, molecule and protein-coordinate helpers through update, including topology, visible actors, all hard switches and terminal states.",
+        "Fresh 0..1 grid with stage-adjacent and hard-switch samples confirms finite buffers and stable node/geometry/material identities; repeated irregular seeks are deterministic.",
+        "Ran group smoke and fusion-profile tests; inspected existing scientific tests without treating past corrections or metadata as proof.",
+        "LDLR ectodomain faces extracellular/luminal side; cytosolic tail/adaptor and coat placement traced. Distinct receptor anchors follow the common endosomal profile after fusion.",
+        "LDL binding, enclosure, coat loss, carrier travel, endosomal release and recycling-domain separation reviewed; terminal LDL remains luminal and recycling beyond sorting is explicitly omitted.",
+        "Read six stage entries in both languages. Counts of three particles/receptors and lattice hubs are schematic and make no stoichiometric claim.",
+        "Fresh sweep: 130 samples; finite geometry, stable inventory and deterministic repeated seeks passed."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265984/",
+          "title": "Cryo-EM structures of membrane-bound dynamin in a post-hydrolysis state primed for membrane fission",
+          "supports": "Primary cryo-EM and cryo-ET study establishes dynamin polymer surrounding and constricting the membrane neck. Opened PMC page; primary abstract additionally retrieved via Europe PMC for PMID 38663399 and retained locally."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/19674976/",
+          "title": "Mechanism of LDL binding and release probed by structure-based mutagenesis of the LDL receptor",
+          "supports": "Primary mutagenesis supports binding at neutral pH, acidic endosomal ligand release and folded-back LDLR conformation. Browser opening was intermittently challenged; the complete primary abstract was retrieved and read through Europe PMC and preserved."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3090388/",
+          "title": "Three-Dimensional cryoEM Reconstruction of Native LDL Particles",
+          "supports": "Opened primary cryo-EM study describes a neutral-lipid core, phospholipid monolayer and one ApoB-100 polypeptide; supports the declared schematic particle identity, not exact atomic geometry."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-traffic-01",
+          "severity": "P1",
+          "kind": "membrane topology and causal motion",
+          "file": "src/processes/modules/traffic/endocytosisProcess.js",
+          "location": "lines 90-127: plane profile and dynamin collar update",
+          "evidence": "The collar is fixed at world y=0.65 and has radius 0.22 before scalar constriction. At p=0.30 the actual rendered membrane midplane has radius 0.695274 there, whereas the complete conservative collar radial extent is only 0.273; at p=0.34 these values are 0.422926 and 0.273. The collar therefore occupies the extracellular pit lumen instead of wrapping the cytosolic neck. At p=0.39..0.429999 every membrane vertex is identical while collar center radius changes from 0.134067 to 0.072600. The collar also stays visible until .44 despite scission at .43. Measurements are in evidence/traffic/diagnostic.json.",
+          "whyWrong": "The scene says dynamin constricts the membrane neck, but places it inside the invagination and independently shrinks it through an unchanged membrane. This reverses the relevant membrane sidedness and depicts constriction without membrane constriction.",
+          "fix": "Drive the actual connected membrane neck and the cytosolic dynamin collar from one constriction state. Derive collar anchors/radius from the actual neck surface with outward clearance; recruit only at that physical neck and remove/disassemble coherently at scission. Preserve the open-to-sealed cargo topology and a smooth membrane continuation to the detached carrier.",
+          "verification": "Across recruitment, every constriction sample and scission-adjacent frames, measure collar vertices against the actual membrane surface/neck cross-sections, verify cytosolic placement and coupled decreasing membrane/collar radius, and reject the original p=.30/.34 luminal position and unchanged .39..43 membrane. Check bound cargo and receptor sidedness during any neck-profile repair.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC11265984/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "Confirmed independent collar shrinkage and membrane-side failure under 20261004-traffic-01.",
+          "Inspected .12/.29/.43/.44/.45/.49/.54/.65/.67/.73/.76/.9/.96 switches/eases, with stage-adjacent numeric samples."
+        ],
+        "limits": [
+          "No rendered/browser review or isolated frame-rate benchmark; root integrator owns those gates.",
+          "No claim that sampled buffers prove every unsampled vertex/time invariant; explicit formulas were reviewed alongside samples."
+        ]
+      },
+      "limitations": [
+        "Receptor domains, dynamin/clathrin subunits, membrane scale and LDL ApoB path remain declared schematics, not fitted atomic structures.",
+        "No GTP/ATP molecules, quantitative kinetic rates or post-sorting recycling transport are shown; these omissions do not by themselves change the demonstrated pathway."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "autophagy",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mammalian macroautophagy of an illustrative damaged cytosolic enzyme aggregate; one default scenario and no controls.",
+      "checks": [
+        "Read process implementation and refinement contracts plus both science review standards.",
+        "Read both language introductions, every stage, legend, labels and current entries; no context overrides or condition controls exist.",
+        "Resolved actual processesByRoot at runtime: cell is the sole root for each model, including inspection of specialized-root registrations.",
+        "Traced local membrane, fusion profile, molecule and protein-coordinate helpers through update, including topology, visible actors, all hard switches and terminal states.",
+        "Fresh 0..1 grid with stage-adjacent and hard-switch samples confirms finite buffers and stable node/geometry/material identities; repeated irregular seeks are deterministic.",
+        "Ran group smoke and fusion-profile tests; inspected existing scientific tests without treating past corrections or metadata as proof.",
+        "Inspected growing connected phagophore rims, separate inner/outer bilayers at closure, outer fusion and persistent inner barrier. The anterior sector is an explicitly disclosed observation cut.",
+        "Inner-membrane opening/removal .71..8 precedes protease movement .8..9 and cargo hydrolysis .9..995. Hydrolases initially reside in the lysosomal lumen and the target paths pass through the common lumen.",
+        "Read seven stage entries in both languages, TPI and cathepsin-D provenance, peptide-product labels and the omitted return transport boundary.",
+        "Fresh sweep: 133 samples; finite geometry, stable inventory and deterministic repeated seeks passed."
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/s41467-024-52049-3",
+          "title": "The V-ATPase complex component RNAseK is required for lysosomal hydrolase delivery and autophagosome degradation",
+          "supports": "Primary study supports inner autophagosomal membrane disintegration exposing engulfed cargo while the outer limiting membrane retains hydrolases. Full PMC11374810 XML was retrieved through Europe PMC and relevant text read after browser challenges."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1HTI",
+          "title": "RCSB PDB 1HTI: human triosephosphate isomerase",
+          "supports": "Opened depositor structure and primary abstract identify a human TPI reference. The product explicitly separates native backbone provenance from illustrative damage and aggregate placement."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1LYA",
+          "title": "RCSB PDB 1LYA: human cathepsin D",
+          "supports": "Opened depositor entry and primary abstract identify the two-chain human lysosomal aspartic protease; the helper normalizes both chains in one common frame."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-traffic-02",
+          "severity": "P2",
+          "kind": "continuous playback and persistent membrane attachments",
+          "file": "src/processes/modules/traffic/autophagyProcess.js",
+          "location": "lines 186-219: pump and glycan pre/post-fusion parameterization",
+          "evidence": "Across p=.65-1e-8 to p=.65 the same visible glycan group jumps by up to 2.369646 world units, while the V-ATPase jumps 0.892791. The pre-fusion sphere parameter t is reused directly on the entire merged envelope, so membrane-bound actors on the lysosome abruptly reappear across the former autophagosome region. This is a finite jump at a fixed threshold, not fast but continuous movement. Before/after coordinates are retained in evidence/traffic/diagnostic.json.",
+          "whyWrong": "These actors are continuously visible attached membrane structures. An arbitrary change of surface parameterization cannot physically move them across the organelle at fusion, and creates a large playback discontinuity even as the surrounding profile is subsequently interpolated smoothly.",
+          "fix": "Preserve every lysosomal membrane actor world anchor at the fusion threshold, map each to the corresponding right-lobe coordinate of the common envelope and then move it continuously on the changing rendered surface. Derive orientation from the same surface as needed. Review the small pre-fusion envelope gap and nascent neck while checking the fusion frame, without reducing detail.",
+          "verification": "A regression must compare actual world transforms at .65-epsilon, .65 and .65+epsilon and bound displacement in proportion to the interval; verify each glycan base and pump membrane rotor remains anchored throughout fusion and rounding. The original 2.370/.893 jumps must fail.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/s41467-024-52049-3"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "Confirmed pump/glycan teleport at .65 under 20261004-traffic-02.",
+          "At fusion the pre-fusion spherical midplanes have a .18 gap; the immediate common envelope differs from the previous sphere union by up to .110173 at sampled profile points. Retained for root rendered review; no separate scientific verdict inferred solely from this discrete topology change.",
+          "Inspected .44/.47/.63/.65/.71/.73/.8/.82/.9/.96/.995 visibility and interpolation boundaries; fragment appearance and final aggregate disappearance are schematic hydrolysis transitions."
+        ],
+        "limits": [
+          "No browser/rendered fusion review or frame-rate acceptance performed.",
+          "Per-enzyme catalytic docking and actual cleavage sites are not modeled; reference folds support molecular identity rather than reaction dynamics."
+        ]
+      },
+      "limitations": [
+        "Membrane sources, upstream signaling, fusion machinery and returned metabolites are explicitly outside the scene.",
+        "Inner-membrane removal is a topology-preserving schematic timing choice, not a claim of an experimentally measured uniform polar erosion trajectory.",
+        "Native protein backbone references were checked against depositor identity; all original CIF coordinate values were not redownloaded/rehashed in this audit."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

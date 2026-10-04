@@ -1,6 +1,8 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { nuclearCell } from "./nuclearCell.js";
 import { nuclearDetail } from "./fineStructure.js";
+import { nuclearLineage } from "./nuclearLineage.js";
+import { labelAnchor } from "./labelAnchors.js";
 
 export default {
   id: "parameciumConjugation",
@@ -111,6 +113,29 @@ export default {
       Math.PI,
       Math.PI / 2,
     );
+    function separateNuclearDetails(mesh) {
+      const holder = new THREE.Group(),
+        contents = new THREE.Group(),
+        edges = new THREE.Group();
+      mesh.parent.add(holder);
+      holder.position.copy(mesh.position);
+      holder.quaternion.copy(mesh.quaternion);
+      holder.scale.copy(mesh.scale);
+      holder.add(mesh, contents, edges);
+      mesh.position.set(0, 0, 0);
+      mesh.quaternion.identity();
+      mesh.scale.setScalar(1);
+      mesh.children.slice().forEach((child, index) => {
+        if (
+          index === 1 ||
+          index === 2 ||
+          (child.isInstancedMesh && child.geometry.type === "TorusGeometry")
+        )
+          edges.add(child);
+        else if (index >= 3) contents.add(child);
+      });
+      return { holder, shell: mesh, contents, edges };
+    }
     function mixedNucleus(parent, r = 0.2) {
       const g = new THREE.Group();
       parent.add(g);
@@ -128,12 +153,17 @@ export default {
           depthWrite: false,
         });
       });
+      const parts = separateNuclearDetails(structure);
+      g.nuclearShells = [g.children[0], g.children[1], parts.shell];
+      g.nuclearContents = parts.contents;
+      g.nuclearEdges = parts.edges;
       g.scale.setScalar(r);
       return g;
     }
     const cells = [];
     for (let i = 0; i < 2; i++) {
       const cell = new THREE.Group();
+      cell.name = `conjugating-partner-${i}`;
       group.add(cell);
       cell.scale.x = i ? -1 : 1;
       nuclearCell(k, cell, {
@@ -152,6 +182,7 @@ export default {
         cell,
       );
       const old = k.ball([-0.29, 0.65, 0.26], [0.38, 0.62, 0.25], oldMat, cell);
+      old.name = `maternal-macronucleus-${i}`;
       const oldFragments = [];
       for (let j = 0; j < 8; j++)
         oldFragments.push(
@@ -169,17 +200,26 @@ export default {
       const meiotic = [];
       for (let j = 0; j < 4; j++)
         meiotic.push(k.ball([0, 0, 0], 0.18, nuclearMats[i], cell));
+      meiotic.forEach((o, j) => {
+        o.name = `meiotic-nucleus-${i}-${j}`;
+      });
+      oldFragments.forEach((o, j) => {
+        o.name = `maternal-macronuclear-fragment-${i}-${j}`;
+      });
       const stationary = k.ball(
         [0.36, -0.13, 0.54],
         0.18,
         nuclearMats[i],
         cell,
       );
+      stationary.name = `stationary-pronucleus-${i}`;
       const syn = mixedNucleus(cell, 0.26);
+      syn.name = `synkaryon-${i}`;
       syn.position.set(0.3, 0, 0.54);
       const descendants = [];
       for (let j = 0; j < 8; j++) {
         const g = mixedNucleus(cell, 0.15);
+        g.name = `synkaryon-descendant-${i}-${j}`;
         descendants.push(g);
       }
       const anlagen = [];
@@ -197,6 +237,19 @@ export default {
       meiotic.forEach((o) => nuclearDetail(k, o, false));
       nuclearDetail(k, stationary, false);
       anlagen.forEach((o) => nuclearDetail(k, o, true));
+      const anlageContents = anlagen.map((o, j) => {
+        const parts = separateNuclearDetails(o);
+        parts.shell.visible = false;
+        parts.edges.visible = false;
+        parts.holder.name = `macronuclear-anlage-contents-${i}-${j}`;
+        return parts.holder;
+      });
+      const lineage = nuclearLineage(
+        k,
+        cell,
+        colors,
+        `postzygotic-lineage-${i}`,
+      );
       cells.push({
         cell,
         old,
@@ -205,27 +258,47 @@ export default {
         stationary,
         syn,
         descendants,
-        anlagen,
+        anlagen: anlageContents,
         retained,
+        lineage,
       });
     }
-    const passage = k.segment(
-      [-0.45, 0, 0.35],
-      [0.45, 0, 0.35],
-      0.19,
-      k.material("#c4bba0", {
-        transparent: true,
-        opacity: 0.5,
-        depthWrite: false,
-      }),
-    );
-    const passageRim = k.ring([0, 0, 0.35], 0.23, 0.033, k.material("#a99c80"));
-    passageRim.rotation.y = Math.PI / 2;
+    const passage = new THREE.Group();
+    passage.name = "conjugation-open-passage";
+    group.add(passage);
+    const passageLayers = [0.36, 0.335].map((radius, index) => {
+      const o = k.mesh(
+        new THREE.CylinderGeometry(1, 1, 1, 40, 1, true, Math.PI / 2, Math.PI),
+        k.material(index ? "#e0d3b4" : "#b3ab91", { side: THREE.DoubleSide }),
+        [0, 0, 0],
+        passage,
+      );
+      o.rotation.z = -Math.PI / 2;
+      o.name = `conjugation-passage-${index ? "inner" : "outer"}`;
+      return { o, radius };
+    });
+    const passagePorts = [-1, 1].map((side) => {
+      const g = new THREE.Group();
+      passage.add(g);
+      g.rotation.y = Math.PI / 2;
+      g.name = `conjugation-cortical-port-${side}`;
+      k.mesh(
+        new THREE.RingGeometry(0.36, 0.5, 40),
+        k.material("#b9bba0", { side: THREE.DoubleSide }),
+        [0, 0, 0],
+        g,
+      );
+      k.ring([0, 0, 0], 0.3475, 0.0125, k.material("#a99c80"), g);
+      return { g, side };
+    });
     const migrants = [
       k.ball([0, 0, 0], 0.18, nuclearMats[0]),
       k.ball([0, 0, 0], 0.18, nuclearMats[1]),
     ];
-    migrants.forEach((o) => nuclearDetail(k, o, false));
+    migrants.forEach((o, i) => {
+      nuclearDetail(k, o, false);
+      o.name = `migratory-pronucleus-${i}`;
+    });
     const labels = [
       k.label([-2.1, 2.85, 0.4], "配偶 A", "Partner A", 2),
       k.label([2.1, 2.85, 0.4], "配偶 B", "Partner B", 2),
@@ -234,6 +307,26 @@ export default {
       k.label([0, -0.5, 0.75], "接合通路", "Conjugation passage", 3),
       k.label([-1.4, -1.7, 0.6], "新大核原基", "New macronuclear anlagen", 3),
     ];
+    const lineageLabelPoint = [0, 0, 0],
+      partnerAnchors = cells.map((c, i) =>
+        labelAnchor(group, labels[i], c.cell, [0, 2.05, -0.1]),
+      ),
+      oldAnchors = [cells[0].old, cells[0].oldFragments[0]].map((o) =>
+        labelAnchor(group, labels[2], o),
+      ),
+      germAnchors = [
+        labelAnchor(group, labels[3], cells[0].meiotic[0]),
+        labelAnchor(group, labels[3], cells[0].stationary),
+        labelAnchor(group, labels[3], cells[0].syn),
+        labelAnchor(
+          group,
+          labels[3],
+          cells[0].lineage.group,
+          lineageLabelPoint,
+        ),
+      ],
+      passageAnchor = labelAnchor(group, labels[4], passage),
+      anlageAnchor = labelAnchor(group, labels[5], cells[0].anlagen[0]);
     function update(progress) {
       const p = clamp(progress),
         approach = ease(p, 0, 0.12),
@@ -245,22 +338,28 @@ export default {
         pronuclear = ease(p, 0.44, 0.53),
         exchange = ease(p, 0.55, 0.67),
         fusion = ease(p, 0.68, 0.75),
-        development = ease(p, 0.92, 0.975),
+        development = ease(p, 0.94, 0.975),
         selectMicro = ease(p, 0.975, 1);
       cells.forEach((c, i) => {
         c.cell.position.x = (i ? 1 : -1) * cx;
-        c.old.visible = p < 0.37;
-        c.old.scale.set(0.38 * (1 - 0.5 * selection), 0.62, 0.25);
+        c.old.visible = p < 0.42;
+        c.old.scale.set(
+          0.38 * (1 - selection),
+          0.62 * (1 - selection),
+          0.25 * (1 - selection),
+        );
         c.oldFragments.forEach((o) => {
-          o.visible = p >= 0.37;
+          o.visible = selection > 1e-6;
+          o.scale.set(0.1 * selection, 0.14 * selection, 0.075 * selection);
         });
         c.meiotic.forEach((o, j) => {
           o.visible =
             p < 0.445 && (j === 0 || (p >= 0.14 && (j < 2 || p >= 0.23)));
           const x = 0.2 + (j % 2 ? 0.18 : -0.18) * first,
-            y = 0.05 + (j < 2 ? 1 : -1) * (0.18 + second * 0.22);
+            y = j < 2 ? 0.23 + second * 0.22 : 0.23 - second * 0.58,
+            birth = j === 0 ? 1 : j === 1 ? first : second;
           o.position.set(x, y, 0.54);
-          o.scale.setScalar(0.18 * (j === 0 ? 1 : 1 - selection));
+          o.scale.setScalar(0.18 * birth * (j === 0 ? 1 : 1 - selection));
           if (j === 0) {
             o.position.x = x + (0.36 - x) * selection;
             o.position.y = y + (-0.13 - y) * selection;
@@ -272,25 +371,29 @@ export default {
           -0.13 * (1 - fusion),
           0.54,
         );
-        c.stationary.scale.setScalar(0.18 * (1 - 0.75 * fusion));
-        c.syn.visible = p >= 0.72 && p < 0.82;
+        c.stationary.scale.setScalar(0.18 * (1 - fusion));
+        c.syn.visible = p >= 0.7 && p < 0.805;
         c.syn.scale.setScalar(0.26 * ease(p, 0.7, 0.75));
-        // Three divisions: one to two, two to four, four to eight. No new nuclei allocated during playback.
-        const n = p < 0.85 ? 2 : p < 0.89 ? 4 : 8;
+        c.syn.nuclearShells.forEach((o) => {
+          o.visible = p < 0.78;
+        });
+        c.syn.nuclearEdges.visible = p < 0.78;
+        c.syn.nuclearContents.scale.setScalar(1 - ease(p, 0.78, 0.805));
+        c.lineage.update(p);
+        // Every envelope patch starts on the synkaryon and is deformed through
+        // three connected fissions. Contents grow at their own parent's locus.
         c.descendants.forEach((o, j) => {
-          o.visible =
-            p >= 0.82 && j < n && (j < 4 ? p < 0.978 : p < 0.985 || j === 4);
-          const side = j < 4 ? -1 : 1,
-            index = j % 4;
-          const targetX = (index % 2 ? 1 : -1) * 0.31,
-            targetY = side * (0.87 + Math.floor(index / 2) * 0.49);
-          const spread = ease(p, 0.82, 0.93);
-          o.position.set(
-            0.3 * (1 - spread) + targetX * spread,
-            targetY * spread,
-            0.48,
+          const state = c.lineage.states[j];
+          o.visible = p >= 0.78 && state.retained > 1e-8;
+          o.position.copy(state.center);
+          o.scale.copy(state.radius);
+          o.nuclearShells.forEach((shell) => {
+            shell.visible = false;
+          });
+          o.nuclearContents.scale.setScalar(
+            state.birth * (j < 4 ? 1 - development : 1),
           );
-          o.scale.setScalar(0.15 * (j >= 5 ? 1 - selectMicro : 1));
+          o.nuclearEdges.scale.setScalar(ease(p, 0.92, 0.94));
         });
         c.anlagen.forEach((o, j) => {
           o.visible = p >= 0.94;
@@ -307,43 +410,59 @@ export default {
         });
         c.retained.visible = false;
       });
-      passage.visible = p >= 0.09 && p < 0.77;
-      passageRim.visible = passage.visible;
+      const passageOpening = ease(p, 0.07, 0.12) * (1 - ease(p, 0.75, 0.8)),
+        passageHalfLength = cx - 0.68;
+      passage.visible = passageOpening > 1e-6;
+      passage.position.z = 0.54;
+      passageLayers.forEach(({ o, radius }) =>
+        o.scale.set(
+          radius * passageOpening,
+          2 * passageHalfLength,
+          radius * passageOpening,
+        ),
+      );
+      passagePorts.forEach(({ g, side }) => {
+        g.position.x = side * passageHalfLength;
+        g.scale.setScalar(passageOpening);
+      });
       migrants.forEach((o, i) => {
         const sign = i ? 1 : -1,
-          source = sign * (cx - 0.62),
+          source = sign * (cx - (0.36 + 0.26 * pronuclear)),
           dest = -sign * (cx - 0.36);
         o.position.set(
           source + (dest - source) * exchange,
-          sign * 0.12 * (1 - fusion),
-          0.57,
+          (-0.13 * (1 - pronuclear) + sign * 0.12 * pronuclear) * (1 - fusion),
+          0.54 + 0.03 * pronuclear,
         );
-        o.scale.setScalar(
-          0.18 * (0.45 + 0.55 * pronuclear) * (1 - 0.75 * fusion),
-        );
+        o.scale.setScalar(0.18 * ease(p, 0.445, 0.53) * (1 - fusion));
         o.visible = p >= 0.445 && p < 0.75;
       });
-      labels[0].position[0] = -cx;
-      labels[1].position[0] = cx;
-      labels[2].position[0] = -cx - 0.38;
+      partnerAnchors.forEach((anchor) => anchor());
+      oldAnchors[p < 0.37 ? 0 : 1]();
       labels[2].text =
         p < 0.37
           ? b("旧大核", "Old macronucleus")
           : b("旧大核片段 · 暂时保留", "Old macronuclear fragments · persist");
-      labels[3].position[0] = -cx + 0.25;
+      cells[0].lineage.states[0].center.toArray(lineageLabelPoint);
+      germAnchors[p < 0.445 ? 0 : p < 0.72 ? 1 : p < 0.78 ? 2 : 3]();
       labels[3].text =
         p < 0.14
           ? b("小核 · 二倍体", "Micronucleus · diploid")
-          : p < 0.44
-            ? b("减数产物 · 单倍体", "Meiotic products · haploid")
-            : p < 0.68
-              ? b("原核 · 单倍体", "Pronuclei · haploid")
-              : p < 0.82
-                ? b("合核 · 二倍体", "Synkaryon · diploid")
-                : b("合核后代", "Synkaryon descendants");
-      labels[4].active = p >= 0.09 && p < 0.77;
+          : p < 0.3
+            ? b("小核 · 减数分裂中", "Micronucleus · meiosis in progress")
+            : p < 0.44
+              ? b("减数产物 · 单倍体", "Meiotic products · haploid")
+              : p < 0.68
+                ? b("原核 · 单倍体", "Pronuclei · haploid")
+                : p < 0.72
+                  ? b("原核融合中", "Pronuclei fusing")
+                  : p < 0.78
+                    ? b("合核 · 二倍体", "Synkaryon · diploid")
+                    : b("合核后代", "Synkaryon descendants");
+      labels[4].active = p >= 0.09 && p < 0.8;
+      passageAnchor();
       labels[5].active = p >= 0.94;
-      labels[5].position[0] = -cx;
+      anlageAnchor();
       group.userData = {
         species: "Paramecium caudatum",
         cellCount: 2,
@@ -352,7 +471,7 @@ export default {
         retainedHaploidPerCell: p >= 0.42 ? 1 : 0,
         reciprocalExchange: exchange,
         synkaryonDiploid: p >= 0.75,
-        postzygoticDivisions: p < 0.82 ? 0 : p < 0.85 ? 1 : p < 0.89 ? 2 : 3,
+        postzygoticDivisions: p < 0.805 ? 0 : p < 0.858 ? 1 : p < 0.911 ? 2 : 3,
         newMacronuclearAnlagenPerCell: p >= 0.975 ? 4 : 0,
         retainedMicronucleiPerExconjugant: p >= 0.999 ? 1 : 0,
         oldMacronuclearFragmentsPersist: p >= 0.37,

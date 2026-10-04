@@ -7,11 +7,13 @@ function capture(scene) {
   const result = [];
   scene.group.traverse((object) => {
     result.push(object.uuid, object.visible, ...object.matrix.elements);
-    if (object.geometry)
-      result.push(
-        object.geometry.uuid,
-        ...object.geometry.attributes.position.array,
-      );
+    if (object.geometry) {
+      result.push(object.geometry.uuid);
+      // Preserve every scalar in the deterministic snapshot without turning
+      // a preallocated deformation buffer into thousands of call arguments.
+      for (const value of object.geometry.attributes.position.array)
+        result.push(value);
+    }
     if (object.isInstancedMesh) result.push(...object.instanceMatrix.array);
     if (object.material)
       result.push(

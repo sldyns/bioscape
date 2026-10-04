@@ -3,6 +3,7 @@ import {
   membraneScene,
   materialInventory,
   alphaHelix,
+  bindSurfaceLabel,
   mix,
   seeded,
   wander,
@@ -110,6 +111,7 @@ const definition = {
     ];
     // Four aquaporin monomers, each with its OWN water pore. The center of
     // the tetramer is not used as the channel. Helices are schematic ribbons.
+    let channelLabelMesh;
     for (const [cx, cz] of poreCenters) {
       for (let j = 0; j < 6; j++) {
         const a = (j * Math.PI) / 3;
@@ -120,6 +122,10 @@ const definition = {
           j % 2 ? channel : channelAlt,
         );
         h.rotation.z = Math.cos(a) * 0.045;
+        if (cx > 0 && cz > 0 && j === 0) {
+          h.name = "aquaporin-callout-helix";
+          channelLabelMesh = h;
+        }
         const a2 = ((j + 1) * Math.PI) / 3;
         const y = j % 2 ? 0.94 : -0.94;
         k.tube(
@@ -181,6 +187,13 @@ const definition = {
       k.label([-2.65, -0.1, 0.65], "疏水尾", "Hydrophobic tails"),
       k.label([2.7, 2.92, 0], "水 · 通道扩散", "Water · channel diffusion", 2),
     ];
+    const anchorChannel = bindSurfaceLabel(
+      labels[2],
+      channelLabelMesh,
+      k.group,
+      [0, 0.4, 0.1],
+    );
+    anchorChannel();
     function update(progress, parameters = {}) {
       const p = clamp(progress);
       const water = parameters.route !== "oxygen";

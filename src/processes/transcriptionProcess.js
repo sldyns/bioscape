@@ -132,7 +132,7 @@ function create() {
   group.add(arrow);
 
   const labels = [
-    { position: [-2.6, -0.92, 0], text: { zh: "启动子", en: "Promoter" } },
+    { position: [-2.55, -0.595, 0], text: { zh: "启动子", en: "Promoter" } },
     {
       position: [-3.48, -0.64, 0],
       text: { zh: "模板链 3′", en: "Template 3′" },
@@ -141,7 +141,7 @@ function create() {
     { position: [-3.48, 0.73, 0], text: { zh: "编码链 5′", en: "Coding 5′" } },
     { position: [3.45, 0.73, 0], text: { zh: "3′", en: "3′" } },
     {
-      position: [0, 1.52, 0],
+      position: [0, 1.23, -0.1],
       text: { zh: "读取模板 3′ → 5′", en: "Read template 3′ → 5′" },
     },
     {
@@ -300,9 +300,9 @@ function create() {
     }
     center = cleaved ? 1.7 : polymeraseCenter;
     rnaPoint(1, length, cleavage, b);
-    labels[7].position.splice(0, 3, b.x, b.y - 0.31, b.z + 0.12);
+    b.toArray(labels[7].position);
     rnaPoint(cleaved ? cutDistance : 0, 1, cleavage, a);
-    labels[8].position.splice(0, 3, a.x + 0.14, a.y - 0.39, a.z + 0.1);
+    a.toArray(labels[8].position);
     labels[7].active = growth > 0.04;
     labels[8].active = growth > 0.04 && !cleaved;
     center = polymeraseCenter;
@@ -317,7 +317,15 @@ function create() {
     remnant.instanceMatrix.needsUpdate = true;
     activeSite.visible = p >= 0.23 && p < 0.98;
     activeSite.position.set(center, -0.39, 0.32);
-    labels[6].position.splice(0, 3, center, 1.02 + departure * 0.65, 0.35);
+    b.copy(polymerase.children[2].position)
+      .add(polymerase.position)
+      .toArray(labels[6].position);
+    // Annotation positions are molecular targets, not text-layout offsets.
+    // The helical end points change with the displayed unwinding frame.
+    dnaPoint(-3.6, 0, a).toArray(labels[1].position);
+    dnaPoint(3.6, 0, a).toArray(labels[2].position);
+    dnaPoint(-3.6, 1, a).toArray(labels[3].position);
+    dnaPoint(3.6, 1, a).toArray(labels[4].position);
     for (const item of [
       ...rails,
       ...bases,

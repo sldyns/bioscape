@@ -1,4 +1,5 @@
 import { sporulationTopology } from "./sporulationTopology.js";
+import { sporeGeometry as dimensions } from "./sporeGeometry.js";
 import { rodCutaway, sporeLayers } from "./envelopeDetail.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
@@ -94,6 +95,11 @@ export default {
         "The Bacillus subtilis endospore: assembly and functions of the multilayered coat",
       url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC9910062/",
     },
+    {
+      title:
+        "Ultrastructure of macromolecular assemblies contributing to bacterial spore resistance revealed by in situ cryo-electron tomography",
+      url: "https://www.nature.com/articles/s41467-024-45770-6",
+    },
   ],
   create({ rootId = "bacterium" } = {}) {
     const k = sceneKit(),
@@ -138,7 +144,7 @@ export default {
     const spore = new THREE.Group();
     group.add(spore);
     spore.position.set(-1.85, 0, 0);
-    spore.scale.x = 1.12;
+    spore.scale.x = dimensions.axialStretch;
     const layeredDetail = sporeLayers(spore);
     const core = k.ball([0, 0, 0], [0.68, 0.68, 0.57], coremat, spore);
     const inner = k.ring([0, 0, 0.03], 0.72, 0.05, membrane, spore);
@@ -146,11 +152,12 @@ export default {
     const cortexShell = k.mesh(
       new THREE.SphereGeometry(1, 40, 24, Math.PI, Math.PI),
       cortex,
-      [0, 0, -0.01],
+      [0, 0, 0],
       spore,
     );
-    cortexShell.scale.set(0.85, 0.81, 0.69);
-    const cortexRim = k.ring([0, 0, 0.05], 0.79, 0.065, cortex, spore);
+    cortexShell.name = "intermembrane-cortex-shell";
+    const cortexRim = k.ring([0, 0, 0.05], 0.79, 0.025, cortex, spore);
+    cortexRim.name = "intermembrane-cortex-cut-edge";
     cortexRim.scale.x = 1.06;
     const outerShell = k.mesh(
       new THREE.SphereGeometry(1, 40, 24, Math.PI, Math.PI),
@@ -162,13 +169,34 @@ export default {
     const coatShell = k.mesh(
       new THREE.SphereGeometry(1, 40, 24, Math.PI, Math.PI),
       coat,
-      [0, 0, -0.03],
+      [0, 0, 0],
       spore,
     );
-    coatShell.scale.set(1.03, 0.99, 0.82);
-    const coatRim = k.ring([0, 0, 0.05], 0.96, 0.09, coat, spore);
+    coatShell.name = "external-protein-coat-shell";
+    const coatRim = k.ring([0, 0, 0.05], 1, 0.04, coat, spore);
+    coatRim.name = "external-protein-coat-cut-edge";
     coatRim.scale.x = 1.04;
     const topology = sporulationTopology(group);
+    const septalSurface = group.getObjectByName("polar-septum-inward-annulus");
+    const engulfingSurface = group.getObjectByName(
+      "mother-membrane-continuous-engulfment",
+    );
+    const coreDNA = group.getObjectByName(
+      "sporulation-chromosome-1-strand-0-sugar-phosphate-backbone",
+    );
+    const anchor = new THREE.Vector3(),
+      anchorMatrix = new THREE.Matrix4();
+    const surfaceAnchor = (item, mesh, index, parent) => {
+      mesh.updateMatrix();
+      anchor
+        .fromBufferAttribute(mesh.geometry.attributes.position, index)
+        .applyMatrix4(mesh.matrix);
+      if (parent) {
+        parent.updateMatrix();
+        anchor.applyMatrix4(parent.matrix);
+      }
+      anchor.toArray(item.position);
+    };
     const debris = [];
     for (let i = 0; i < 14; i++) {
       const a = (i * Math.PI * 2) / 14;
@@ -238,15 +266,21 @@ export default {
       coatShell.visible = p > 0.63;
       coatRim.visible = p > 0.63;
       cortexShell.scale.set(
-        0.74 + 0.11 * layer,
-        0.7 + 0.11 * layer,
-        0.58 + 0.11 * layer,
+        dimensions.cortex.initial.axial +
+          (dimensions.cortex.mature.axial - dimensions.cortex.initial.axial) *
+            layer,
+        dimensions.cortex.initial.radial +
+          (dimensions.cortex.mature.radial - dimensions.cortex.initial.radial) *
+            layer,
+        dimensions.cortex.initial.radial +
+          (dimensions.cortex.mature.radial - dimensions.cortex.initial.radial) *
+            layer,
       );
-      cortexRim.scale.set(1.06 * (0.9 + 0.1 * layer), 0.9 + 0.1 * layer, 1);
+      cortexRim.scale.set(1.06 * (0.96 + 0.04 * layer), 0.96 + 0.04 * layer, 1);
       coatShell.scale.set(
-        1.03 * (0.88 + 0.12 * layer),
-        0.99 * (0.88 + 0.12 * layer),
-        0.82 * (0.88 + 0.12 * layer),
+        dimensions.coat.axial * (0.88 + 0.12 * layer),
+        dimensions.coat.radial * (0.88 + 0.12 * layer),
+        dimensions.coat.radial * (0.88 + 0.12 * layer),
       );
       coatRim.scale.set(1.04 * (0.88 + 0.12 * layer), 0.88 + 0.12 * layer, 1);
       debris.forEach((m, i) => {
@@ -268,6 +302,22 @@ export default {
       labels[6].active = p > 0.74 && p < 0.9;
       labels[7].active = p > 0.94;
       labels[8].active = blocked && raw > 0.43;
+      labels[0].position.splice(0, 3, 0.6, 0, 0);
+      labels[1].position.splice(
+        0,
+        3,
+        -2.15 + 0.3 * ease(p, 0.32, 0.43),
+        0,
+        -0.25,
+      );
+      surfaceAnchor(labels[2], septalSurface, 48 * 33 + 28);
+      surfaceAnchor(labels[3], engulfingSurface, 60 * 33 + 28);
+      surfaceAnchor(labels[4], coatShell, 6 * 41 + 20, spore);
+      surfaceAnchor(labels[5], cortexRim, 0, spore);
+      coreDNA.getMatrixAt(25, anchorMatrix);
+      anchor.setFromMatrixPosition(anchorMatrix).toArray(labels[6].position);
+      surfaceAnchor(labels[7], coatShell, 6 * 41 + 20, spore);
+      surfaceAnchor(labels[8], engulfingSurface, 60 * 33 + 28);
       group.userData = {
         rootId,
         organism: "Bacillus subtilis",

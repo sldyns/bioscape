@@ -1,57 +1,14 @@
 import {
   wallAnatomy,
   nuclearAnatomy,
-  layeredCutaway,
-  surfacePores,
   materialInventory,
   cutSphere,
 } from "./anatomy.js";
+import { placeSegment } from "./topology.js";
+import { labelAnchors } from "./labelAnchors.js";
+import { meioticEnvelope } from "./meioticEnvelope.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 
-function dividingEnvelope(k, material, axis) {
-  const n = 32,
-    m = 40,
-    g = new THREE.BufferGeometry(),
-    v = new Float32Array((n + 1) * (m + 1) * 3),
-    index = [];
-  for (let i = 0; i < n; i++)
-    for (let j = 0; j < m; j++) {
-      const a = i * (m + 1) + j,
-        b = a + m + 1;
-      index.push(a, b, a + 1, b, b + 1, a + 1);
-    }
-  g.setAttribute("position", new THREE.BufferAttribute(v, 3));
-  g.setIndex(index);
-  const mesh = k.mesh(g, material);
-  return {
-    mesh,
-    shape(extension, pinch, secondDivision = 0) {
-      for (let i = 0; i <= n; i++) {
-        const t = i / n,
-          long = -0.5 * (1.35 + 1.75 * extension) * Math.cos(Math.PI * t),
-          r = 0.64 * Math.sin(Math.PI * t);
-        for (let j = 0; j <= m; j++) {
-          const a = (j * 2 * Math.PI) / m,
-            q = (i * (m + 1) + j) * 3;
-          const y = r * (1 + 1.4 * secondDivision) * Math.cos(a);
-          // The common envelope broadens around both MII spindles. Late
-          // constrictions leave a thin connected sheet between four lobes;
-          // only completion of MII permits its final partition.
-          const bridge =
-            (1 - 0.86 * pinch * Math.exp(-Math.pow(long / 0.24, 2))) *
-            (1 - 0.86 * pinch * Math.exp(-Math.pow(y / 0.24, 2)));
-          v[q] = axis === "x" ? long : r * Math.cos(a);
-          v[q + 1] = axis === "x" ? y : long;
-          v[q + 2] = r * (1 - 0.35 * secondDivision) * Math.sin(a) * bridge;
-        }
-      }
-      g.attributes.position.needsUpdate = true;
-      g.computeVertexNormals();
-      g.computeBoundingSphere();
-      g.computeBoundingBox();
-    },
-  };
-}
 // An actual growing membrane cup, rather than a closed spore appearing at once.
 function prosporeMembrane(k, material) {
   const n = 24,
@@ -70,16 +27,18 @@ function prosporeMembrane(k, material) {
   const mesh = k.mesh(g, material);
   return {
     mesh,
-    shape(closure) {
-      const maxAngle = 0.22 + (Math.PI - 0.22) * closure;
+    shape(closure, attachment, attached, nucleation) {
+      const maxAngle = 0.22 * nucleation + (Math.PI - 0.22) * closure;
       for (let i = 0; i <= n; i++)
         for (let j = 0; j <= m; j++) {
           const t = (i / n) * maxAngle,
             a = (j / m) * Math.PI * 2,
             q = (i * (m + 1) + j) * 3;
-          v[q] = 0.64 * Math.sin(t) * Math.cos(a);
-          v[q + 1] = 0.64 * Math.sin(t) * Math.sin(a);
-          v[q + 2] = -0.64 * Math.cos(t);
+          const anchorWeight = attached * Math.exp(-Math.pow(t / 0.48, 2));
+          v[q] = 0.64 * Math.sin(t) * Math.cos(a) + attachment.x * anchorWeight;
+          v[q + 1] =
+            0.64 * Math.sin(t) * Math.sin(a) + attachment.y * anchorWeight;
+          v[q + 2] = -0.64 * Math.cos(t) + (attachment.z + 0.64) * anchorWeight;
         }
       g.attributes.position.needsUpdate = true;
       g.computeVertexNormals();
@@ -117,13 +76,11 @@ function create() {
     rose = k.material("#b68191"),
     gold = k.material("#c7a665");
   const ascus = k.ball([0, 0, -0.1], [2.36, 2.07, 1.35], cellMat);
+  ascus.name = "sporulation-maternal-ascus";
   wallAnatomy(k, ascus);
   const rim = k.ring([0, 0, -0.23], 1, 0.022, k.material("#b6ac94"));
   rim.scale.set(2.36, 2.07, 1);
-  const early = dividingEnvelope(k, nuclearMat, "x");
-  early.mesh.name = "sporulation-common-nuclear-envelope";
-  const meioticEnvelopeLayers = [layeredCutaway(k, early.mesh, 32, 40, true)];
-  const meioticPores = [surfacePores(k, early.mesh, 32, 40)];
+  const early = meioticEnvelope(k);
   const centers = [
     [-0.88, -0.82, 0],
     [-0.88, 0.82, 0],
@@ -203,6 +160,7 @@ function create() {
   });
   const chromatid = Array.from({ length: 4 }, (_, i) => {
     const g = new THREE.Group();
+    g.name = `sporulation-chromatid-${i}`;
     group.add(g);
     k.segment([0, -0.2, 0], [0, 0.13, 0], 0.06, i < 2 ? teal : rose, g);
     const tip = k.segment(
@@ -228,6 +186,7 @@ function create() {
         64,
       );
     const centromere = k.ball([0, -0.02, 0], 0.078, gold, g);
+    centromere.name = `sporulation-centromere-${i}`;
     return { g, tip, centromere };
   });
   const spindleI = k.segment([-0.8, 0, 0.02], [0.8, 0, 0.02], 0.024, gold);
@@ -235,10 +194,23 @@ function create() {
     k.segment([-0.88, -0.82, 0.02], [-0.88, 0.82, 0.02], 0.022, gold),
     k.segment([0.88, -0.82, 0.02], [0.88, 0.82, 0.02], 0.022, gold),
   ];
+  spindleI.name = "sporulation-spindle-I";
+  spindleII.forEach((mesh, i) => {
+    mesh.name = `sporulation-spindle-II-${i}`;
+  });
   const poles = centers.map((c) => k.ball(c, 0.08, gold));
+  poles.forEach((mesh, i) => {
+    mesh.name = `sporulation-spb-${i}`;
+  });
+  const polePoints = centers.map(() => new THREE.Vector3()),
+    poleNormals = centers.map(() => new THREE.Vector3()),
+    membraneAnchors = centers.map(() => new THREE.Vector3());
   const vesicles = Array.from({ length: 12 }, () =>
     k.ball([0, 0, 0], 0.047, teal),
   );
+  vesicles.forEach((mesh, i) => {
+    mesh.name = `sporulation-secretory-vesicle-${i}`;
+  });
   const nutrients = Array.from({ length: 10 }, (_, i) =>
     k.ball(
       [2.75 + 0.22 * Math.sin(i * 2), -1.35 + i * 0.29, 0],
@@ -246,11 +218,12 @@ function create() {
       i % 2 ? teal : gold,
     ),
   );
+  nutrients[4].name = "sporulation-rich-nutrient-label-target";
   const labels = [
     k.label(
       [0, 2.55, 0],
-      "a/α 二倍体 · 酿酒酵母",
-      "a/α diploid · S. cerevisiae",
+      "酿酒酵母 · 起始 a/α 二倍体",
+      "S. cerevisiae · starting a/α diploid",
       10,
     ),
     k.label(
@@ -296,6 +269,7 @@ function create() {
       10,
     ),
   ];
+  const anchor = labelAnchors(labels);
   function update(raw, parameters = {}) {
     const p = clamp(raw),
       induced = parameters.nutrients !== "rich",
@@ -303,16 +277,50 @@ function create() {
     const replication = ease(q, 0.08, 0.2),
       mi = ease(q, 0.3, 0.47),
       mii = ease(q, 0.5, 0.67),
-      closure = ease(q, 0.61, 0.83),
+      // Grow attached cups during MII; wrap the front only once nuclear
+      // partition finishes, so the membranes never slice the common NE.
+      closure = 0.23 * ease(q, 0.61, 0.76) + 0.77 * ease(q, 0.8, 0.83),
       mature = ease(q, 0.84, 0.96);
     early.mesh.visible = q < 0.8;
     early.shape(mi, ease(q, 0.68, 0.8), mii);
+    // Duplicate and remodel the poles at the end of MI. All spindle ends and
+    // nascent membrane sites share these exact nuclear-surface anchors.
+    const remodel = ease(q, 0.47, 0.53),
+      polarExtent = 0.5 * (1.35 + 1.75 * mi),
+      poleX = THREE.MathUtils.lerp(polarExtent * 0.985, 0.88, remodel),
+      poleY = (0.125 + 0.725 * mii) * remodel;
+    for (let i = 0; i < 4; i++) {
+      const x = (i < 2 ? -1 : 1) * poleX,
+        y = (i % 2 ? 1 : -1) * poleY;
+      early.surfaceAt(x, y, polePoints[i], poleNormals[i]);
+      poles[i].position.copy(polePoints[i]);
+      poles[i].visible = q > 0.25 && q < 0.8 && (i % 2 === 0 || q > 0.47);
+      const duplicate = i % 2 ? ease(q, 0.47, 0.5) : 1;
+      poles[i].scale.setScalar(
+        0.08 * duplicate * ease(q, 0.25, 0.28) * (1 - ease(q, 0.77, 0.8)),
+      );
+      membraneAnchors[i]
+        .copy(polePoints[i])
+        .addScaledVector(poleNormals[i], 0.06);
+      membraneAnchors[i].x -= centers[i][0];
+      membraneAnchors[i].y -= centers[i][1];
+    }
     for (let i = 0; i < 2; i++) {
       spindleII[i].visible = q >= 0.5 && q < 0.72;
-      spindleII[i].scale.set(0.022, 0.25 + 1.45 * mii, 0.022);
+      placeSegment(
+        spindleII[i],
+        polePoints[i * 2],
+        polePoints[i * 2 + 1],
+        0.022 * ease(q, 0.5, 0.52) * (1 - ease(q, 0.7, 0.72)),
+      );
     }
     spindleI.visible = q > 0.25 && q < 0.5;
-    spindleI.scale.set(0.024, 0.7 + 1.2 * mi, 0.024);
+    placeSegment(
+      spindleI,
+      polePoints[0],
+      polePoints[2],
+      0.024 * ease(q, 0.25, 0.28) * (1 - ease(q, 0.47, 0.5)),
+    );
     for (let i = 0; i < 4; i++) {
       const homolog = i < 2 ? 0 : 1,
         sister = i % 2,
@@ -334,7 +342,9 @@ function create() {
             : rose;
       finalNuclei[i].visible = q >= 0.8;
       membranes[i].mesh.visible = q > 0.59 && q < 0.9;
-      membranes[i].shape(closure);
+      const attached = 1 - ease(q, 0.7, 0.78),
+        nucleation = ease(q, 0.59, 0.61);
+      membranes[i].shape(closure, membraneAnchors[i], attached, nucleation);
       const source = membranes[i].mesh.geometry.attributes.position.array,
         dest = membraneInner[i].geometry.attributes.position.array;
       for (let j = 0; j < source.length; j++) dest[j] = source[j] * 0.947;
@@ -343,34 +353,39 @@ function create() {
       membraneInner[i].geometry.computeBoundingBox();
       membraneInner[i].geometry.computeBoundingSphere();
       membraneInner[i].visible = q > 0.59;
-      const cupAngle = 0.22 + (Math.PI - 0.22) * closure;
+      const cupAngle = 0.22 * nucleation + (Math.PI - 0.22) * closure,
+        rimAttachment = attached * Math.exp(-Math.pow(cupAngle / 0.48, 2));
       closureRims[i].visible = q > 0.59 && q < 0.84;
       closureRims[i].scale.setScalar(Math.max(0.001, Math.sin(cupAngle)));
       closureRims[i].position.set(
-        centers[i][0],
-        centers[i][1],
-        -0.64 * Math.cos(cupAngle),
+        centers[i][0] + membraneAnchors[i].x * rimAttachment,
+        centers[i][1] + membraneAnchors[i].y * rimAttachment,
+        -0.64 * Math.cos(cupAngle) +
+          (membraneAnchors[i].z + 0.64) * rimAttachment,
       );
       walls[i][0].visible = q > 0.84;
       walls[i][1].visible = q > 0.86;
       walls[i][2].visible = q >= 0.91;
       walls[i][3].visible = q >= 0.94;
       matureMat.opacity = 0.1 + 0.28 * mature;
-      poles[i].visible = q > 0.51 && q < 0.82;
-      poles[i].position.set(centers[i][0], centers[i][1], -0.37);
     }
     for (let i = 0; i < 12; i++) {
       const c = centers[Math.floor(i / 3)],
         t = (q * 2 + i / 12) % 1;
       vesicles[i].visible = q > 0.59 && q < 0.82;
+      vesicles[i].scale.setScalar(
+        0.047 *
+          ease(t, 0.02, 0.12) *
+          (1 - ease(t, 0.88, 0.98)) *
+          ease(q, 0.59, 0.62) *
+          (1 - ease(q, 0.79, 0.82)),
+      );
       vesicles[i].position.set(
         c[0] + 0.8 * (1 - t) * Math.cos(i * 2),
         c[1] + 0.8 * (1 - t) * Math.sin(i * 2),
         -0.6 - 0.25 * (1 - t),
       );
     }
-    meioticEnvelopeLayers.forEach((l) => l.update());
-    meioticPores.forEach((l) => l.update());
     nutrients.forEach((n) => {
       n.visible = !induced;
     });
@@ -381,6 +396,16 @@ function create() {
     labels[5].active = induced && q >= 0.65 && q < 0.87;
     labels[6].active = induced && q >= 0.87;
     labels[7].active = !induced;
+    anchor.atVertex(0, ascus, 0);
+    anchor.atVertex(1, ascus, 28 * 41);
+    anchor.atMesh(2, chromatid[0].centromere);
+    anchor.atMesh(3, chromatid[0].centromere);
+    anchor.atMesh(4, chromatid[1].centromere);
+    anchor.atVertex(5, membranes[1].mesh, 24 * 37);
+    let sporeWall = walls[0][0];
+    for (const layer of walls[0]) if (layer.visible) sporeWall = layer;
+    anchor.atVertex(6, sporeWall, 14 * 41 + 20);
+    anchor.atMesh(7, nutrients[4]);
     group.userData = {
       species: "Saccharomyces cerevisiae",
       process: "sporulation",

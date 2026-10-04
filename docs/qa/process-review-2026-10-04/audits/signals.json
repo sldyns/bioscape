@@ -1,0 +1,255 @@
+{
+  "group": "signals",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "signalTransduction",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Simplified mammalian PDGF receptor → Grb2/SOS → membrane Ras → Raf/MEK/ERK → nuclear transcriptional response; all condition values ligand, noLigand, kinaseInactive.",
+      "checks": [
+        "Inspected WORKPLAN, CONTRIBUTING, scientific review/correction and implementation/refinement contracts.",
+        "Traced actual create/update geometry plus structuralKit and continuousMembrane helpers; reviewed zh/en title, intro, all stages, controls, labels, entries, condition notes and related-structure links. No model defines a legend or root-specific context override.",
+        "Actual processesByRoot import confirms cell is the only registered root; neuron, muscleFibre and erythrocyte do not expose these four models.",
+        "Focused smoke.mjs and science.test.mjs pass. Existing regressions include stable nodes/geometries/material inventories, finite buffers, all controls, arbitrary seeks including mutable geometry bytes, and actual geometric containment/contact tests. Logs retained.",
+        "Five receptor extracellular domains, extracellular PDGF, intracellular receptor kinase and tail phosphates, SOS/Ras physical exchange contact, membrane-anchored GTPase identity, GDP/GTP exchange, downstream activation ordering and blocked branches inspected.",
+        "ERK enters after activation; transcript remains nuclear and grows from its origin; text avoids guaranteeing cell division. Actual nuclear-entry path independently tested against rim triangles."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/1BKD",
+          "title": "Human Ras–SOS exchange complex, Boriack-Sjodin et al. 1998",
+          "supports": "SOS physically engages Ras and opens its nucleotide-binding site for release/rebinding; Ras is a small GTPase."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4663128/",
+          "title": "Full-length human PDGFRβ–PDGF-B structure",
+          "supports": "PDGFR has five extracellular Ig-like domains, one transmembrane segment and a cytosolic kinase; ligand stabilizes a receptor dimer."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC124259/",
+          "title": "Whitehurst et al. 2002, ERK2 nuclear entry",
+          "supports": "Permeabilized-cell import experiments support ERK2 entry through nuclear pore complexes and interaction with nucleoporins; no claim here that every cellular ERK route is carrier-independent."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-signals-01",
+          "severity": "P1",
+          "kind": "misleading membrane topology",
+          "file": "src/processes/modules/signals/signalTransductionProcess.js",
+          "location": "nuclear rim creation lines 140-144, doubleRim lines 190-198; ERK import lines 301-306",
+          "evidence": "Both nuclear rims are complete TorusGeometry objects. ERK center is interpolated across x=1.59 near the decorative pore, but no opening is made in either rim. MeshBVH triangle/triangle tests detect ERK/rim intersections at p=0.82, 0.835, 0.85, 0.86 and 0.88; four mesh-pair intersections at p=0.85. No-ligand and kinaseInactive branches do not import ERK. See evidence/signals/diagnostic.json:erk.",
+          "whyWrong": "The stage specifically teaches entry through a nuclear pore. The drawn pore does not replace the enclosing rim, so the displayed kinase crosses membrane material rather than a clear portal. This is a topological failure, not an objection to approximate molecular scale.",
+          "fix": "Give every nuclear-envelope layer an aligned open portal, size and route the existing ERK geometry through that portal with positive clearance, and keep inactive controls outside. Preserve the detailed kinase/pore geometry.",
+          "verification": "At representative and dense intermediate import samples, test actual ERK meshes against every nuclear membrane/rim triangle; assert no crossing outside the portal and correct pre/post compartment. Retain deterministic arbitrary seeks and condition regressions. Root should inspect normal-camera continuous entry.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC124259/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "Smoothstep receptor docking, SOS movement, Raf docking, nuclear import and transcript growth traced across full interval.",
+          "Actual membrane penetration during import is confirmed in issue 01. Phosphate and GDP/GTP visibility thresholds are categorical state indicators, not independently classified as defects."
+        ],
+        "limits": [
+          "No rendered continuous-playback inspection.",
+          "Small CPU-only update sample mean 0.0098 ms; this is not a browser FPS measurement."
+        ]
+      },
+      "limitations": [
+        "Read-only Phase A: no product/test edits, browser operation or full-workspace suite.",
+        "Primitive secondary structures and trajectories are teaching schematics, not atomic reconstructions or measured kinetics.",
+        "Static/buffer/triangle checks do not establish normal-camera readability, mobile behavior or continuous rendered FPS.",
+        "Cascade collision chemistry, alternate pathways and feedback are deliberately omitted."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "apoptosis",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Mammalian intrinsic mitochondrial apoptosis; stress and noStress branches; MOMP, cytochrome-c release, heptameric Apaf-1, caspase cascade and membrane-enclosed body formation.",
+      "checks": [
+        "Inspected WORKPLAN, CONTRIBUTING, scientific review/correction and implementation/refinement contracts.",
+        "Traced actual create/update geometry plus structuralKit and continuousMembrane helpers; reviewed zh/en title, intro, all stages, controls, labels, entries, condition notes and related-structure links. No model defines a legend or root-specific context override.",
+        "Actual processesByRoot import confirms cell is the only registered root; neuron, muscleFibre and erythrocyte do not expose these four models.",
+        "Focused smoke.mjs and science.test.mjs pass. Existing regressions include stable nodes/geometries/material inventories, finite buffers, all controls, arbitrary seeks including mutable geometry bytes, and actual geometric containment/contact tests. Logs retained.",
+        "Traced distinct outer/inner mitochondrial membranes; continuous crista contour opens toward IMS. Cytochrome-c path runs through the right outer-membrane aperture after its closure opens, before Apaf assembly and caspase execution.",
+        "Seven Apaf-1 arms each carry 7/8-blade WD40 schematic propellers; caspase-9 precedes caspase-3/7; bilingual text explicitly distinguishes proteases from DNA-cleaving nucleases and omits nucleotide drawing.",
+        "Existing exact membrane triangle checks retain original chromatin cargo and show one closed membrane at start, six closed components at end (remnant plus five bodies), and one component in noStress. Threshold switches and piecewise release joins traced."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4691890/",
+          "title": "Zhou et al. 2015, atomic mammalian apoptosome",
+          "supports": "Cytochrome c and nucleotide activation of Apaf-1, heptameric apoptosome and initiator/effector caspase ordering; WD1/WD2 consist of seven/eight WD40 blades."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "No new confirmed topology or position-discontinuity failure in the reviewed path. Cytochrome-c intermediate path joins agree in position; release/assembly/execution precede body packaging.",
+          "CPU diagnostic measured mean 19.67 ms per update over eight progress samples and 18.70 ms for eight identical-state updates; continuousMembrane rebuilds the same isosurface even when lobe parameters do not change. This is a concrete optimization target, not a proven browser FPS failure."
+        ],
+        "limits": [
+          "Root must measure continuous rendered playback, especially the active membrane morph.",
+          "Bounded CPU timings taken while other reviewers may run; no sustained or hardware-normalized benchmark."
+        ]
+      },
+      "limitations": [
+        "Read-only Phase A: no product/test edits, browser operation or full-workspace suite.",
+        "Primitive secondary structures and trajectories are teaching schematics, not atomic reconstructions or measured kinetics.",
+        "Static/buffer/triangle checks do not establish normal-camera readability, mobile behavior or continuous rendered FPS.",
+        "Upstream BCL-2 regulation, detailed cytochrome-c binding, nucleotides and later engulfment are schematic/omitted; this is not an atomic assembly simulation.",
+        "Qualified scientific pass does not close rendering/performance acceptance."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "differentiation",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Mouse definitive erythroid maturation along one descendant trajectory, functional versus insufficient GATA1, ending at reticulocyte plus membrane-enclosed pyrenocyte rather than mature erythrocyte.",
+      "checks": [
+        "Inspected WORKPLAN, CONTRIBUTING, scientific review/correction and implementation/refinement contracts.",
+        "Traced actual create/update geometry plus structuralKit and continuousMembrane helpers; reviewed zh/en title, intro, all stages, controls, labels, entries, condition notes and related-structure links. No model defines a legend or root-specific context override.",
+        "Actual processesByRoot import confirms cell is the only registered root; neuron, muscleFibre and erythrocyte do not expose these four models.",
+        "Focused smoke.mjs and science.test.mjs pass. Existing regressions include stable nodes/geometries/material inventories, finite buffers, all controls, arbitrary seeks including mutable geometry bytes, and actual geometric containment/contact tests. Logs retained.",
+        "Read lineage boundary, omitted divisions/environment support, GATA1-associated regulation, hemoglobin tetramers, condensation, polarity, extrusion and residual reticulocyte organelles in both languages.",
+        "Original complete DNA surface containment regression passes 1,556,064 vertex checks plus 144 triangle-pair checks; nucleus/plasma-membrane tests show two closed final products and intact arrested branch.",
+        "Independently checked complete GATA1 assembly against actual envelope; this reveals a compartment defect excluded by the chromatin-only regression."
+      ],
+      "sources": [
+        {
+          "url": "https://academic.oup.com/ajcp/article/147/4/420/3072332",
+          "title": "Lee et al. 2017, GATA1 nuclear marker",
+          "supports": "Primary immunohistochemical study reports strong nuclear GATA1 in immature erythroid precursors; supports nuclear regulator placement, not mouse-specific timing."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16174764/",
+          "title": "Differential effects of GATA-1 on proliferation and differentiation of erythroid lineage cells",
+          "supports": "Primary study abstract describes conditional GATA-1 rescue of null embryonic-stem-cell primitive/definitive erythropoiesis; supports regulatory role. Repeated full-page retrieval was inconsistent."
+        },
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3283871/",
+          "title": "Wang et al. 2012, PI3K-dependent erythroblast polarization",
+          "supports": "Primary study abstract describes mouse fetal-liver erythroblasts, polarization and extrusion into membrane-enclosed nuclear bud. Full-page open encountered anti-bot challenge, so no newly asserted detailed mechanical conclusion relies on full text."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-signals-02",
+          "severity": "P1",
+          "kind": "false compartment / nuclear-envelope intersection",
+          "file": "src/processes/modules/signals/differentiationProcess.js",
+          "location": "GATA1 creation lines 88-107; position update lines 261-266",
+          "evidence": "At p=0 the GATA1 body center transformed into the unit nuclear-envelope coordinates is (-0.72727,0.6,0.57692), radius 1.1053. 2329/2332 vertices of the box plus zinc-finger decoration lie outside the envelope; the actual box intersects NE triangles through p=0.15. Even at p=0.23, 102 decorative vertices remain outside (max radius 1.02953). This is independent of the earlier chromatin-containment regression, which passes. See diagnostic.json:gata.",
+          "whyWrong": "The scene identifies GATA1 as the nuclear erythroid regulator and does not depict import. Its visible path goes through intact nuclear membrane on the opposite side from the pore. Even an intended import would need a pore-aligned path instead of a membrane intersection.",
+          "fix": "Place the complete GATA1 model inside the nuclear envelope throughout its visible regulatory trajectory, including all attached zinc-finger features. If import is intentionally taught instead, supply an explicit aligned pore trajectory; no new process scope is needed here.",
+          "verification": "Check all visible GATA1 surface vertices and direct triangle intersections against the actual NE for p=0 through 0.46 and both programs; preserve original chromatin/NE and enucleation containment regressions.",
+          "sourceUrls": [
+            "https://academic.oup.com/ajcp/article/147/4/420/3072332"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "Nuclear/polarization/extrusion trajectories use joined smoothstep intervals; common nuclear deformation preserves chromatin-envelope relation and final membrane topology under arbitrary seek.",
+          "CPU diagnostic measured mean 12.70 ms per update and 12.70 ms for identical-state updates; continuousMembrane does unnecessary rebuilding while lobes are unchanged."
+        ],
+        "limits": [
+          "GATA1 compartment issue remains.",
+          "No continuous rendered playback inspection; CPU timings are limited concurrent-machine diagnostics, not FPS claims."
+        ]
+      },
+      "limitations": [
+        "Read-only Phase A: no product/test edits, browser operation or full-workspace suite.",
+        "Primitive secondary structures and trajectories are teaching schematics, not atomic reconstructions or measured kinetics.",
+        "Static/buffer/triangle checks do not establish normal-camera readability, mobile behavior or continuous rendered FPS.",
+        "F-actin, membrane trafficking, enucleosome mechanics and intermediate divisions are not explicitly modeled; text appropriately avoids a unique contractile-ring explanation.",
+        "Some primary full-text endpoints were access-limited; accessible publisher GATA1 study was independently opened/read."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "immuneResponse",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Nucleated mammalian target-cell endogenous MHC-I presentation to differentiated effector CD8 T cell; matched and unmatched TCR epitope branches, both MHC-binding competent.",
+      "checks": [
+        "Inspected WORKPLAN, CONTRIBUTING, scientific review/correction and implementation/refinement contracts.",
+        "Traced actual create/update geometry plus structuralKit and continuousMembrane helpers; reviewed zh/en title, intro, all stages, controls, labels, entries, condition notes and related-structure links. No model defines a legend or root-specific context override.",
+        "Actual processesByRoot import confirms cell is the only registered root; neuron, muscleFibre and erythrocyte do not expose these four models.",
+        "Focused smoke.mjs and science.test.mjs pass. Existing regressions include stable nodes/geometries/material inventories, finite buffers, all controls, arbitrary seeks including mutable geometry bytes, and actual geometric containment/contact tests. Logs retained.",
+        "Traced protein processing, TAP-facing cytosolic nucleotide domains, ER lumen import, MHC heavy chain/beta2-microglobulin, helical groove walls/beta floor, carrier orientation and luminal-to-extracellular topology, TCR/CD8 interface and granule polarization.",
+        "Both branches preserve presentation; unmatched branch disperses contact and prevents polarized granules. Text distinguishes effector recognition from naive priming and does not depict killing.",
+        "Existing actual local-groove regression passes in both branches; new triangle test finds peptide and groove collide with static ER membrane. Piecewise loading endpoint is also mismatched."
+      ],
+      "sources": [
+        {
+          "url": "https://www.rcsb.org/structure/1AO7",
+          "title": "Garboczi et al. 1996, TCR–peptide–HLA-A2 complex",
+          "supports": "Primary structure shows TCR variable loops contacting peptide plus MHC surface across the binding site."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1AKJ",
+          "title": "Gao et al. 1997, CD8–HLA-A2 complex",
+          "supports": "Primary structure shows CD8 binding to an MHC-I site including alpha3/alpha2 and beta2-microglobulin, compatible with TCR co-engagement."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1M2V",
+          "title": "Bi et al. 2002, Sec23/24–Sar1 COPII pre-budding complex",
+          "supports": "Primary structure/abstract describes ER COPII coat assembly, cargo selection and membrane deformation. Used for the conserved membrane-budding requirement, not species-specific MHC biochemistry."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-signals-03",
+          "severity": "P1",
+          "kind": "false ER loading/export topology with endpoint discontinuity",
+          "file": "src/processes/modules/signals/immuneResponseProcess.js",
+          "location": "static ER wall lines 56-96; MHC/carrier and peptide update lines 436-461",
+          "evidence": "The right ER boundary remains a static continuous wall through the loading and export route. At p=0.46,0.49,0.50,0.52 and 0.54, three peptide-residue meshes intersect actual ER-wall triangles; 16 MHC component meshes intersect at p=0.46, rather than only the transmembrane stalk. The MHC/peptide then travels through that unchanged wall until p≈0.60. A separate endpoint mismatch at p=0.46 moves the peptide origin from (-0.84,0.70,0.12) to (-0.90,0.73,0.12), a 0.0671-unit snap versus bead radius 0.04. Both epitope conditions share this transport path. See diagnostic.json:immuneER.",
+          "whyWrong": "The peptide groove must face ER lumen during loading, and an integral MHC-I complex must remain embedded in a membrane during vesicular export. The current peptide itself intersects lipid and the carrier crosses an unchanged ER boundary. The compressed-Golgi-route caption does not resolve the false membrane crossing.",
+          "fix": "Move the loading complex to a real ER membrane site with the entire groove/peptide on the luminal side; provide a continuous preallocated budding/exit geometry before carrier departure. Preserve peptide attachment, membrane orientation, the two recognition branches and existing MHC-groove regression. Match peptide position/orientation exactly at the loading-to-bound transition.",
+          "verification": "Check actual peptide/groove against ER lipid surfaces through p=0.35-0.62 in both epitope branches; verify membrane continuity during exit and lumen-facing cargo through budding, transport and fusion. Test one-sided position limits at p=0.46 and seek determinism. Root renders normal-distance continuous transport.",
+          "sourceUrls": [
+            "https://www.rcsb.org/structure/1AO7",
+            "https://www.rcsb.org/structure/1M2V"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "ER loading-to-bound origin has a 0.0671-unit position jump at p=0.46; included with issue 03.",
+          "Carrier egress crosses an immutable ER wall. The later surface patch switch is explicitly staged around fusion; final TCR engagement and unmatched release have smooth positions."
+        ],
+        "limits": [
+          "Root must inspect corrected budding, loading and surface fusion in continuous playback.",
+          "Five peptide beads are schematic chain markers; no exact amino-acid count is asserted."
+        ]
+      },
+      "limitations": [
+        "Read-only Phase A: no product/test edits, browser operation or full-workspace suite.",
+        "Primitive secondary structures and trajectories are teaching schematics, not atomic reconstructions or measured kinetics.",
+        "Static/buffer/triangle checks do not establish normal-camera readability, mobile behavior or continuous rendered FPS.",
+        "Proteasomal subunit arrangements, loading chaperones/trimming, ER-to-Golgi detail, full immunological synapse and actual killing are omitted/compressed."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import {
   materialInventory,
 } from "./structuralDetails.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 const model = {
   id: "lacOperon",
@@ -90,6 +91,11 @@ const model = {
   ],
   sources: [
     {
+      title:
+        "Barkley et al. (1975): Interaction of effecting ligands with lac repressor and repressor-operator complex",
+      url: "https://pubmed.ncbi.nlm.nih.gov/235964/",
+    },
+    {
       title: "NCBI Bookshelf — How Genetic Switches Work",
       url: "https://www.ncbi.nlm.nih.gov/books/NBK26872/",
     },
@@ -123,6 +129,7 @@ const model = {
       m.position.z = -0.27;
     }
     const repressor = new THREE.Group();
+    repressor.name = "LacI repressor";
     group.add(repressor);
     for (let i = 0; i < 4; i++)
       k.ball(
@@ -132,25 +139,31 @@ const model = {
         repressor,
       );
     regulatorDomains(k, repressor, purple, "lacI");
+    repressor.children[0].name = "LacI protein surface";
     const ligands = [
       k.ball([-0.23, 0.34, 0.28], 0.095, gold, repressor),
       k.ball([0.23, 0.34, 0.28], 0.095, gold, repressor),
     ];
+    ligands.forEach((m, i) => (m.name = `LacI bound allolactose ${i}`));
     const cap = new THREE.Group();
     group.add(cap);
     k.ball([-0.22, 0, 0], [0.31, 0.38, 0.3], green, cap);
     k.ball([0.22, 0, 0], [0.31, 0.38, 0.3], green, cap);
     regulatorDomains(k, cap, green, "cap");
+    cap.children[0].name = "CAP protein surface";
     const camp = [
       k.ball([-0.3, 0.22, 0.26], 0.085, gold, cap),
       k.ball([0.3, 0.22, 0.26], 0.085, gold, cap),
     ];
     const lactose = new THREE.Group();
+    lactose.name = "Lactose substrate";
     group.add(lactose);
     k.ball([-0.13, 0, 0], 0.12, gold, lactose);
+    lactose.children[0].name = "Lactose sugar unit";
     k.ball([0.13, 0, 0], 0.12, gold, lactose);
     k.segment([-0.13, 0, 0], [0.13, 0, 0], 0.045, gold, lactose);
     const beta = k.ball([-0.5, 2.1, 0], [0.45, 0.32, 0.27], blue);
+    beta.name = "Pre-existing beta-galactosidase";
     const polymerases = Array.from({ length: 3 }, () => {
       const g = new THREE.Group();
       group.add(g);
@@ -170,9 +183,10 @@ const model = {
         group,
         72,
       );
+      m.name = `lacZYA transcript ${j}`;
       return m;
     });
-    const bridges = transcripts.map(() => nascentBridge(k, rna));
+    const bridges = transcripts.map((m) => nascentBridge(k, rna, m));
     const rnaDetails = transcripts.map((m) => nucleotideDetail(k, m));
     for (let i = 0; i < 4; i++)
       helix(k, beta, [(i - 1.5) * 0.2, 0.1, 0.55], blue, {
@@ -202,11 +216,19 @@ const model = {
       k.label([4.4, 0.05, 0], "3′ / 5′", "3′ / 5′", 1),
       k.label([1.4, 1.3, 0], "较强转录", "Stronger transcription", 2),
     ];
+    const anchors = labelAnchors(labels),
+      dnaPhosphates = detailedDNA.group.getObjectByName("DNA phosphates 0"),
+      dnaSites = [-3.15, -2.05, -1.1, 0.45, 2.1, 3.4].map((x) =>
+        anchors.nearestX(dnaPhosphates, x),
+      );
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         hasLactose = parameters.lactose !== "absent",
         lowGlucose = parameters.glucose !== "high";
-      const induction = hasLactose ? ease(p, 0.17, 0.39) : 0,
+      labels.forEach((label) => (label.active = true));
+      // Induced departure follows visible inducer occupancy, rather than
+      // beginning while the lactose conversion is still being illustrated.
+      const induction = hasLactose ? ease(p, 0.25, 0.43) : 0,
         activation = lowGlucose ? ease(p, 0.34, 0.51) : 0;
       repressor.position.set(
         -1.1 + 1.75 * induction,
@@ -223,11 +245,18 @@ const model = {
       beta.visible = p < 0.4;
       const count = hasLactose ? (lowGlucose ? 3 : 1) : 0;
       polymerases.forEach((m, i) => {
-        const t = ease(p, 0.53 + i * 0.075, 0.87 + i * 0.04);
-        m.visible = i < count && p >= 0.53 + i * 0.075 && t < 1;
+        const start = 0.53 + i * 0.075,
+          end = 0.87 + i * 0.04,
+          t = ease(p, start, end);
+        m.visible = i < count && p >= start - 0.035 && t < 1;
         m.position.set(-1.8 + 5.7 * t, -0.33, 0.22);
         transcriptionBubbles[i].x = m.position.x;
-        transcriptionBubbles[i].opening = m.visible ? 1 : 0;
+        // Loading opens DNA before elongation; after release it reanneals
+        // continuously. Each polymerase retains its own bounded bubble.
+        transcriptionBubbles[i].opening =
+          i < count
+            ? ease(p, start - 0.035, start) * (1 - ease(p, end, end + 0.04))
+            : 0;
         transcripts[i].visible = i < count && t > 0;
         transcripts[i].geometry.setDrawRange(
           0,
@@ -241,13 +270,12 @@ const model = {
           transcripts[i].geometry.parameters.path,
           ease(p, 0.53 + i * 0.075, 0.87 + i * 0.04),
           polymerases[i],
-          polymerases[i].visible,
+          transcripts[i].visible,
+          ease(p, 0.87 + i * 0.04, 0.91 + i * 0.04),
+          ease(p, 0.53 + i * 0.075, 0.565 + i * 0.075),
         ),
       );
       arrow.visible = count > 0 && p >= 0.93;
-      labels[6].position[0] = repressor.position.x;
-      labels[6].position[1] = repressor.position.y + 0.8;
-      labels[7].position[1] = cap.position.y + 0.7;
       labels[7].text =
         lowGlucose && p > 0.33
           ? b("CAP–cAMP", "CAP–cAMP")
@@ -261,6 +289,19 @@ const model = {
         : lowGlucose
           ? b("较强转录", "Stronger transcription")
           : b("较低转录", "Lower transcription");
+      group.updateMatrixWorld(true);
+      dnaSites.forEach((site, i) => anchors.instance(i, dnaPhosphates, site));
+      anchors.surface(6, repressor.children[0]);
+      anchors.surface(7, cap.children[0]);
+      anchors.surface(8, beta);
+      anchors.surface(9, lactose.visible ? lactose.children[0] : ligands[0]);
+      anchors.tube(10, transcripts[0]);
+      anchors.instance(11, dnaPhosphates, 0, "notation");
+      anchors.instance(12, dnaPhosphates, dnaPhosphates.count - 1, "notation");
+      if (!hasLactose) anchors.surface(13, repressor.children[0], "state");
+      else if (transcripts[0].geometry.drawRange.count > 0)
+        anchors.tube(13, transcripts[0], false, "state");
+      else anchors.instance(13, dnaPhosphates, dnaSites[1], "state");
       group.userData = {
         rootId,
         species: "Escherichia coli",

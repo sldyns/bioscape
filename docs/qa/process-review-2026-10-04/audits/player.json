@@ -1,0 +1,10 @@
+{
+  "group":"player", "models":[],
+  "findings":[{
+    "issueId":"20261004-player-01", "severity":"P2", "kind":"shared playback cadence", "file":"src/processes/ProcessExperience.jsx", "location":"rAF tick and ProcessScene progress effect",
+    "evidence":"Authoritative progress ref advances each rAF, but setProgress only at >=30ms feeds the sole normal model.update path. Deterministic cadence reproduction yields30 poses/sec at60Hz,25 at75Hz,30 at120Hz and28.8 at144Hz.",
+    "whyWrong":"The geometry cannot use available display cadence even when its update/render cost is small, creating avoidable stepwise motion.",
+    "fix":"Separate active geometry updates from throttled UI/session state publication; keep one authoritative progress, deterministic seeking/capture and paused demand rendering.",
+    "verification":"Deterministic scheduler tests plus real browser playback; no stale state rewinds, duplicate update per displayed frame, or paused update loop. Keep existing capture and render caching regressions."
+  }]
+}

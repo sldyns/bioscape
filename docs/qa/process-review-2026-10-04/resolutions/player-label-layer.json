@@ -1,0 +1,151 @@
+{
+  "issueId": "20261004-shared-capture-leader-layer-01",
+  "status": "fixed-and-native-rendered-verified",
+  "owner": "review_regulation, explicit root assignment",
+  "changedFiles": ["src/scene/sceneCapture.js", "tests/scene-capture.mjs"],
+  "change": "Two paint passes: all leaders and transparent halos first, then all caption backgrounds, borders and text. Layout and label data are unchanged.",
+  "discovery": "evidence/player/leader-layer-discovery.json",
+  "verification": [
+    {
+      "command": "node tests/scene-capture.mjs",
+      "result": "PASS 15/15, including real Canvas2D call ordering for opaque and transparent/halo cases",
+      "log": "evidence/player/capture-leader-layer-tests.log"
+    },
+    {
+      "command": "BIOSCAPE_CAPTURE_DRAWING_REVIEW_MODULE=<retained pre-repair module> node --test --test-name-pattern='export draws every leader' tests/scene-capture.mjs",
+      "result": "Expected FAIL on old interleaved implementation; all four captions and strings retained",
+      "log": "evidence/player/capture-leader-layer-negative.log"
+    },
+    {
+      "command": "node tests/comparison-capture.mjs",
+      "result": "PASS",
+      "log": "evidence/player/capture-leader-layer-comparison.log"
+    },
+    {
+      "command": "esbuild browser bundle (write:false)",
+      "result": "PASS",
+      "log": "evidence/player/capture-leader-layer-bundle.log"
+    },
+    {
+      "command": "prettier --check owned files; git diff --check owned files",
+      "result": "PASS",
+      "log": "evidence/player/capture-leader-layer-format.log"
+    },
+    {
+      "command": "capture-label-replay.mjs with native transparent PNG and native Chromium text measurements",
+      "result": "R05 actual alpha overlap remains 3205/1761/2770 -> 0/0/0; all 7/5/8 captions retained",
+      "log": "evidence/player/capture-leader-layer-r05-preserved.log"
+    }
+  ],
+  "sourceSha256": {
+    "src/scene/sceneCapture.js": "ca80382659fb456a2a6ea0f0469b2a6b3999c3242495a08b4e968fb97d2f9ff3",
+    "tests/scene-capture.mjs": "480867c9955fe04832f4848a3c91403995cf782280b369dd54a28e9163283f35"
+  },
+  "impact": {
+    "changesOnly": "Canvas2D layer order of exported annotations",
+    "unchanged": [
+      "3D geometry and materials",
+      "camera and view bounds",
+      "model progress and parameter application",
+      "projected anchors",
+      "caption selection, ordering, font, strings, wrapping and box dimensions",
+      "geometry avoidance layout",
+      "existing RGBA readback and WebGL capture passes"
+    ],
+    "priorEvidence": "Existing 235-case geometry/condition/irregular-seek captures remain useful. They predate this final annotation layer and cannot themselves prove the final paint order.",
+    "recaptureRecommended": "Targeted plantGenome targeting=removed p=.585 English and Chinese; one dense-caption case; transparent halo case.",
+    "full235RecaptureRequiredForCorrectness": false,
+    "qualification": "Re-export all 235 only if every retained image is required to use the final shared layer; no need to rerun scientific diagnostics or uninterrupted playback merely for this paint-order change.",
+    "recaptureCompleted": "Reported plantGenome targeting=removed p=.585 and 1: EN opaque, ZH opaque, ZH transparent (six originals). Each has ten active captions; same drawing-call regression covers opaque and halo modes."
+  },
+  "nativeRenderedSignoff": {
+    "status": "PASS-English-Chinese-and-transparent-originals",
+    "reviewer": "review_regulation",
+    "method": "Direct view_image original detail at 960x640; no reviewer browser operation",
+    "images": [
+      {
+        "path": "evidence/browser/conditions-final-b-010-plantGenome-plant-stage-4.webp",
+        "sha256": "904d567ee5c93f759a8b6eaa05ca9095c6b2f47ef79eabe654cdb5602b79388d",
+        "verdict": "PASS",
+        "observation": "TOC/TIC and TOM/TIM leaders are below the long removed-targeting captions; the text is clear and original caption content retained."
+      },
+      {
+        "path": "evidence/browser/conditions-final-b-010-plantGenome-plant-end.webp",
+        "sha256": "c7747a0b1551a9fc25d5c8d8751604ae7c7250f86279a929b6130f38b7b6b82d",
+        "verdict": "PASS",
+        "observation": "TOC/TIC and TOM/TIM leaders are below the long removed-targeting captions; the text is clear and original caption content retained."
+      },
+      {
+        "path": "evidence/browser/conditions-final-c-019-plantGenome-plant-stage-4.webp",
+        "sha256": "a2b85011e83943d8eec81198a4c5a21cdf40a842918907d7be96d1fd34828a61",
+        "language": "zh",
+        "parameters": {
+          "targeting": "removed"
+        },
+        "verdict": "PASS",
+        "observation": "Long Chinese removed-targeting captions remain readable; TOC/TIC and TOM/TIM strokes terminate behind the caption layer. All ten original active captions remain present."
+      },
+      {
+        "path": "evidence/browser/conditions-final-c-019-plantGenome-plant-end.webp",
+        "sha256": "f13563b4c2999b030a530ac36b3454a6665738e1ea4acc5307817467a2494f03",
+        "language": "zh",
+        "parameters": {
+          "targeting": "removed"
+        },
+        "verdict": "PASS",
+        "observation": "Long Chinese removed-targeting captions remain readable; TOC/TIC and TOM/TIM strokes terminate behind the caption layer. All ten original active captions remain present."
+      },
+      {
+        "path": "evidence/browser/label-transparent-final-001-plantGenome-plant-stage-4.png",
+        "sha256": "711115e7bc0c2212e5282a66a427ee3584bd4e47de4c785aebce125ad14e2e9d",
+        "mode": "RGBA",
+        "size": [960, 640],
+        "alphaMinMax": [0, 255],
+        "fullyTransparentPixels": 404408,
+        "partiallyTransparentPixels": 165296,
+        "fullyOpaquePixels": 44696,
+        "language": "zh",
+        "parameters": {
+          "targeting": "removed"
+        },
+        "background": "transparent",
+        "verdict": "PASS",
+        "observation": "All ten Chinese captions and dark leader cores with white halos remain clear. Both leader and halo are below all caption backgrounds and text; no strike-through. PNG alpha confirms actual transparency rather than a baked black background."
+      },
+      {
+        "path": "evidence/browser/label-transparent-final-001-plantGenome-plant-end.png",
+        "sha256": "9d9459a2049399ca45178f87cdd61b1ee3a5a4a2944c61cac9068f5965bda40f",
+        "mode": "RGBA",
+        "size": [960, 640],
+        "alphaMinMax": [0, 255],
+        "fullyTransparentPixels": 404419,
+        "partiallyTransparentPixels": 164783,
+        "fullyOpaquePixels": 45198,
+        "language": "zh",
+        "parameters": {
+          "targeting": "removed"
+        },
+        "background": "transparent",
+        "verdict": "PASS",
+        "observation": "All ten Chinese captions and dark leader cores with white halos remain clear. Both leader and halo are below all caption backgrounds and text; no strike-through. PNG alpha confirms actual transparency rather than a baked black background."
+      }
+    ],
+    "limits": [
+      "Scoped native signoff covers the reported plantGenome removed-targeting poses at .585 and 1, in English and Chinese with opaque backgrounds plus Chinese transparent PNGs. Universal layout/performance is not asserted.",
+      "Additional chromatin-owner RdDM signoff was reported by root, not independently viewed by this reviewer."
+    ],
+    "alphaEvidence": "evidence/player/capture-leader-transparent-alpha.json"
+  },
+  "group": "player-label-layer",
+  "issues": [
+    {
+      "issueId": "20261004-shared-capture-leader-layer-01",
+      "severity": "P2",
+      "status": "fixed-and-native-rendered-verified",
+      "changes": "Two paint passes: all leaders and transparent halos first, then all caption backgrounds, borders and text. Layout and label data are unchanged.",
+      "files": ["src/scene/sceneCapture.js", "tests/scene-capture.mjs"],
+      "discovery": "evidence/player/leader-layer-discovery.json",
+      "verification": "15/15 focused tests; retained old drawing fails; six native original EN/ZH/transparent reported-pose exports pass; R05 actual-alpha layout invariants preserved."
+    }
+  ]
+}

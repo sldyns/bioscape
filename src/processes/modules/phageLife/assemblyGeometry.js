@@ -274,7 +274,8 @@ export function assemblyTail(k, parent) {
     );
     sheath.push(row);
   }
-  const fibers = new THREE.Group();
+  const fibers = new THREE.Group(),
+    fiberComponents = [];
   group.add(fibers);
   for (let i = 0; i < 6; i++) {
     const a = (i * Math.PI) / 3,
@@ -295,13 +296,21 @@ export function assemblyTail(k, parent) {
       k.material("#9aa7b6"),
       group,
     );
-    k.ball([c * 0.4, -2.15, s * 0.4], 0.08, k.material("#8c9cad"), fibers);
-    k.ball([c * 0.92, -2.35, s * 0.92], 0.065, k.material("#8c9cad"), fibers);
+    const fiber = new THREE.Group();
+    fiber.name = `T4-assembling-long-fiber-${i}`;
+    fibers.add(fiber);
+    fiberComponents.push({
+      group: fiber,
+      angle: a,
+      root: [c * 0.4, -2.15, s * 0.4],
+    });
+    k.ball([c * 0.4, -2.15, s * 0.4], 0.08, k.material("#8c9cad"), fiber);
+    k.ball([c * 0.92, -2.35, s * 0.92], 0.065, k.material("#8c9cad"), fiber);
     k.ball(
       [c * 1.18, -3.03, s * 1.18],
       [0.07, 0.11, 0.07],
       k.material("#b2a3bc"),
-      fibers,
+      fiber,
     );
     k.tube(
       [
@@ -311,7 +320,7 @@ export function assemblyTail(k, parent) {
       ],
       0.032,
       k.material("#7896a1"),
-      fibers,
+      fiber,
       24,
     );
   }
@@ -323,5 +332,15 @@ export function assemblyTail(k, parent) {
     group,
   );
   terminator.rotation.x = Math.PI / 2;
-  return { group, base, spike, tube, lumen, sheath, fibers, terminator };
+  return {
+    group,
+    base,
+    spike,
+    tube,
+    lumen,
+    sheath,
+    fibers,
+    fiberComponents,
+    terminator,
+  };
 }

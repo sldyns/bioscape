@@ -1,0 +1,248 @@
+{
+  "group": "membrane",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "summary": {
+    "ownedIssuesFixed": 10,
+    "sharedIssuesFixedByRoot": 1,
+    "modelsAffected": [
+      "diffusion",
+      "activeTransport",
+      "osmoticBalance",
+      "bacterialCellWall"
+    ],
+    "remainingOwnedIssues": [],
+    "renderedAcceptance": "Original default-gallery review discovered 07-11; repaired modules await root recapture and acceptance",
+    "oldRegressionsChanged": false
+  },
+  "issues": [
+    {
+      "issueId": "20261004-membrane-01",
+      "status": "fixed",
+      "changes": "Reversed the shared alpha-helix generator's angular sense around +y. Existing height, winding count, radii, tessellation and shared geometry reuse are retained; aquaporin, pump and RodA/PBP2 consumers all receive right-handed secondary structures.",
+      "files": [
+        "src/processes/modules/membrane/membraneGeometry.js",
+        "src/processes/modules/membrane/process-review.test.mjs"
+      ],
+      "verification": [
+        "New test 01 computes signed triple products from actual TubeGeometry centerlines after world transforms in all three consumer scenes. Current geometry is positive/right-handed; baseline fails with left-handed alpha helix.",
+        "Primary-coordinate reference retained: AQP1 PDB 1J4N chain A residues 5–34, 27/27 positive consecutive-C-alpha windows."
+      ],
+      "limitations": [
+        "Secondary structures remain schematics, not fitted atomic models. Root performs rendered acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-02",
+      "status": "fixed",
+      "changes": "ATP remains intact while it approaches the phosphorylation pocket during gate closure. At p=.29 the two retained marker objects hand off at identical position and scale, after sodium occlusion. ADP then departs; existing Pi-release timing and one-phosphate inventory are preserved.",
+      "files": [
+        "src/processes/modules/membrane/activeTransportProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs"
+      ],
+      "verification": [
+        "New test 02 probes the visible marker across decreasing epsilon values and verifies conservation, exact ATP-relative positioning before transfer, constant bound position after transfer, and no nucleotide/phosphate in the no-ATP branch.",
+        "At p=.29±1e-7, displacement is 1.976803852853373e-12 and radius difference 1.2964629370060266e-13; original displacement was .5337602458033006.",
+        "Unchanged science.test.mjs passes its 2002 gate/phosphate/label states and 3 Na out / 2 K in checks. Baseline challenge rejects the original jump."
+      ],
+      "limitations": [
+        "Schematic docking and phosphotransfer timing are not microscopic kinetics; rendered review remains with root."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-03",
+      "status": "fixed",
+      "changes": "Each of the existing 20 water tracers has a construction-time material and fades only at its distant reservoir endpoints, becoming transparent on both sides of each modulus reset. Visible transit, particle detail, direction ratios, exact membrane deformation and impermeant-solute positions are retained.",
+      "files": [
+        "src/processes/modules/membrane/osmoticBalanceProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs"
+      ],
+      "verification": [
+        "New test 03 covers every in-range periodic seam for every particle, all three tonicities and both cell/erythrocyte roots: 132 seam cases per root, 264 total. At ±1e-6, maximum opacity is 1.451978759448025e-9; no fully visible tracer is reset.",
+        "The same test confirms full opacity during transport, unchanged inward/outward direction pattern, stable material identities and deterministic opacity/position after irregular seeks.",
+        "Unchanged area/volume regressions pass: area conserved, final V/V0 1.624757 / 1 / .637394 for hypo/iso/hypertonic; node and geometry inventories remain 62 / 6. Baseline fails the visible-reservoir-reset invariant."
+      ],
+      "limitations": [
+        "The fade marks finite tracer recycling in a schematic reservoir; it is not molecule creation/destruction. Root must inspect rendered continuous playback."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-04",
+      "status": "fixed",
+      "changes": "The PBP2 catalytic domain now moves continuously to each successive reacting peptide before bond change. A detailed cleft lip contacts the acceptor; the same membrane helix remains anchored while a fixed-buffer curved stalk keeps exact attachment to the moving domain. Finished wall bonds, growing glycan, carrier and all peptide connections are preserved.",
+      "files": [
+        "src/processes/modules/membrane/bacterialCellWallProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs"
+      ],
+      "verification": [
+        "New test 04 checks immediately before/at/after both reactions: donor-to-active-serine distance .1, nearest real enzyme triangle distance .056 versus donor radius .064; acceptor nearest triangle distances .00468/.00463, also within its radius.",
+        "Actual TubeGeometry stalk centerline endpoints stay attached to the fixed membrane anchor and transformed domain neck through approach, first catalysis, inter-site movement, second catalysis and departure. Exact piecewise boundaries are position-continuous.",
+        "Blocked branch keeps terminal D-Ala bonds and forms no crosslinks. Unchanged old 402-state molecular conservation/attachment tests pass. Baseline fails actual active-site contact."
+      ],
+      "limitations": [
+        "Domain and cleft motions are illustrative; the added binding lip is not claimed as an atomic reconstruction. Quantitative kinetics, full elongasome architecture and complete natural glycan length remain outside scope."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-05",
+      "status": "fixed-by-root",
+      "changes": "Integrator separated diffusion equal-gradient notes by route: water specifies water activity in Chinese/English and oxygen retains concentration terminology. Root added bilingual condition-note assertions and supplied a passing receipt.",
+      "files": [
+        "src/exploration/conditionNotes.js",
+        "tests/condition-notes.mjs"
+      ],
+      "verification": [
+        "Root confirmation received during Phase B; evidence log docs/qa/process-review-2026-10-04/evidence/condition-notes.log reports 84 definitions / 155 options with bilingual copy and combined-control checks passing.",
+        "Membrane reviewer did not edit shared code or rerun the shared test suite."
+      ],
+      "limitations": [
+        "Integrated rendered overlay review belongs to root."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-06",
+      "status": "fixed",
+      "changes": "The beta-lactam schematic explicitly identifies carbonyl carbon, adjacent ring nitrogen and carbonyl oxygen, retaining a C=O double bond. Acylation opens their C–N ring edge, after docking, and connects the actual moving active-site serine to that same carbonyl carbon. Covalent endpoints are derived from actual molecular transforms, not the ring center.",
+      "files": [
+        "src/processes/modules/membrane/bacterialCellWallProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs"
+      ],
+      "verification": [
+        "New test 06 checks approach, pre-acylation, exact event and terminal states. The one broken ring edge must connect carbonyl C and ring N; the one acyl bond must connect real enzyme residue and carbonyl C, with intact C=O geometry.",
+        "Terminal endpoint error is 5.551115123125783e-17. Carbonyl-to-serine separation is .19 along the drawn covalent bond; there is no endpoint in the empty ring center.",
+        "No-antibiotic branch restores all ring edges on the hidden drug and displays no acyl bond. Baseline challenge fails the wrong-edge/disconnected-endpoint invariant."
+      ],
+      "limitations": [
+        "The generic beta-lactam substituents are schematic; common serine-PBP chemistry is supported by the added primary PBP3 acyl-structure paper without claiming PBP2-specific rates."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-07",
+      "status": "fixed",
+      "discovery": "default-stage rendered follow-up; immutable repair-discoveries.json",
+      "changes": "Aquaporin callout is attached to a real vertex of the front-right channel helix. A cached mesh-space point is transformed through its real object hierarchy; overlay text offsets are no longer used as object coordinates.",
+      "files": [
+        "src/processes/modules/membrane/diffusionProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs",
+        "src/processes/modules/membrane/membraneGeometry.js"
+      ],
+      "verification": [
+        "New test 07 checks the actual target mesh surface across all four roots, both routes, both gradients, and four progress states (64 label samples).",
+        "Pre-rendered-repair modules fail the same actual-surface assertion."
+      ],
+      "limitations": [
+        "Owned focused geometry/regression acceptance complete; root must recapture the changed models and complete rendered, bilingual and continuous-playback acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-08",
+      "status": "fixed",
+      "discovery": "default-stage rendered follow-up; immutable repair-discoveries.json",
+      "changes": "N/P-domain and conformation callouts track actual transformed mesh vertices. ATP/ADP and phosphate callouts track their actual marker objects; the no-ATP status points to the pump internal gate. Phosphate annotation is active only when its actual marker is visible.",
+      "files": [
+        "src/processes/modules/membrane/activeTransportProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs",
+        "src/processes/modules/membrane/membraneGeometry.js"
+      ],
+      "verification": [
+        "New test 08 checks 13 irregular seeks in each energy branch, including docking, phosphate transfer, domain rotations, occlusion and Pi release.",
+        "Actual triangle contact is checked for the two domain callouts and pump callout; marker centers and visibility are checked independently. Original domain anchors fail."
+      ],
+      "limitations": [
+        "Owned focused geometry/regression acceptance complete; root must recapture the changed models and complete rendered, bilingual and continuous-playback acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-09",
+      "status": "fixed",
+      "discovery": "default-stage rendered follow-up; immutable repair-discoveries.json",
+      "changes": "Cortex annotation follows an actual deformed junction in the bounded front window. The red-cell callout uses a real front-facing membrane vertex; inflow/outflow labels follow the scaled arrow heads. Region/status annotations remain region statements.",
+      "files": [
+        "src/processes/modules/membrane/osmoticBalanceProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs"
+      ],
+      "verification": [
+        "New test 09 checks both roots and all three tonicities through six irregular seeks (36 model states). Membrane positions are compared with actual deformed geometry vertices and cortex labels with actual instance matrices; arrow heads are checked after scaling.",
+        "Original red-cell/cortex and arrow offsets fail actual-geometry checks. No new geometry, scene nodes or per-frame materials were introduced."
+      ],
+      "limitations": [
+        "Owned focused geometry/regression acceptance complete; root must recapture the changed models and complete rendered, bilingual and continuous-playback acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-10",
+      "status": "fixed",
+      "discovery": "default-stage rendered follow-up; immutable repair-discoveries.json",
+      "changes": "RodA callout uses a real helix vertex, PBP2 follows its active-site residue, and lipid-II/tetrasaccharide follows a real NAM-ring bead as the chain moves. New-crosslink annotation activates only with the first visible crosslink and targets that bond. The inhibited-state annotation activates only after covalent occupancy and targets the actual catalytic site.",
+      "files": [
+        "src/processes/modules/membrane/bacterialCellWallProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs",
+        "src/processes/modules/membrane/membraneGeometry.js"
+      ],
+      "verification": [
+        "New test 10 checks 14 irregular seeks in each antibiotic branch (28 states), including both sides of polymerization, acylation and each transpeptidation event.",
+        "Actual surface/center anchors and active-label timing are verified against real scene objects. Original RodA callout fails the surface assertion."
+      ],
+      "limitations": [
+        "Owned focused geometry/regression acceptance complete; root must recapture the changed models and complete rendered, bilingual and continuous-playback acceptance."
+      ]
+    },
+    {
+      "issueId": "20261004-membrane-11",
+      "status": "fixed",
+      "discovery": "default-stage rendered follow-up; immutable repair-discoveries.json",
+      "changes": "Each receiving mDAP3 retains its terminal D-Ala4 on an explicit side branch offset in x and z, clear of both the approaching donor and completed crosslink. Donor D-Ala5 starts off the crosslink axis and departs continuously from that position. All residue objects/material identities, all peptide-stem endpoints, mDAP3 acceptor endpoints and both inhibited-branch terminal bonds are preserved.",
+      "files": [
+        "src/processes/modules/membrane/bacterialCellWallProcess.js",
+        "src/processes/modules/membrane/process-review.test.mjs"
+      ],
+      "verification": [
+        "New test 11 inspects 414 states across both antibiotic conditions, including 201 dense progress samples and exact +/-epsilon reaction points per condition. It checks actual cylinder axes/radii against all 50 named residue spheres except the two endpoints, plus unrelated D-Ala sphere separation and peptide attachment.",
+        "Minimum crosslink-to-nonendpoint-sphere surface clearance improves from -0.119 (intersection) to +0.071; minimum unrelated D-Ala sphere surface clearance across approach and reaction improves from -0.028 to +0.060890620967357256.",
+        "Original geometry fails the actual bond/sphere-clearance regression. All unchanged old sugar/carrier/peptide endpoint and inhibited-branch scientific tests still pass."
+      ],
+      "limitations": [
+        "Owned focused geometry/regression acceptance complete; root must recapture the changed models and complete rendered, bilingual and continuous-playback acceptance."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "newRegression": "src/processes/modules/membrane/process-review.test.mjs",
+  "commands": [
+    "node src/processes/modules/membrane/process-review.test.mjs — PASS 5/5",
+    "node src/processes/modules/membrane/science.test.mjs — PASS, unchanged existing regressions",
+    "node src/processes/modules/membrane/refinement.test.mjs — PASS all four models including finite buffers, bounds, deterministic controls, resource stability and esbuild",
+    "BIOSCAPE_MEMBRANE_TEST_MODULES=<archived be81aa5 baseline module directory> node src/processes/modules/membrane/process-review.test.mjs — expected FAIL 5/5, proving rejection of all five original owned defects",
+    "prettier --check on the five changed/added owned source and test files — PASS",
+    "Follow-up: node src/processes/modules/membrane/process-review.test.mjs — PASS 10/10",
+    "Follow-up: BIOSCAPE_MEMBRANE_TEST_MODULES=<pre-rendered-repair archive> node --test --test-name-pattern=^(07|08|09|10|11): src/processes/modules/membrane/process-review.test.mjs — expected FAIL 5/5",
+    "Follow-up: node src/processes/modules/membrane/science.test.mjs — PASS unchanged old tests",
+    "Follow-up: node src/processes/modules/membrane/refinement.test.mjs — PASS all four models unchanged old tests",
+    "Follow-up: node docs/qa/process-review-2026-10-04/evidence/membrane/rendered-repair-measurements.mjs — before/after actual geometry receipt",
+    "Follow-up: prettier --check on six owned source/test files — PASS"
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/membrane/phase-b-process-review.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/phase-b-science-test.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/phase-b-refinement-test.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/phase-b-baseline-challenge.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/phase-b-measurements.json",
+    "docs/qa/process-review-2026-10-04/evidence/condition-notes.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/repair-discoveries.json",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/repair-discoveries.md",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/rendered-review-diagnostics.json",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/rendered-repair-process-review.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/rendered-repair-baseline-challenge.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/rendered-repair-science.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/rendered-repair-refinement.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/rendered-repair-measurements.json",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/rendered-repair-measurements.mjs"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3025346/",
+      "title": "Crystal Structures of Penicillin-Binding Protein 3 from Pseudomonas aeruginosa: Comparison of Native and Antibiotic-Bound Forms",
+      "scope": "Common serine-PBP beta-lactam acylation topology; not organism-specific kinetics"
+    }
+  ],
+  "completionBoundary": "All eleven issues are accounted for exactly once: ten owned fixes plus shared issue 05 fixed by root. Original Phase A and read-only gallery discovery reports remain retained. Product code frozen after focused 10/10 regression and unchanged old science/refinement tests. No browser, full-workspace suite, shared runner edit or publication was performed. Root owns updated rendered, bilingual and continuous-playback acceptance."
+}

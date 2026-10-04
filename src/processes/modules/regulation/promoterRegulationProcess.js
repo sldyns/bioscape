@@ -42,6 +42,7 @@ function create() {
   for (const bases of dna.bases)
     for (let i = 0; i < 96; i++) bases.setColorAt(i, baseWhite);
   const start = k.ring([0.15, 0, 0], 0.45, 0.025, rnaMat);
+  start.name = "Transcription start +1 marker";
   start.rotation.y = Math.PI / 2;
   const tfiid = tfiidComplex(k, teal, gold);
   const tfab = protein(
@@ -216,6 +217,24 @@ function create() {
       4,
     ),
   ];
+  // Annotation positions are leader endpoints, not desired text locations.
+  // Cache a front-facing surface vertex and follow its complete object transform.
+  const labelPoint = new THREE.Vector3();
+  const surfaceAnchors = [
+    [1, tfiid.getObjectByName("TAF lobe B")],
+    [3, pol.getObjectByName("RPB1 wall")],
+    [4, tfiiH.getObjectByName("XPB lobe 2")],
+  ].map(([index, object]) => {
+    const positions = object.geometry.attributes.position;
+    let vertex = 0;
+    for (let i = 1; i < positions.count; i++)
+      if (positions.getZ(i) > positions.getZ(vertex)) vertex = i;
+    return {
+      index,
+      object,
+      local: new THREE.Vector3().fromBufferAttribute(positions, vertex),
+    };
+  });
   let bend = 0,
     opening = 0,
     travel = 0;
@@ -289,31 +308,42 @@ function create() {
     const length = ease(p, 0.74, 0.99) * 2.3;
     // The first backbone point is the catalytic 3′ end, not the RNA exit.
     // The short, straight initial segment lies alongside the opened template.
-    rna.update(
-      (t, out) => {
-        const distance = length * t;
-        const peel = ease(distance, 0.26, 1.55);
-        out.set(
-          pol.position.x + 0.03 - distance,
-          pol.position.y - 0.18 - 1.1 * peel,
-          pol.position.z + 0.015 + 0.28 * peel,
-        );
-      },
-      length,
-      (t, out) => out.set(0, -0.065, 0),
-    );
+    const rnaPoint = (t, out) => {
+      const distance = length * t;
+      const peel = ease(distance, 0.26, 1.55);
+      out.set(
+        pol.position.x + 0.03 - distance,
+        pol.position.y - 0.18 - 1.1 * peel,
+        pol.position.z + 0.015 + 0.28 * peel,
+      );
+    };
+    rna.update(rnaPoint, length, (t, out) => out.set(0, -0.065, 0));
     siteColor.set(altered ? "#bf837c" : "#d4b66c");
     for (const bases of dna.bases) {
       for (let i = 0; i < 96; i++)
         bases.setColorAt(i, i >= 23 && i <= 33 ? siteColor : baseWhite);
       bases.instanceColor.needsUpdate = true;
     }
+    for (const { index, object, local } of surfaceAnchors) {
+      object.updateWorldMatrix(true, false);
+      labelPoint
+        .copy(local)
+        .applyMatrix4(object.matrixWorld)
+        .toArray(labels[index].position);
+    }
+    point((28 + 0.5) / 96, 0, labelPoint);
+    labelPoint.toArray(labels[0].position);
+    labels[2].position.splice(0, 3, 0.15, -0.45, 0);
+    rnaPoint(1, labelPoint);
+    labelPoint.toArray(labels[5].position);
+    point(0.025, 0, labelPoint);
+    labelPoint.toArray(labels[6].position);
+    point(0.975, 1, labelPoint);
+    labelPoint.toArray(labels[7].position);
     labels[1].active = stable > 0.2;
-    labels[3].position[0] = 0.4 + travel;
     labels[3].active = true;
     labels[4].active = !altered && p > 0.48;
     labels[5].active = rna.group.visible;
-    labels[5].position[0] = pol.position.x + 0.03 - length;
     labels[8].active = altered && p > 0.38;
     group.userData = {
       species: "mammal",

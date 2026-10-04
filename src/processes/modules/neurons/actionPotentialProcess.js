@@ -1,4 +1,5 @@
 import { bilayer, pore } from "./structural.js";
+import { anchorObject } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, phase, bilingual as b } from "../../kit.js";
 
 const stages = [
@@ -93,7 +94,8 @@ export default {
     const k = sceneKit(),
       { group } = k;
     const lipid = k.material("#b5b9af"),
-      rest = k.material("#81968b"),
+      // The camera sees the inner face of each cutaway state band.
+      rest = k.material("#81968b", { side: THREE.DoubleSide }),
       na = k.material("#4b9694"),
       potassium = k.material("#c49b5d");
     const box = new THREE.BoxGeometry(1, 1, 1);
@@ -152,6 +154,7 @@ export default {
         [x, 0, 0.04],
       );
       patch.rotation.z = Math.PI / 2;
+      patch.name = `axon state band ${i}`;
       const parts = [];
       for (const type of ["na", "k"]) {
         const cx = x + (type === "na" ? -0.28 : 0.28),
@@ -244,13 +247,15 @@ export default {
         k.material(type === "na" ? "#8ab5b1" : "#d0b789"),
         detail,
       );
+      mouth.name = `enlarged ${type} extracellular collar`;
       mouth.rotation.x = Math.PI / 2;
       const exit = k.ring([x, -0.335, 0], 0.105, 0.021, mat, detail);
+      exit.name = `enlarged ${type} cytoplasmic collar`;
       exit.rotation.x = Math.PI / 2;
       const ions = Array.from({ length: 3 }, () =>
         k.ball([x, 0.65, 0], 0.047, mat, detail),
       );
-      detailChannels.push({ type, x, channel, ions });
+      detailChannels.push({ type, x, channel, ions, mouth, exit });
     }
     const labels = [
       k.label(
@@ -273,8 +278,8 @@ export default {
       ),
       k.label(
         [-2.45, -1.53, 0.3],
-        "细胞质侧 · 通道门控",
-        "Cytoplasmic side · channel gates",
+        "细胞质侧 · 通道出口",
+        "Cytoplasmic side · channel exit",
         1,
       ),
       k.label([-2.45, 0.85, 1.02], "细胞外侧", "Extracellular side", 1),
@@ -350,6 +355,15 @@ export default {
       current.position.x = front + 0.35;
       tip.position.x = front + 0.83;
       stimulus.visible = enabled && p >= 0.1 && p < 0.2;
+      anchorObject(labels[0], detailLipids);
+      anchorObject(labels[1], detailChannels[0].mouth);
+      anchorObject(labels[2], detailChannels[1].mouth);
+      anchorObject(labels[3], detailChannels[0].exit);
+      // Compartment labels deliberately identify the extracellular region.
+      anchorObject(labels[4], detail, 0, 0.5, 0.15);
+      anchorObject(labels[5], axoplasm);
+      anchorObject(labels[6], zones[selectedIndex].patch);
+      anchorObject(labels[7], locator);
       group.userData = {
         process: "actionPotential",
         specimen: "mammalian unmyelinated neuronal axon",

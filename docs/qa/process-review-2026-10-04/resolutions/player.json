@@ -1,0 +1,24 @@
+{
+  "group": "player",
+  "issues": [
+    {
+      "issueId": "20261004-player-01",
+      "status": "fixed",
+      "changes": "Display-frame model updates read the authoritative progress ref independently of throttled React text/session publication. Paused views remain demand-rendered and geometry work is cached. Pause, seek, condition change and scene disposal synchronously cancel the clock. Capture temporarily seeks and restores the live pose.",
+      "files": [
+        "src/processes/playbackClock.js",
+        "src/processes/ProcessExperience.jsx",
+        "src/processes/ProcessScene.jsx",
+        "tests/process-playback.mjs"
+      ],
+      "verification": [
+        "Deterministic scheduler checks at 60/75/90/120/144 Hz pass, including stale callback, pause/resume, speed changes, terminal state and geometry caching.",
+        "Independent read-only code review and added clock probes qualified-pass.",
+        "Actual 28-second native transcription playback: 1681 updates, 60.0004 updates/second, zero backwards, exact terminal 1. Full per-process playback and capture records are in evidence/browser."
+      ]
+    }
+  ],
+  "remainingLimits": [
+    "Mounted interaction/visibility and final all-case integration acceptance tracked separately. Cadence receipt does not establish universal smoothness or physical-device performance."
+  ]
+}

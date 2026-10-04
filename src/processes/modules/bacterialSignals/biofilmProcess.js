@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { beadInstances, helix } from "./structuralDetails.js";
+import { labelAnchors } from "./labelAnchors.js";
 export default {
   id: "biofilm",
   title: b(
@@ -105,7 +106,12 @@ export default {
       edna = k.material("#a28ba8"),
       substrate = k.material("#c4c9c1"),
       protein = k.material("#8baab6");
-    k.mesh(new THREE.BoxGeometry(7.4, 0.3, 3.6), substrate, [0, -1.9, 0]);
+    const solidSurface = k.mesh(
+      new THREE.BoxGeometry(7.4, 0.3, 3.6),
+      substrate,
+      [0, -1.9, 0],
+    );
+    solidSurface.name = "biofilm-solid-surface";
     for (let i = 0; i < 9; i++)
       k.segment(
         [-3.6 + i * 0.9, -1.738, -1.72],
@@ -148,6 +154,7 @@ export default {
     const surfaceMaterial = k.material("#adc0a7");
     positions.forEach((pos, i) => {
       const g = new THREE.Group();
+      g.name = `biofilm-cell-${i}`;
       group.add(g);
       k.ball([0, 0, 0], [0.37, 0.15, 0.15], cellMat, g);
       k.segment(
@@ -212,6 +219,7 @@ export default {
       );
       flagella.push(flag);
       const stem = k.segment(pos, [pos[0], -1.72, pos[2]], 0.018, psl);
+      stem.name = `Psl-adhesion-tether-${i}`;
       tethers.push(stem);
       if (i > 2) {
         const from = positions[i];
@@ -313,6 +321,7 @@ export default {
     const cues = [];
     for (let i = 0; i < 7; i++) {
       const g = new THREE.Group();
+      g.name = `NO-cue-${i}`;
       group.add(g);
       k.ball([0, 0, 0], 0.07, protein, g);
       k.ball([0.1, 0, 0], 0.06, k.material("#b9877e"), g);
@@ -320,6 +329,7 @@ export default {
     }
     // Two linked rings denote intracellular c-di-GMP in a labeled conceptual inset.
     const inset = new THREE.Group();
+    inset.name = "c-di-GMP-conceptual-inset";
     group.add(inset);
     inset.position.set(2.9, 1.1, 0.15);
     k.ring([-0.07, 0, 0], 0.12, 0.032, psl, inset);
@@ -344,6 +354,10 @@ export default {
       ),
       k.label([2.62, 2.35, 0.2], "活细胞释放", "Viable cells released", 2),
     ];
+    const anchors = labelAnchors(labels),
+      dnaStrand = dnaFibers[0].children.find(
+        (m) => m.geometry?.type === "TubeGeometry",
+      );
     function update(value, parameters = {}) {
       const p = clamp(value),
         cue = parameters.cue !== "none",
@@ -394,9 +408,18 @@ export default {
       });
       inset.visible = p > 0.5;
       inset.scale.setScalar(cue ? 1 - 0.65 * ease(p, 0.7, 0.83) : 1);
-      labels[6].active = cue && p > 0.7;
-      labels[7].active = release > 0.25;
-      labels[5].active = p > 0.5;
+      anchors[0].local(solidSurface, 0, 0.15, 1.2);
+      anchors[1].surface(cells[0].children[0]);
+      anchors[2].surface(
+        fibers[0].visible ? fibers[0].children[0] : tethers[0],
+        fibers[0].visible ? 32 * 9 : 0,
+      );
+      anchors[3].surface(dnaStrand, 32 * 9);
+      anchors[4].surface(adhesive[0]);
+      anchors[5].surface(inset.children[0]);
+      anchors[6].surface(cues[0].children[0]);
+      anchors[7].surface(cells[12].children[0]);
+      labels[7].active = labels[7].active && release > 0.25;
       group.userData = {
         species: "Pseudomonas aeruginosa PAO1",
         phenotype: "nonmucoid",

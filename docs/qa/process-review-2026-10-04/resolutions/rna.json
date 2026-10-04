@@ -1,0 +1,177 @@
+{
+  "group": "rna",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-rna-01",
+      "status": "fixed",
+      "changes": "Added two preallocated dynein terminal microtubule-binding domains with folded surfaces and helix traces; their centers remain exactly connected to the existing stalk endpoints. The binding surfaces now meet real tubulin triangles when planted and lift with the stalk during each swing. Added precise bilingual domain wording and primary structural evidence. Existing gait and track coordinates were preserved.",
+      "files": [
+        "src/processes/modules/rna/motorTransportProcess.js",
+        "src/processes/modules/rna/science.test.mjs"
+      ],
+      "verification": [
+        "New assertDyneinSurfaceContact uses MeshBVH.intersectsGeometry against the exact transformed tubulin and binding-domain triangles: 90 planted-head contacts, 10 detached midswings, 10 ATP-depleted bound states pass.",
+        "Each newly added binding domain remains centered at the actual transformed stalk tip throughout all sampled step boundaries and intermediate fractions.",
+        "Negative control replays original baseline motor geometry and is rejected by the same physical contact assertion at progress 0.29000000000000004; failure is not merely a missing object-name check.",
+        "Existing science regressions still pass for 1005-time RNA linkage in both roots, all-root/NLS pore topology/cargo paths, and distinct motor gait/net direction/ATP branches.",
+        "Module refinement suite passes all 14 root/condition configurations, finite buffers/bounds, deterministic repeated seeks, stable resource identities, complete material inventory and browser esbuild; motor node count increased from 57 to 65 with no update-time allocation.",
+        "Prettier limited to the two changed module files reports both unchanged."
+      ],
+      "limitations": [
+        "Functional domain geometry remains schematic, not fitted atomic coordinates or force/kinetic simulation.",
+        "Rendered verification covers sampled active/depleted states; continuous per-case playback remains outside this review."
+      ],
+      "renderedVerification": "Sampled all-root/control review complete; see rna-rendered-all-cases.md. Continuous per-case playback is outside this review."
+    },
+    {
+      "issueId": "20261004-rna-rendered-01",
+      "status": "fixed",
+      "changes": "Split the combined importin alpha/beta annotation into prebuilt independent beta and alpha labels anchored to existing receptor helices. Alpha receives bilingual retained-in-nucleus wording only after exposed-NLS nuclear cargo release (p >= 0.73). Masked-NLS receptors remain correctly identified in the cytosol. Ran-GTP/GDP wording and alpha state changes reuse prebuilt bilingual text objects.",
+      "files": [
+        "src/processes/modules/rna/nuclearTransportProcess.js",
+        "src/processes/modules/rna/science.test.mjs"
+      ],
+      "verification": [
+        "All three registered roots and both NLS conditions pass receptor-surface, alpha retention, returned beta compartment, Ran nucleotide wording, bilingual identity and repeated-seek text/array/object identity tests.",
+        "No label/text/position arrays are created by the new update-time label logic."
+      ],
+      "limitations": [
+        "All six root/NLS branches now have post-repair Chinese sampled-frame verification; continuous per-case playback and post-fix English layout recapture are outside this supplement."
+      ],
+      "renderedVerification": "Sampled all-root/control review complete; see rna-rendered-all-cases.md. Continuous per-case playback is outside this review."
+    },
+    {
+      "issueId": "20261004-rna-rendered-02",
+      "status": "fixed",
+      "changes": "Replace detached concrete-object annotation coordinates with construction-time bindings to existing mesh vertices and tubulin instances. All 20 concrete-object labels follow their own translated, scaled or rotated surfaces; this includes 18 confirmed off-object anchors, the new alpha label, and a consistency refinement for the previously near-wire lariat point. Full object wording and compartment/region annotations are preserved. No molecular geometry, motion, controls or camera changes were needed for the label repair.",
+      "files": [
+        "src/processes/modules/rna/refinementGeometry.js",
+        "src/processes/modules/rna/rnaProcessingProcess.js",
+        "src/processes/modules/rna/nuclearTransportProcess.js",
+        "src/processes/modules/rna/motorTransportProcess.js",
+        "src/processes/modules/rna/organelleImportProcess.js",
+        "src/processes/modules/rna/science.test.mjs"
+      ],
+      "verification": [
+        "14 registered root/condition configurations pass 1,218 active-label checks against transformed triangles of the actual target mesh/instance, including signal-absent branches, dynamic chain points and the rotated stromal chaperone.",
+        "Independent before/after measurement: 18 confirmed detached anchors (maximum original distance 1.317355 scene units); maximum after distance is zero at sampled points. The old lariat point is explicitly not counted as an empty-space defect.",
+        "Negative control replays all 18 original off-object anchors against unchanged geometry: all fail the same physical surface invariant, while repaired anchors pass.",
+        "Existing science suite retains RNA connectivity, NPC pore topology/trajectory and distinct motor gait/ATP invariants; original dynein binding surface tests still pass 90 planted / 10 swing / 10 depleted checks.",
+        "Refinement suite passes all roots/controls, finite buffers/bounds, deterministic seeks, stable resources, complete materials and browser esbuild. Node counts remain 463 RNA / 177 NPC / 65 motor / 172 organelle after label-only repairs.",
+        "Prettier applied only to the six owned RNA module files; git diff --check on the module passes."
+      ],
+      "limitations": [
+        "Registered root/control sampled views are reviewed; surface attachment does not guarantee an unobstructed projection from every camera angle or every intermediate time."
+      ],
+      "renderedVerification": "Sampled all-root/control review complete; see rna-rendered-all-cases.md. Continuous per-case playback is outside this review."
+    },
+    {
+      "issueId": "20261004-rna-rendered-03",
+      "status": "fixed",
+      "changes": "Use one fixed centroid of an existing upper-front beta helix triangle (child 8, indexed triangle vertices 579/580/571). No time-based anchor switching, molecular geometry, relative protein poses, Ran anchor or camera changes.",
+      "files": [
+        "src/processes/modules/rna/refinementGeometry.js",
+        "src/processes/modules/rna/nuclearTransportProcess.js",
+        "src/processes/modules/rna/science.test.mjs"
+      ],
+      "verification": [
+        "156 actual fitted-default-camera first-hit checks for beta/Ran across three roots, both NLS branches and 13 gallery/binding/recycling poses pass.",
+        "The beta anchor is the same local triangle centroid through 1005 seeks in each of six root/NLS configurations; no point switching or label/text/array identity changes.",
+        "Three negative replays at p=.765 first hit Ran using the prior beta anchor; the repaired anchor first hits beta. At p=.935 the fitted-camera old point already first hits beta and is correctly retained as a preservation check.",
+        "The 1218 existing exact surface checks, all original scientific invariants, dynein physical contact checks and refinement suite remain passing.",
+        "Ran anchors and every molecular geometry/relative pose/camera remain unchanged.",
+        "Fresh Chinese batch-E sheets for all six root/NLS cases and six original960 exposed .765/.935 images pass direct object-identity review; no new ambiguity confirmed."
+      ],
+      "limitations": [
+        "Actual membrane/pore occlusion during central passage is preserved; this is not an arbitrary-angle or every-progress visibility guarantee.",
+        "Post-repair rendered verification covers the six Chinese root/NLS cases and native .765/.935 frames; continuous per-case playback and post-fix English layout recapture are outside this supplement."
+      ],
+      "renderedVerification": "Sampled all-root/control review complete; see rna-rendered-all-cases.md. Continuous per-case playback is outside this review."
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/rna/science.test.mjs",
+      "result": "PASS",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/phase-b-science.log"
+    },
+    {
+      "command": "node src/processes/modules/rna/refinement.test.mjs",
+      "result": "PASS",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/phase-b-refinement.log"
+    },
+    {
+      "command": "node --input-type=module (import assertDyneinSurfaceContact and baseline-motor-replay.mjs; expect baseline assertion failure)",
+      "result": "PASS: original defect rejected",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/phase-b-negative-control.log"
+    },
+    {
+      "command": "npx prettier --write src/processes/modules/rna/motorTransportProcess.js src/processes/modules/rna/science.test.mjs",
+      "result": "PASS: both files already formatted"
+    },
+    {
+      "command": "node src/processes/modules/rna/science.test.mjs",
+      "result": "PASS: original scientific checks plus 1218 label-surface checks / 14 root-condition configurations",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/label-repair-science.log"
+    },
+    {
+      "command": "node src/processes/modules/rna/refinement.test.mjs",
+      "result": "PASS: all 14 root-condition configurations",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/label-repair-refinement.log"
+    },
+    {
+      "command": "node docs/qa/process-review-2026-10-04/evidence/rna/label-negative-control.mjs",
+      "result": "PASS: all 18 old anchors rejected; repaired points accepted; imports and passes final formatted science suite",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/label-repair-negative-control.log"
+    },
+    {
+      "command": "node docs/qa/process-review-2026-10-04/evidence/rna/label-anchor-diagnostic.mjs",
+      "result": "PASS: independently measured maximum after distance 0",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/label-anchor-after.json"
+    },
+    {
+      "command": "node src/processes/modules/rna/science.test.mjs",
+      "result": "PASS: 156 fitted-camera first hits, six stable-local-point seek sequences and three old-anchor negative controls, plus existing tests",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/npc-visibility-science.log"
+    },
+    {
+      "command": "node src/processes/modules/rna/refinement.test.mjs",
+      "result": "PASS",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/npc-visibility-refinement.log"
+    },
+    {
+      "command": "node docs/qa/process-review-2026-10-04/evidence/rna/label-negative-control.mjs",
+      "result": "PASS: all 18 original detached-anchor failures preserved after the visibility repair",
+      "log": "docs/qa/process-review-2026-10-04/evidence/rna/npc-visibility-original-anchor-replay.log"
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "title": "Redwine et al. (2012): Structural basis for microtubule binding and release by dynein",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/22997337/",
+      "supports": "Primary cryo-EM and motility experiments identify the terminal MT-binding domain and its binding/release coupling to the stalk."
+    }
+  ],
+  "renderedAcceptance": "sampled-all-root-control-frames-reviewed; continuous-per-case-playback-not-reviewed",
+  "evidenceFolder": "docs/qa/process-review-2026-10-04/evidence/rna/",
+  "initialRepairUnchangedModels": [
+    "rnaProcessing",
+    "nuclearTransport",
+    "organelleImport"
+  ],
+  "repairDiscoveries": "docs/qa/process-review-2026-10-04/evidence/rna/repair-discoveries.json",
+  "renderedReview": {
+    "report": "docs/qa/process-review-2026-10-04/resolutions/rna-rendered-all-cases.md",
+    "acceptedCases": 14,
+    "acceptedSampledFrames": 98,
+    "totalSheetsActuallyReviewedIncludingSupersededNPC": 20,
+    "totalCapturedFramesReviewedIncludingSupersededNPC": 140,
+    "nativeOriginalsAdditionallyOpened": 17,
+    "npcReplacementBatch": "conditions-final-e-000..005",
+    "npcReplacementLanguage": "zh",
+    "continuousPerCasePlaybackReviewed": false,
+    "newPostRepairIssues": 0
+  }
+}

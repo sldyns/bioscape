@@ -1,5 +1,6 @@
 import { clamp, ease, bilingual as b } from "../../kit.js";
 import { divisionKit } from "./divisionShapes.js";
+import { surfaceAnchor } from "./labelAnchors.js";
 
 function create() {
   const k = divisionKit();
@@ -80,6 +81,22 @@ function create() {
       "Daughter cell: chromosome complement retained",
       7,
     ),
+  ];
+  const anchors = [
+    surfaceAnchor(labels[0], cell.mesh.children[0], [0, 2.25, 0]),
+    surfaceAnchor(
+      labels[1],
+      poles[0].getObjectByName("pericentriolar-matrix"),
+      [0, 0, 1],
+    ),
+    surfaceAnchor(labels[2], chromosomes[6].centromere, [0, 0, 1]),
+    surfaceAnchor(labels[3], ring.children[1], [0, -1, 0]),
+    surfaceAnchor(
+      labels[4],
+      chromosomes[7].kinetochore.getObjectByName("outer-kinetochore-plate"),
+      [0, 0, 1],
+    ),
+    surfaceAnchor(labels[5], daughters[1].mesh.children[0], [0, 1.58, 0]),
   ];
   function update(progress, parameters = {}) {
     const requested = clamp(progress);
@@ -170,12 +187,13 @@ function create() {
         0.008 * (1 - ease(p, 0.74, 0.84)),
       );
     });
+    labels[0].active = p < 0.94;
     labels[1].active = p < 0.83;
-    labels[1].position[0] = -poleX;
     labels[2].active = p < 0.48;
     labels[3].active = p >= 0.68 && p < 0.94;
     labels[4].active = blocked && requested >= 0.4;
     labels[5].active = p >= 0.94;
+    anchors.forEach((anchor) => anchor());
     k.group.userData = {
       mechanism: "animal-mitosis",
       chromosomeScope:

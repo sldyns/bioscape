@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { articulatedChain } from "./mechanics.js";
+import { labelAnchors, surfacePoint } from "./labelAnchors.js";
 import {
   cutawayLobe,
   helix,
@@ -14,6 +15,8 @@ function create({ rootId = "cell" } = {}) {
   const exonMats = ["#6e9f98", "#c7a16b", "#a18db4"].map((c) => k.material(c));
   const intronMat = k.material("#bac5c6");
   const chain = articulatedChain(k, 81, 0.071, intronMat);
+  chain.beads.forEach((o, i) => (o.name = `splice-rna-residue-${i}`));
+  chain.links.forEach((o, i) => (o.name = `splice-rna-backbone-${i}`));
   const updateRnaDetails = rnaBaseDetails(k, chain);
   const sections = [
     [0, 15],
@@ -31,12 +34,21 @@ function create({ rootId = "cell" } = {}) {
       chain.beads[i].scale.setScalar(0.093);
       if (i < 80) chain.links[i].material = exonMats[e];
     }
-  const splicers = Array.from({ length: 2 }, () => {
+  const splicers = Array.from({ length: 2 }, (_, i) => {
     const g = new THREE.Group();
+    g.name = `spliceosome-${i}`;
     group.add(g);
     const body = k.material("#93a8b9", { side: THREE.DoubleSide });
     // Open Prp8/U5 scaffold exposes the RNA-binding catalytic cleft.
-    cutawayLobe(k, g, [-0.48, 0.16, -0.26], [0.52, 0.67, 0.54], body, 1);
+    const scaffold = cutawayLobe(
+      k,
+      g,
+      [-0.48, 0.16, -0.26],
+      [0.52, 0.67, 0.54],
+      body,
+      1,
+    );
+    scaffold.name = `spliceosome-scaffold-${i}`;
     cutawayLobe(k, g, [0.44, 0.19, -0.3], [0.51, 0.63, 0.53], body, 2);
     cutawayLobe(
       k,
@@ -125,9 +137,11 @@ function create({ rootId = "cell" } = {}) {
     k.segment([0, 0, 0], [0.1, 0, 0], 0.053, exonMats[0]),
     k.segment([0, 0, 0], [0.1, 0, 0], 0.053, exonMats[2]),
   ];
+  branchLinks.forEach((o, i) => (o.name = `splice-branch-bond-${i}`));
+  joinLinks.forEach((o, i) => (o.name = `splice-exon-junction-${i}`));
+  branchNodes.forEach((o, i) => (o.name = `splice-branch-node-${i}`));
   const dir = new THREE.Vector3(),
-    up = new THREE.Vector3(0, 1, 0),
-    target = new THREE.Vector3();
+    up = new THREE.Vector3(0, 1, 0);
   const labels = [
     k.label([-3.25, -0.55, 0.4], "外显子 6", "Exon 6", 2),
     k.label([0, -0.55, 0.4], "外显子 7", "Exon 7", 2),
@@ -151,51 +165,159 @@ function create({ rootId = "cell" } = {}) {
     k.label([4.25, 0, 0.25], "3′", "3′", 2),
     k.label([0, 3.1, 0], "人类 SMN2 · 细胞核", "Human SMN2 · nucleus", 1),
   ];
-  function lariat(out, t, cx, cy, r) {
-    if (t <= 0.8) {
-      const angle = -Math.PI / 2 + (2 * Math.PI * t) / 0.8;
+  const scaffold = splicers[0].getObjectByName("spliceosome-scaffold-0");
+  const updateLabelAnchors = labelAnchors([
+    [labels[0], chain.beads[7]],
+    [labels[1], chain.beads[40]],
+    [labels[2], chain.beads[72]],
+    [labels[3], chain.beads[23]],
+    [labels[4], chain.beads[56]],
+    [labels[5], scaffold, surfacePoint(scaffold)],
+    [labels[6], branchNodes[0]],
+    [labels[7], joinLinks[0]],
+    [labels[8], chain.beads[0]],
+    [labels[9], chain.beads[80]],
+  ]);
+  function lariat(out, t, cx, cy, r, branchFraction) {
+    // Leave a short, explicit branch bond rather than overlapping its atoms.
+    const halfGap = Math.asin(0.1 / (2 * r)),
+      branchY = cy - r * Math.cos(halfGap);
+    if (t <= branchFraction) {
+      const angle =
+        -Math.PI / 2 +
+        halfGap +
+        ((2 * Math.PI - 2 * halfGap) * t) / branchFraction;
       out.set(
         cx + r * Math.cos(angle),
         cy + r * Math.sin(angle),
-        0.1 + 0.1 * Math.sin(angle * 2),
+        0.1 + 0.1 * Math.sin((t / branchFraction) * Math.PI * 2),
       );
     } else {
-      const u = (t - 0.8) / 0.2;
-      out.set(cx + 0.65 * u, cy - r - 0.4 * u, 0.1);
+      const u = (t - branchFraction) / (1 - branchFraction);
+      out.set(cx - 0.05 + 0.65 * u, branchY - 0.4 * u, 0.1);
     }
   }
+  function reactionFrames(skip) {
+    const branch = initial.map((p) => p.clone()),
+      ligation = initial.map((p) => p.clone()),
+      product = initial.map((p) => p.clone()),
+      excised = initial.map(() => false),
+      introns = skip
+        ? [[16, 64, 54, 0, 1.45, 1.1, 65]]
+        : [
+            [16, 31, 28, -1.5, 1.2, 0.66, 32],
+            [49, 64, 61, 1.5, 1.2, 0.66, 65],
+          ];
+    function line(points, a, z, from, to) {
+      for (let i = a; i <= z; i++)
+        points[i].copy(from).lerp(to, (i - a) / (z - a));
+    }
+    for (const [a, z, bi, x, y, r] of introns) {
+      for (let i = a; i <= z; i++) {
+        lariat(branch[i], (i - a) / (z - a), x, y, r, (bi - a) / (z - a));
+        excised[i] = true;
+      }
+    }
+    // Flanking exons follow the still-covalent intron termini during bending.
+    const firstEnd = branch[16].clone().add(new THREE.Vector3(-0.1, -0.1, 0)),
+      lastStart = branch[64].clone().add(new THREE.Vector3(0.1, 0, 0));
+    line(
+      branch,
+      0,
+      15,
+      firstEnd.clone().add(new THREE.Vector3(-1.5, 0, 0)),
+      firstEnd,
+    );
+    line(
+      branch,
+      65,
+      80,
+      lastStart,
+      lastStart.clone().add(new THREE.Vector3(1.5, 0, 0)),
+    );
+    if (!skip)
+      line(
+        branch,
+        32,
+        48,
+        branch[31].clone().add(new THREE.Vector3(0.1, 0, 0)),
+        branch[49].clone().add(new THREE.Vector3(-0.1, -0.1, 0)),
+      );
+    for (let i = 0; i < 81; i++) {
+      ligation[i].copy(branch[i]);
+      product[i].copy(branch[i]);
+    }
+    // Bring the free upstream exon beside the downstream exon before chemistry.
+    line(
+      ligation,
+      0,
+      15,
+      new THREE.Vector3(skip ? -1.55 : -3.05, 0.1, 0.1),
+      new THREE.Vector3(skip ? -0.05 : -1.55, 0.1, 0.1),
+    );
+    line(
+      ligation,
+      65,
+      80,
+      new THREE.Vector3(skip ? 0.05 : 1.55, 0.1, 0.1),
+      new THREE.Vector3(skip ? 1.55 : 3.05, 0.1, 0.1),
+    );
+    if (!skip)
+      line(
+        ligation,
+        32,
+        48,
+        new THREE.Vector3(-1.45, 0.1, 0.1),
+        new THREE.Vector3(1.45, 0.1, 0.1),
+      );
+    for (const [a, z, bi, , , , downstream] of introns) {
+      const contact = ligation[downstream]
+        .clone()
+        .add(new THREE.Vector3(0, 0.1, 0));
+      for (let i = bi + 1; i <= z; i++)
+        ligation[i].copy(branch[bi]).lerp(contact, (i - bi) / (z - bi));
+    }
+    line(
+      product,
+      0,
+      15,
+      new THREE.Vector3(skip ? -1.55 : -2.35, -0.75, 0.1),
+      new THREE.Vector3(skip ? -0.05 : -0.85, -0.75, 0.1),
+    );
+    line(
+      product,
+      65,
+      80,
+      new THREE.Vector3(skip ? 0.05 : 0.85, -0.75, 0.1),
+      new THREE.Vector3(skip ? 1.55 : 2.35, -0.75, 0.1),
+    );
+    if (!skip)
+      line(
+        product,
+        32,
+        48,
+        new THREE.Vector3(-0.75, -0.75, 0.1),
+        new THREE.Vector3(0.75, -0.75, 0.1),
+      );
+    return { branch, ligation, product, excised, branchY: branch[16].y };
+  }
+  const frames = { include: reactionFrames(false), skip: reactionFrames(true) };
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       skip = parameters.isoform === "skip",
-      loop = ease(p, 0.24, 0.49),
-      ligate = ease(p, 0.55, 0.73),
+      frame = frames[skip ? "skip" : "include"],
+      loop = ease(p, 0.18, 0.33),
+      approach = ease(p, 0.38, 0.56),
+      ligate = ease(p, 0.62, 0.77),
       depart = ease(p, 0.75, 0.94),
       assemble = ease(p, 0.05, 0.22);
     for (let i = 0; i < 81; i++) {
-      let isExcised = false;
-      if (i <= 15) {
-        const t = i / 15;
-        target.set((skip ? -1.65 : -2.35) + t * 1.5, -0.75, 0.1);
-        chain.points[i].copy(initial[i]).lerp(target, ligate);
-      } else if (i >= 65) {
-        const t = (i - 65) / 15;
-        target.set((skip ? 0.15 : 0.85) + t * 1.5, -0.75, 0.1);
-        chain.points[i].copy(initial[i]).lerp(target, ligate);
-      } else if (skip) {
-        lariat(target, (i - 16) / 48, 0, 1.45 + depart * 0.6, 1.1);
-        isExcised = true;
-      } else if (i >= 32 && i <= 48) {
-        const t = (i - 32) / 16;
-        target.set(-0.75 + 1.5 * t, -0.75, 0.1);
-        chain.points[i].copy(initial[i]).lerp(target, ligate);
-      } else if (i < 32) {
-        lariat(target, (i - 16) / 15, -1.5, 1.2 + depart * 0.65, 0.66);
-        isExcised = true;
-      } else {
-        lariat(target, (i - 49) / 15, 1.5, 1.2 + depart * 0.65, 0.66);
-        isExcised = true;
-      }
-      if (isExcised) chain.points[i].copy(initial[i]).lerp(target, loop);
+      chain.points[i]
+        .copy(initial[i])
+        .lerp(frame.branch[i], loop)
+        .lerp(frame.ligation[i], approach)
+        .lerp(frame.product[i], ligate);
+      if (frame.excised[i]) chain.points[i].y += 0.65 * depart;
     }
     chain.commit();
     updateRnaDetails();
@@ -231,11 +353,13 @@ function create({ rootId = "cell" } = {}) {
       splicers[j].visible = (!skip || j === 0) && p < 0.9;
       splicers[j].position.set(
         skip ? 0 : j === 0 ? -1.5 : 1.5,
-        (1 - assemble) * 1.1 - depart * 0.7,
+        (1 - assemble) * 1.1 +
+          loop * (frame.branchY * (1 - approach) + 0.1 * approach) -
+          depart * 0.7,
         -0.23,
       );
       splicers[j].scale.setScalar((skip ? 1.38 : 1) * (1 - 0.2 * depart));
-      branchNodes[j].visible = loop > 0.4 && (!skip || j === 0);
+      branchNodes[j].visible = p >= 0.34 && (!skip || j === 0);
       const bi = skip ? 54 : j === 0 ? 28 : 61;
       branchNodes[j].position.copy(chain.points[bi]);
       const start = skip ? 16 : j === 0 ? 16 : 49;
@@ -248,27 +372,14 @@ function create({ rootId = "cell" } = {}) {
       branchLinks[j].scale.set(0.03, Math.max(0.0001, dir.length()), 0.03);
       branchLinks[j].quaternion.setFromUnitVectors(up, dir.normalize());
     }
-    labels[0].position[0] = -3.25 + (skip ? 2.35 : 1.65) * ligate;
-    labels[0].position[1] = -0.55 - 0.75 * ligate;
-    labels[1].position[1] = skip
-      ? 2.55 * loop + 0.6 * depart
-      : -0.55 - 0.75 * ligate;
-    labels[2].position[0] = 3.3 - (skip ? 2.35 : 1.65) * ligate;
-    labels[2].position[1] = -0.55 - 0.75 * ligate;
     labels[3].active = p < 0.35 && !skip;
     labels[4].active = p < 0.35 && !skip;
     labels[5].active = p < 0.82;
-    labels[6].active = loop > 0.5;
-    labels[6].position[0] = skip ? 0 : -1.5;
-    labels[6].position[1] = 0.25 + 0.6 * depart;
+    labels[6].active = p >= 0.34;
     labels[7].active = p > 0.76;
-    labels[7].position[1] = -1.8;
     labels[7].text.zh = skip ? "成熟 RNA：6–8（Δ7）" : "成熟 RNA：6–7–8";
     labels[7].text.en = skip ? "Mature RNA: 6–8 (Δ7)" : "Mature RNA: 6–7–8";
-    labels[8].position[0] = chain.points[0].x - 0.25;
-    labels[8].position[1] = chain.points[0].y;
-    labels[9].position[0] = chain.points[80].x + 0.25;
-    labels[9].position[1] = chain.points[80].y;
+    updateLabelAnchors();
     group.userData = {
       process: "alternativeSplicing",
       rootId,
@@ -278,7 +389,7 @@ function create({ rootId = "cell" } = {}) {
       condition: skip ? "exon7-skipping" : "exon7-inclusion",
       retainedExons: skip ? [6, 8] : [6, 7, 8],
       excisedExon7: skip && depart > 0.8,
-      ligationCompleted: ligate === 1,
+      ligationCompleted: p >= 0.59,
       proteinFunctionGuaranteed: false,
       structuralDetail:
         "open spliceosomal cleft, U2/U6 RNA helices, U5 loop, Sm ring and nucleotide backbones",
@@ -369,6 +480,10 @@ export default {
     { color: "#91abc0", text: b("剪接体剖视", "Spliceosome cutaway") },
   ],
   sources: [
+    {
+      title: "Cryo-EM structure of the spliceosome immediately after branching",
+      url: "https://pubmed.ncbi.nlm.nih.gov/27459055/",
+    },
     {
       title:
         "Lorson et al. · A single nucleotide in the SMN gene regulates splicing",

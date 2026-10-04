@@ -128,7 +128,12 @@ export function corticalRows(
   k,
   parent,
   point,
-  { rows = 13, columns = 17, frontLimit = 0.7 } = {},
+  {
+    rows = 13,
+    columns = 17,
+    frontLimit = 0.7,
+    latitudeRange = [-0.91, 0.91],
+  } = {},
 ) {
   const r = resources(k),
     count = rows * columns,
@@ -153,18 +158,28 @@ export function corticalRows(
   const params = [];
   for (let row = 0; row < rows; row++)
     for (let col = 0; col < columns; col++) {
-      const y = -0.91 + (col / (columns - 1)) * 1.82,
+      const y =
+          latitudeRange[0] +
+          (col / (columns - 1)) * (latitudeRange[1] - latitudeRange[0]),
         a = Math.PI - 0.12 + (row / (rows - 1)) * (Math.PI + 0.24);
       params.push({ row, col, y, a });
     }
   const normal = new THREE.Vector3(),
     axis = new THREE.Vector3(0, 0, 1),
     previous = new THREE.Vector3();
-  function update(pinch = 0, stretch = 1) {
+  function update(pinch = 0, stretch = 1, division = 0, separation = 0) {
     let segment = 0;
     params.forEach(({ row, col, y, a }, i) => {
       const rad = Math.sqrt(1 - y * y),
-        p = point(rad * Math.cos(a), y, rad * Math.sin(a), pinch, stretch);
+        p = point(
+          rad * Math.cos(a),
+          y,
+          rad * Math.sin(a),
+          pinch,
+          stretch,
+          division,
+          separation,
+        );
       temp.position.set(...p);
       normal.set(Math.cos(a), y * 0.25, Math.sin(a)).normalize();
       temp.quaternion.setFromUnitVectors(axis, normal);

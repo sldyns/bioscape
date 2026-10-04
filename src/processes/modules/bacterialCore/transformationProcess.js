@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { rod, chain, segmentWriter, instances } from "./bacterialGeometry.js";
+import { anchorObject, anchorSegment, anchorVertex } from "./labelAnchors.js";
 const process = {
   id: "transformation",
   title: b("枯草芽孢杆菌的自然转化", "Natural transformation in B. subtilis"),
@@ -96,6 +97,10 @@ const process = {
         "Chromosomal transformation in Bacillus subtilis is a non-polar recombination reaction",
       url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4824099/",
     },
+    {
+      title: "Right-handed B-DNA duplex reference (1BNA)",
+      url: "https://www.rcsb.org/structure/1BNA",
+    },
   ],
   legend: [
     { color: "#ae7d96", text: b("输入 DNA 链", "Incoming DNA strand") },
@@ -117,7 +122,7 @@ const process = {
     const cell = new THREE.Group();
     cell.position.x = 0.72;
     group.add(cell);
-    rod(k, cell, {
+    const envelope = rod(k, cell, {
       radius: 1,
       length: 3.15,
       horizontal: true,
@@ -131,6 +136,15 @@ const process = {
       recMat = k.material("#809b81"),
       comMat = k.material("#9689a9");
     const exterior = [chain(k, 54, donor, group), chain(k, 54, other, group)];
+    exterior.forEach((strand, side) =>
+      strand.forEach((mesh, i) => {
+        mesh.name = `external-strand-${side}-${i}`;
+      }),
+    );
+    const transiting = chain(k, 16, donor, group);
+    transiting.forEach((mesh, i) => {
+      mesh.name = `ComEC-transiting-strand-${i}`;
+    });
     const imported = chain(k, 35, donor, group);
     imported.forEach((mesh, i) => {
       mesh.name = `incoming-strand-${i}`;
@@ -158,10 +172,12 @@ const process = {
         write(chr[s][i], a, z, 0.035);
       }
     const comec = new THREE.Group();
+    comec.name = "ComEC-ssDNA-pore";
     group.add(comec);
     comec.position.set(-1.87, 0, 0.2);
     for (const x of [-0.1, 0.1]) {
       const r = k.ring([x, 0, 0], 0.24, 0.085, comMat, comec);
+      r.name = x < 0 ? "ComEC-outer-mouth" : "ComEC-inner-mouth";
       r.rotation.y = Math.PI / 2;
     }
     k.segment([-0.15, -0.28, 0], [0.15, -0.28, 0], 0.085, comMat, comec);
@@ -243,6 +259,7 @@ const process = {
       [0.15, 0.2, 0.14],
       k.material("#d3af76"),
     );
+    dprA.name = "DprA-RecA-loader";
     const capture = chain(k, 12, comMat, group);
     const ssb = Array.from({ length: 10 }, () =>
       k.ball([0, 0, 0], [0.075, 0.12, 0.1], k.material("#bba57f")),
@@ -250,9 +267,15 @@ const process = {
     const recA = Array.from({ length: 27 }, () =>
       k.ball([0, 0, 0], [0.07, 0.125, 0.125], recMat),
     );
+    recA.forEach((mesh, i) => {
+      mesh.name = `RecA-subunit-${i}`;
+    });
     const debris = Array.from({ length: 16 }, () =>
       k.ball([0, 0, 0], 0.035, other),
     );
+    debris.forEach((mesh, i) => {
+      mesh.name = `degraded-partner-strand-${i}`;
+    });
     const labels = [
       k.label([0.5, 1.62, 0], "感受态枯草芽孢杆菌", "Competent B. subtilis", 9),
       k.label([-3.62, 0.87, 0], "环境双链 DNA", "Environmental dsDNA", 8),
@@ -297,18 +320,26 @@ const process = {
         docking = match ? ease(p, 0.66, 0.74) : 0,
         pair = match ? ease(p, 0.74, 0.87) : 0,
         integrated = match && p >= 0.9;
-      const externalPoint = (t, s) => [
-        -4.65 + 2.75 * t + 2.75 * uptake,
-        0.1 + (1 - bind) * 0.32 + 0.115 * Math.sin(t * 17 + s * Math.PI),
-        0.17 + 0.115 * Math.cos(t * 17 + s * Math.PI),
-      ];
+      const externalPoint = (t, s) => {
+        const along = t + uptake,
+          opening = bind * ease(along, 0.82, 1),
+          angle = Math.PI / 2 + (along - 1) * 17 * (1 - opening) + s * Math.PI,
+          radius = 0.115 - 0.035 * opening;
+        // Unwind within one positive-radius frame at the uptake mouth. The
+        // retained strand approaches above the other strand without crossing it.
+        return [
+          -4.65 + 2.75 * along - 0.2 * bind,
+          0.1 * (1 - opening) + (1 - bind) * 0.32 + radius * Math.sin(angle),
+          0.17 + 0.03 * opening - radius * Math.cos(angle),
+        ];
+      };
       for (let s = 0; s < 2; s++)
         for (let i = 0; i < 54; i++) {
           exterior[s][i].visible = i / 54 < 1 - uptake;
           write(
             exterior[s][i],
             externalPoint(i / 54, s),
-            externalPoint((i + 1) / 54, s),
+            externalPoint(Math.min((i + 1) / 54, 1 - uptake), s),
             0.034,
           );
         }
@@ -328,22 +359,38 @@ const process = {
         0.06 + 0.49 * Math.sin(t * Math.PI * 0.75),
         0.27 + 0.05 * Math.sin(t * 8),
       ];
+      // One ssDNA backbone runs from the trimmed exterior strand through the
+      // open ComEC lumen to the imported strand. Its leading end crosses first;
+      // after the exterior tail is consumed, the trailing end clears the pore.
+      const poreFront = ease(p, 0.24, 0.27),
+        poreTail = ease(p, 0.57, 0.61),
+        mouth = externalPoint(1 - uptake, 0),
+        cytoplasmicEnd = source(0);
+      const porePoint = (t) =>
+        mouth.map((v, j) => v + (cytoplasmicEnd[j] - v) * t);
+      for (let i = 0; i < transiting.length; i++) {
+        const a = Math.max(i / transiting.length, poreTail),
+          z = Math.min((i + 1) / transiting.length, poreFront);
+        transiting[i].visible = z > a;
+        write(transiting[i], porePoint(a), porePoint(Math.max(a, z)), 0.038);
+      }
       const target = (t) => chrom(((44 - 35 * t) / 110) * Math.PI * 2);
       const incoming = (t) => {
         const a = source(t),
           z = target(t);
         // Dock alongside the duplex first. Contact then advances along the DNA.
-        z[2] += pair >= 1 ? 0 : 0.18 * ease(t, pair, Math.min(1, pair + 0.1));
+        z[2] += 0.18 * ease(t, pair, pair + 0.1);
         return a.map((v, j) => v + (z[j] - v) * docking);
       };
       const loss = !match ? ease(p, 0.79, 0.99) : 0;
       for (let i = 0; i < imported.length; i++) {
         const a = incoming(i / imported.length),
-          z = incoming((i + 1) / imported.length);
+          z = incoming(Math.min((i + 1) / imported.length, uptake));
         a[1] += loss * ((i % 3) - 1) * 0.32;
         z[1] += loss * ((i % 3) - 1) * 0.32;
         imported[i].visible =
-          i / imported.length < uptake && (match || i / imported.length > loss);
+          i / imported.length < uptake &&
+          (match || i / imported.length >= loss);
         write(imported[i], a, z, 0.038);
       }
       for (let i = 0; i < 52; i++) {
@@ -351,7 +398,7 @@ const process = {
         incomingBases.point(
           i,
           incoming(t),
-          t < uptake && (match || t > loss) ? 0.047 : 0,
+          t < uptake && (match || t >= loss) ? 0.047 : 0,
         );
       }
       incomingBases.flush();
@@ -437,18 +484,43 @@ const process = {
           0.3 + 0.17 * Math.sin(i * 1.9),
         );
       }
-      labels[1].active = p < 0.58;
+      const environmentalDNA = exterior[0].filter((mesh) => mesh.visible),
+        degradedDNA = debris.filter((mesh) => mesh.visible),
+        loadedRecA = recA.filter((mesh) => mesh.visible);
+      anchorVertex(labels[0], envelope.children[4], 32 * 65 + 64);
+      labels[1].active = environmentalDNA.length > 0;
+      anchorSegment(
+        labels[1],
+        environmentalDNA[Math.floor(environmentalDNA.length / 2)] ??
+          exterior[0][0],
+      );
       labels[2].active = p >= 0.17 && p < 0.63;
-      labels[3].active = p > 0.31 && p < 0.7;
-      labels[4].active = p >= 0.34 && p < 0.58;
-      labels[5].active = p >= 0.53 && p < 0.89;
+      anchorObject(labels[2], comec.children[0], -0.325, 0, 0);
+      labels[3].active = degradedDNA.length > 0 && p > 0.31 && p < 0.7;
+      anchorObject(
+        labels[3],
+        degradedDNA[Math.floor(degradedDNA.length / 2)] ?? debris[0],
+      );
+      labels[4].active = dprA.visible && p < 0.58;
+      anchorObject(labels[4], dprA);
+      labels[5].active = loadedRecA.length > 0 && p >= 0.53;
+      anchorObject(
+        labels[5],
+        loadedRecA[Math.floor(loadedRecA.length / 2)] ?? recA[0],
+      );
+      anchorSegment(labels[6], chr[1][80]);
       labels[7].active = p >= 0.89;
       labels[7].text = match
         ? b(
             "异源双链：输入链 + 原有互补链",
             "Heteroduplex: incoming + resident strand",
           )
-        : b("无同源区：未发生整合", "No homology: no integration");
+        : b(
+            "染色体保持完整：未发生同源整合",
+            "Chromosome retained: no homologous integration",
+          );
+      anchorSegment(labels[7], match ? imported[17] : chr[1][27]);
+      anchorVertex(labels[8], envelope.children[4], 12 * 65 + 64);
       group.userData = {
         process: "transformation",
         structuralDetail:

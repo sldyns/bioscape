@@ -1,5 +1,5 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { energyDetails } from "./detailKit.js";
+import { energyDetails, carrierPhase, flowScale } from "./detailKit.js";
 function create() {
   const k = sceneKit(),
     { group, material, ball, segment, label } = k;
@@ -54,12 +54,14 @@ function create() {
   psii.position.set(-2.9, 0.4, 0);
   for (const x of [-0.28, 0.28]) {
     details.bundle(psii, [x, 0, 0], [1.05, 0.86, 1.1], psMat, 7);
-    details.fold(
+    const donor = details.fold(
       psii,
       [x, -0.36, 0.05],
       [0.62, 0.45, 0.68],
       material("#ab9c81"),
     );
+    if (x === -0.28)
+      donor.children[0].name = "PSII-water-oxidation-label-surface";
   }
   // Three basal core cylinders and five tiered rods, with resolved disks and
   // central channels. Repeated disks share torus and radial-sector geometry.
@@ -90,8 +92,8 @@ function create() {
       disk(psii, [x, 0.46 + level * 0.13, 0], 0);
   for (let rod = 0; rod < 5; rod++) {
     const a = (rod - 2) * 0.48;
-    for (let tier = 0; tier < 4; tier++)
-      disk(
+    for (let tier = 0; tier < 4; tier++) {
+      const antennaDisk = disk(
         psii,
         [
           Math.sin(a) * (0.43 + tier * 0.19),
@@ -100,9 +102,13 @@ function create() {
         ],
         -a,
       );
+      if (rod === 2 && tier === 3)
+        antennaDisk.children[1].name = "phycobilisome-label-surface";
+    }
   }
   for (const x of [-1.04, -0.63]) {
-    details.bundle(group, [x, 0.4, 0], [0.9, 0.96, 1], b6, 7);
+    const domain = details.bundle(group, [x, 0.4, 0], [0.9, 0.96, 1], b6, 7);
+    if (x === -0.63) domain.name = "b6f-proton-transfer-domain";
     details.fold(group, [x, -0.03, -0.01], [0.6, 0.45, 0.7], b6);
   }
   const psi = new THREE.Group();
@@ -113,10 +119,12 @@ function create() {
     const x = 0.32 * Math.cos(a),
       z = 0.32 * Math.sin(a);
     details.bundle(psi, [x, 0, z], [1, 0.85, 0.85], psMat, 7);
-    details.fold(psi, [x, 0.32, z], [0.72, 0.45, 0.62], psMat);
+    const acceptor = details.fold(psi, [x, 0.32, z], [0.72, 0.45, 0.62], psMat);
+    if (i === 1) acceptor.children[0].name = "PSI-label-surface";
   }
   const fd = ball([1.45, 1.1, 0.2], 0.14, material("#b59177"));
-  ball([2, 1.1, 0], [0.3, 0.24, 0.24], material("#82959d"));
+  const fnr = ball([2, 1.1, 0], [0.3, 0.24, 0.24], material("#82959d"));
+  fnr.name = "FNR-protein";
   const rotor = new THREE.Group();
   group.add(rotor);
   rotor.position.set(3.42, 0.4, 0);
@@ -134,6 +142,8 @@ function create() {
   details.synthase(group, rotor, [3.42, 0.4, 0], 1.04, 14);
   const pc = ball([-0.05, -0.2, 0.3], 0.15, antennaMat),
     pq = ball([-1.8, 0.4, 0.5], [0.16, 0.11, 0.12], eMat);
+  pc.name = "lumenal-PC-c6-carrier";
+  pq.name = "plastoquinone-carrier";
   const photonGroups = [];
   for (const x of [-2.9, 0.95]) {
     const g = new THREE.Group();
@@ -175,13 +185,19 @@ function create() {
   const electrons = Array.from({ length: 8 }, () =>
     ball([0, 0, 0], 0.06, eMat),
   );
-  const intoLumen = Array.from({ length: 4 }, () =>
-    ball([0, 0, 0], 0.08, hMat),
-  );
+  const intoLumen = Array.from({ length: 4 }, (_, i) => {
+    const o = ball([0, 0, 0], 0.08, hMat);
+    o.name = `b6f-proton-${i}`;
+    return o;
+  });
   const waterProtons = Array.from({ length: 4 }, () =>
     ball([0, 0, 0], 0.08, hMat),
   );
-  const back = Array.from({ length: 4 }, () => ball([0, 0, 0], 0.08, hMat));
+  const back = Array.from({ length: 4 }, (_, i) => {
+    const o = ball([0, 0, 0], 0.08, hMat);
+    o.name = `Fo-return-proton-${i}`;
+    return o;
+  });
   const reservoir = Array.from({ length: 18 }, (_, i) =>
     ball(
       [
@@ -220,7 +236,12 @@ function create() {
     label([-0.86, 0.99, 0.1], "细胞色素 b₆f", "Cytochrome b₆f", 1),
     label([0.95, 0.85, 0.5], "PSI", "PSI", 2),
     label([2.06, 1.72, 0.25], "Fd / FNR → NADPH", "Fd / FNR → NADPH", 2),
-    label([3.5, 1.95, 0.25], "ATP · 胞质侧", "ATP · cytoplasmic side", 2),
+    label(
+      [3.5, 1.95, 0.25],
+      "F₁ · ATP 生成于胞质侧",
+      "F₁ · ATP on cytoplasmic side",
+      2,
+    ),
     label([-1.86, 0.58, 0.6], "PQ", "PQ", 1),
     label([0.04, -0.23, 0.65], "PC / 细胞色素 c₆", "PC / cytochrome c₆", 1),
     label(
@@ -230,12 +251,31 @@ function create() {
       1,
     ),
   ];
+  details.anchor(
+    labels[2],
+    group.getObjectByName("phycobilisome-label-surface"),
+  );
+  details.anchor(
+    labels[3],
+    group.getObjectByName("PSII-water-oxidation-label-surface"),
+  );
+  details.anchor(
+    labels[4],
+    group.getObjectByName("b6f-proton-transfer-domain").children[2],
+  );
+  details.anchor(labels[5], group.getObjectByName("PSI-label-surface"));
+  details.anchor(labels[6], fnr);
+  details.anchor(labels[7], group.getObjectByName("F1-label-surface"));
+  details.anchor(labels[8], pq);
+  details.anchor(labels[9], pc);
   const update = (progress, parameters = {}) => {
     const p = clamp(progress),
       lit = parameters.light !== "dark",
       flow = lit ? ease(p, 0.15, 0.62) : 0;
     photonGroups.forEach((g, i) => {
-      g.position.y = 2.1 - 0.32 * ((p * 3 + i * 0.4) % 1);
+      const t = (p * 3 + i * 0.4) % 1;
+      g.position.y = 2.1 - 0.32 * t;
+      g.scale.setScalar(flowScale(t) * ease(p, 0.08, 0.12));
       g.visible = lit && p > 0.08;
     });
     electrons.forEach((o, i) => {
@@ -245,19 +285,22 @@ function create() {
         a = path[j],
         c = path[j + 1];
       o.position.set(a[0] + (c[0] - a[0]) * t, a[1] + (c[1] - a[1]) * t, a[2]);
+      o.scale.setScalar(0.06 * flowScale(u / 8) * ease(p, 0.23, 0.27));
       o.visible = lit && p > 0.23;
     });
-    pq.position.x = -2.3 + 1.35 * ((p * 2) % 1);
-    pc.position.x = -0.45 + 1.35 * ((p * 2) % 1);
+    pq.position.x = -2.3 + 1.35 * carrierPhase(p, 2);
+    pc.position.x = -0.45 + 1.35 * carrierPhase(p, 2);
     fd.position.y = 1.03 + 0.14 * Math.sin(p * Math.PI * 4);
     intoLumen.forEach((o, i) => {
       const t = (p * 3 + i / 4) % 1;
-      o.position.set(-0.82, 0.95 - 1.54 * t, 0.55);
+      o.position.set(-0.63, 0.95 - 1.54 * t, 0);
+      o.scale.setScalar(0.08 * flowScale(t) * ease(p, 0.36, 0.4));
       o.visible = lit && p > 0.36;
     });
     waterProtons.forEach((o, i) => {
       const t = (p * 2 + i / 4) % 1;
       o.position.set(-2.9 + 0.45 * t, -0.15 - 0.56 * t, 0.35);
+      o.scale.setScalar(0.08 * flowScale(t) * ease(p, 0.23, 0.27));
       o.visible = lit && p > 0.23;
     });
     reservoir.forEach((o, i) => {
@@ -265,7 +308,8 @@ function create() {
     });
     back.forEach((o, i) => {
       const t = (p * 3 + i / 4) % 1;
-      o.position.set(3.42, -0.6 + 1.72 * t, 0.39);
+      o.position.set(3.76, -0.6 + 1.72 * t, 0);
+      o.scale.setScalar(0.08 * flowScale(t) * ease(p, 0.59, 0.63));
       o.visible = lit && p > 0.59;
     });
     rotor.rotation.y = lit ? Math.max(0, p - 0.59) * Math.PI * 12 : 0;
@@ -284,6 +328,7 @@ function create() {
     atp.forEach((o, i) => {
       const t = (p * 2 + i / 3) % 1;
       o.position.set(3.43 - 0.4 * t, 1.68 + 0.48 * t, 0.15);
+      o.scale.setScalar(0.46 * flowScale(t) * ease(p, 0.68, 0.72));
       o.visible = lit && p > 0.68;
     });
     labels[1].text = lit
@@ -292,6 +337,7 @@ function create() {
           "类囊体腔 · 光驱动流停止",
           "Thylakoid lumen · light-driven flow stopped",
         );
+    details.syncLabelAnchors();
     group.userData = {
       process: "bacterialPhotosynthesis",
       species: "Synechocystis sp. PCC 6803",
@@ -424,6 +470,10 @@ export default {
     },
   ],
   sources: [
+    {
+      title: "Synechocystis PCC 6803 cytochrome b6f · PDB 7ZXY",
+      url: "https://www.rcsb.org/structure/7ZXY",
+    },
     {
       title: "Pogoryelov et al. 2007 · Synechocystis PCC 6803 c14 ring",
       url: "https://doi.org/10.1128/JB.00581-07",

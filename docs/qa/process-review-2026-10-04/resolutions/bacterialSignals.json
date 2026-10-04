@@ -1,0 +1,232 @@
+{
+  "group": "bacterialSignals",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "phase": "B",
+  "issues": [
+    {
+      "issueId": "20261004-bacterialSignals-01",
+      "status": "fixed",
+      "changes": "Selected CW filament now interpolates from twist +36 to -72; right-handed semicoiled pitch is half normal at unchanged radius. Hook anchoring, complete connected segment chain and phase-integrated reversal/recovery are retained.",
+      "files": [
+        "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Actual distal cylinder endpoints measure normal pitch 0.4601322573, semicoiled pitch 0.2300661287, recovered pitch 0.4601322573; ratio 0.5000000000.",
+        "New regression measures all four tumble intervals across gradient/uniform options; old handedness, CW/CCW sign and hook/segment continuity regressions pass.",
+        "Controlled restoration of the former 36 - 60 * deformation formula is rejected by the new pitch assertion."
+      ],
+      "limitations": [
+        "Pitch and radius are relative schematic geometry, not measured absolute bacterial dimensions; root rendered judgment remains pending."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialSignals-02",
+      "status": "fixed",
+      "changes": "CheY-P representatives follow closed smooth trigonometric diffusion paths with continuous particle identity instead of visible modulus resets. Existing concentration visibility branch is preserved.",
+      "files": [
+        "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "All 16 originally visible reset events across both conditions are continuous for the same mesh at progress +/-1e-7.",
+        "Restoring the prior linear-modulus positions is rejected by the visible-carrier continuity regression."
+      ],
+      "limitations": [
+        "The representative closed path is not a Brownian molecular simulation; pool size remains a qualitative visibility encoding."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialSignals-03",
+      "status": "fixed",
+      "changes": "Added a visible schematic His side chain from a point on the actual NarX kinase helix to a donor tip. The tip and His site are children of that NarX protomer. ATP gamma approach, NarL encounter and phosphate transfer derive from the donor position after receptor movement.",
+      "files": [
+        "src/processes/modules/bacterialSignals/twoComponentProcess.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Both nitrate branches and 10 progress points verify exact world-space joins from kinase helix to side-chain start, side-chain end to donor tip, and physical tip to His marker.",
+        "All old ATP-to-His handoff, direct His/Asp transfer, phosphate conservation and departing NarL-Asp attachment assertions pass unchanged.",
+        "A controlled geometric detachment of the side-chain anchor by 0.4 units is rejected."
+      ],
+      "limitations": [
+        "The residue branch is a connectivity schematic, not a reconstruction of NarX atomic coordinates."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialSignals-04",
+      "status": "fixed",
+      "changes": "LuxR approaches the lux-box duplex in depth as well as x/y. All four C-terminal recognition helices now contact its actual geometry; occupancy is reported only once the approach has completed, before transcription.",
+      "files": [
+        "src/processes/modules/bacterialSignals/quorumSensingProcess.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Each recognition-helix mesh is tested against triangles of actual instanced DNA backbones restricted to the lux-box region at progress 0.68, 0.72, 0.8 and 1.",
+        "At first full docking, measured vertex-to-triangle separations are 0.0000026-0.0000323 scene units. The diluted branch remains separated and unoccupied.",
+        "Restoring the former y/z docking transform fails the actual-contact regression; all old DNA-handedness and single-RNA tests remain intact."
+      ],
+      "limitations": [
+        "Contact represents a bound coarse complex, not an atomically resolved DNA-groove interaction; root should inspect readability and occlusion."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialSignals-05",
+      "status": "fixed",
+      "changes": "The five exported/returning AHL representatives use closed smooth trajectories; retained versus diluted signal still changes accumulation and net spatial displacement with fixed population size. No visible icon is relocated at a modulus wrap.",
+      "files": [
+        "src/processes/modules/bacterialSignals/quorumSensingProcess.js",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "All six previously visible AHL reset events across both conditions converge continuously at progress +/-1e-7.",
+        "Restoring the original modulus-based x/y coordinates fails the visible-carrier continuity regression."
+      ],
+      "limitations": [
+        "Paths illustrate signal exchange; they are not recorded particle tracks or exact diffusion trajectories."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialSignals-06",
+      "status": "fixed",
+      "changes": "Cell envelope, receptor, CheA, CheZ, CheY-P, basal motor and selected track labels now terminate on actual mesh surfaces after cell wobble and particle animation.",
+      "files": [
+        "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+        "src/processes/modules/bacterialSignals/labelAnchors.js",
+        "src/processes/modules/bacterialSignals/labels.test.mjs",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Rendered discovery recorded before edits in repair-discoveries.json/.md; Phase A is unchanged.",
+        "labels.test.mjs checks every molecular label against actual triangles across 26 stage/boundary/irregular samples, both controls and two parent-transform states; all 3090 active-target checks passed.",
+        "Actual target visibility, molecular wording, stable label/position/text objects and deterministic irregular seeking pass.",
+        "Controlled restoration of this original label defect is rejected; parent-transform omission and false unliganded LuxR wording are also rejected."
+      ],
+      "limitations": [
+        "The code and numeric corrections are complete; root must rerender all seven stages to validate final legibility/occlusion."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialSignals-07",
+      "status": "fixed",
+      "changes": "NarX sensor and physical His donor, moving ATP/ADP, rotated NarL/Asp, DNA ends and growing RNA now carry actual geometry anchors. Nitrate has its own visibility-gated label; periplasm and cytoplasm are explicitly region annotations. ATP/ADP and NarL wording matches visible state.",
+      "files": [
+        "src/processes/modules/bacterialSignals/twoComponentProcess.js",
+        "src/processes/modules/bacterialSignals/labelAnchors.js",
+        "src/processes/modules/bacterialSignals/labels.test.mjs",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Rendered discovery recorded before edits in repair-discoveries.json/.md; Phase A is unchanged.",
+        "labels.test.mjs checks every molecular label against actual triangles across 26 stage/boundary/irregular samples, both controls and two parent-transform states; all 3090 active-target checks passed.",
+        "Actual target visibility, molecular wording, stable label/position/text objects and deterministic irregular seeking pass.",
+        "Controlled restoration of this original label defect is rejected; parent-transform omission and false unliganded LuxR wording are also rejected."
+      ],
+      "limitations": [
+        "The code and numeric corrections are complete; root must rerender all seven stages to validate final legibility/occlusion."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialSignals-08",
+      "status": "fixed",
+      "changes": "Population/cutaway, LuxI, moving LuxR, lux-box marker, operon tab, free AHL and DNA/RNA leaders now track actual surfaces or rendered strand endpoints. The unliganded/diluted branch says LuxR; LuxR + AHL appears only with bound AHL.",
+      "files": [
+        "src/processes/modules/bacterialSignals/quorumSensingProcess.js",
+        "src/processes/modules/bacterialSignals/labelAnchors.js",
+        "src/processes/modules/bacterialSignals/labels.test.mjs",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Rendered discovery recorded before edits in repair-discoveries.json/.md; Phase A is unchanged.",
+        "labels.test.mjs checks every molecular label against actual triangles across 26 stage/boundary/irregular samples, both controls and two parent-transform states; all 3090 active-target checks passed.",
+        "Actual target visibility, molecular wording, stable label/position/text objects and deterministic irregular seeking pass.",
+        "Controlled restoration of this original label defect is rejected; parent-transform omission and false unliganded LuxR wording are also rejected."
+      ],
+      "limitations": [
+        "The code and numeric corrections are complete; root must rerender all seven stages to validate final legibility/occlusion."
+      ]
+    },
+    {
+      "issueId": "20261004-bacterialSignals-09",
+      "status": "fixed",
+      "changes": "Surface, PAO1, Psl, eDNA, matrix protein, c-di-GMP, NO and released-cell anchors now follow actual geometry and inherited visibility. Early invisible matrix has no active labels; release and inset shrinking update their endpoints.",
+      "files": [
+        "src/processes/modules/bacterialSignals/biofilmProcess.js",
+        "src/processes/modules/bacterialSignals/labelAnchors.js",
+        "src/processes/modules/bacterialSignals/labels.test.mjs",
+        "src/processes/modules/bacterialSignals/science.test.mjs"
+      ],
+      "verification": [
+        "Rendered discovery recorded before edits in repair-discoveries.json/.md; Phase A is unchanged.",
+        "labels.test.mjs checks every molecular label against actual triangles across 26 stage/boundary/irregular samples, both controls and two parent-transform states; all 3090 active-target checks passed.",
+        "Actual target visibility, molecular wording, stable label/position/text objects and deterministic irregular seeking pass.",
+        "Controlled restoration of this original label defect is rejected; parent-transform omission and false unliganded LuxR wording are also rejected."
+      ],
+      "limitations": [
+        "The code and numeric corrections are complete; root must rerender all seven stages to validate final legibility/occlusion."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/bacterialSignals/science.test.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/bacterialSignals/phase-b-diagnostics.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/bacterialSignals/phase-b-flagellar-pitch.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/bacterialSignals/phase-b-contact-diagnostics.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/bacterialSignals/regression-negative-probes.mjs",
+    "node_modules/.bin/prettier --check src/processes/modules/bacterialSignals/chemotaxisProcess.js src/processes/modules/bacterialSignals/twoComponentProcess.js src/processes/modules/bacterialSignals/quorumSensingProcess.js src/processes/modules/bacterialSignals/science.test.mjs",
+    "git diff --check -- src/processes/modules/bacterialSignals",
+    "node src/processes/modules/bacterialSignals/labels.test.mjs (also imported by science.test.mjs)",
+    "node docs/qa/process-review-2026-10-04/evidence/bacterialSignals/rendered-label-negative-probes.mjs"
+  ],
+  "sourcesAdded": [],
+  "sourcesReliedOn": [
+    {
+      "url": "https://journals.asm.org/doi/10.1128/jb.01501-06",
+      "title": "On Torque and Tumbling in Swimming Escherichia coli",
+      "supports": "Opened publisher full text. Introduction and Fig. 7 discussion distinguish CCW normal left-handed filaments from CW right-handed semicoiled filaments. Semicoiled has approximately half the normal pitch at the same amplitude; a reversed filament can leave and then rejoin the bundle."
+    },
+    {
+      "url": "https://journals.asm.org/doi/10.1128/jb.181.17.5309-5316.1999",
+      "title": "Signal-Dependent Phosphorylation of the Membrane-Bound NarX Two-Component Sensor-Transmitter Protein of Escherichia coli",
+      "supports": "Opened publisher full text. Introduction, NarL phosphotransfer results and Fig. 6 identify periplasmic sensing, cytoplasmic ATP-dependent covalent phosphorylation of membrane-associated NarX, transfer from NarX protein to NarL, and nonzero basal activity."
+    },
+    {
+      "url": "https://journals.asm.org/doi/10.1128/jb.186.3.631-637.2004",
+      "title": "Reversible Acyl-Homoserine Lactone Binding to Purified Vibrio fischeri LuxR Protein",
+      "supports": "Opened publisher full text. Purified LuxR binds lux-box DNA in a 3OC6-HSL-dependent manner; DNase protection and transcription assays support DNA binding before transcriptional activation. C-terminal helix-turn-helix mediates DNA binding; dilution can reverse activation."
+    }
+  ],
+  "evidence": [
+    "evidence/bacterialSignals/phase-b-regressions.log",
+    "evidence/bacterialSignals/phase-b-diagnostics.json",
+    "evidence/bacterialSignals/phase-b-flagellar-pitch.json",
+    "evidence/bacterialSignals/phase-b-contact-diagnostics.json",
+    "evidence/bacterialSignals/regression-negative-probes.json",
+    "evidence/bacterialSignals/repair-discoveries.json",
+    "evidence/bacterialSignals/repair-discoveries.md",
+    "evidence/bacterialSignals/rendered-followup-science.log",
+    "evidence/bacterialSignals/rendered-label-negative-probes.json",
+    "resolutions/bacterialSignals-rendered.md"
+  ],
+  "verificationSummary": {
+    "localSuite": "passed existing and new science/smoke assertions, including esbuild smoke checks",
+    "conditionBranches": 8,
+    "samplePointsPerBranch": 101,
+    "finiteAndStable": true,
+    "irregularSeeksDeterministic": true,
+    "visibleBoundarySamples": 22,
+    "maxBoundaryDisplacement": 9.902861818277066e-07,
+    "negativeProbesRejected": 5,
+    "ownedFormatting": "passed",
+    "renderedAcceptance": "All initial 28 stage images reviewed; final label repair rerender pending root integration.",
+    "renderedLabelTriangleSurfaceChecks": 3090,
+    "renderedLabelNegativeProbesRejected": 6,
+    "renderedFramesReviewedBeforeLabelRepair": 28
+  },
+  "remainingLimits": [
+    "No browser, full-workspace suite, shared-code edits or further agents were used.",
+    "No catalog/detail reduction; biofilm label repair leaves its molecular geometry and Phase A biological limits intact.",
+    "No claim of rendered, physical-device or fixed-performance acceptance."
+  ]
+}

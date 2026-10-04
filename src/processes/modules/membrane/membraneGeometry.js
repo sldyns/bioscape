@@ -92,6 +92,33 @@ export function membraneScene(gap = 0.95, centre = 0, extraHoles = []) {
 }
 
 export const mix = (a, b, p) => a + (b - a) * p;
+// Callout endpoints use a real mesh vertex; text placement belongs to the
+// overlay. Cache the selected vertex and reuse one vector as the object moves.
+export function bindSurfaceLabel(label, mesh, root, target = [0, 0, 1]) {
+  const positions = mesh.geometry.attributes.position;
+  const vertex = new THREE.Vector3(),
+    point = new THREE.Vector3();
+  let nearest = Infinity;
+  for (let i = 0; i < positions.count; i++) {
+    point.fromBufferAttribute(positions, i);
+    const distance =
+      (point.x - target[0]) ** 2 +
+      (point.y - target[1]) ** 2 +
+      (point.z - target[2]) ** 2;
+    if (distance < nearest) {
+      nearest = distance;
+      vertex.copy(point);
+    }
+  }
+  return () => {
+    point.copy(vertex);
+    for (let object = mesh; object && object !== root; object = object.parent) {
+      object.updateMatrix();
+      point.applyMatrix4(object.matrix);
+    }
+    point.toArray(label.position);
+  };
+}
 export function seeded(index, salt = 1) {
   const q = Math.sin((index + 1) * 127.1 + salt * 311.7) * 43758.5453;
   return q - Math.floor(q);
@@ -115,7 +142,7 @@ export function alphaHelix(k, position, height, material, parent = k.group) {
         new THREE.Vector3(
           0.084 * Math.cos(t * Math.PI * 14),
           t * 2 - 1,
-          0.084 * Math.sin(t * Math.PI * 14),
+          -0.084 * Math.sin(t * Math.PI * 14),
         ),
       );
     }

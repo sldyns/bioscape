@@ -1,0 +1,259 @@
+{
+  "group": "energy",
+  "phase": "rendered repair discovery; Phase A preserved",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "findings": [
+    {
+      "issueId": "20261004-energy-07",
+      "severity": "P2",
+      "kind": "annotation leader endpoint misidentification",
+      "file": "src/processes/modules/energy/{respiration,glycolysis,bacterialEnergetics,bacterialPhotosynthesis}Process.js",
+      "location": "Concrete-object label.position entries and glycolysis carbon-label +0.6 y offset; ProcessScene.jsx projects this position as the leader start.",
+      "evidence": "Thirty stage frames across four default root/condition scenes show concrete labels ending in empty space or near another object. Examples: respiration IV anchor is 0.925 scene units from its membrane-domain center; glycolysis carbon labels sit 0.6 above their actual chains; bacterial Q anchor is 0.940 from the visible Q carrier; cyanobacterial FNR anchor is 0.671 from FNR and visually nearer the ATP-synthase head. Full pre-fix measurements are preserved in label-before.json.",
+      "whyWrong": "Legacy text-placement offsets become scientific leader endpoints in the current annotation renderer. A named protein, carrier or substrate must point to that object rather than a former text margin. Region descriptions may remain regional.",
+      "fix": "Bind concrete labels to transformed actual mesh-surface points. Moving carriers, glycolytic carbons, NAD and adenylates track their geometry. Branch-specific NDH/oxidase labels use the selected visible protein. Reword ion-reaction labels as named reaction sites and the cyanobacterial ATP label as F1. Keep compartment/accounting descriptions regional.",
+      "verification": "New labels.test.mjs: 1760 actual transformed-surface endpoint checks across 15 root/condition contexts, a translated real-protein test, and negative controls restoring photographed offsets. Legacy science, transport continuity, finite/stable-resource and deterministic-seek smoke all pass. New rendered frames still required for final visual acceptance.",
+      "sourceUrls": [],
+      "sourceCodeEvidence": [
+        "src/processes/ProcessScene.jsx:187",
+        "src/processes/ProcessScene.jsx:215"
+      ],
+      "models": [
+        {
+          "id": "respiration",
+          "root": "cell",
+          "condition": "default",
+          "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-retry-018-respiration-cell.jpg",
+          "frameCount": 7,
+          "measurements": [
+            {
+              "id": "respiration",
+              "p": 0.685,
+              "label": "Q",
+              "index": 10,
+              "target": "Q",
+              "anchor": [
+                -0.95,
+                0.31,
+                0.7
+              ],
+              "actual": [
+                -1.5660064421486795,
+                0,
+                0.55
+              ],
+              "centerDistance": 0.7057364499362877
+            },
+            {
+              "id": "respiration",
+              "p": 0.685,
+              "label": "Cytochrome c",
+              "index": 11,
+              "target": "cytochrome c",
+              "anchor": [
+                0.65,
+                1.13,
+                0
+              ],
+              "actual": [
+                0.33044640398857406,
+                0.85,
+                0
+              ],
+              "centerDistance": 0.42486998096339257
+            },
+            {
+              "id": "respiration",
+              "p": 0.685,
+              "label": "F₁ · ADP + Pi → ATP",
+              "index": 7,
+              "target": "F1 catalytic-head center",
+              "anchor": [
+                3.15,
+                -2.15,
+                0.3
+              ],
+              "actual": [
+                3.15,
+                -1.48,
+                0
+              ],
+              "centerDistance": 0.7340980860893181
+            },
+            {
+              "id": "respiration",
+              "p": 0.685,
+              "label": "IV · O₂ → H₂O",
+              "index": 6,
+              "target": "IV transmembrane domain",
+              "anchor": [
+                1.5,
+                -0.82,
+                0.4
+              ],
+              "actual": [
+                1.35,
+                0,
+                0
+              ],
+              "centerDistance": 0.9246080250571049
+            }
+          ]
+        },
+        {
+          "id": "glycolysis",
+          "root": "cell",
+          "condition": "default",
+          "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-retry-019-glycolysis-cell.jpg",
+          "frameCount": 8,
+          "measurements": [
+            {
+              "id": "glycolysis",
+              "p": 0.595,
+              "label": "1,3-BPG → 3-PG",
+              "index": 4,
+              "target": "left carbon chain",
+              "anchor": [
+                -1.65,
+                0.43000000000000005,
+                0
+              ],
+              "actual": [
+                -1.65,
+                -0.16999999999999993,
+                0
+              ],
+              "centerDistance": 0.6
+            },
+            {
+              "id": "glycolysis",
+              "p": 0.595,
+              "label": "1,3-BPG → 3-PG",
+              "index": 5,
+              "target": "right carbon chain",
+              "anchor": [
+                1.65,
+                0.43000000000000005,
+                0
+              ],
+              "actual": [
+                1.65,
+                -0.16999999999999993,
+                0
+              ],
+              "centerDistance": 0.6
+            }
+          ]
+        },
+        {
+          "id": "bacterialEnergetics",
+          "root": "bacterium",
+          "condition": "default",
+          "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-retry-020-bacterialEnergetics-bacterium.jpg",
+          "frameCount": 7,
+          "measurements": [
+            {
+              "id": "bacterialEnergetics",
+              "p": 0.675,
+              "label": "Q / QH₂",
+              "index": 6,
+              "target": "Q/QH2",
+              "anchor": [
+                -1,
+                0.35,
+                0.55
+              ],
+              "actual": [
+                -0.1312986416294626,
+                -0.0012929499970306534,
+                0.48
+              ],
+              "centerDistance": 0.9396535461288023
+            },
+            {
+              "id": "bacterialEnergetics",
+              "p": 0.675,
+              "label": "bo₃ · proton pump and O₂ reduction",
+              "index": 4,
+              "target": "bo3 membrane domain",
+              "anchor": [
+                0.65,
+                -0.9,
+                0.3
+              ],
+              "actual": [
+                0.52,
+                -0.0316875,
+                0
+              ],
+              "centerDistance": 0.9278289700458
+            }
+          ]
+        },
+        {
+          "id": "bacterialPhotosynthesis",
+          "root": "bacterium",
+          "condition": "default",
+          "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-retry-021-bacterialPhotosynthesis-bacterium.jpg",
+          "frameCount": 8,
+          "measurements": [
+            {
+              "id": "bacterialPhotosynthesis",
+              "p": 0.755,
+              "label": "PQ",
+              "index": 8,
+              "target": "PQ",
+              "anchor": [
+                -1.86,
+                0.58,
+                0.6
+              ],
+              "actual": [
+                -0.9513319583109163,
+                0.4,
+                0.5
+              ],
+              "centerDistance": 0.9317068261996767
+            },
+            {
+              "id": "bacterialPhotosynthesis",
+              "p": 0.755,
+              "label": "PC / cytochrome c₆",
+              "index": 9,
+              "target": "PC/c6",
+              "anchor": [
+                0.04,
+                -0.23,
+                0.65
+              ],
+              "actual": [
+                0.8986680416890835,
+                -0.2,
+                0.3
+              ],
+              "centerDistance": 0.9277450112062935
+            },
+            {
+              "id": "bacterialPhotosynthesis",
+              "p": 0.755,
+              "label": "Fd / FNR → NADPH",
+              "index": 6,
+              "target": "FNR protein center",
+              "anchor": [
+                2.06,
+                1.72,
+                0.25
+              ],
+              "actual": [
+                2,
+                1.1,
+                0
+              ],
+              "centerDistance": 0.6711929677819932
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

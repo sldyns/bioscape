@@ -1,4 +1,5 @@
 import { proteinPocket, wallAnatomy, materialInventory } from "./anatomy.js";
+import { labelAnchors } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 function create() {
   const k = sceneKit(),
@@ -34,6 +35,12 @@ function create() {
   wallAnatomy(k, cell);
   proteinPocket(k, pdc, "#baa888");
   proteinPocket(k, adh, "#acb4a3");
+  pdc.name = "fermentation-pdc";
+  adh.name = "fermentation-adh";
+  const pdcAnchor = pdc.children[0],
+    adhAnchor = adh.children[0];
+  pdcAnchor.name = "fermentation-pdc-label-target";
+  adhAnchor.name = "fermentation-adh-label-target";
   const carbons = Array.from({ length: 6 }, () =>
     k.ball([0, 0, 0], 0.16, carbon),
   );
@@ -50,15 +57,27 @@ function create() {
   const co2B = Array.from({ length: 4 }, () =>
     k.segment([0, 0, 0], [1, 0, 0], 0.025, bondMat),
   );
+  co2O.forEach((mesh, i) => {
+    mesh.name = `fermentation-co2-oxygen-${i}`;
+  });
+  co2B.forEach((mesh, i) => {
+    mesh.name = `fermentation-co2-bond-${i}`;
+  });
   const redoxBadge = Array.from({ length: 2 }, () =>
     k.ball([0, 0, 0], [0.19, 0.11, 0.12], oxygen),
   );
   const carbonylBonds = Array.from({ length: 4 }, () =>
     k.segment([0, 0, 0], [1, 0, 0], 0.025, bondMat),
   );
+  carbonylBonds.forEach((mesh, i) => {
+    mesh.name = `fermentation-carbonyl-bond-${i}`;
+  });
   const hydroxylH = Array.from({ length: 2 }, () =>
     k.ball([0, 0, 0], 0.068, hydrogenMat),
   );
+  hydroxylH.forEach((mesh, i) => {
+    mesh.name = `fermentation-hydroxyl-hydrogen-${i}`;
+  });
   const hydroxylBonds = Array.from({ length: 2 }, () =>
     k.segment([0, 0, 0], [1, 0, 0], 0.022, bondMat),
   );
@@ -106,6 +125,8 @@ function create() {
     for (let j = 0; j < 3; j++) k.ball([j * 0.09, 0, 0], 0.07, atpMat, g);
     return g;
   });
+  atp[0].children[1].name = "fermentation-atp-label-target";
+  nad[0].g.children[0].name = "fermentation-nad-label-target";
   const environmentalOxygen = Array.from({ length: 3 }, (_, i) => {
     const g = new THREE.Group();
     group.add(g);
@@ -114,9 +135,16 @@ function create() {
     k.ball([0.06, 0, 0], 0.075, oxygen, g);
     return g;
   });
+  environmentalOxygen[1].children[0].name = "fermentation-oxygen-label-target";
   const pts = Array.from({ length: 6 }, () => new THREE.Vector3()),
     direction = new THREE.Vector3(),
     up = new THREE.Vector3(0, 1, 0);
+  // Pyruvate carboxyl -> carbonyl -> methyl. The first triose reverses its
+  // orientation: glucose C3/C4, rather than C1/C4, supply the two CO2 carbons.
+  const pyruvateCarbons = [
+    [2, 1, 0],
+    [3, 4, 5],
+  ];
   const setBond = (mesh, a, b) => {
     mesh.position.copy(a).add(b).multiplyScalar(0.5);
     direction.copy(b).sub(a);
@@ -156,7 +184,14 @@ function create() {
     k.label([-2.9, 2.15, 0], "酿酒酵母 · 胞质", "S. cerevisiae · cytosol", 7),
     k.label([3.3, 2.08, 0], "有氧 + 高糖", "O₂ + high glucose", 8),
     k.label([2.15, 0.25, 0.6], "NADH → NAD⁺", "NADH → NAD⁺", 9),
+    k.label(
+      [-2.5, 0, 0.12],
+      "糖酵解：碳骨架重排",
+      "Glycolysis: carbon rearrangement",
+      10,
+    ),
   ];
+  const anchor = labelAnchors(labels);
   function update(raw, parameters = {}) {
     const p = clamp(raw),
       glycolysis = ease(p, 0.08, 0.3),
@@ -168,7 +203,7 @@ function create() {
     const aerobic = parameters.condition === "aerobic";
     for (let lane = 0; lane < 2; lane++)
       for (let j = 0; j < 3; j++) {
-        const i = lane * 3 + j;
+        const i = pyruvateCarbons[lane][j];
         // Open-chain carbon bookkeeping, with no fictitious C6-C1 bond.
         const gx = -3.18 + i * 0.25,
           gy = i % 2 ? 0.12 : -0.12;
@@ -180,10 +215,18 @@ function create() {
         const py =
           (lane === 0 ? 0.62 : -0.62) +
           (j === 0 ? decarb * (lane === 0 ? 0.88 : -0.88) : 0);
+        const firstTrioseTurn = Math.PI * glycolysis;
+        const x =
+          lane === 0
+            ? THREE.MathUtils.lerp(-2.93, px - (j - 1) * 0.36, glycolysis) +
+              (1 - j) *
+                THREE.MathUtils.lerp(0.25, 0.36, glycolysis) *
+                Math.cos(firstTrioseTurn)
+            : THREE.MathUtils.lerp(gx, px, glycolysis);
         pts[i].set(
-          THREE.MathUtils.lerp(gx, px, glycolysis),
+          x,
           THREE.MathUtils.lerp(gy, py, glycolysis),
-          0.12,
+          0.12 + (lane === 0 ? (1 - j) * 0.32 * Math.sin(firstTrioseTurn) : 0),
         );
         carbons[i].position.copy(pts[i]);
         carbons[i].material = carbon;
@@ -194,10 +237,10 @@ function create() {
       bonds[i].visible =
         i < 5 &&
         (glycolysis < 0.05 ||
-          (i === 0 || i === 3 ? decarb < 0.96 : i === 1 || i === 4));
+          (i === 1 || i === 3 ? decarb < 0.96 : i === 0 || i === 4));
     }
     for (let lane = 0; lane < 2; lane++) {
-      const base = pts[lane * 3];
+      const base = pts[pyruvateCarbons[lane][0]];
       for (let side = 0; side < 2; side++) {
         const i = lane * 2 + side,
           o = co2O[i];
@@ -223,7 +266,7 @@ function create() {
         setBond(bond, tempBondA, tempBondB);
         bond.scale.x = bond.scale.z = 0.021;
       }
-      hydroxylH[lane].visible = hydroxylBonds[lane].visible = reduction > 0.8;
+      hydroxylH[lane].visible = hydroxylBonds[lane].visible = reduction >= 0.8;
       hydroxylH[lane].position.copy(b.position);
       hydroxylH[lane].position.x += 0.18;
       hydroxylH[lane].position.y += 0.08;
@@ -245,15 +288,31 @@ function create() {
       o.visible = aerobic;
     });
     loop.visible = p > 0.64;
-    labels[0].active = p < 0.21;
-    labels[1].active = p >= 0.21 && p < 0.49;
-    labels[4].active = p >= 0.49 && p < 0.72;
-    labels[5].active = p >= 0.72;
-    labels[6].active = p > 0.47;
+    labels[0].active = glycolysis < 0.05;
+    labels[1].active = glycolysis > 0.98 && decarb < 0.96;
+    labels[4].active = decarb >= 0.96 && reduction < 0.8;
+    labels[5].active = reduction >= 0.8;
+    labels[6].active = decarb >= 0.96;
     labels[7].active = p > 0.27;
-    labels[8].active = p > 0.76;
+    labels[8].active = reduction >= 0.8;
     labels[10].active = aerobic;
-    labels[11].active = p > 0.56 && p < 0.87;
+    labels[11].active = p > 0.56 && reduction < 0.8;
+    labels[12].active = glycolysis >= 0.05 && glycolysis <= 0.98;
+    anchor.atMesh(0, carbons[1]);
+    anchor.atMesh(1, carbons[1]);
+    anchor.atMesh(2, pdcAnchor);
+    anchor.atMesh(3, adhAnchor);
+    anchor.atMesh(4, carbons[1]);
+    anchor.atMesh(5, carbons[1]);
+    anchor.atMesh(6, carbons[2]);
+    anchor.atMesh(7, atp[0].children[1]);
+    anchor.atMesh(8, nad[0].g.children[0]);
+    labels[9].position[0] = -2.6;
+    labels[9].position[1] = 1;
+    labels[9].position[2] = -0.9;
+    anchor.atMesh(10, environmentalOxygen[1].children[0]);
+    anchor.atMesh(11, nad[0].g.children[0]);
+    anchor.atMesh(12, carbons[1]);
     group.userData = {
       species: "Saccharomyces cerevisiae",
       process: "alcoholicFermentation",
@@ -370,6 +429,11 @@ export default {
     { color: "#c09b5e", text: B("糖酵解的 ATP", "ATP from glycolysis") },
   ],
   sources: [
+    {
+      title:
+        "The intramolecular 13C-distribution in ethanol reveals the influence of the CO2-fixation pathway and environmental conditions on the site-specific 13C variation in glucose",
+      url: "https://onlinelibrary.wiley.com/doi/10.1111/j.1365-3040.2011.02308.x",
+    },
     {
       title: "ChEBI:4167 D-glucopyranose structure",
       url: "https://www.ebi.ac.uk/chebi/CHEBI:4167",

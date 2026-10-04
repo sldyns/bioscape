@@ -1,0 +1,2253 @@
+{
+  "freezeGate": {
+    "status": "confirmed",
+    "scopes": "All product and test owners",
+    "basis": "Root explicitly confirmed all product and test owners have completed final freeze in the latest instruction.",
+    "sourceChangesDetectedDuringScan": [],
+    "observedDuringEarlierRefresh": "The earlier candidate increase from 65 to 66 included signals/apoptosomeCytosol.test.mjs. Its owner has since confirmed freeze, and signals/science.test.mjs:10 imports it."
+  },
+  "integrationCheck": {
+    "status": "passed",
+    "command": "npm run check",
+    "exitCode": 0,
+    "startedAt": "2026-10-04T03:29:37.962Z",
+    "finishedAt": "2026-10-04T03:37:33.731Z",
+    "receipt": "evidence/final-check.json",
+    "log": "evidence/final-check.log",
+    "codeFilesChecked": 198,
+    "sourceSetStable": true,
+    "headUnchanged": true,
+    "auditedTestsMatchingReceipt": 66,
+    "verifySourceMatchesReceipt": true,
+    "basis": "Root-owned final integrated check completed successfully; this audit read its receipt and matched every current candidate test plus verify.mjs against the after-check SHA snapshot. No test was rerun."
+  },
+  "capturedAt": "2026-10-04T03:39:31.823005+00:00",
+  "mode": "Read-only static execution-chain audit. No npm check, test suite or test module was executed by this audit.",
+  "scope": "Git-modified/new src/processes/modules/**/*.test.mjs and tests/*.mjs in the current working tree.",
+  "pipeline": {
+    "check": "npm run format:check && npm run verify && npm run build && npm run check:release",
+    "verify": "node scripts/verify.mjs",
+    "test:science": "node tests/science-regressions.mjs"
+  },
+  "summary": {
+    "candidates": 66,
+    "new": 42,
+    "modified": 24,
+    "covered": 66,
+    "remainingOmissions": 0,
+    "scienceGroups": 22
+  },
+  "discoveredOmissions": [
+    {
+      "path": "src/processes/modules/chromatin/plantSmoke.test.mjs",
+      "nowCovered": true,
+      "currentEntry": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/chromatin/plantSmoke.test.mjs",
+          "line": 60,
+          "kind": "spawnSync entry"
+        }
+      ]
+    },
+    {
+      "path": "src/processes/modules/operons/science.mutations.test.mjs",
+      "nowCovered": true,
+      "currentEntry": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/operons/science.mutations.test.mjs",
+          "line": 61,
+          "kind": "spawnSync entry"
+        }
+      ]
+    },
+    {
+      "path": "src/processes/modules/signals/deformation.test.mjs",
+      "nowCovered": true,
+      "currentEntry": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/signals/deformation.test.mjs",
+          "line": 62,
+          "kind": "spawnSync entry"
+        }
+      ]
+    },
+    {
+      "path": "src/processes/modules/signals/labelAnchors.test.mjs",
+      "nowCovered": true,
+      "currentEntry": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/signals/labelAnchors.test.mjs",
+          "line": 63,
+          "kind": "spawnSync entry"
+        }
+      ]
+    },
+    {
+      "path": "src/processes/modules/signals/labelEvents.test.mjs",
+      "nowCovered": true,
+      "currentEntry": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/signals/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/signals/science.test.mjs",
+          "to": "src/processes/modules/signals/labelEvents.test.mjs",
+          "line": 9,
+          "kind": "literal module import"
+        }
+      ]
+    }
+  ],
+  "remainingOmissions": [],
+  "recommendations": [
+    "No runner additions are needed for the current owner-frozen changed/new test set. The root-owned final npm check passed; retain its receipt and log as runtime evidence.",
+    "Retain the chromatin plantSmoke and operons science.mutations explicit entries in scripts/verify.mjs. The latter imports science.test.mjs; importing it back using an awaited dynamic import in science.test.mjs would introduce a cyclic dependency."
+  ],
+  "manualExecutionChecks": [
+    {
+      "file": "src/processes/modules/parameciumLife/science.test.mjs",
+      "line": 315,
+      "finding": "Calls imported runReview20261004; the supplementary module is not merely imported for unused exports."
+    },
+    {
+      "file": "src/processes/modules/plantWater/waterFlux.test.mjs",
+      "line": 314,
+      "finding": "Calls exported runWaterFluxRegression at module top level."
+    },
+    {
+      "file": "src/processes/modules/operons/playback.test.mjs",
+      "finding": "Top-level calls run all five exported verification functions; science.test.mjs imports it."
+    },
+    {
+      "file": "src/processes/modules/operons/science.test.mjs",
+      "lines": [
+        292,
+        293,
+        294
+      ],
+      "finding": "Exported verifyLac/verifyTrp/verifyHog are each invoked."
+    },
+    {
+      "file": "src/processes/modules/rna/science.test.mjs",
+      "lines": [
+        328,
+        475,
+        520
+      ],
+      "finding": "Exported dynein contact and surface-label assertion helpers are invoked by the executed suite."
+    },
+    {
+      "file": "src/processes/modules/phageLife/labelAnchors.test.mjs",
+      "finding": "Top-level loop executes on import. Optional PHAGE_LABEL_MODELS/PHAGE_LABEL_ONLY environment switches are unset by the runner; coverage assumes ordinary environment."
+    }
+  ],
+  "limits": [
+    "Coverage means configured execution reachability, not a successful runtime result. npm check stops if an earlier command fails; verify/science runners stop on the first failing child.",
+    "ESM deduplicates imports inside one process; a separately spawned mutation suite may also import a base suite already scheduled in another process. That repeats execution but does not create a coverage gap.",
+    "Unchanged historical smoke/refinement files outside the changed/new candidate set were not classified as this-turn omissions.",
+    "All product/test owners are frozen according to root. Counts and hashes describe that current snapshot; the root-owned final npm check passed according to evidence/final-check.json, and current candidate/runner hashes match its after-check snapshot. This audit did not rerun tests."
+  ],
+  "sourceReadStability": {
+    "changedDuringScan": [],
+    "scope": "Cached runner, entry metadata and imported test sources compared again before report creation. Owner freeze is separately confirmed by root."
+  },
+  "runners": [
+    {
+      "path": "scripts/verify.mjs",
+      "sha256": "f933fdc08d6b99e39c7d32f0ddb3933df2d91e27345c113f2b5bc5fc359475fa"
+    },
+    {
+      "path": "tests/science-regressions.mjs",
+      "sha256": "bca8878c229fd87b79044ec55d8dd6692742695cf5aaa4f7b7496b12ac015d56"
+    },
+    {
+      "path": "package.json",
+      "sha256": "2360414bdb0ec84a62c0b194bae18ae748943c4b79499671b6f1888531858d68"
+    },
+    {
+      "path": "src/processes/extensions.js",
+      "sha256": "111e8c0eb4c0af5d3bb3a8d1e6177c85da21726b1a30bac1c5404cf5caff6677"
+    }
+  ],
+  "tests": [
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/bacterialCore/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/bacterialCore/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "157632006e1f3e401424ec292896203881f04787ab371ab9b7d2a070f96f7769"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/bacterialSignals/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/bacterialSignals/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "00e1b5e80f3a1f1350bd59ec45d55facdeaf734ce70b15b50a54c74b740ec540"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/chromatin/plantSmoke.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/chromatin/plantSmoke.test.mjs",
+          "line": 60,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "6656c76d1cd63762b0792a450e65fddf39f66a4ae15dd5b52b4892a45d372247"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/chromatin/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/chromatin/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "3c2eda8b49bcc21658f232476662dfe2a912715e5672436a782e68203d945977"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/division/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/division/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "73b92daa41658b3581d0d542b6af3275787c5b50a5a7dbdf20bd998399b8039e"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/energy/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/energy/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "3bd23cef04ae9637042d4a33c711f1bb99755262cf33c222643a07c6de511163"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/genome/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/genome/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "6a2f35f791fb0030e8836e3f2b42cbd9a58dd27d570ee04ea66ff317f323f532"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/neurons/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/neurons/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "c2a82b8f247faa96b618bfa8f1090407bd3a829b85df669609055ed145ebc1e5"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/operons/science.mutations.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/operons/science.mutations.test.mjs",
+          "line": 61,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "7ace49b47f7db9b145b4cf8464c841e3b7292b78a466c55837a24089ebd7df91"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/operons/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/operons/science.mutations.test.mjs",
+          "line": 61,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "src/processes/modules/operons/science.mutations.test.mjs",
+          "to": "src/processes/modules/operons/science.test.mjs",
+          "line": 5,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "b569961c85d0403278a37983e791f5827aec9d1f6e002e3b11b21abf5fbaebcc"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/parameciumLife/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/parameciumLife/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "6afb81bb6ac5d9a02d9c0b0d251c59bf3d975b5f28bb99481f1d6c448d9ad87a"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/phageLife/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/phageLife/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "3d449e31bb8cb3a76796f9d048733bfbd67598caed78c1339d1e3b77fb6bf5f8"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/plantConnections/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantConnections/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "3572cdc4bc1756ee0d14de2f5d9c52726abf8a9cd7ea900fb0708e35762de8d8"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/plantGrowth/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantGrowth/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "88ded0d33053513356f0a8053f5b886c5bbf8bdc6b1faffc736321e6a57f283f"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/plantSignals/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantSignals/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "1e55d4190a7e720351a3a0e7d5e7b2b4018cc9fb95ac1ee2c47e519da4c88aaf"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/plantWater/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantWater/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "3a29d8ecb48b9146cf17c536ad918e46d7175192f10e99dbb9e5375f14625a84"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/rna/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/rna/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "7ec0e679f647b2c14a6e7ca130f607573b07e5b346bc86c2adbcbc2ce989573f"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/signals/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/signals/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "1dae1e736fd3db61b60fbfcbcfb68bdf2179b26491ea833647727302de34ddf3"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/traffic/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/traffic/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "e0212081218a3f7172b337a5b9296ec24b0917881b8a95e73a952539461b4b89"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/translation/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/translation/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "c533994e33330c58a94fd24c3ae31ca066bef3fcbc11e50c7028c19af5e5fb40"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/turnover/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/turnover/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "134d32f99da5a13eaf0d487df53d28e45c3f9f8c2c3d335b16d632852b282ee4"
+    },
+    {
+      "gitStatus": " M",
+      "path": "src/processes/modules/yeastLife/science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/yeastLife/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        }
+      ],
+      "sha256": "f45363ef78917fd801fbb26c7bdb7ff9c8659de95e63385dcd29fe20b7448c03"
+    },
+    {
+      "gitStatus": " M",
+      "path": "tests/condition-notes.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/condition-notes.mjs",
+          "line": 43,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "ae3773c4f17d22348621b330b3325d92622e71da3bc551353a0270d5ae27d325"
+    },
+    {
+      "gitStatus": " M",
+      "path": "tests/scene-capture.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/scene-capture.mjs",
+          "line": 27,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "480867c9955fe04832f4848a3c91403995cf782280b369dd54a28e9163283f35"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/bacterialCore/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/bacterialCore/science.test.mjs",
+          "to": "src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+          "line": 4,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "aef84207ffa45587496fda5c2a81cc1a8ae88480c216068fe2c70e3532849422"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/bacterialCore/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/bacterialCore/science.test.mjs",
+          "to": "src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs",
+          "line": 3,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "21054c01b1edcb4102734dacb92884aaa2106f025c12cb86bef1b953f08afb1c"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/bacterialSignals/labels.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/bacterialSignals/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/bacterialSignals/science.test.mjs",
+          "to": "src/processes/modules/bacterialSignals/labels.test.mjs",
+          "line": 448,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "f9deb0d90eb5171f9387cd08e9f56a097698c9c446fc1774213c9ed1a0dbab9f"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/chromatin/labelAnchors.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/chromatin/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/chromatin/science.test.mjs",
+          "to": "src/processes/modules/chromatin/labelAnchors.test.mjs",
+          "line": 9,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "f9a4bc2d1c944dc683c783dacb9a67d2e80b13c5de15a447b9c42d123d991146"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/chromatin/upstream.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/chromatin/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/chromatin/science.test.mjs",
+          "to": "src/processes/modules/chromatin/upstream.test.mjs",
+          "line": 8,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "63faa14c276f292e3e62d728626ae1f5e45cf86956060d5044790f02285365d4"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/division/cortical-ring.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/division/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/division/science.test.mjs",
+          "to": "src/processes/modules/division/cortical-ring.test.mjs",
+          "line": 360,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "20e9425cf6894e09257c189adbb9cbedd88891213bc0cf42634b9a4099b4e6d4"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/division/label-anchors.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/division/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/division/science.test.mjs",
+          "to": "src/processes/modules/division/label-anchors.test.mjs",
+          "line": 361,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "c885516c114392f4c2f62d3e0d5342c89a55a619bc95c69e5e03785448c281be"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/energy/continuity.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/energy/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/energy/science.test.mjs",
+          "to": "src/processes/modules/energy/continuity.test.mjs",
+          "line": 277,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "24a2c1564fa33f9e9d213b40dbf9dcb2d41b39844a8357ed046abf4787fb82ac"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/energy/labels.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/energy/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/energy/science.test.mjs",
+          "to": "src/processes/modules/energy/labels.test.mjs",
+          "line": 278,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "386ceca57b5fabbb03ef656b68643e0f2eb85d75a5cd85f5100e208392e80782"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/genome/incisionLabel.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/genome/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/genome/science.test.mjs",
+          "to": "src/processes/modules/genome/incisionLabel.test.mjs",
+          "line": 436,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "c8368415ed79ab0ed05be0f88e02d8a7e139e3130cda29747bdd5b67739f32dc"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/genome/labelAnchors.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/genome/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/genome/science.test.mjs",
+          "to": "src/processes/modules/genome/labelAnchors.test.mjs",
+          "line": 434,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "63e89fb523ab1d51bea53276158fa9bf9a6a7d37587ab1d1f4930ce18dd8ffe7"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/genome/review20261004.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/genome/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/genome/science.test.mjs",
+          "to": "src/processes/modules/genome/review20261004.test.mjs",
+          "line": 433,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "2ca2b04465ef3047eeef466b6a159b9885e9e18257ea9135144bfadcecc6e457"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/genome/tailVisibility.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/genome/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/genome/science.test.mjs",
+          "to": "src/processes/modules/genome/tailVisibility.test.mjs",
+          "line": 435,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "b1a569fc8af6a518b6bde72a17a3ef1e05162e0f758362d09794285528b7c12d"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/membrane/process-review.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/membrane/process-review.test.mjs",
+          "line": 57,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "78c1c20ad19abb44c602376e8db8a1adfef1fbca5293c9c92746e1ffe8404422"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/operons/labelAnchors.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/operons/science.mutations.test.mjs",
+          "line": 61,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "src/processes/modules/operons/science.mutations.test.mjs",
+          "to": "src/processes/modules/operons/science.test.mjs",
+          "line": 5,
+          "kind": "literal module import"
+        },
+        {
+          "from": "src/processes/modules/operons/science.test.mjs",
+          "to": "src/processes/modules/operons/labelAnchors.test.mjs",
+          "line": 4,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "96fea2e9ea00cb1f5adfc1931a4118aac55c86c3eb68064c56e04372e14dba74"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/operons/playback.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/operons/science.mutations.test.mjs",
+          "line": 61,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "src/processes/modules/operons/science.mutations.test.mjs",
+          "to": "src/processes/modules/operons/playback.test.mjs",
+          "line": 7,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "afbb2642041bdcccfd89f96c1006e7b04fd40185f259069b373fa4dd20c4da17"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/parameciumLife/review20261004.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/parameciumLife/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/parameciumLife/science.test.mjs",
+          "to": "src/processes/modules/parameciumLife/review20261004.test.mjs",
+          "line": 7,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "9a893e9c6a3bf90b37d16ce580bd65bba088f05b15e82d6a4ff0e081b0f9aa2e"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/phageLife/continuity.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/phageLife/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/phageLife/science.test.mjs",
+          "to": "src/processes/modules/phageLife/continuity.test.mjs",
+          "line": 299,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "7759b0ed72d8acba946c468dfb37430d45bd18d8935bb06da4be284a0c957e05"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/phageLife/labelAnchors.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/phageLife/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/phageLife/science.test.mjs",
+          "to": "src/processes/modules/phageLife/labelAnchors.test.mjs",
+          "line": 300,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "ee0a025a3143ff5596f74b4d98c3f0db58bf2bf94f451e0b7a5d90409f97c9e8"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/phageLife/renderedMechanics.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/phageLife/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/phageLife/science.test.mjs",
+          "to": "src/processes/modules/phageLife/renderedMechanics.test.mjs",
+          "line": 301,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "95f8c8d805a005d9d225d2f7a7213f5f340ccb22af2deed5a1fa9d6b59331578"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/plantConnections/camStorage.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantConnections/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/plantConnections/science.test.mjs",
+          "to": "src/processes/modules/plantConnections/camStorage.test.mjs",
+          "line": 311,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "c4fe01b0a1c4279ef15ac98d1d7cd99685598a9867ff8ccf81384d271ffacd88"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/plantConnections/labelAnchors.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantConnections/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/plantConnections/science.test.mjs",
+          "to": "src/processes/modules/plantConnections/labelAnchors.test.mjs",
+          "line": 310,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "908712bb106ea866fe3d015a1b4f6f49c6382a1eaffe5b6b77846e6c6875ec20"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/plantConnections/topology.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantConnections/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/plantConnections/science.test.mjs",
+          "to": "src/processes/modules/plantConnections/topology.test.mjs",
+          "line": 309,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "5c908f9905defc7c399629eb9a0dff8ab535f0a3d09d5095d7029a9399cff681"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/plantGrowth/fusion.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantGrowth/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/plantGrowth/science.test.mjs",
+          "to": "src/processes/modules/plantGrowth/fusion.test.mjs",
+          "line": 3,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "650bfc24c335db2442c08da9833cd06b50bb277b1a0ffc1cd918e8642f5fb854"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/plantWater/labelAnchors.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantWater/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/plantWater/science.test.mjs",
+          "to": "src/processes/modules/plantWater/labelAnchors.test.mjs",
+          "line": 7,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "d568e24f1a8243b70ab4c66eec101dca7251c52fd6c2c99432980dcebb0b3ecb"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/plantWater/waterFlux.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/plantWater/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/plantWater/science.test.mjs",
+          "to": "src/processes/modules/plantWater/waterFlux.test.mjs",
+          "line": 6,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "6a1c00f0badb59870acafea968ef8330e91f244757865a6873bf068951d40435"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/signals/apoptosomeCytosol.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/signals/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/signals/science.test.mjs",
+          "to": "src/processes/modules/signals/apoptosomeCytosol.test.mjs",
+          "line": 10,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "e497e9060506cffc3b11fe2a896ca176b91c5e64dc3c9f8346bc6fca40658926"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/signals/deformation.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/signals/deformation.test.mjs",
+          "line": 62,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "0da0213f4cbfc3fd893c4d5690211484392228a7d7b302f78155a96a0a900862"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/signals/labelAnchors.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/signals/labelAnchors.test.mjs",
+          "line": 63,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "6297dfb462a34c62c8fd5e56316e6d61c4041308e593c5c3de9f8def2d1312aa"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/signals/labelEvents.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/signals/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/signals/science.test.mjs",
+          "to": "src/processes/modules/signals/labelEvents.test.mjs",
+          "line": 9,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "45955dccc035be19da217b5033d4b709da65766e48c96d17d345e90564502583"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/traffic/review20261004.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/traffic/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/traffic/science.test.mjs",
+          "to": "src/processes/modules/traffic/review20261004.test.mjs",
+          "line": 8,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "955f0fc112e20e5c1eeea478348f8c699c9bd835cf73aafd6d92a7fde3fed991"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/translation/labelAnchors20261004.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/translation/labelAnchors20261004.test.mjs",
+          "line": 59,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "fd3e11ec2f2f9eae858a673382fd9b2b5eaf4131dc4f3f83381addadab01069a"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/translation/review20261004.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "src/processes/modules/translation/review20261004.test.mjs",
+          "line": 58,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "08fac1f74e94876eadd93b43d73f114b32ba2ec3bfcd5c65da0d1923be2155a2"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/turnover/continuity.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/turnover/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/turnover/science.test.mjs",
+          "to": "src/processes/modules/turnover/continuity.test.mjs",
+          "line": 398,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "fa1589374aca9d1110ac2d91eace3bc64f4f68655fec22f533aad877cb4998d8"
+    },
+    {
+      "gitStatus": "??",
+      "path": "src/processes/modules/turnover/labels.test.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/science-regressions.mjs",
+          "line": 65,
+          "kind": "spawnSync entry"
+        },
+        {
+          "from": "tests/science-regressions.mjs",
+          "to": "src/processes/modules/turnover/science.test.mjs",
+          "line": 22,
+          "kind": "spawnSync generated from live extensionEntries module group"
+        },
+        {
+          "from": "src/processes/modules/turnover/science.test.mjs",
+          "to": "src/processes/modules/turnover/labels.test.mjs",
+          "line": 399,
+          "kind": "literal module import"
+        }
+      ],
+      "sha256": "024b35d03ec61865c39d5cf3959d6176b05c1a7975c6bcb7c0adebdf6d34c0de"
+    },
+    {
+      "gitStatus": "??",
+      "path": "tests/original-infection-review.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/original-infection-review.mjs",
+          "line": 56,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "2bbdc22db5b92db17eb94558f57a1ade3a428a5548660eb476245bb2b6585bb3"
+    },
+    {
+      "gitStatus": "??",
+      "path": "tests/original-photosynthesis-review.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/original-photosynthesis-review.mjs",
+          "line": 55,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "fa68791e2074b12072d3a875e9c3a139ca7f016656cd5ab39ea0bf87c2a904ec"
+    },
+    {
+      "gitStatus": "??",
+      "path": "tests/original-secretion-label-review.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/original-secretion-label-review.mjs",
+          "line": 52,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "de1ba276c3153fffec0da4aaecac6963565947b8f988d8dde823cf509e359821"
+    },
+    {
+      "gitStatus": "??",
+      "path": "tests/original-secretion-review.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/original-secretion-review.mjs",
+          "line": 51,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "fdd92a31f4235b9102ad80760d0135e339b9aebbcd5fa27c79d36332d429f7eb"
+    },
+    {
+      "gitStatus": "??",
+      "path": "tests/original-transcription-labels.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/original-transcription-labels.mjs",
+          "line": 54,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "5a7db175ac0399de887c5200ee1e0e2eb92ccebfcc5c3f56e8fc25654a258aaa"
+    },
+    {
+      "gitStatus": "??",
+      "path": "tests/process-playback.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/process-playback.mjs",
+          "line": 38,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "904eddf2b38621f786ea950a23df88f6594e06105881a62643797e0e7b308fd1"
+    },
+    {
+      "gitStatus": "??",
+      "path": "tests/regulation-label-review.mjs",
+      "covered": true,
+      "executionPath": [
+        {
+          "from": "scripts/verify.mjs",
+          "to": "tests/regulation-label-review.mjs",
+          "line": 53,
+          "kind": "spawnSync entry"
+        }
+      ],
+      "sha256": "f4d3f81205efd5b708a2b049230cddda20cd9ef5de408ce748e632f4a2d94f4c"
+    }
+  ],
+  "executionEdges": [
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/models.mjs",
+      "line": 10,
+      "kind": "esbuild bundle then spawned model entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/asset-url.mjs",
+      "line": 20,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/home-catalog.mjs",
+      "line": 21,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/home-navigation.mjs",
+      "line": 22,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/home-search.mjs",
+      "line": 23,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/exploration-state.mjs",
+      "line": 24,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/history-session.mjs",
+      "line": 25,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/exploration-relationships.mjs",
+      "line": 26,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/scene-capture.mjs",
+      "line": 27,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/structure-label-modes.mjs",
+      "line": 28,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/studio.mjs",
+      "line": 29,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/studio-preview.mjs",
+      "line": 30,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/comparison.mjs",
+      "line": 31,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/comparison-capture.mjs",
+      "line": 32,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/specialized-cells.mjs",
+      "line": 33,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/erythrocyte-refinement.mjs",
+      "line": 34,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/neuron-refinement.mjs",
+      "line": 35,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/muscle-refinement.mjs",
+      "line": 36,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/process-session.mjs",
+      "line": 37,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/process-playback.mjs",
+      "line": 38,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/related-process-entry.mjs",
+      "line": 39,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/proteasome-polish.mjs",
+      "line": 40,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/replication-recruitment.mjs",
+      "line": 41,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/process-continuity-c.mjs",
+      "line": 42,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/condition-notes.mjs",
+      "line": 43,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "src/processes/modules/traffic/fusionProfiles.test.mjs",
+      "line": 44,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/process-label-layout.mjs",
+      "line": 45,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/render-updates.mjs",
+      "line": 46,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/prepared-model-cache.mjs",
+      "line": 47,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/exact-vertex-index.mjs",
+      "line": 48,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/process-contract.mjs",
+      "line": 49,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/secretion-refinement.mjs",
+      "line": 50,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/original-secretion-review.mjs",
+      "line": 51,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/original-secretion-label-review.mjs",
+      "line": 52,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/regulation-label-review.mjs",
+      "line": 53,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/original-transcription-labels.mjs",
+      "line": 54,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/original-photosynthesis-review.mjs",
+      "line": 55,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/original-infection-review.mjs",
+      "line": 56,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "src/processes/modules/membrane/process-review.test.mjs",
+      "line": 57,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "src/processes/modules/translation/review20261004.test.mjs",
+      "line": 58,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "src/processes/modules/translation/labelAnchors20261004.test.mjs",
+      "line": 59,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "src/processes/modules/chromatin/plantSmoke.test.mjs",
+      "line": 60,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "src/processes/modules/operons/science.mutations.test.mjs",
+      "line": 61,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "src/processes/modules/signals/deformation.test.mjs",
+      "line": 62,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "src/processes/modules/signals/labelAnchors.test.mjs",
+      "line": 63,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/process-bounds.mjs",
+      "line": 64,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "scripts/verify.mjs",
+      "to": "tests/science-regressions.mjs",
+      "line": 65,
+      "kind": "spawnSync entry"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/bacterialCore/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/bacterialSignals/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/chromatin/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/division/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/energy/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/genome/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/membrane/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/neurons/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/operons/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/parameciumLife/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/phageLife/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/plantConnections/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/plantGrowth/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/plantSignals/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/plantWater/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/regulation/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/rna/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/signals/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/traffic/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/translation/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/turnover/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/science-regressions.mjs",
+      "to": "src/processes/modules/yeastLife/science.test.mjs",
+      "line": 22,
+      "kind": "spawnSync generated from live extensionEntries module group"
+    },
+    {
+      "from": "tests/models.mjs",
+      "to": "tests/processes.mjs",
+      "line": 2,
+      "kind": "literal module import"
+    },
+    {
+      "from": "tests/models.mjs",
+      "to": "tests/model-refinements.mjs",
+      "line": 3,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/operons/science.mutations.test.mjs",
+      "to": "src/processes/modules/operons/science.test.mjs",
+      "line": 5,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/operons/science.mutations.test.mjs",
+      "to": "src/processes/modules/operons/duplexGeometry.test.mjs",
+      "line": 6,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/operons/science.mutations.test.mjs",
+      "to": "src/processes/modules/operons/playback.test.mjs",
+      "line": 7,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/bacterialCore/science.test.mjs",
+      "to": "src/processes/modules/bacterialCore/bubble.science.test.mjs",
+      "line": 2,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/bacterialCore/science.test.mjs",
+      "to": "src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs",
+      "line": 3,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/bacterialCore/science.test.mjs",
+      "to": "src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+      "line": 4,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/bacterialSignals/science.test.mjs",
+      "to": "src/processes/modules/bacterialSignals/smoke.test.mjs",
+      "line": 446,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/bacterialSignals/science.test.mjs",
+      "to": "src/processes/modules/bacterialSignals/labels.test.mjs",
+      "line": 448,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/chromatin/science.test.mjs",
+      "to": "src/processes/modules/chromatin/upstream.test.mjs",
+      "line": 8,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/chromatin/science.test.mjs",
+      "to": "src/processes/modules/chromatin/labelAnchors.test.mjs",
+      "line": 9,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/division/science.test.mjs",
+      "to": "src/processes/modules/division/cortical-ring.test.mjs",
+      "line": 360,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/division/science.test.mjs",
+      "to": "src/processes/modules/division/label-anchors.test.mjs",
+      "line": 361,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/energy/science.test.mjs",
+      "to": "src/processes/modules/energy/continuity.test.mjs",
+      "line": 277,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/energy/science.test.mjs",
+      "to": "src/processes/modules/energy/labels.test.mjs",
+      "line": 278,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/energy/science.test.mjs",
+      "to": "src/processes/modules/energy/refinement-smoke.mjs",
+      "line": 279,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/genome/science.test.mjs",
+      "to": "src/processes/modules/genome/review20261004.test.mjs",
+      "line": 433,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/genome/science.test.mjs",
+      "to": "src/processes/modules/genome/labelAnchors.test.mjs",
+      "line": 434,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/genome/science.test.mjs",
+      "to": "src/processes/modules/genome/tailVisibility.test.mjs",
+      "line": 435,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/genome/science.test.mjs",
+      "to": "src/processes/modules/genome/incisionLabel.test.mjs",
+      "line": 436,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/operons/science.test.mjs",
+      "to": "src/processes/modules/operons/duplexGeometry.test.mjs",
+      "line": 2,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/operons/science.test.mjs",
+      "to": "src/processes/modules/operons/playback.test.mjs",
+      "line": 3,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/operons/science.test.mjs",
+      "to": "src/processes/modules/operons/labelAnchors.test.mjs",
+      "line": 4,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/parameciumLife/science.test.mjs",
+      "to": "src/processes/modules/parameciumLife/review20261004.test.mjs",
+      "line": 7,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/phageLife/science.test.mjs",
+      "to": "src/processes/modules/phageLife/continuity.test.mjs",
+      "line": 299,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/phageLife/science.test.mjs",
+      "to": "src/processes/modules/phageLife/labelAnchors.test.mjs",
+      "line": 300,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/phageLife/science.test.mjs",
+      "to": "src/processes/modules/phageLife/renderedMechanics.test.mjs",
+      "line": 301,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/plantConnections/science.test.mjs",
+      "to": "src/processes/modules/plantConnections/topology.test.mjs",
+      "line": 309,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/plantConnections/science.test.mjs",
+      "to": "src/processes/modules/plantConnections/labelAnchors.test.mjs",
+      "line": 310,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/plantConnections/science.test.mjs",
+      "to": "src/processes/modules/plantConnections/camStorage.test.mjs",
+      "line": 311,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/plantGrowth/science.test.mjs",
+      "to": "src/processes/modules/plantGrowth/seek.test.mjs",
+      "line": 2,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/plantGrowth/science.test.mjs",
+      "to": "src/processes/modules/plantGrowth/fusion.test.mjs",
+      "line": 3,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/plantWater/science.test.mjs",
+      "to": "src/processes/modules/plantWater/waterFlux.test.mjs",
+      "line": 6,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/plantWater/science.test.mjs",
+      "to": "src/processes/modules/plantWater/labelAnchors.test.mjs",
+      "line": 7,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/regulation/science.test.mjs",
+      "to": "src/processes/modules/regulation/duplexGeometry.test.mjs",
+      "line": 286,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/signals/science.test.mjs",
+      "to": "src/processes/modules/signals/labelEvents.test.mjs",
+      "line": 9,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/signals/science.test.mjs",
+      "to": "src/processes/modules/signals/apoptosomeCytosol.test.mjs",
+      "line": 10,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/traffic/science.test.mjs",
+      "to": "src/processes/modules/traffic/review20261004.test.mjs",
+      "line": 8,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/turnover/science.test.mjs",
+      "to": "src/processes/modules/turnover/bubble.test.mjs",
+      "line": 397,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/turnover/science.test.mjs",
+      "to": "src/processes/modules/turnover/continuity.test.mjs",
+      "line": 398,
+      "kind": "literal module import"
+    },
+    {
+      "from": "src/processes/modules/turnover/science.test.mjs",
+      "to": "src/processes/modules/turnover/labels.test.mjs",
+      "line": 399,
+      "kind": "literal module import"
+    }
+  ]
+}

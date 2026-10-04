@@ -1,5 +1,6 @@
 import { THREE, sceneKit, bilingual as b, clamp, ease } from "../../kit.js";
 import { anatomy } from "./anatomy.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 function create() {
   const k = sceneKit(),
@@ -53,7 +54,7 @@ function create() {
   const vertices = [],
     indices = [],
     segments = 48,
-    slices = 16;
+    slices = 64;
   for (let i = 0; i <= slices; i++)
     for (let j = 0; j <= segments; j++) {
       const a = 0.72 + (j * (Math.PI * 2 - 1.44)) / segments;
@@ -114,6 +115,7 @@ function create() {
       [side * 1.06, 0, 0],
     );
     lip.rotation.y = -Math.PI / 2;
+    lip.name = `pore-mouth-plasma-membrane-${side < 0 ? "A" : "B"}`;
     membraneLips.push(lip);
   }
   // The compressed ER is continuous with cortical ER on both sides, not a cargo pipe.
@@ -262,9 +264,10 @@ function create() {
         material("#b2b3a4"),
       );
   const collars = [];
-  for (const x of [-1, 1]) {
-    const collar = ring([x, 0, 0], 1.057, 0.17, calloseMat);
+  for (const x of [-0.8, 0.8]) {
+    const collar = ring([x, 0, 0], 1.092, 0.17, calloseMat);
     collar.rotation.y = Math.PI / 2;
+    collar.name = `wall-side-callose-collar-${x < 0 ? "A" : "B"}`;
     collars.push(collar);
   }
   const small = [];
@@ -272,6 +275,7 @@ function create() {
     small.push(ball([-3.35 - i * 0.06, 0.43, 0.38], 0.095, smallMat));
   const large = new THREE.Group();
   group.add(large);
+  large.name = "untargeted-large-cargo";
   for (let i = 0; i < 7; i++) {
     const a = i * 2.4;
     ball(
@@ -282,10 +286,10 @@ function create() {
     );
   }
   const labels = [
-    label([-2.85, 1.95, 0.7], "相邻细胞 A", "Neighboring cell A", 3),
-    label([2.85, 1.95, 0.7], "相邻细胞 B", "Neighboring cell B", 3),
+    label([-2.85, 1.7, 0], "相邻细胞 A", "Neighboring cell A", 3),
+    label([2.85, 1.7, 0], "相邻细胞 B", "Neighboring cell B", 3),
     label(
-      [0, 2.3, 0.3],
+      [0, 1.61, 0.3],
       "两侧细胞壁 · 中胶层",
       "Cell walls · middle lamella",
       2,
@@ -306,17 +310,35 @@ function create() {
       2,
     ),
   ];
+  const desmotubuleAnchor = new THREE.Vector3().fromBufferAttribute(
+    compressed.geometry.attributes.position,
+    20,
+  );
+  desmotubuleAnchor.y = 0;
+  const updateLabelAnchors = labelAnchors([
+    [labels[3], group.getObjectByName("pore-cytosolic-leaflet"), 32 * 49 + 3],
+    [labels[5], compressed, desmotubuleAnchor.toArray()],
+    [labels[6], collars[0], 5 * 57 + 28],
+    [labels[7], large.children[0]],
+  ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       restricted = parameters.gate === "callose";
     const gate = restricted ? ease(p, 0.35, 0.6) : 0,
-      neckRadius = 0.84 - 0.35 * gate;
-    // Deform the actual lumen, while the center remains wide.
+      neckRadius = 0.84 - 0.35 * gate,
+      collarThickness = 0.17 + 0.35 * gate;
+    // Callose is outside the PM. The same elliptical collar cross-section
+    // determines the neck: two leaflets + a small clearance remain inside it.
+    // A fixed axial half-width keeps every collar behind both cell-facing lips.
+    const sleeveRadius = (x) => {
+      const u = clamp((0.8 - Math.abs(x)) / 0.16);
+      const collarInner = 1.092 - collarThickness * Math.sqrt(1 - u * u);
+      return Math.min(0.84, collarInner - 0.047 - 0.035);
+    };
     const pos = shellGeometry.attributes.position;
     for (let i = 0; i <= slices; i++) {
       const x = -1.06 + (2.12 * i) / slices,
-        neck = Math.pow(Math.abs(x) / 1.06, 5),
-        r = 0.84 - 0.35 * gate * neck;
+        r = sleeveRadius(x);
       for (let j = 0; j <= segments; j++) {
         const a = 0.72 + (j * (Math.PI * 2 - 1.44)) / segments;
         pos.setXYZ(i * (segments + 1) + j, x, r * Math.sin(a), r * Math.cos(a));
@@ -339,7 +361,7 @@ function create() {
       for (let j = 0; j < lipidAngles; j++) {
         const x = -1.02 + (i / (lipidRows - 1)) * 2.04,
           a = 0.75 + (j / (lipidAngles - 1)) * (Math.PI * 2 - 1.5),
-          r = 0.84 - 0.35 * gate * Math.pow(Math.abs(x) / 1.06, 5);
+          r = sleeveRadius(x);
         radial.set(0, Math.sin(a), Math.cos(a));
         for (let side = 0; side < 2; side++) {
           const radius = r + side * 0.047;
@@ -384,18 +406,17 @@ function create() {
       lip.geometry.computeBoundingBox();
     });
     collars.forEach((c) => {
-      const positions = c.geometry.attributes.position,
-        thickness = 0.17 + 0.35 * gate;
+      const positions = c.geometry.attributes.position;
       for (let j = 0; j <= 10; j++)
         for (let i = 0; i <= 56; i++) {
           const u = (i / 56) * Math.PI * 2,
             v = (j / 10) * Math.PI * 2,
-            r = 1.057 + thickness * Math.cos(v);
+            r = 1.092 + collarThickness * Math.cos(v);
           positions.setXYZ(
             j * 57 + i,
             r * Math.cos(u),
             r * Math.sin(u),
-            thickness * Math.sin(v),
+            0.16 * Math.sin(v),
           );
         }
       positions.needsUpdate = true;
@@ -422,6 +443,7 @@ function create() {
       0.43,
     );
     large.rotation.set(0.15 * Math.sin(p * 4), p * 0.65, 0);
+    updateLabelAnchors();
     group.userData = {
       process: "plasmodesmata",
       structuralDetail:

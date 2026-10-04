@@ -1,0 +1,206 @@
+{
+  "group": "regulation",
+  "reviewer": "review_regulation",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "promoterRegulation",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "qualified_pass",
+      "scope": {
+        "organism": "mammal",
+        "compartment": "nucleus",
+        "controls": {
+          "bindingSite": [
+            "intact",
+            "altered"
+          ]
+        },
+        "fullCartesianCases": 2,
+        "timeRange": [
+          0,
+          1
+        ],
+        "locales": [
+          "zh",
+          "en"
+        ]
+      },
+      "checks": [
+        "Read current WORKPLAN, CONTRIBUTING, scientific review/correction standards and process implementation contract before model inspection.",
+        "Actual processesByRoot imported by independent diagnostic: only cell supports either regulation ID; specialized neuron, muscleFibre and erythrocyte registrations do not add these processes.",
+        "Read bilingual entry title/summary, introduction, all six stage titles/descriptions, every control option, labels, legend and source metadata; no contexts overrides exist.",
+        "Independently traced geometry.js dynamicTube/molecularDNA/molecularRNA/protein/polymerase and condition update formulas. Schematic detail is explicitly distinguished from atomic coordinates.",
+        "201 evenly spaced progress samples per condition, all declared stage boundaries and mechanism branch boundaries at +/-1e-7; irregular seeks include NaN and out-of-range progress.",
+        "Focused existing smoke and science scripts pass. Existing science script additionally imports transcription regressions; no shared file was edited and no full suite was run.",
+        "Mammalian nucleus; schematic TATA promoter only, with explicit warning that most human promoters lack canonical TATA and the altered-site scenario is one unsuccessful assembly attempt.",
+        "Actual two DNA rails maintain chain identity; x increases in coding 5-prime to 3-prime and template 3-prime to 5-prime direction. Upstream TATA color and TBP bend precede Pol II/TFIIF assembly and TFIIE/TFIIH recruitment.",
+        "XPB geometry is bilobal, not a hexameric ring. Opening is local and bases remain attached to their own rails. The altered condition reduces binding, never opens the template and never displays RNA.",
+        "Nascent RNA is one strand; actual first centerline point matches the Pol II catalytic-center world coordinate; its short initial segment follows the opened template. Growing 3-prime end stays catalytic, distal label identifies 5-prime end.",
+        "Promoter escape advances Pol II along the template while the opening follows. Phosphorylation, nucleosomes and atomic folding are explicitly omitted; no fabricated kinetics or expression fold change is supplied."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30442764/",
+          "title": "Patel et al. (2018), Structure of human TFIID and mechanism of TBP loading onto promoter DNA",
+          "supports": "Primary cryo-EM/biochemical study: TFIID recognizes the core promoter, facilitates TBP loading, and initiates PIC assembly. Abstract and figure captions opened."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/33902107/",
+          "title": "Aibara et al. (2021), Structures of mammalian RNA polymerase II pre-initiation complexes",
+          "supports": "Primary mammalian PIC study: general-factor assembly, XPB translocation and local DNA opening downstream of the TATA box. Human factors/pig Pol II specimen boundary retained. Abstract opened."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/5C44",
+          "title": "Barnes et al. (2015), Transcribing RNA polymerase II with a complete bubble, PDB 5C44",
+          "supports": "Primary structural entry with DNA/RNA scaffold supports local bubble, template/RNA arrangement and translocation. Entry is yeast Pol II; used for conserved scaffold topology, not as an atomic mammalian coordinate model."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "No sustained GPU/FPS or physical-device measurement; numeric C0 continuity is separate from perceptual smoothness.",
+          "Promoter escape rotates/deforms the schematic duplex continuously. The larger late-frame displacement has no nonzero boundary limit in the checked intervals; rendered comfort remains for root review."
+        ],
+        "samplesPerCondition": 201,
+        "conditionCases": 2,
+        "boundaryProbeHalfWidth": 1e-07,
+        "worstBoundaryProbe": {
+          "p": 0.87,
+          "distance": 1.229265959683286e-05,
+          "name": "Promoter coding backbone",
+          "vertex": 249,
+          "polPosition": 2.375999998971423e-06,
+          "polAngle": 0
+        },
+        "deterministicIrregularSeeks": true,
+        "finiteSampledBuffers": true,
+        "stableResourceInventory": true
+      },
+      "limitations": [
+        "No browser or rendered playback review was performed by this reviewer; root owns that separate acceptance gate.",
+        "Finite sampling and code analysis are not a proof over every real-valued time or an experimental validation of schematic shapes.",
+        "Procedural protein secondary-structure strokes and nucleic-acid repeated markers are schematic, not coordinate-derived atomic structures or a stoichiometric/kinetic simulation."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "enhancerRegulation",
+      "roots": [
+        "cell"
+      ],
+      "verdict": "qualified_pass",
+      "scope": {
+        "organism": "mammal",
+        "compartment": "nucleus",
+        "controls": {
+          "coactivator": [
+            "competent",
+            "impaired"
+          ]
+        },
+        "fullCartesianCases": 2,
+        "timeRange": [
+          0,
+          1
+        ],
+        "locales": [
+          "zh",
+          "en"
+        ]
+      },
+      "checks": [
+        "Read current WORKPLAN, CONTRIBUTING, scientific review/correction standards and process implementation contract before model inspection.",
+        "Actual processesByRoot imported by independent diagnostic: only cell supports either regulation ID; specialized neuron, muscleFibre and erythrocyte registrations do not add these processes.",
+        "Read bilingual entry title/summary, introduction, all six stage titles/descriptions, every control option, labels, legend and source metadata; no contexts overrides exist.",
+        "Independently traced geometry.js dynamicTube/molecularDNA/molecularRNA/protein/polymerase and condition update formulas. Schematic detail is explicitly distinguished from atomic coordinates.",
+        "201 evenly spaced progress samples per condition, all declared stage boundaries and mechanism branch boundaries at +/-1e-7; irregular seeks include NaN and out-of-range progress.",
+        "Focused existing smoke and science scripts pass. Existing science script additionally imports transcription regressions; no shared file was edited and no full suite was run.",
+        "Mammalian nuclear chromatin schematic; enhancer and promoter lie on the same continuous fiber. Seven histone octamers each contain two H2A/H2B/H3/H4 copies; each core has a left-handed 1.65-turn duplex wrap and 147 repeated base-pair instances.",
+        "Eight two-stranded linkers join the same strand endpoints of neighboring nucleosomes. Existing exact segment-distance regressions reject rail intersection and check all endpoints over 201 frames per condition.",
+        "Activators bind in both conditions; competent Mediator recruitment precedes the illustrative bursts, while impaired recruitment remains unbound and produces no burst in the observation window.",
+        "Both conditions retain identical nucleosome/global chromatin trajectories. Local productive opening appears only with competent initiation; stage text correctly says proximity alone is not an immediate expression guarantee.",
+        "Within each burst Pol II progresses along actual template-sugar positions and the RNA 3-prime end coincides with the world catalytic coordinate. At 0.74 and 0.99 the old chain path is preserved exactly by the released product; RNA 1 persists during RNA 2 production.",
+        "The interval includes continuous polymerase departure/repositioning/rebinding. Timing, distances, folded surfaces and recurrence are clearly illustrative; no universal enhancer mechanism or measured kinetics is claimed."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/33902108/",
+          "title": "Rengachari et al. (2021), Structure of the human Mediator-RNA polymerase II pre-initiation complex",
+          "supports": "Primary reconstituted Mediator-PIC structure: activator-recruited Mediator and its head/middle/tail architecture support PIC function. Abstract opened; detailed subunit contact map is not claimed by the schematic."
+        },
+        {
+          "url": "https://elifesciences.org/articles/41769.pdf",
+          "title": "Alexander et al. (2019), Live-cell imaging reveals enhancer-dependent Sox2 transcription in the absence of enhancer proximity",
+          "supports": "Primary live-cell mouse ESC study shows intermittent Sox2 bursts without contemporaneous association with enhancer proximity. The PDF was opened; corroborating PubMed abstract at https://pubmed.ncbi.nlm.nih.gov/31124784/ was retrieved. This locus-specific evidence supports caution, not a universal contact-independent rule."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/1KX5",
+          "title": "Davey et al. (2002), Nucleosome core particle NCP147, PDB 1KX5",
+          "supports": "Primary nucleosome structural entry supports 147-bp wrapped DNA and histone-core molecular identity; used as topology evidence, not as the source of the procedural mesh coordinates."
+        },
+        {
+          "url": "https://www.rcsb.org/structure/5C44",
+          "title": "Barnes et al. (2015), Transcribing RNA polymerase II with a complete bubble, PDB 5C44",
+          "supports": "Primary structural entry with DNA/RNA scaffold supports local bubble, template/RNA arrangement and translocation. Entry is yeast Pol II; used for conserved scaffold topology, not as an atomic mammalian coordinate model."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "No sustained GPU/FPS or physical-device measurement; numeric C0 continuity is separate from perceptual smoothness.",
+          "Review the relatively fast recycling movement near progress 0.79-0.82 in the browser. The largest sampled change is continuous: approximately 0.55 world units and 0.607 radians per 0.005 progress, while +/-1e-7 boundary changes remain below 2.5e-5. This is a render-review focus, not a confirmed jump."
+        ],
+        "samplesPerCondition": 201,
+        "conditionCases": 2,
+        "boundaryProbeHalfWidth": 1e-07,
+        "worstBoundaryProbe": {
+          "p": 0.81,
+          "distance": 2.449927188077179e-07,
+          "name": "Linker 2 strand 1",
+          "vertex": 30,
+          "polPosition": 2.2085592360682952e-05,
+          "polAngle": 2.4082231265366545e-05
+        },
+        "deterministicIrregularSeeks": true,
+        "finiteSampledBuffers": true,
+        "stableResourceInventory": true
+      },
+      "limitations": [
+        "No browser or rendered playback review was performed by this reviewer; root owns that separate acceptance gate.",
+        "Finite sampling and code analysis are not a proof over every real-valued time or an experimental validation of schematic shapes.",
+        "Procedural protein secondary-structure strokes and nucleic-acid repeated markers are schematic, not coordinate-derived atomic structures or a stoichiometric/kinetic simulation.",
+        "Alexander et al. supports a locus-specific caution; model text explicitly avoids extending the Sox2 observation into a universal rule."
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "commands": [
+    {
+      "command": "node src/processes/modules/regulation/smoke.mjs",
+      "result": "PASS",
+      "log": "docs/qa/process-review-2026-10-04/evidence/regulation/smoke.log"
+    },
+    {
+      "command": "node src/processes/modules/regulation/science.test.mjs",
+      "result": "PASS",
+      "log": "docs/qa/process-review-2026-10-04/evidence/regulation/science.log"
+    },
+    {
+      "command": "node docs/qa/process-review-2026-10-04/evidence/regulation/continuity-diagnostic.mjs",
+      "result": "PASS for finite sampled buffers, deterministic seeks, stable resources; motion measurements recorded without an invented threshold",
+      "log": "docs/qa/process-review-2026-10-04/evidence/regulation/continuity-summary.log"
+    }
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/regulation/continuity-diagnostic.mjs",
+    "docs/qa/process-review-2026-10-04/evidence/regulation/continuity-diagnostic.json"
+  ],
+  "productFilesChanged": []
+}

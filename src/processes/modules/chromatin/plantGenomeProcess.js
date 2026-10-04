@@ -89,6 +89,7 @@ function create() {
   na.update(nuclearA);
   nb.update(nuclearB);
   duplexDetails(k, group, 70, 0.016).update(nuclearA, nuclearB);
+  const organelleGenomeAnchors = [];
   for (let organelle = 0; organelle < 2; organelle++) {
     const y = organelle === 0 ? 2.13 : -1.29;
     const points = [];
@@ -103,6 +104,7 @@ function create() {
     const curve = new THREE.CatmullRomCurve3(
       points.map((p) => new THREE.Vector3(...p)),
     );
+    organelleGenomeAnchors.push(curve.getPoint(0.5).toArray());
     const duplex = rightHandedDuplex(
       (s, out) => curve.getPoint(s, out),
       0.025,
@@ -183,7 +185,8 @@ function create() {
   const ribosomes = [],
     localRibosomes = [],
     cytosolicPorts = [],
-    localPorts = [];
+    localPorts = [],
+    importPores = [];
   for (let i = 0; i < 2; i++) {
     const y = i === 0 ? 1.65 : -1.65;
     const rib = new THREE.Group();
@@ -214,6 +217,7 @@ function create() {
         i === 0
           ? "TOC-or-TIC-protein-translocation-channel"
           : "TOM-or-TIM-protein-translocation-channel";
+      if (x === 1.05) importPores.push(pore);
       for (let j = 0; j < 8; j++) {
         const a = (j / 8) * Math.PI * 2;
         k.ball(
@@ -275,22 +279,32 @@ function create() {
     k.ball([0, 0, 0], 0.083, tagMat),
   ];
   const labels = [
-    k.label([-3, 1.8, 0], "细胞核 · 核基因组", "Nucleus · nuclear genome", 10),
     k.label(
-      [2.75, 3.13, 0],
+      nuclearCurve.getPoint(0.5).toArray(),
+      "细胞核 · 核基因组",
+      "Nucleus · nuclear genome",
+      10,
+    ),
+    k.label(
+      organelleGenomeAnchors[0],
       "叶绿体 · 叶绿体基因组",
       "Chloroplast · plastid genome",
       10,
     ),
     k.label(
-      [2.75, -3.0, 0],
+      organelleGenomeAnchors[1],
       "线粒体 · 线粒体基因组",
       "Mitochondrion · mitochondrial genome",
       10,
     ),
-    k.label([-0.35, 0.72, 0.1], "胞质核糖体", "Cytosolic ribosomes", 7),
-    k.label([1.12, 2.7, 0.1], "TOC / TIC", "TOC / TIC", 6),
-    k.label([1.12, -2.7, 0.1], "TOM / TIM", "TOM / TIM", 6),
+    k.label(
+      ribosomes[0].children[0].getWorldPosition(new THREE.Vector3()).toArray(),
+      "胞质核糖体",
+      "Cytosolic ribosome",
+      7,
+    ),
+    k.label(importPores[0].position.toArray(), "TOC / TIC", "TOC / TIC", 6),
+    k.label(importPores[1].position.toArray(), "TOM / TIM", "TOM / TIM", 6),
     k.label(
       [2.05, 0.62, 0.2],
       "核编码 → 基质导入",
@@ -308,6 +322,12 @@ function create() {
       "拟南芥叶肉细胞 · 局部切面",
       "Arabidopsis mesophyll · cutaways",
       2,
+    ),
+    k.label(
+      ribosomes[1].children[0].getWorldPosition(new THREE.Vector3()).toArray(),
+      "胞质核糖体",
+      "Cytosolic ribosome",
+      7,
     ),
   ];
   let progress = 0,
@@ -369,6 +389,8 @@ function create() {
       );
       chains[i].mesh.visible = progress > 0.345;
       chains[i].update((s, out) => chainSample(s, out, i));
+      chainSample(0.5, routeScratch, i).toArray(labels[6 + i].position);
+      labels[6 + i].active = chains[i].mesh.visible;
       chainSample(1, tags[i].position, i);
       tags[i].visible = importEnabled && progress > 0.345 && progress < 0.91;
       tags[i].position.y -= 0.35 * ease(progress, 0.87, 0.91);

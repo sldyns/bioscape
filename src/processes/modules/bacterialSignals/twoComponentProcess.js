@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { helix, bilayer, transcriptionDetail } from "./structuralDetails.js";
+import { labelAnchors } from "./labelAnchors.js";
 export default {
   id: "twoComponent",
   title: b("双组分信号：NarX–NarL", "Two-component signaling: NarX–NarL"),
@@ -103,6 +104,7 @@ export default {
       const x = -2.4 + s * 0.55,
         g = new THREE.Group();
       group.add(g);
+      g.name = `NarX-protomer-${s}`;
       g.position.x = x;
       subunits.push(g);
       // Two membrane helices per protomer connect the periplasmic sensor to the cytoplasmic kinase.
@@ -110,7 +112,7 @@ export default {
         helix(k, g, [dx, 0.32, 0], [dx, 1.35, 0], 0.056, 9, 0.026, sensor);
         helix(k, g, [dx, 1.34, 0], [dx, 1.92, 0], 0.052, 5, 0.025, sensor);
       }
-      k.tube(
+      const sensorLoop = k.tube(
         [
           [-0.1, 1.91, 0],
           [0, 2, 0.02],
@@ -120,8 +122,9 @@ export default {
         pale,
         g,
       );
-      for (const dx of [-0.1, 0.1])
-        helix(
+      sensorLoop.name = `NarX-sensor-loop-${s}`;
+      for (const dx of [-0.1, 0.1]) {
+        const scaffold = helix(
           k,
           g,
           [dx, -0.68, -0.02],
@@ -131,6 +134,8 @@ export default {
           0.023,
           sensor,
         );
+        if (s === 0 && dx === 0.1) scaffold.name = "NarX-His-bearing-helix";
+      }
       const side = s === 0 ? -1 : 1;
       k.ball([side * 0.34, -0.71, -0.08], [0.23, 0.25, 0.17], sensor, g);
       // ATP-binding lobe frames an exposed nucleotide pocket.
@@ -166,6 +171,7 @@ export default {
 
     // A nitrate icon has trigonal geometry, distinct from the phosphate marker.
     const nitrate = new THREE.Group();
+    nitrate.name = "periplasmic-nitrate";
     group.add(nitrate);
     k.ball([0, 0, 0], 0.095, dnaMat, nitrate);
     for (let i = 0; i < 3; i++) {
@@ -183,7 +189,28 @@ export default {
     atp.children[3].name = "ATP-terminal-phosphate";
     atp.position.set(-3.5, -0.7, 0.2);
     const phosphate = k.ball([-2.15, -0.4, 0.35], 0.105, gold);
-    const his = k.ring([-2.12, -0.4, 0.3], 0.14, 0.025, gold);
+    // The donor residue is part of the first protomer. Its schematic side
+    // chain starts on the actual helix centerline and reaches the active site.
+    const donorProtomer = subunits[0],
+      scaffold = group.getObjectByName("NarX-His-bearing-helix"),
+      residueAnchor = scaffold.geometry.parameters.path.getPoint(0.5),
+      residueTip = [0.28, -0.3, 0.3];
+    const hisSidechain = k.tube(
+      [
+        residueAnchor.toArray(),
+        [0.13, -0.27, 0.08],
+        [0.22, -0.3, 0.17],
+        residueTip,
+      ],
+      0.03,
+      sensor,
+      donorProtomer,
+    );
+    hisSidechain.name = "NarX-His-sidechain";
+    const donorAtom = k.ball(residueTip, 0.04, sensor, donorProtomer);
+    donorAtom.name = "NarX-His-donor-atom";
+    const his = k.ring(residueTip, 0.14, 0.025, gold, donorProtomer);
+    const donor = new THREE.Vector3();
     phosphate.name = "transferred-phosphoryl-group";
     his.name = "NarX-His-site";
     const narL = new THREE.Group();
@@ -216,7 +243,7 @@ export default {
     const promoter = k.ring([0.78, -2, 0.02], 0.27, 0.018, gold);
     promoter.rotation.y = Math.PI / 2;
     const labels = [
-      k.label([0.5, 2.45, 0], "周质 · 硝酸盐", "Periplasm · nitrate", 2),
+      k.label([0.5, 2.45, 0], "周质（区域）", "Periplasm (region)", 2),
       k.label([2.45, 1.35, 0], "内膜", "Inner membrane", 2),
       k.label([-2.15, 2.24, 0], "NarX 感受域", "NarX sensor", 2),
       k.label([-2.25, -1.28, 0], "NarX · His", "NarX · His", 2),
@@ -224,10 +251,16 @@ export default {
       k.label([0.5, -0.3, 0.2], "NarL · Asp", "NarL · Asp", 2),
       k.label([2.3, -2.46, 0], "narGHJI · DNA", "narGHJI · DNA", 2),
       k.label([3.0, -0.56, 0.3], "RNA · 5′→3′", "RNA · 5′→3′", 1),
-      k.label([3.05, 0.35, 0], "胞质", "Cytoplasm", 1),
+      k.label([3.05, 0.35, 0], "胞质（区域）", "Cytoplasm (region)", 1),
       k.label([-0.73, -2.28, 0], "5′ / 3′", "5′ / 3′", 0),
       k.label([3.64, -2.23, 0], "3′ / 5′", "3′ / 5′", 0),
+      k.label([0, 0, 0], "硝酸盐", "Nitrate", 1),
     ];
+    const anchors = labelAnchors(labels),
+      headgroups = group.getObjectByName("paired-phospholipid-headgroups"),
+      sensorLoop = group.getObjectByName("NarX-sensor-loop-0"),
+      dnaRail = transcription.group.getObjectByName("DNA-0-backbone"),
+      rna = transcription.group.getObjectByName("RNA-backbone");
     function update(value, parameters = {}) {
       const p = clamp(value),
         present = parameters.nitrate !== "absent";
@@ -239,21 +272,22 @@ export default {
       nitrate.position.set(-0.75 - 1.375 * bind, 2.2 - 0.53 * bind, 0.18);
       subunits[0].position.y = -0.1 * bind;
       subunits[1].position.y = 0.04 * bind;
+      donor.copy(his.position).add(donorProtomer.position);
       atp.visible = true;
       atp.children[3].visible = !(present && p >= 0.35);
       const atpApproach = present ? ease(p, 0.3, 0.35) : 0;
       // ATP gamma marker meets His before its mutually exclusive handoff.
       atp.position.set(
-        -3.5 + 0.79 * atpApproach,
-        -0.7 + 0.3 * atpApproach,
-        0.2 + 0.1 * atpApproach,
+        -3.5 + (donor.x - 0.59 + 3.5) * atpApproach,
+        -0.7 + (donor.y + 0.7) * atpApproach,
+        0.2 + (donor.z - 0.2) * atpApproach,
       );
       his.visible = present && p >= 0.35 && p < 0.62;
       asp.visible = present && p >= 0.46;
       narL.position.set(
-        (0.4 - 2.47 * encounter) * (1 - dock) + 0.78 * dock,
-        (-0.6 + 0.2 * encounter) * (1 - dock) - 1.59 * dock,
-        (0.24 + 0.36 * encounter) * (1 - dock) + 0.24 * dock,
+        (0.4 + (donor.x + 0.05 - 0.4) * encounter) * (1 - dock) + 0.78 * dock,
+        (-0.6 + (donor.y + 0.6) * encounter) * (1 - dock) - 1.59 * dock,
+        (0.24 + (donor.z + 0.3 - 0.24) * encounter) * (1 - dock) + 0.24 * dock,
       );
       // Face the Asp pocket toward the NarX His, at a 0.117-unit site separation.
       narL.rotation.y = Math.PI * encounter * (1 - dock);
@@ -264,7 +298,7 @@ export default {
       phosphate.visible = present && p >= 0.35;
       // One conserved marker crosses only the contacting active-site gap, then
       // follows NarL's Asp through rotation and departure; no free courier.
-      phosphate.position.copy(his.position).lerp(acceptor, transfer);
+      phosphate.position.copy(donor).lerp(acceptor, transfer);
       const extension = present ? ease(p, 0.8, 1) : 0;
       transcription.update(
         1.72 + 0.66 * extension,
@@ -272,8 +306,26 @@ export default {
         1.65 * extension,
         present && p >= 0.79,
       );
-      labels[5].position = [narL.position.x, narL.position.y + 0.43, 0.5];
-      labels[7].active = present && p > 0.82;
+      // Compartment labels explicitly describe regions; molecular labels track
+      // actual rendered surfaces, including the rotated receiver and RNA tip.
+      anchors[0].local(group, 0.5, 2.45, 0);
+      anchors[1].surface(headgroups, 0, Math.floor(headgroups.count * 0.8));
+      anchors[2].surface(sensorLoop, 48 * 9);
+      anchors[3].surface(donorAtom);
+      anchors[4].surface(atp.children[0]);
+      labels[4].text.zh = labels[4].text.en = atp.children[3].visible
+        ? "ATP"
+        : "ADP";
+      anchors[5].surface(asp.visible ? asp : narL.children[0]);
+      labels[5].text.zh = labels[5].text.en = asp.visible
+        ? "NarL · Asp"
+        : "NarL";
+      anchors[6].surface(dnaRail, 0, 84);
+      anchors[7].local(rna, 0, 0.5, 0, rna.count - 1);
+      anchors[8].local(group, 3.05, 0.35, 0);
+      anchors[9].local(dnaRail, 0, -0.5, 0, 0);
+      anchors[10].local(dnaRail, 0, 0.5, 0, dnaRail.count - 1);
+      anchors[11].surface(nitrate.children[0]);
       group.userData = {
         species: "Escherichia coli",
         oxygen: "anaerobic; active FNR assumed",

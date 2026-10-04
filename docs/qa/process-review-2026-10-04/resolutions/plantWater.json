@@ -1,0 +1,170 @@
+{
+  "group": "plantWater",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-plantWater-01",
+      "status": "fixed",
+      "changes": "Bath-gap marker centers now derive from the current complete outer-leaflet head silhouette and fixed inner wall. Their full disks stay extracellular with a positive margin at every visible time.",
+      "files": [
+        "src/processes/modules/plantWater/plasmolysisProcess.js",
+        "src/processes/modules/plantWater/waterFlux.test.mjs",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "401 progress samples for each bath condition compare actual instanced membrane-head world bounds and wall vertex bounds to full marker radius; minimum clearance 0.1301.",
+        "Negative control restores original x=+/-2.05 at p=0.325 and fails the same actual geometry check."
+      ],
+      "limitations": [
+        "This checks the explicitly drawn cut-face XY compartment boundary. Raised display markers are not literal 3D solvated molecules."
+      ]
+    },
+    {
+      "issueId": "20261004-plantWater-02",
+      "status": "fixed",
+      "changes": "Ion species/color is independent of guard-cell side. Both guard cells now receive and release potassium and counter-anion tracer cohorts. Four bilingual legend entries identify K+, counter-anions, water and H+.",
+      "files": [
+        "src/processes/modules/plantWater/stomataProcess.js",
+        "src/processes/modules/plantWater/waterFlux.test.mjs",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "Actual visible mesh colors and positions contain both species on both sides during inward and ABA outward phases; small forward-step displacement checks verify transport directions.",
+        "Negative control segregates colors by side again and fails."
+      ],
+      "limitations": [
+        "Tracer counts remain illustrative, without stoichiometric charge or kinetic claims. Signal/channel detail remains intentionally schematic."
+      ]
+    },
+    {
+      "issueId": "20261004-plantWater-03",
+      "status": "fixed",
+      "changes": "The liquid delivery branch exits through an actual membrane-backed lateral pit and reaches a curved wet film on the lower upper-right mesophyll wall. All 15 prebuilt vapor paths originate on that wall, then cross air space and the stomatal opening.",
+      "files": [
+        "src/processes/modules/plantWater/plantLongDistanceTransportProcess.js",
+        "src/processes/modules/plantWater/waterFlux.test.mjs",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "Exact point-to-triangle checks: every vapor birth intersects the wet film and is within 0.0024 of the actual mesophyll wall. Every original empty-air birth fails attachment.",
+        "Actual final liquid-delivery mesh ring reaches the wet wall; sampled branch centerline through the vessel-wall radial band has minimum radius-aware clearance 0.0289 from lignified wall triangles.",
+        "Both stomatal conditions sampled over 181 progress points: finite vapor spheres remain exterior to the guard-cell volumes and clear actual guard-cell triangles by at least 0.0099 while crossing the aperture."
+      ],
+      "limitations": [
+        "The pathway is a compressed apoplastic tissue schematic, not a full hydraulic reconstruction. Radius is narrowed at the existing pit opening to preserve its topology; vessel walls, pits, perforation rims, chloroplasts and other scene detail remain.",
+        "Normal-speed rendered legibility is pending root review."
+      ]
+    },
+    {
+      "issueId": "20261004-plantWater-04",
+      "status": "fixed",
+      "changes": "Removed the hard closure<0.7 visibility cutoff. Independently prebuilt tracer materials continuously fade the extra cohort as the integrated flow slows. Route birth/exit fades hide modulo recycling seams.",
+      "files": [
+        "src/processes/modules/plantWater/plantLongDistanceTransportProcess.js",
+        "src/processes/modules/plantWater/waterFlux.test.mjs",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "Actual visible/material-opacity weights sampled immediately either side of the former cutoff are continuous; the original binary gate has a unit jump and fails the negative control.",
+        "2,001 progress samples in both conditions keep opacity finite/bounded and change gradually; every open-flow recycling seam fades to zero on both sides.",
+        "Irregular seeks reproduce transforms, visibility and opacities exactly; smoke confirms stable nodes/geometries/material identities, finite buffers and bounds. All independently cloned tracer materials remain referenced in the scene for disposal."
+      ],
+      "limitations": [
+        "Rendered continuous playback remains root-owned. Other finite-path water/ion flow markers were not changed without a confirmed rendered defect."
+      ]
+    },
+    {
+      "issueId": "20261004-plantWater-05",
+      "status": "fixed",
+      "changes": "Guard-cell, thick-wall and vacuolar-water leaders now follow actual current mesh vertices. Ion annotation explicitly names a membrane flux region and is active only while ion tracers are shown. Light/ABA anchors and visibility follow their actual icons.",
+      "files": [
+        "src/processes/modules/plantWater/stomataProcess.js",
+        "src/processes/modules/plantWater/labelAnchors.js",
+        "src/processes/modules/plantWater/labelAnchors.test.mjs",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "Actual triangle-surface contact checked for deforming guard body, thick wall and vacuole over 14 stage/boundary/intermediate samples in both conditions.",
+        "Ion label visibility equals actual ion-tracer visibility; icon anchors and visibility equal their objects.",
+        "Original thick-wall offset is a negative control and fails the surface-contact invariant."
+      ],
+      "limitations": [
+        "Post-repair label layout still requires root native recapture; this reviewer did not operate a browser."
+      ]
+    },
+    {
+      "issueId": "20261004-plantWater-06",
+      "status": "fixed",
+      "changes": "Root-region leader targets a root-cell face; continuous-liquid leader targets the actual column surface; wet-wall leader targets a rendered wet-film vertex. Outlet region tracks the midpoint of the actual guard-cell pair. Air-space remains explicitly a region annotation.",
+      "files": [
+        "src/processes/modules/plantWater/plantLongDistanceTransportProcess.js",
+        "src/processes/modules/plantWater/labelAnchors.js",
+        "src/processes/modules/plantWater/labelAnchors.test.mjs",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "Actual triangle-surface contact for root tissue, liquid and wet film in both conditions over 14 progress inputs.",
+        "Outlet region stays between the guard cells and outside their volumes; old liquid and wet-wall offsets fail exact surface-contact checks."
+      ],
+      "limitations": [
+        "Region annotations intentionally name areas, not individual particles. Root must confirm post-repair label layout at native resolution."
+      ]
+    },
+    {
+      "issueId": "20261004-plantWater-07",
+      "status": "fixed",
+      "changes": "Cortical-plastid leader follows the real top surface of a representative instanced granum through the whole plastid transform. Periclinal and anticlinal region anchors lie on actual floor/wall planes. Vacuole anchor lies on its actual ellipsoid, and light-direction anchor follows a persistent arrow.",
+      "files": [
+        "src/processes/modules/plantWater/chloroplastMovementProcess.js",
+        "src/processes/modules/plantWater/labelAnchors.js",
+        "src/processes/modules/plantWater/labelAnchors.test.mjs",
+        "src/processes/modules/plantWater/science.test.mjs"
+      ],
+      "verification": [
+        "Actual instanced granum triangle contact checked across both genotypes, including accumulation, corner transit and avoidance; the label moves with the organelle.",
+        "Floor, wall and vacuole surface contact; arrow tracking; original fixed cortical offset fails the same attachment check.",
+        "All label positions/active states reproduce exactly under repeated irregular seeks. Existing complete-plastid containment/resource regression remains unchanged and passes."
+      ],
+      "limitations": [
+        "The chloroplast mechanism and meshes are unchanged; only annotation anchors change. Post-repair label screen layout awaits root recapture."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/plantWater/science.test.mjs — PASS (includes new waterFlux.test.mjs)",
+    "node src/processes/modules/plantWater/smoke.mjs — PASS for all four models and both conditions",
+    "git diff --check -- src/processes/modules/plantWater — PASS",
+    "npx prettier --write (only the five changed owned JS/MJS files) — PASS",
+    "node src/processes/modules/plantWater/labelAnchors.test.mjs — PASS",
+    "node src/processes/modules/plantWater/science.test.mjs after rendered-label repairs — PASS",
+    "node src/processes/modules/plantWater/smoke.mjs after rendered-label repairs — PASS",
+    "npx prettier --write (six owned files touched by rendered-label repair) — PASS"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.nature.com/articles/nature07226",
+      "title": "Wheeler and Stroock — The transpiration of water at negative pressures in a synthetic tree",
+      "supports": "Primary experiment opened in Phase A: a continuous liquid pathway is driven by evaporation at a liquid/air interface; source explicitly concerns synthetic-tree physics."
+    }
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/plantWater/science-phase-b.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantWater/smoke-phase-b.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantWater/repair-discoveries.json",
+    "docs/qa/process-review-2026-10-04/evidence/plantWater/science-rendered-labels.log",
+    "docs/qa/process-review-2026-10-04/evidence/plantWater/smoke-rendered-labels.log",
+    "docs/qa/process-review-2026-10-04/resolutions/plantWater-rendered.md"
+  ],
+  "remainingLimits": [
+    "Root-supplied contact sheets cover all 7 captured frames per process; four native 960×640 originals were additionally inspected. No crop or loss of biological detail found.",
+    "The original four fixes are visible in those supplied frames. Three additional annotation issues were discovered and fixed afterward; their final native layout requires root recapture.",
+    "No browser operation or full-workspace suite was run by this reviewer; root owns integration and continuous-playback acceptance."
+  ],
+  "mechanismsUnchangedDuringRenderedRepair": [
+    "plasmolysis",
+    "stomata",
+    "plantLongDistanceTransport",
+    "chloroplastMovement"
+  ]
+}

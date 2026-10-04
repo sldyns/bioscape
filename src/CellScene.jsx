@@ -9,6 +9,7 @@ import { disposeCell } from "./scene/cellTransfer";
 import { makePresentation } from "./scene/presentation";
 import { createPresentationAppearance } from "./scene/presentationAppearance";
 import { explodedFitDistance } from "./scene/viewFraming";
+import { createFramingDistanceCache } from "./scene/framingDistanceCache.js";
 import { supportsExplosion } from "./scene/viewCapabilities";
 import { getNode } from "./hierarchy";
 import {
@@ -218,7 +219,7 @@ export default function CellScene({
       new THREE.Vector3(),
       new THREE.Vector3(),
     ];
-    const distance = (
+    const computeDistance = (
       preserveOrientation = false,
       viewCamera = camera,
       separation = null,
@@ -284,6 +285,25 @@ export default function CellScene({
         ),
       );
     };
+    const framingDistance = createFramingDistanceCache(computeDistance);
+    const distance = (
+      preserveOrientation = false,
+      viewCamera = camera,
+      separation = null,
+    ) =>
+      framingDistance.get(
+        {
+          presentation: current,
+          nodeId: live.current.nodeId,
+          mode: live.current.mode,
+          explode: live.current.explode,
+          camera,
+          minDistance: controls.minDistance,
+        },
+        preserveOrientation,
+        viewCamera,
+        separation,
+      );
     const desiredCamera = new THREE.Vector3(0.5, 0.65, 11.4);
     let fitting = false;
     let suppressViewChange = false;
@@ -406,6 +426,7 @@ export default function CellScene({
       if (current) scene.remove(current.root);
       if (!cache.has(id)) cache.set(id, makePresentation(model, id, special));
       current = cache.get(id);
+      framingDistance.invalidate();
       cache.delete(id);
       cache.set(id, current);
       while (cache.size > 8) {
@@ -1172,6 +1193,7 @@ export default function CellScene({
       destroyed = true;
       publishReady(null);
       capture.dispose();
+      framingDistance.invalidate();
       generation++;
       cellLoader?.dispose();
       detailLoader.dispose();

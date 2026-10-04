@@ -175,10 +175,14 @@ export default {
     k.group.add(anchors);
     const waterMat = k.material("#80a9b5");
     const soluteMat = k.material("#b7a679");
-    const water = Array.from({ length: 20 }, (_, i) => ({
-      mesh: k.ball([0, 0, 0], 0.07, waterMat),
-      angle: (i * Math.PI * 2) / 20,
-    }));
+    const water = Array.from({ length: 20 }, (_, i) => {
+      const tracerMaterial = waterMat.clone();
+      tracerMaterial.transparent = true;
+      tracerMaterial.depthWrite = false;
+      const mesh = k.ball([0, 0, 0], 0.07, tracerMaterial);
+      mesh.name = `osmotic-water-${i}`;
+      return { mesh, angle: (i * Math.PI * 2) / 20 };
+    });
     const solutes = Array.from({ length: 30 }, (_, i) => {
       const a = i * 2.39996,
         r = 2.8 + seeded(i, 13) * 0.6;
@@ -204,6 +208,18 @@ export default {
     }
     const into = arrow(-3.1, 1),
       out = arrow(2.3, 1);
+    into.name = "water-in-arrow";
+    out.name = "water-out-arrow";
+    // Choose a junction inside the bounded front window once; its position
+    // is read again from the deformed geometry on every seek.
+    const cortexLabelNode = cortexNodes.reduce((best, i) => {
+      const score = (j) =>
+        (base[j * 3] - 0.25) ** 2 +
+        (base[j * 3 + 1] - 0.5) ** 2 +
+        (base[j * 3 + 2] - 0.8) ** 2;
+      return score(i) < score(best) ? i : best;
+    });
+    const membraneLabelVertex = 25 * 65 + 18;
     const labels = [
       k.label(
         [-2.9, 1.7, 0],
@@ -333,6 +349,8 @@ export default {
         mesh.computeBoundingBox();
         mesh.computeBoundingSphere();
       }
+      point(cortexLabelNode, ca).toArray(labels[5].position);
+      point(membraneLabelVertex, ca, 1).toArray(labels[1].position);
       geometry.attributes.position.needsUpdate = true;
       geometry.computeVertexNormals();
       geometry.computeBoundingBox();
@@ -353,6 +371,10 @@ export default {
               : i % 5 === 0;
         const t = (p * 2.2 + seeded(i, 23)) % 1;
         const radius = inward ? mix(3.3, 1.1, t) : mix(1.1, 3.3, t);
+        // Fade only at reservoir endpoints, away from the membrane crossing.
+        // Both sides of the periodic reset are transparent: no visible tracer
+        // teleports from extracellular fluid into the cell or vice versa.
+        mesh.material.opacity = ease(t, 0, 0.1) * (1 - ease(t, 0.9, 1));
         mesh.position.set(
           Math.cos(angle) * radius,
           0.05 + Math.sin(angle * 3) * 0.15,
@@ -366,6 +388,15 @@ export default {
       out.scale.setScalar(
         mode === "hypotonic" ? 0.6 : mode === "hypertonic" ? 1.3 : 1,
       );
+      for (const [arrowGroup, label] of [
+        [into, labels[3]],
+        [out, labels[4]],
+      ]) {
+        ca.copy(arrowGroup.children[1].position)
+          .multiply(arrowGroup.scale)
+          .add(arrowGroup.position)
+          .toArray(label.position);
+      }
       labels[2].text =
         mode === "hypotonic"
           ? b("低渗 · 净吸水", "Hypotonic · net water gain")

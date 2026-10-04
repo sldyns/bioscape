@@ -1,0 +1,40 @@
+{
+  "baseline": "/tmp/bioscape-performance-20261004-baseline",
+  "kind": "byte-equivalence-and-correctness-only",
+  "sequence": {
+    "uniformSamples": 121,
+    "boundarySamples": 75,
+    "nonSequentialAndInvalidSamples": 14,
+    "totalPerModel": 210
+  },
+  "comparisons": "All geometry attributes and indices, local/world transforms, instance matrices, geometry/instance bounds, visibility, materials, userData and labels; UUIDs and buffer upload versions excluded",
+  "models": [
+    {
+      "id": "endocytosis",
+      "comparedStates": 210,
+      "exact": true,
+      "labelsExact": true,
+      "cameraExact": true,
+      "candidateProfileBuilds": 114,
+      "baselineProfileBuilds": 630
+    },
+    {
+      "id": "autophagy",
+      "comparedStates": 210,
+      "exact": true,
+      "labelsExact": true,
+      "cameraExact": true,
+      "candidateProfileBuilds": 324,
+      "baselineProfileBuilds": 1050
+    }
+  ],
+  "sourceHashes": {
+    "baseline/membranes.js": "cbd58fc7e6b75615c45e0c6d00486119db5d0ae388ce3d3ef845f0d5b3db8728",
+    "candidate/membranes.js": "bfa0112ac6f905bdbc5704363d5ee6ac36c8fe16f2c3b7da2092d5ddf0bba9eb",
+    "baseline/endocytosisProcess.js": "70b8c1345ffa382a5d22f25f930eeb8c912eb6071d845429a5b935dab69c83c6",
+    "candidate/endocytosisProcess.js": "70b8c1345ffa382a5d22f25f930eeb8c912eb6071d845429a5b935dab69c83c6",
+    "baseline/autophagyProcess.js": "46bac7e45a2ada6536feed4d5b37643ee9f1271f9646c51b68731d7388e068df",
+    "candidate/autophagyProcess.js": "46bac7e45a2ada6536feed4d5b37643ee9f1271f9646c51b68731d7388e068df"
+  },
+  "passed": true
+}

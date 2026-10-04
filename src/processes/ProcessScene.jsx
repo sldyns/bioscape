@@ -5,6 +5,7 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { visibleProcessBounds } from "./sceneBounds.js";
 import { placeLabel } from "./labelLayout.js";
 import { prepareAnnotationLabels } from "./annotationDom.js";
+import { createProcessPose } from "./playbackClock.js";
 import {
   applySceneView,
   normalizeSceneView,
@@ -42,6 +43,7 @@ export default function ProcessScene({
   rootId,
   parameters,
   progress,
+  progressSource,
   lang,
   resetKey = 0,
   zoom = { direction: null, key: 0 },
@@ -56,8 +58,10 @@ export default function ProcessScene({
   const live = useRef();
   live.current = {
     progress,
+    progressSource,
     lang,
     parameters,
+    annotations,
     onSceneReady,
     initialView,
     onViewChange,
@@ -94,8 +98,11 @@ export default function ProcessScene({
       api,
       suppressViewChange = false;
     let lastView = null;
-    let appliedProgress = clampProgress(live.current.progress);
-    let appliedParameters = live.current.parameters;
+    const readProgress = () =>
+      clampProgress(
+        live.current.progressSource?.current ?? live.current.progress,
+      );
+    let pose;
     const view = () => readSceneView(camera, controls.target, fittedDistance);
     const orbitChanged = () => {
       requestRender();
@@ -122,7 +129,7 @@ export default function ProcessScene({
       capture?.dispose();
       cancelAnimationFrame(frame);
       observer?.disconnect();
-      document.fonts?.removeEventListener("loadingdone", fontsChanged);
+      document.fonts?.removeEventListener("loadingdone", invalidateAnnotations);
       controls?.dispose();
       renderer?.domElement.removeEventListener(
         "webglcontextlost",
@@ -147,7 +154,7 @@ export default function ProcessScene({
       console.error(
         "Process scene failure",
         definition.id,
-        appliedProgress,
+        pose?.progress ?? readProgress(),
         cause,
       );
       dispose();
@@ -168,6 +175,7 @@ export default function ProcessScene({
       if (!disposed) setAttempt((value) => value + 1);
     };
     const projectLabels = () => {
+      if (!live.current.annotations) return;
       const occupied = [];
       const projected = new THREE.Vector3();
       prepareAnnotationLabels(
@@ -212,7 +220,7 @@ export default function ProcessScene({
         item.line.setAttribute("y2", placement.y);
       }
     };
-    const fontsChanged = () => {
+    const invalidateAnnotations = () => {
       for (const item of labelItems) item.measuredKey = null;
       requestRender();
     };
@@ -226,6 +234,8 @@ export default function ProcessScene({
       frame = 0;
       if (disposed || contextLost) return;
       try {
+        if (pose?.apply(readProgress(), live.current.parameters))
+          matricesDirty = true;
         // OrbitControls emits change only while damping still moves the camera.
         // The final unchanged frame ends the loop; paused scenes stay idle.
         controls.update();
@@ -290,7 +300,7 @@ export default function ProcessScene({
 
       model = definition.create({ rootId });
       scene.add(model.group);
-      const currentProgress = clampProgress(live.current.progress);
+      const currentProgress = readProgress();
       const sampleProgress = new Set([
         ...Array.from({ length: 9 }, (_, index) => index / 8),
         ...(definition.stages ?? []).map((stage) => clampProgress(stage.at)),
@@ -302,6 +312,11 @@ export default function ProcessScene({
         bounds.union(visibleProcessBounds(model.group, sampleBounds));
       }
       model.update(currentProgress, live.current.parameters);
+      pose = createProcessPose(
+        (value, parameters) => model.update(value, parameters),
+        currentProgress,
+        live.current.parameters,
+      );
       // Sample the full animation once, then keep its framing fixed while
       // scrubbing. Unused space in a generic envelope should not shrink models.
       if (
@@ -491,10 +506,16 @@ export default function ProcessScene({
         },
         getView: view,
         setView,
+        requestRender,
+        getProgress: () => pose.progress,
         releaseCapture: () => capture.dispose(),
         captureFrame(options = {}) {
           if (!api.ready)
             throw new Error("The process scene is not ready to capture.");
+          if (pose.apply(readProgress(), live.current.parameters))
+            matricesDirty = true;
+          const appliedProgress = pose.progress;
+          const appliedParameters = pose.parameters;
           const seek =
             Number.isFinite(options.progress) &&
             clampProgress(options.progress) !== appliedProgress;
@@ -514,23 +535,12 @@ export default function ProcessScene({
       if (live.current.initialView) setView(live.current.initialView);
       observer = new ResizeObserver(() => resize());
       observer.observe(element);
-      document.fonts?.addEventListener("loadingdone", fontsChanged);
+      document.fonts?.addEventListener("loadingdone", invalidateAnnotations);
       engine.current = {
         api,
         dispose,
-        update(value) {
-          if (disposed) return;
-          try {
-            appliedProgress = clampProgress(value);
-            appliedParameters = live.current.parameters;
-            model.update(appliedProgress, appliedParameters);
-            matricesDirty = true;
-            requestRender();
-          } catch (cause) {
-            fail(cause);
-          }
-        },
         requestRender,
+        invalidateAnnotations,
         reset() {
           if (disposed) return;
           controls.reset();
@@ -570,8 +580,8 @@ export default function ProcessScene({
     return dispose;
   }, [definition, rootId, attempt]);
 
-  useEffect(() => engine.current?.update(progress), [progress, parameters]);
-  useEffect(() => engine.current?.requestRender(), [lang]);
+  useEffect(() => engine.current?.requestRender(), [progress, parameters]);
+  useEffect(() => engine.current?.invalidateAnnotations(), [lang, annotations]);
   useEffect(() => {
     if (lastReset.current !== resetKey) engine.current?.reset();
     lastReset.current = resetKey;

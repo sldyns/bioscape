@@ -1,0 +1,286 @@
+{
+  "group": "bacterialSignals",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "reviewer": "review_bacterial_signals",
+  "phase": "A",
+  "models": [
+    {
+      "id": "chemotaxis",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "E. coli peritrichous run/tumble chemotaxis; environment=gradient or uniform, default gradient; no root-specific text or geometry overrides.",
+      "checks": [
+        "Read both languages in entries, introduction, all six stages, control options, labels and sources.",
+        "Read all geometry and update branches over progress 0-1, including three uniform tumble intervals and one gradient interval, phase integration, visibility thresholds, modulo recycling and terminal track state.",
+        "Existing science regression passed actual handedness, motor reversal/recovery, hook joins and segment joins; independent pitch measurement identifies an uncovered defect.",
+        "Ran independent 101-point finite-buffer/resource checks per option and irregular seeks .713 -> .99 -> .001 -> .457 -> .713; all deterministic and inventory-stable.",
+        "The illustrative track intentionally shows different run lengths and does not claim commanded navigation; adaptation omission is explicitly named in both languages."
+      ],
+      "sources": [
+        {
+          "url": "https://journals.asm.org/doi/10.1128/jb.01501-06",
+          "title": "On Torque and Tumbling in Swimming Escherichia coli",
+          "supports": "Opened publisher full text. Introduction and Fig. 7 discussion distinguish CCW normal left-handed filaments from CW right-handed semicoiled filaments. Semicoiled has approximately half the normal pitch at the same amplitude; a reversed filament can leave and then rejoin the bundle."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-bacterialSignals-01",
+          "severity": "P1",
+          "kind": "scientific_geometry",
+          "file": "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+          "location": "point(), lines 318-340; stage at 0.75, lines 61-66",
+          "evidence": "The selected filament uses twist = 36 - 60 * deformation. Distal actual mesh endpoints give normal pitch 0.460132 at p=0.70 and the labeled semicoiled pitch 0.690198 at p=0.79; ratio 1.500000, with unchanged radius 0.12. See evidence/bacterialSignals/flagellar-pitch.json.",
+          "whyWrong": "The named normal-to-semicoiled transition gets handedness right but changes pitch in the wrong direction. The opened Darnton experiment describes the semicoiled form as having about half the normal pitch, whereas the scene makes it 50% longer. This is a concrete morphology mismatch, independent of molecular scale.",
+          "fix": "Rebuild the selected filament polymorphic interpolation so the final right-handed semicoiled state has shorter pitch at similar radius, while preserving hooks, complete filament continuity, CW reversal and CCW recovery.",
+          "verification": "Measure pitch from actual transformed segment endpoints in all tumble intervals of both conditions; expect semicoiled/normal approximately 0.5, correct torsion sign, connected hooks and no boundary jumps.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/10.1128/jb.01501-06"
+          ]
+        },
+        {
+          "issueId": "20261004-bacterialSignals-02",
+          "severity": "P2",
+          "kind": "visible_motion_discontinuity",
+          "file": "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+          "location": "update(), lines 364-367",
+          "evidence": "Each visible CheY-P sphere uses q=(p*2+i*0.19)%1 and resets from about (-0.70,-0.48,0.6) to (0.65,-0.10,0.6). At gradient p=0.5 the same visible sphere jumps 1.402462 units over progress +/-1e-7; 16 visible reset events occur across both options.",
+          "whyWrong": "A continuously visible, fully opaque representative signaling particle teleports across the exposed cell. Repeated schematic flow is allowed, but the on-screen discontinuity is not concealed by a reaction, occlusion, or an exit/reentry transition.",
+          "fix": "Keep representative flow but make its recycling visually continuous, e.g. a continuous curved return route or explicit smooth turnover/appearance at the reaction sites. Avoid hiding the entire process or changing the CheY-P concentration branch.",
+          "verification": "Probe every modulus boundary and ordinary frames in both options. A particle may relocate only when smoothly negligible/invisible; otherwise adjacent visible world positions must converge as delta progress tends to zero.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/10.1128/jb.01501-06"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": [
+          "All interval endpoints and existing hook/segment continuity regression",
+          "Every internal visible CheY-P modulus wrap",
+          "Full code review plus 101 progress samples for both controls"
+        ],
+        "findings": [
+          "20261004-bacterialSignals-02"
+        ],
+        "limits": [
+          "Motor/filament geometry is continuous at sampled transitions, but pitch is biologically wrong.",
+          "Track heading changes at explicit run boundaries are an intentional schematic turn, not reported as a teleport.",
+          "CheY concentration markers and enzyme state are qualitative; a detailed enzyme-contact cycle is omitted."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered acceptance was performed by this reviewer; root must inspect playback, occlusion and label clarity.",
+        "Shapes and time courses are schematic; no claim of atomistic dynamics, exact kinetics or absolute molecular stoichiometry is made.",
+        "Source-backed morphology and sign checks do not verify physiological flagellar contour mechanics or real swimming kinematics."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "twoComponent",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Anaerobic E. coli NarX-NarL branch with active FNR assumed; nitrate present/absent; NarQ/NarP and basal activity explicitly omitted rather than set biologically to zero.",
+      "checks": [
+        "Read both languages in catalog/module metadata, all stages, controls, labels, molecular names and compartment labels.",
+        "Traced periplasmic ligand sensor, two transmembrane helices per protomer, cytoplasmic kinase, ATP/ADP, donor His, receiver Asp, DNA docking and single nascent RNA.",
+        "Existing direct-transfer and phosphate-conservation checks pass; independently measured actual NarX triangle-surface attachment rather than marker-to-marker proxies.",
+        "Reviewed every threshold .10/.27/.30/.35/.36/.46/.62/.65/.78/.79/.80/.85/1 and present/absent branches; no reset loop exists.",
+        "Existing DNA handedness and single RNA regression passes; 101-point option sweeps remain finite, deterministic and inventory-stable."
+      ],
+      "sources": [
+        {
+          "url": "https://journals.asm.org/doi/10.1128/jb.181.17.5309-5316.1999",
+          "title": "Signal-Dependent Phosphorylation of the Membrane-Bound NarX Two-Component Sensor-Transmitter Protein of Escherichia coli",
+          "supports": "Opened publisher full text. Introduction, NarL phosphotransfer results and Fig. 6 identify periplasmic sensing, cytoplasmic ATP-dependent covalent phosphorylation of membrane-associated NarX, transfer from NarX protein to NarL, and nonzero basal activity."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-bacterialSignals-03",
+          "severity": "P1",
+          "kind": "molecular_attachment",
+          "file": "src/processes/modules/bacterialSignals/twoComponentProcess.js",
+          "location": "NarX construction lines 123-164; fixed His site lines 185-188; update lines 240-267",
+          "evidence": "Both actual NarX protein groups end at z=0.132023, while the His torus begins at z=0.276224: separating-plane gap >=0.144201. Its center is 0.293552 units from the nearest actual NarX triangle surface. At p=0.35-0.62 the donor phosphate is placed on/near this floating site; His/Asp marker distance 0.116619 passes existing tests even though the donor site is detached from its kinase.",
+          "whyWrong": "The lesson claims a covalently phosphorylated residue of NarX and direct transfer from that kinase. A detached donor ring plus a spatially disconnected phosphomarker represents phosphorylation in empty space. The ring has no connecting residue, pocket or separate reaction inset that would establish ownership.",
+          "fix": "Attach a clearly visible His-bearing side chain/pocket to the NarX cytoplasmic scaffold and derive ATP, phosphate and NarL encounter positions from that actual moving donor. Preserve the single-phosphate handoff and departing Asp attachment.",
+          "verification": "Test actual protein-to-residue connectivity/surface intersection in addition to donor-to-acceptor distance. Confirm donor marker attachment through receptor conformational movement; conserve the three ATP/ADP/phosphoryl spheres and verify transfer and departure.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/10.1128/jb.181.17.5309-5316.1999"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": [
+          "ATP gamma handoff at .35",
+          "NarL contact/transfer .46-.62 and departure .65-.8",
+          "RNA opening and growth .78-1; both controls and arbitrary seeking"
+        ],
+        "findings": [],
+        "limits": [
+          "The phosphate position handoff is continuous, but continuity alone fails to establish kinase attachment.",
+          "Marker appearance and polymerase appearance are discrete reaction-state representations; no additional visible spatial reset was confirmed."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered acceptance was performed by this reviewer; root must inspect playback, occlusion and label clarity.",
+        "Shapes and time courses are schematic; no claim of atomistic dynamics, exact kinetics or absolute molecular stoichiometry is made.",
+        "A canonical biochemical branch is isolated; no full Nar cross-regulatory network or phosphatase cycle is depicted."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "quorumSensing",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Aliivibrio/Vibrio fischeri LuxI-LuxR, 3-oxo-C6-HSL and luxICDABEG; retained versus diluted signal at fixed cell number; permissive oxygen, substrates and other regulatory conditions.",
+      "checks": [
+        "Read all bilingual organism names, introductions, stages, labels, source titles and both exchange controls; enlarged recipient cutaway is distinguished from the community.",
+        "Traced LuxI synthesis icons, AHL paths/accumulation, ligand pocket markers, LuxR approach, lux box, RNAP/nascent RNA, extra LuxI and output halos.",
+        "Measured actual LuxR and all instanced DNA bounds after claimed docking, including separate DNA-binding-helix bounds; established a separating-plane gap, not a nearest-vertex proxy.",
+        "Examined all activation/output thresholds and all modulo resets; both condition branches maintain the same three community cells and one focal inset.",
+        "DNA handedness, single RNA, 101-point finite resource sweeps, condition-distinct state and irregular seeks pass."
+      ],
+      "sources": [
+        {
+          "url": "https://journals.asm.org/doi/10.1128/jb.186.3.631-637.2004",
+          "title": "Reversible Acyl-Homoserine Lactone Binding to Purified Vibrio fischeri LuxR Protein",
+          "supports": "Opened publisher full text. Purified LuxR binds lux-box DNA in a 3OC6-HSL-dependent manner; DNase protection and transcription assays support DNA binding before transcriptional activation. C-terminal helix-turn-helix mediates DNA binding; dilution can reverse activation."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-bacterialSignals-04",
+          "severity": "P1",
+          "kind": "molecular_contact",
+          "file": "src/processes/modules/bacterialSignals/quorumSensingProcess.js",
+          "location": "LuxR DNA-binding helices lines 197-214; docking update lines 289-293; transcription start lines 296-301",
+          "evidence": "After docking (p=0.68 through 1), LuxR stays at z=0.46. Its whole mesh minimum z is 0.26, while all DNA mesh maximum z is 0.190973: a guaranteed gap >=0.069027. The actual DNA-binding helices begin at z=0.475005, at least 0.284033 ahead of any DNA geometry, despite luxBoxOccupied and transcription output.",
+          "whyWrong": "The protein never physically contacts the regulatory DNA, although that binding is the mechanism the stage explicitly teaches. Projected x/y alignment and userData occupancy do not establish a bound complex in this rotatable 3D scene.",
+          "fix": "Dock the actual LuxR C-terminal binding helices to the lux-box duplex surface in 3D and derive the activated transcription state only after contact. Preserve ligand pocket detail and an unobstructed polymerase route.",
+          "verification": "Measure contact between actual DNA-binding-domain geometry and the intended lux-box DNA region throughout occupied states; diluted branch must remain undocked. Verify intermediate approach, deterministic seeking, correct DNA handedness and RNA topology.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/10.1128/jb.186.3.631-637.2004"
+          ]
+        },
+        {
+          "issueId": "20261004-bacterialSignals-05",
+          "severity": "P2",
+          "kind": "visible_motion_discontinuity",
+          "file": "src/processes/modules/bacterialSignals/quorumSensingProcess.js",
+          "location": "AHL update lines 266-287",
+          "evidence": "The first five AHLs follow q=(p*0.75+i*0.137)%1. Particles 2/3/4 jump 3.600320-3.603670 units at p=0.968, 0.785333 and 0.602667 while visible on both sides, in both retained and diluted options. They cross the focal-cell/community area without any fade, material transparency or off-scene handoff.",
+          "whyWrong": "The same fully visible AHL icon instantly returns across much of the scene. This is a playback discontinuity in a representative diffusion path, rather than an intentional microscopic diffusion claim.",
+          "fix": "Replace the visible discontinuous recycling with a closed/continuous diffusion illustration or smooth entrance and exit, retaining accumulation versus dilution, ligand identity and unchanged population size.",
+          "verification": "At every recycling boundary in both conditions require continuous visible world-space trajectories or smooth disappearance before relocation and reappearance afterward; keep signaling branch outcomes and stable resources.",
+          "sourceUrls": [
+            "https://journals.asm.org/doi/10.1128/jb.186.3.631-637.2004"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": [
+          "LuxR continuous approach .51-.68",
+          "Every internal AHL recycling event in both controls",
+          "RNAP/RNA .7-.94 and output .79-.96; arbitrary seeks"
+        ],
+        "findings": [
+          "20261004-bacterialSignals-05"
+        ],
+        "limits": [
+          "Bound AHL and accumulated-signal icons represent a pool; their counts are not interpreted as exact ligand mass balance.",
+          "Appearance of extra LuxI is an explicitly unexpanded translation outcome; no detailed protein synthesis claim is inferred."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered acceptance was performed by this reviewer; root must inspect playback, occlusion and label clarity.",
+        "Shapes and time courses are schematic; no claim of atomistic dynamics, exact kinetics or absolute molecular stoichiometry is made.",
+        "The scene is one LuxI-LuxR branch, not the entire V. fischeri signaling network."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "biofilm",
+      "roots": [
+        "bacterium"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Nonmucoid Pseudomonas aeruginosa PAO1, selected attached aggregate route with Psl/eDNA/protein matrix, low-level NO or no-added-cue branches; no mandatory universal lifecycle claim.",
+      "checks": [
+        "Read all bilingual stages, controls, labels and registered root; organism/strain and qualitative concentration inset are explicit.",
+        "Traced surface approach, representative cell growth, Psl bundles, eDNA double helices, matrix proteins, cue onset, c-di-GMP reduction, local fiber removal and four leaving cells.",
+        "Checked all fiber endpoint dependencies: no persistent nondegradable incoming fiber remains attached to a chosen leaver; surrounding network intentionally persists.",
+        "Six actual extracellular duplexes retain right-handed geometry and paired base links in both conditions; cells and envelope motifs follow their group transforms.",
+        "NO and no-added-cue branches sampled 101 times each, including terminal state; finite vertices/instances, stable 841-node inventory and deterministic irregular seeks pass.",
+        "Opened primary matrix, low-NO and untethering studies; model correctly distinguishes permissive dispersal from killing and retains matrix remodeling as a separate qualitative event."
+      ],
+      "sources": [
+        {
+          "url": "https://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1000354",
+          "title": "Assembly and Development of the Pseudomonas aeruginosa Biofilm Matrix",
+          "supports": "Opened publisher full text. Psl associates with cell surfaces, supports cell-cell and cell-surface interactions, and contributes to porous structured matrices containing extracellular DNA. Biofilm morphology and matrix distribution depend on conditions; free matrix material also occurs."
+        },
+        {
+          "url": "https://journals.asm.org/doi/10.1128/jb.00975-09",
+          "title": "Nitric Oxide Signaling in Pseudomonas aeruginosa Biofilms Mediates Phosphodiesterase Activity, Decreased Cyclic Di-GMP Levels, and Enhanced Dispersal",
+          "supports": "Opened publisher full text. Low-level NO exposure increased PDE activity, lowered intracellular c-di-GMP and enhanced biofilm dispersal. The model uses conditional qualitative output rather than copying experimental concentrations or magnitudes."
+        },
+        {
+          "url": "https://journals.asm.org/doi/10.1128/jb.00575-19",
+          "title": "Untethering and Degradation of the Polysaccharide Matrix Are Essential Steps in the Dispersion Response of Pseudomonas aeruginosa Biofilms",
+          "supports": "Opened publisher full text. Results distinguish matrix untethering from polysaccharide degradation. CdrA can impede PslG-dependent dispersion; reducing c-di-GMP alone is not sufficient in the tested overexpression context. The scene leaves these downstream effectors abstract and states both untethering and remodeling."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": [
+          "Initial attachment .05-.25",
+          "Representative growth .28-.625, mature network .32-.64",
+          "NO/c-di-GMP .7-.83 and cell release .79-1",
+          "All threshold branches plus 101 progress samples and irregular seeks per option"
+        ],
+        "findings": [],
+        "limits": [
+          "Some whole matrix fibers and flagella appear/disappear at thresholds. They represent formation/remodeling states; absent rendered evidence of a distracting pop, no new defect is invented. Root should judge these switches during playback.",
+          "C-di-GMP is a labeled conceptual inset; scaling depicts amount, not molecular shrinkage.",
+          "Cell growth is representative population expansion, not a tracked single-cell division lineage."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered acceptance was performed by this reviewer; root must inspect playback, occlusion and label clarity.",
+        "Shapes and time courses are schematic; no claim of atomistic dynamics, exact kinetics or absolute molecular stoichiometry is made.",
+        "Detailed NO receptor/PDE network, c-di-GMP effectors, CdrA untethering and hydrolase chemistry are omitted. The permissive arrow does not assert that low c-di-GMP alone always suffices."
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "summary": {
+    "models": 4,
+    "conditionBranches": 8,
+    "confirmedIssueModels": 3,
+    "qualifiedPassModels": 1,
+    "unresolvedModels": 0,
+    "issues": 5,
+    "P1": 3,
+    "P2": 2
+  },
+  "evidence": [
+    "evidence/bacterialSignals/phase-a-diagnostics.mjs",
+    "evidence/bacterialSignals/phase-a-diagnostics.json",
+    "evidence/bacterialSignals/flagellar-pitch.mjs",
+    "evidence/bacterialSignals/flagellar-pitch.json",
+    "evidence/bacterialSignals/existing-tests.log"
+  ],
+  "commands": [
+    "node src/processes/modules/bacterialSignals/science.test.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/bacterialSignals/phase-a-diagnostics.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/bacterialSignals/flagellar-pitch.mjs"
+  ],
+  "editingBoundary": "No product or test files changed in Phase A. Only owned dated audit/evidence files written."
+}

@@ -1,0 +1,159 @@
+{
+  "group": "plantGrowth",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "status": "local_repairs_complete_frozen_for_integrator_render",
+  "issues": [
+    {
+      "issueId": "20261004-plantGrowth-01",
+      "status": "fixed",
+      "changes": "Cell-plate fusion bulges now settle and flatten continuously into the sheet before modulo reuse; final delivery cohorts finish absorption before the terminal state.",
+      "files": [
+        "src/processes/modules/plantGrowth/plantDivisionProcess.js",
+        "src/processes/modules/plantGrowth/cellPlateMembrane.js"
+      ],
+      "verification": [
+        "Actual-triangle ray positions differ by only 9.54e-7 and 1.19e-6 at p=.5/.7 across 2e-7 progress, instead of the previous .095 retreat; original closed lumen, growing margin and parent-junction regressions retained.",
+        "node src/processes/modules/plantGrowth/science.test.mjs: PASS; new fusion.test.mjs is imported by this owned entrypoint."
+      ],
+      "limitations": [
+        "Source/numeric regression completion; final rendered continuous-playback acceptance remains with the integrator."
+      ]
+    },
+    {
+      "issueId": "20261004-plantGrowth-02",
+      "status": "fixed",
+      "changes": "Female gamete ellipsoids now have a continuous host/sperm surface with an actual annular fusion neck. Separate sperm shells end at plasmogamy; paternal nuclei enter through the opening and migrate within the female compartment. Maternal nuclei and contributions were repositioned/scaled inside their cell envelopes.",
+      "files": [
+        "src/processes/modules/plantGrowth/doubleFertilizationProcess.js",
+        "src/processes/modules/plantGrowth/fusionSurface.js"
+      ],
+      "verification": [
+        "Both assignments pass real-triangle open-neck tests, retained surrounding membrane tests, whole-nuclear-body vertex containment at .56/.6/.65/.719999/.72/.8, and absence of a separate intact sperm shell after plasmogamy.",
+        "node src/processes/modules/plantGrowth/science.test.mjs: PASS; new fusion.test.mjs is imported by this owned entrypoint."
+      ],
+      "limitations": [
+        "Source/numeric regression completion; final rendered continuous-playback acceptance remains with the integrator."
+      ]
+    },
+    {
+      "issueId": "20261004-plantGrowth-03",
+      "status": "fixed",
+      "changes": "The carried paternal nucleus and post-fusion contribution have identical final world positions and radii. The exclusive identity switch now has no positional or visual-size jump.",
+      "files": [
+        "src/processes/modules/plantGrowth/doubleFertilizationProcess.js"
+      ],
+      "verification": [
+        "At .72 +/- 1e-7, both assignments have nuclear handoff displacement below 1e-6 and matching radii; original exactly-two-identities regressions remain unchanged.",
+        "node src/processes/modules/plantGrowth/science.test.mjs: PASS; new fusion.test.mjs is imported by this owned entrypoint."
+      ],
+      "limitations": [
+        "Source/numeric regression completion; final rendered continuous-playback acceptance remains with the integrator."
+      ]
+    },
+    {
+      "issueId": "20261004-plantGrowth-04",
+      "status": "fixed",
+      "changes": "Apical PM and connected exocytotic vesicle lumens use one fixed-buffer field surface: internal caps are removed on contact. Lumen cargo crosses into extracellular space, hands off to prebuilt wall cohorts, and fully delivered carriers have no visible geometry during reuse. Cutaway vesicles retain paired membrane faces/rims and cargo detail.",
+      "files": [
+        "src/processes/modules/plantGrowth/fungalHyphaeProcess.js",
+        "src/processes/modules/plantGrowth/cellPlateMembrane.js",
+        "src/processes/modules/plantGrowth/structuralDetail.js"
+      ],
+      "verification": [
+        "Both supply branches pass an actual membrane barrier before contact and no intervening membrane after contact, extracellular cargo before handoff, retained extracellular wall cohorts, invisible carrier reuse and existing entire-vesicle septal clearance tests.",
+        "node src/processes/modules/plantGrowth/science.test.mjs: PASS; new fusion.test.mjs is imported by this owned entrypoint."
+      ],
+      "limitations": [
+        "Source/numeric regression completion; final rendered continuous-playback acceptance remains with the integrator."
+      ]
+    },
+    {
+      "issueId": "20261004-plantGrowth-05",
+      "status": "fixed",
+      "changes": "The incoming and outgoing Spitzenkorper trajectories share the same three-dimensional endpoint and zero tangent speed at their join, followed by eased apical docking.",
+      "files": [
+        "src/processes/modules/plantGrowth/fungalHyphaeProcess.js"
+      ],
+      "verification": [
+        "Normal and reduced delivery positions across t=.68 +/- shrinking epsilon converge (tested below 1e-4 for delta-progress 2e-7); original pore-clearance and retained-wall tests pass.",
+        "node src/processes/modules/plantGrowth/science.test.mjs: PASS; new fusion.test.mjs is imported by this owned entrypoint."
+      ],
+      "limitations": [
+        "Source/numeric regression completion; final rendered continuous-playback acceptance remains with the integrator."
+      ]
+    },
+    {
+      "issueId": "20261004-plantGrowth-06",
+      "status": "fixed",
+      "changes": "Repair-discovered label leader endpoints now use actual geometry: chromosome and phragmoplast particles, cortical microtubules, moving CESA/fibers, maternal nuclei/egg/tube/developmental targets, septal wall, Spitzenkorper particles and apical fusion membrane. Region/force explanations remain attached to their illustrated region or force arrow.",
+      "files": [
+        "src/processes/modules/plantGrowth/plantDivisionProcess.js",
+        "src/processes/modules/plantGrowth/cellWallGrowthProcess.js",
+        "src/processes/modules/plantGrowth/doubleFertilizationProcess.js",
+        "src/processes/modules/plantGrowth/fungalHyphaeProcess.js",
+        "src/processes/modules/plantGrowth/structuralDetail.js"
+      ],
+      "verification": [
+        "Actual vertex/world-transform comparisons pass across four models, moving stages and both condition branches; fusion label chooses a vertex from the actual current membrane surface.",
+        "node src/processes/modules/plantGrowth/science.test.mjs: PASS; new fusion.test.mjs is imported by this owned entrypoint."
+      ],
+      "limitations": [
+        "Source/numeric regression completion; final rendered continuous-playback acceptance remains with the integrator."
+      ]
+    },
+    {
+      "issueId": "20261004-plantGrowth-07",
+      "status": "fixed",
+      "changes": "After sister-chromatid separation starts, the bilingual label becomes 子染色体 / Daughter chromosomes. Arbitrary seeks back before separation restore the duplicated-chromosome name. Existing label-text object identity, anchor and geometry are preserved.",
+      "files": [
+        "src/processes/modules/plantGrowth/plantDivisionProcess.js",
+        "src/processes/modules/plantGrowth/fusion.test.mjs"
+      ],
+      "verification": [
+        "Regression first failed on old code at p=.130001; passes after the three-line name correction.",
+        "Boundary .129999/.13/.130001, late states and repeated backwards/forwards seeks retain the correct bilingual identity and exact geometry anchor.",
+        "Owned science.test.mjs and smoke.mjs both exit 0 after this change."
+      ],
+      "limitations": [
+        "The reviewed full-b3 screenshots predate this final text-only correction; fresh default/combination capture remains with the integrator."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/plantGrowth/science.test.mjs",
+    "node src/processes/modules/plantGrowth/smoke.mjs",
+    "npx prettier --write on nine owned JS/MJS files only"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://elifesciences.org/articles/04501",
+      "title": "Kawashima et al. (2014), Dynamic F-actin movement is essential for fertilization in Arabidopsis thaliana",
+      "supports": "Plasmogamy precedes paternal nuclear migration inside female gametes and karyogamy; opened primary full text during Phase A."
+    }
+  ],
+  "performance": {
+    "changes": "Same cell-plate grid resolution retained. Scalar marching-tetrahedra scratch buffers are reused; x/z-dependent field values are cached per sample column; distant fusion spheres are rejected with exact bounds. Fixed buffers retain zeroed tails and exact seeking. Gamete membrane state is cached outside its changing fusion interval.",
+    "evidence": "evidence/plantGrowth/phase-b-measurements.json",
+    "nodeUpdateMedianMs": {
+      "plantDivision": 3.076708,
+      "doubleFertilization": 0.011958,
+      "fungalHyphae": 5.068542
+    },
+    "limits": "18 updates per model; gamete median includes cached non-fusion states, with max 1.64 ms. Node timings are not browser FPS or isolated sustained performance acceptance."
+  },
+  "evidence": [
+    "evidence/plantGrowth/phase-b-science-final.log",
+    "evidence/plantGrowth/phase-b-smoke-final.log",
+    "evidence/plantGrowth/phase-b-measurements.json",
+    "evidence/plantGrowth/phase-b-chromosome-label-red.log",
+    "evidence/plantGrowth/phase-b-science-label-final.log",
+    "evidence/plantGrowth/phase-b-smoke-label-final.log",
+    "resolutions/plantGrowth-rendered-final.md"
+  ],
+  "remainingLimits": [
+    "No browser operated and no full workspace suite run by this owner. Four default-zh full-b3 stage sheets and 12 original images were visually reviewed; the final label correction and planned transition supplements need fresh capture.",
+    "No molecular/atomic trajectory or quantitative kinetic accuracy claimed.",
+    "Existing historical audits and Phase A findings remain unchanged."
+  ]
+}

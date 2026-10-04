@@ -1,0 +1,116 @@
+{
+  "group": "chromatin",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "chromatinAccess",
+      "roots": ["cell", "plant", "yeast"],
+      "verdict": "qualified_pass",
+      "scope": "Eukaryotic nuclear ISWI-family nucleosome sliding; active/disabled ATP hydrolysis in all three actual registered roots. Plant CHR11/17 and yeast Isw1 text overrides included.",
+      "checks": [
+        "Read bilingual intro, five stages, ATP control, all label mutations, root-specific introductions, entries summary, sources, and actual centerline/duplex/update functions. No legend is declared.",
+        "Traced retained eight-histone core, 1.65-turn left-handed superhelix, right-handed local duplex, arclength-constant sequence marker, exposure criterion, and factor binding after exposure. Inactive hydrolysis suppresses sliding and binding without removing the core.",
+        "Fresh diagnostic covers all six root/condition combinations, boundary-adjacent and irregular seeks, labels, actual vertex/instance buffers, finite bounds and stable resource inventories. Full detailed output is in ../evidence/chromatin/diagnostics.json.",
+        "Existing scientific regression independently rerun and read: actual rendered DNA handedness, marker-to-centerline distance, sequence arclength, and arbitrary-seek behavior passed. These existing tests are supporting evidence rather than sole audit basis."
+      ],
+      "sources": [
+        {"url":"https://www.nature.com/articles/s41594-019-0199-9","title":"Yan et al. (2019), Structures of the ISWI–nucleosome complex","supports":"Opened abstract and figure descriptions: yeast ISW1 complexes show local DNA distortion/translocation with largely retained histone-core conformation; supports Isw1 and sliding mechanism without histone eviction."},
+        {"url":"https://onlinelibrary.wiley.com/doi/10.1111/tpj.12499","title":"Li et al. (2014), ISWI proteins participate in the genome-wide nucleosome distribution in Arabidopsis","supports":"Opened summary: chr11 chr17 double mutants lose regular nucleosome spacing without losing density, supporting plant ISWI sliding/positioning scope."}
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "121 evenly spaced states for each distinct geometry branch plus stage-boundary/irregular seeks for all roots; refined local vertex and tube-center motion near p=.60256.",
+        "findings": ["No finite state jump established. Local strand-frame rotation near the sharp wrapping contact is rapid but converges: center displacement reduces from 0.000318 at delta-p=1e-7 to approximately 0.00000321 at 1e-9."],
+        "limits": ["Root should inspect the wrapping/contact seam during rendered playback. Headless convergence does not establish absence of flicker, GPU stalls, or high-DPI aliasing.", "The 120-step full sweep is not exhaustive temporal sampling."]
+      },
+      "limitations": ["Protein folds and DNA nucleotide motifs are schematic, not atomic reconstructions; no kinetic or binding-probability claim is verified.","No browser or physical-device review was performed by this reviewer."],
+      "confidence": "medium"
+    },
+    {
+      "id": "tad",
+      "roots": ["cell"],
+      "verdict": "qualified_pass",
+      "scope": "Mammalian interphase cohesin extrusion with convergent CTCF sites; normal, right-boundary deletion, and cohesin-depletion controls. Actual registry has no additional specialized roots for this model.",
+      "checks": [
+        "Read bilingual intro, six stages, all three options, changing CTCF/cohesin/contact labels, entry summary and full loop-radius/material-coordinate update. No legend or root override is declared.",
+        "DNA enters the constant-length loop by reducing arm lengths; two sequence-specific CTCF positions stay fixed at genomic coordinates .23/.77. Deletion removes only the right CTCF and extends the right material anchor; depletion prevents sustained enlargement and removes cohesin.",
+        "Actual rendered contour-length, CTCF attachment, handedness, finite buffers and deterministic-seek regressions passed. Fresh diagnostics cover all conditions and include normal/default and perturbed seeks.",
+        "Dashed contacts are explicitly possible relationships, not measurements or guaranteed activation. Membrane-free contact-domain wording and non-absolute CTCF barriers are consistent in both languages."
+      ],
+      "sources": [
+        {"url":"https://pubmed.ncbi.nlm.nih.gov/31753851/","title":"Davidson et al. (2019), DNA loop extrusion by human cohesin","supports":"Opened primary research record: human cohesin loop extrusion supplies the mechanism reference; no use of schematic dimensions as measured rates."},
+        {"url":"https://pmc.ncbi.nlm.nih.gov/articles/PMC10132984/","title":"Davidson et al. (2023), CTCF is a DNA-tension-dependent barrier to cohesin-mediated loop extrusion","supports":"Opened primary results and Fig. 2 description: CTCF blocking is orientation- and tension-dependent with passing events, supporting the model's explicit idealized-barrier caveat and deletion comparison."}
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "121 evenly spaced states in each of three conditions; fresh stage-adjacent/irregular seeks; refined loop-mouth strand motion at boundaryDeleted p=.82176723.",
+        "findings": ["Very rapid local duplex-frame turn at the sharp loop mouth: a strand center moves 0.05060 over delta-p=1e-6 while the DNA centerline moves 0.00000574. Further subdivision converges (0.00669 at 1e-7, 0.0000671 at 1e-9), so no finite discontinuity is confirmed.","The p>.6 appearance of a dashed relationship marker is an intentional annotation event; it was not treated as a molecular discontinuity."],
+        "limits": ["Rendered smoothness at the loop mouth remains for root. The numerical result alone cannot establish whether the rapid local frame turn creates visible flicker.","This is a spatial/material-coordinate schematic, not a Hi-C reconstruction or protein motion simulation."]
+      },
+      "limitations": ["Schematic DNA/chromatin and cohesin geometry does not resolve molecular passage topology through every SMC subcompartment.","No browser/frame-time or fixed-performance acceptance was performed."],
+      "confidence": "medium"
+    },
+    {
+      "id": "plantGenome",
+      "roots": ["plant"],
+      "verdict": "qualified_pass",
+      "scope": "Arabidopsis mesophyll nuclear/plastid/mitochondrial information compartments; intact versus removed targeting peptides for two illustrated nuclear-encoded precursors.",
+      "checks": [
+        "Read both languages for intro, six stages, targeting control, all labels, entry summary and source claims. No legend/context override is declared.",
+        "Traced nuclear RNA export through the NPC corridor, mRNA engagement with cytosolic ribosome channels, attached C-terminal ends during synthesis, release, N-terminally led TOC/TIC and TOM/TIM import, peptide processing/folding, and local organelle translation.",
+        "Targeting-signal deletion retains the two products in cytosol while local organelle expression continues. RNA is not sent through protein import channels. All three DNA drawings stay in their separate compartments and are not literal single circular genome maps.",
+        "Re-read actual shell/cut-sac/pore dimensions and update paths. Existing actual-geometry NPC crossing and local ribosome C-terminal/channel/containment regressions pass. Fresh independent seek/finite/inventory checks pass for both conditions.",
+        "Translation attachment algebra was traced to actual cytosolic ribosome exit coordinates: the C terminus remains at x=-.22, y=organelleY+.1, z=.21 until release; import starts only after this release interval."
+      ],
+      "sources": [
+        {"url":"https://pubmed.ncbi.nlm.nih.gov/30464337/","title":"Chen et al. (2018), TIC236 links the outer and inner membrane translocons of the chloroplast","supports":"Primary abstract/record opened and read: most plastid proteins originate as cytosolic precursors with N-terminal transit peptides and cross outer/inner-envelope TOC/TIC machinery."},
+        {"url":"https://pubmed.ncbi.nlm.nih.gov/14730085/","title":"Lister et al. (2004), Arabidopsis mitochondrial protein import apparatus","supports":"Opened primary abstract: Arabidopsis imports cytosolically synthesized proteins and contains experimentally detected TOM/TIM import components."}
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": "121 states for both targeting conditions, birth/release/folding thresholds and irregular seeks; refined exported-RNA movement near p=.3041.",
+        "findings": ["Exported-RNA vertex motion scales down with the time step (largest tested local step approximately .00713 for delta-p=.0001); no path teleport was established.","Product and RNA visibility thresholds occur at onset of the represented products; targeting-signal removal is a labeled processing event, not evidence of a broken recycling loop."],
+        "limits": ["No browser or FPS measurement. Protein and RNA molecular scale, organelle shape proportions and exact import kinetics remain schematic."]
+      },
+      "limitations": ["The scene covers representative soluble stroma/matrix precursor routes, not every organelle protein topology or cotranslational import route.","Nuclear transcription/RNA processing detail and local transcription enzymes are intentionally omitted; no atomistic enzyme audit is implied."],
+      "confidence": "medium"
+    },
+    {
+      "id": "plantRdDM",
+      "roots": ["plant"],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis canonical Pol IV/RDR2-DCL3-AGO4/Pol V-DRM2 pathway, active/inactive DRM2. Both control branches share the upstream defect.",
+      "checks": [
+        "Read bilingual intro, seven stages, DRM2 control, dynamic labels, entry summary and all rendered RNA, DNA, enzyme and base-flip update paths. No legend/context override is declared.",
+        "Traced opposite RNA strand growth, DCL3 product separation, guide retention/passenger removal, antiparallel guide/scaffold arrangement, catalytic recruitment and original-cytosine flipping/mark attachment. Inactive DRM2 preserves upstream pairing and existing unmodeled methylation is not claimed to be removed.",
+        "Rendered original-base replacement, sugar attachment, methyl bond position and unchanged backbone regressions pass. Fresh actual geometry diagnostics expose an upstream polymerase/RNA attachment problem absent from those tests.",
+        "Nine growing-transcript samples use actual drawn tube rings and complete Pol IV object bounds; the measured tip is the indexed drawRange end, not the full undisplayed RNA mesh endpoint."
+      ],
+      "sources": [
+        {"url":"https://pmc.ncbi.nlm.nih.gov/articles/PMC8713982/","title":"Fukudome et al. (2021), Structure and RNA template requirements of Arabidopsis RNA-DEPENDENT RNA POLYMERASE 2","supports":"Opened full primary article, significance/abstract and mechanism section: RDR2 physically associates with Pol IV; nascent RNA 3-prime-end access and coupled second-strand synthesis precede release of dsRNA for DCL3."},
+        {"url":"https://www.rcsb.org/structure/7L4N","title":"DRM2 (C397R)-CCG DNA complex; Fang et al. (2021)","supports":"Opened primary structural entry connected to the source paper. It supports a DNA-bound methyltransferase structural context; this audit does not claim the schematic pocket is an atom-coordinate reconstruction."}
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-chromatin-01",
+          "severity": "P1",
+          "kind": "misleading molecular attachment and coupled-enzyme topology",
+          "file": "src/processes/modules/chromatin/plantRdDMProcess.js",
+          "location": "fragmentSample lines 204-223; independent polymerase positioning and transcript draw-range growth lines 262-292",
+          "evidence": "At p=.10 the actual visible first-strand 3-prime end is (-.4560,1.2600,.1494); the entire Pol IV world box spans x=-3.8269..-2.5526 and y=1.5950..2.6828, giving a conservative tip-to-entire-protein-box gap of 2.1232 scene units. At p=.15 the gap is 3.1373. Pol IV remains at the source DNA while precursor RNA grows from x=-2.4 toward .84, and RDR2 moves independently from x=.84 to -2.4 at y=.73. All measurements are stored in ../evidence/chromatin/diagnostics.json, rddmAttachments.",
+          "whyWrong": "The animation explicitly depicts Pol IV transcription and RDR2 complementary-strand synthesis, yet its nascent RNA grows remotely with no contact to Pol IV, and its polymerases do not form the coupled Pol IV-RDR2 machine. The primary evidence describes RNA engagement by physically associated polymerases and dsRNA release after synthesis. Separating source and target loci for readability does not explain disconnecting a growing transcript from its producer.",
+          "fix": "Preserve the pathway detail but build a connected Pol IV-RDR2 production complex with explicit RNA ports. Keep the growing first-strand 3-prime end in its production port, hand the same transcript into the RDR2 template channel, keep second-strand growth attached, and release/transport the completed duplex toward DCL3 only after synthesis. Keep current downstream guide, scaffold and methylation identities and both DRM2 branches.",
+          "verification": "Add actual-buffer/actual-port tests across dense intermediate growth and handoff/release times in both DRM2 conditions. They must check growing RNA end attachment, physical proximity/connection of the two producer complexes, same-precursor continuity into DCL3, unchanged deterministic seeks and stable allocation inventories, and must fail against the present detached geometry. Root then reviews continuous rendered playback.",
+          "sourceUrls": ["https://pmc.ncbi.nlm.nih.gov/articles/PMC8713982/"]
+        }
+      ],
+      "continuity": {
+        "checked": "121 states in both DRM2 conditions; actual RNA drawRange endpoints, precursor fragment seam and guide/passenger transfer reviewed; refined guide docking movement near p=.6519.",
+        "findings": ["Confirmed upstream attachment defect 20261004-chromatin-01.","Guide motion converges in the refined time window (largest tested local vertex step approximately .00392 at delta-p=.0001). DrawRange uses 75 longitudinal sections per RNA fragment and thus intentionally quantizes very small growth increments; this is not separately established as a visible defect."],
+        "limits": ["No browser verification of product visibility, guide pairing legibility, or smooth docking.","Some publisher/PMC source pages returned access challenges; the opened full RDR2 primary article directly supports the confirmed issue."]
+      },
+      "limitations": ["Only canonical RdDM is assessed; noncanonical pathways and methylation-maintenance enzymes remain outside this model's stated scope.","No production/test files were edited in Phase A; this verdict is a defect report, not a corrected-model acceptance."],
+      "confidence": "high"
+    }
+  ]
+}

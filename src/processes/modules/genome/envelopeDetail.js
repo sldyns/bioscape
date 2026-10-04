@@ -1,7 +1,14 @@
 import { THREE } from "../../kit.js";
 import { molecularKit } from "./molecularDetail.js";
+import { sporeGeometry as dimensions } from "./sporeGeometry.js";
 
-export function rodCutaway(parent, length, radius, color = "#86a49a") {
+export function rodCutaway(
+  parent,
+  length,
+  radius,
+  color = "#86a49a",
+  { entryPort = false } = {},
+) {
   const k = molecularKit(parent),
     wall = k.mat(color, { side: THREE.DoubleSide }),
     inner = k.mat("#b6c8bc", { side: THREE.DoubleSide }),
@@ -20,6 +27,46 @@ export function rodCutaway(parent, length, radius, color = "#86a49a") {
       for (let j = 0; j < 3; j++)
         vertices.push(pos.getX(i + j), pos.getY(i + j), pos.getZ(i + j));
   }
+  // The recipient's entry site needs real missing membrane triangles. Extra
+  // axial rows delimit that small aperture without removing a whole long
+  // cylinder face. The ordinary donor/mother cutaways retain their geometry.
+  if (entryPort) {
+    vertices.length = 0;
+    const rows = [];
+    for (let i = 0; i <= 12; i++) {
+      const theta = Math.PI - (i * Math.PI) / 24;
+      rows.push([
+        -length / 2 + radius * Math.cos(theta),
+        radius * Math.sin(theta),
+      ]);
+    }
+    for (let i = 1; i <= 30; i++)
+      rows.push([-length / 2 + (length * i) / 30, radius]);
+    for (let i = 1; i <= 12; i++) {
+      const theta = Math.PI / 2 - (i * Math.PI) / 24;
+      rows.push([
+        length / 2 + radius * Math.cos(theta),
+        radius * Math.sin(theta),
+      ]);
+    }
+    const at = (row, j) => {
+      const phi = Math.PI + (j * Math.PI) / 32;
+      // Inverse of the existing mesh's +pi/2 rotation about z.
+      return [row[1] * Math.cos(phi), -row[0], row[1] * Math.sin(phi)];
+    };
+    for (let i = 0; i < rows.length - 1; i++)
+      for (let j = 0; j < 32; j++) {
+        const x = (rows[i][0] + rows[i + 1][0]) / 2;
+        if (Math.abs(x) < 0.17 && j >= 30) continue;
+        const q = [
+          at(rows[i], j),
+          at(rows[i + 1], j),
+          at(rows[i + 1], j + 1),
+          at(rows[i], j + 1),
+        ];
+        for (const n of [0, 1, 2, 0, 2, 3]) vertices.push(...q[n]);
+      }
+  }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
   geo.computeVertexNormals();
@@ -31,6 +78,7 @@ export function rodCutaway(parent, length, radius, color = "#86a49a") {
     const m = new THREE.Mesh(geo, mat);
     m.rotation.z = Math.PI / 2;
     m.scale.setScalar(scale);
+    if (entryPort) m.name = `recipient-envelope-entry-aperture-${scale}`;
     parent.add(m);
   }
   // Paired leaflet cross sections at the open edge expose a genuine wall thickness.
@@ -131,6 +179,17 @@ export function phageSurface(parent) {
   return { materials: k.materials, sleeve };
 }
 
+export function nucleoidPoint(centerX, t, strand, out) {
+  const ang = t * Math.PI * 2,
+    twist = ang * 12 + strand * Math.PI,
+    r = 0.067 * Math.cos(twist);
+  return out.set(
+    centerX + (1.08 + r) * Math.cos(ang),
+    (0.45 + r) * Math.sin(ang),
+    0.12 + 0.067 * Math.sin(twist),
+  );
+}
+
 export function nucleoidDuplex(parent, centerX) {
   const k = molecularKit(parent),
     material = k.mat("#82999c"),
@@ -151,14 +210,7 @@ export function nucleoidDuplex(parent, centerX) {
     new THREE.Color("#a18cae"),
   ];
   function point(t, strand, out) {
-    const ang = t * Math.PI * 2,
-      twist = ang * 12 + strand * Math.PI,
-      r = 0.067 * Math.cos(twist);
-    return out.set(
-      centerX + (1.08 + r) * Math.cos(ang),
-      (0.45 + r) * Math.sin(ang),
-      0.12 + 0.067 * Math.sin(twist),
-    );
+    return nucleoidPoint(centerX, t, strand, out);
   }
   function update(p, special, donor = true) {
     function present(t) {
@@ -167,7 +219,8 @@ export function nucleoidDuplex(parent, centerX) {
         !donor ||
         (p < 0.54 &&
           !(
-            p > 0.23 &&
+            // The transferred duplex renders this locus from the first
+            // frame, then carries those same strands into the particle.
             ((special && i >= 4 && i < 22) || (!special && i >= 16 && i < 22))
           ))
       );
@@ -278,6 +331,7 @@ export function sporeLayers(parent) {
     engulfment.push(m);
   }
   const cortexWeave = new THREE.Group();
+  cortexWeave.name = "intermembrane-cortex-weave";
   parent.add(cortexWeave);
   const fibers = k.instances(
     k.cylinder,
@@ -305,6 +359,7 @@ export function sporeLayers(parent) {
   }
   k.finish(fibers);
   const coatRidges = new THREE.Group();
+  coatRidges.name = "external-protein-coat-ridges";
   parent.add(coatRidges);
   for (let i = 0; i < 11; i++) {
     const theta = 0.2 + (i * (Math.PI - 0.4)) / 10,
@@ -314,9 +369,15 @@ export function sporeLayers(parent) {
         r = 1 + 0.017 * Math.cos(phi * 14 + theta * 4);
       pts.push(
         new THREE.Vector3(
-          1.035 * r * Math.cos(theta),
-          0.995 * r * Math.sin(theta) * Math.cos(phi),
-          0.828 * r * Math.sin(theta) * Math.sin(phi),
+          (dimensions.coat.axial + 0.005) * r * Math.cos(theta),
+          (dimensions.coat.radial + 0.005) *
+            r *
+            Math.sin(theta) *
+            Math.cos(phi),
+          (dimensions.coat.radial + 0.005) *
+            r *
+            Math.sin(theta) *
+            Math.sin(phi),
         ),
       );
     }

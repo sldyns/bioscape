@@ -1,0 +1,92 @@
+{
+  "group": "original-photosynthesis",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-original-03",
+      "status": "fixed",
+      "changes": "Finite open explanatory routes now use smooth vanishing pulse extent at each endpoint; the closed Calvin-cycle overlay retains continuous full-extent circulation.",
+      "files": [
+        "src/processes/photosynthesisProcess.js",
+        "tests/original-photosynthesis-review.mjs"
+      ],
+      "verification": [
+        "All 36 tested finite-route/packet reset boundaries have vanishing extent and invisible packets at +/-1e-7.",
+        "Closed reaction-loop world positions remain continuous; arbitrary seeking preserves pose, visibility and resources."
+      ],
+      "limitations": [
+        "Root owns rendered continuous-playback, bilingual label-layout and final integration acceptance. No browser, full-workspace suite or performance benchmark was run by this reviewer."
+      ]
+    },
+    {
+      "issueId": "20261004-original-04",
+      "status": "fixed",
+      "changes": "Four selected discs now contain genuine paired-leaflet side ports. Their exact boundary rings form smooth hollow lamellae. Observation cuts are clipped in common coordinates and have connected bilayer edges. The secondary stack moves slightly to avoid overlapping closed bodies at the selected connections.",
+      "files": [
+        "src/processes/photosynthesisProcess.js",
+        "tests/original-photosynthesis-review.mjs"
+      ],
+      "verification": [
+        "Both ends of every inner/outer lamella ring match actual open shell boundary edges; maximum world-space mismatch 7.900834e-8.",
+        "Five center/displaced routes per connection pass actual membrane-triangle obstruction tests from source lumen to destination lumen.",
+        "Interior cross-section rays verify that paired lamellar leaflets preserve their interval; seam endpoints are checked separately because the declared disc viewing cuts can legitimately open radial viewing rays."
+      ],
+      "limitations": [
+        "Root owns rendered continuous-playback, bilingual label-layout and final integration acceptance. No browser, full-workspace suite or performance benchmark was run by this reviewer.",
+        "Only the illustrated lamellar connections are reconstructed; no universal granum architecture or atomistic membrane fit is implied."
+      ]
+    },
+    {
+      "issueId": "20261004-original-06",
+      "status": "fixed",
+      "changes": "The OEC caps retain their subunit detail while their vertical extent/position fit within the lumen. ATP synthase moves to a full upper-membrane footprint and its rotor extent crosses the intended wall without reaching the opposite membrane. The stromal head, rotor subunits and output routes are retained.",
+      "files": [
+        "src/processes/photosynthesisProcess.js",
+        "tests/original-photosynthesis-review.mjs"
+      ],
+      "verification": [
+        "Every rendered OEC mesh vertex has actual inner-shell intersections above/below it; minimum lumen-side clearance .0155967.",
+        "Every rotor-helix vertex has an intact membrane footprint; minimum clearance above the opposite lower outer wall .0759164.",
+        "ATP-synthase head remains stromal. Shared helix handedness is independently owned and repaired by plantSignals, not counted as a second fix here."
+      ],
+      "limitations": [
+        "Root owns rendered continuous-playback, bilingual label-layout and final integration acceptance. No browser, full-workspace suite or performance benchmark was run by this reviewer."
+      ]
+    },
+    {
+      "issueId": "20261004-original-photosynthesis-labels-01",
+      "status": "fixed",
+      "changes": "Anchor protein labels to current subunit mesh centers, membrane label to an actual leaflet vertex, lumen label inside the sac, and relationship labels to their explicit explanatory curves.",
+      "files": [
+        "src/processes/photosynthesisProcess.js",
+        "tests/original-photosynthesis-review.mjs"
+      ],
+      "verification": [
+        "Protein/OEC leaders equal current subunit mesh world centers within 2e-6 at eight progress/seek samples.",
+        "Membrane leader matches a rendered leaflet vertex; reaction/energy leaders match actual explanatory-curve points. Label and position-array identities remain stable."
+      ],
+      "limitations": [
+        "Root owns rendered continuous-playback, bilingual label-layout and final integration acceptance. No browser, full-workspace suite or performance benchmark was run by this reviewer."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node tests/original-photosynthesis-review.mjs",
+    "esbuild browser bundle of src/processes/photosynthesisProcess.js with write:false",
+    "npx prettier --write (explicit owned files only)"
+  ],
+  "sourcesAdded": [
+    "https://www.rcsb.org/structure/6FKF",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC1197436/"
+  ],
+  "sourceEvidence": [
+    "evidence/original/sources/access-notes.md",
+    "evidence/traffic/photosynthesis-peer.md"
+  ],
+  "evidence": [
+    "evidence/traffic/original-photosynthesis-regression.log",
+    "evidence/traffic/repair-discoveries.json",
+    "evidence/traffic/label-anchor-before.json"
+  ]
+}

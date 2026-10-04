@@ -5,6 +5,8 @@ import chromatinAccess from "./chromatinAccessProcess.js";
 import tad from "./tadProcess.js";
 import plantGenome from "./plantGenomeProcess.js";
 import plantRdDM from "./plantRdDMProcess.js";
+import "./upstream.test.mjs";
+import "./labelAnchors.test.mjs";
 
 // Read the rendered tube vertex buffers, not process.userData or duplicate
 // trajectory formulas. The mean of a radial ring is its actual centerline.

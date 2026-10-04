@@ -1,0 +1,87 @@
+{
+  "group": "neurons",
+  "issues": [
+    {
+      "issueId": "20261004-neurons-04",
+      "severity": "P2",
+      "kind": "rendered annotation targets and inactive-state semantics",
+      "status": "confirmed_issue",
+      "models": [
+        "actionPotential",
+        "synapse",
+        "muscle",
+        "ciliaryMotion"
+      ],
+      "discoveredDuring": "Native-playback stored-frame integration review; first registered root and default control only.",
+      "evidence": [
+        {
+          "model": "actionPotential",
+          "image": "../browser/full-a-retry-026-actionPotential-cell-stage-3.webp",
+          "observation": "Na/K leader endpoints float above the pore collars. Label coordinates (-3.57,1.52,.3)/(-1.33,1.52,.3) were display offsets; real pore centers are (-3.568,.2,.15)/(-1.332,.2,.15). The rendered Na label ends in background; the K line crosses above the pores."
+        },
+        {
+          "model": "synapse",
+          "image": "../browser/full-a-retry-027-synapse-cell-stage-4.webp",
+          "observation": "Ca-channel label endpoint at (-2.08,1.05,.4) is away from pore (-1.6,.55,.25); EAAT target (3.2,-2.04,.3) is below the membrane and transporter, whose drawn uptake ring is at (3.06,-.19,.25). AMPA annotation points below and between receptors instead of either complex."
+        },
+        {
+          "model": "muscle",
+          "image": "../browser/full-a-retry-028-muscle-cell-stage-5.webp",
+          "observation": "Both Z-disc leaders end below the actual discs; labels y=-1.55 versus disc extent +/-1.225. Actin and SR leaders also terminate in background, and static Ca-to-troponin text remains present when calcium markers are hidden."
+        },
+        {
+          "model": "ciliaryMotion",
+          "image": "../browser/full-a-retry-029-ciliaryMotion-paramecium-stage-3.webp",
+          "observation": "Constrained-sliding target (-3.2,.5,.3) does not follow the bending cilium; the 9+2 and enlarged-section leaders terminate outside the transverse section. At p=0 and ATP absent the motion claim is still active even though geometry is arrested."
+        }
+      ],
+      "whyWrong": "ProcessScene and export rendering interpret label.position as the leader target. These legacy text offsets do not identify the named molecular objects; static event labels also imply movement/binding in inactive conditions.",
+      "fix": "Anchor object-specific labels to existing pores, receptor/EAAT geometry, moving Z discs/actin/ions/nucleotide markers and deforming ciliary geometry; use region anchors for compartment descriptions and hide calcium-transfer/bending-event labels when inactive.",
+      "verification": "Append geometric world-anchor and active-condition regressions to owned science.test.mjs; preserve roots, labels in both languages, existing scientific geometry and original Phase A findings. Root renders follow-up frames.",
+      "sourceUrls": [
+        "https://www.nature.com/articles/s41467-026-71063-1",
+        "https://www.nature.com/articles/s41594-021-00656-9"
+      ]
+    },
+    {
+      "issueId": "20261004-neurons-05",
+      "severity": "P2",
+      "kind": "state-color visibility in an interior cutaway",
+      "status": "confirmed_issue",
+      "models": [
+        "actionPotential"
+      ],
+      "discoveredDuring": "Review of the seven native default-cell actionPotential frames; confirmed by an actual default-camera ray, then assigned by root.",
+      "evidence": [
+        {
+          "image": "../browser/full-a-retry-026-actionPotential-cell-stage-4.webp",
+          "observation": "Axonal interior lacks a clearly visible repolarization band despite the palette legend."
+        },
+        {
+          "diagnostic": {
+            "p": 0.435,
+            "patchIndex": 2,
+            "color": "c49b5d",
+            "materialSide": 0,
+            "camera": [
+              0,
+              3.6,
+              12.5
+            ],
+            "target": [
+              2.3602,
+              0.25,
+              -0.5319999999999999
+            ],
+            "frontSideIntersections": 0,
+            "doubleSideIntersections": 1
+          },
+          "observation": "The colored cylinder cutaway patch is FrontSide, while both axonWall and axoplasm are DoubleSide. From the default camera, its visible interior is a culled back face."
+        }
+      ],
+      "whyWrong": "The six existing state bands carry the promised depolarization/repolarization/refractory colors, but their camera-facing inner faces are culled, hiding the spatial signal state. This is a visibility error rather than an alteration to the voltage mechanism.",
+      "fix": "Make only the existing state-band material DoubleSide, consistent with the axonal inner wall; preserve all geometry, palette, stimulus controls and phase timing.",
+      "verification": "Use actual default-camera rays on all six band meshes and retain their expected depolarization/repolarization/refractory/rest colors, including no-stimulus control. Root re-renders the state stages."
+    }
+  ]
+}

@@ -1,0 +1,267 @@
+{
+  "group": "operons",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "phase": "B",
+  "issues": [
+    {
+      "issueId": "20261004-operons-01",
+      "status": "fixed",
+      "changes": "LacI induced departure now begins at the .25 allolactose-occupancy event, after the conversion presentation. Repression remains in both no-lactose conditions; both lactose-present branches release before RNAP loading.",
+      "files": [
+        "src/processes/modules/operons/lacOperonProcess.js",
+        "src/processes/modules/operons/playback.test.mjs",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "Actual named ligand meshes and repressor pose checked across p=0..0.25 and all four conditions.",
+        "Restoring the original .17 departure interval is rejected by verifyInducerOrder."
+      ],
+      "limitations": []
+    },
+    {
+      "issueId": "20261004-operons-02",
+      "status": "fixed",
+      "changes": "Independent lac RNAP bubbles open/close continuously. RNA exit strands remain visible as covalent parts of each released transcript; their free ends relax continuously into separate output rows. Initial RNA emerges with a connected prefix beside its polymerase exit.",
+      "files": [
+        "src/processes/modules/operons/lacOperonProcess.js",
+        "src/processes/modules/operons/structuralDetails.js",
+        "src/processes/modules/operons/playback.test.mjs",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "Actual phosphate-instance motion at all loading and release boundaries converges as epsilon drops from 1e-4 to 1e-5; maximum fine-step displacement is 0.00081424 world units.",
+        "Each of three exit strands retains all 16 backbone segments and 17 phosphate markers at and after release; actual cylinder endpoints coincide with consecutive phosphate centers.",
+        "Restoring binary opening or polymerase-dependent bridge visibility is rejected separately.",
+        "Previous multi-RNAP open-DNA, duplex clearance and deterministic/resource tests still pass."
+      ],
+      "limitations": [
+        "Root rendered/continuous-playback review remains pending; numeric and unit checks are not visual acceptance.",
+        "Schematic RNA relaxation preserves every prebuilt exit-strand element and connection; it does not claim atomistic kinetics or fixed bond-scale contour length."
+      ]
+    },
+    {
+      "issueId": "20261004-operons-03",
+      "status": "fixed",
+      "changes": "Adjacent trp RNA regions now share reveal boundaries, so the downstream region cannot begin before its predecessor reaches their common junction. Both complete alternative hairpin geometries are preserved.",
+      "files": [
+        "src/processes/modules/operons/trpOperonProcess.js",
+        "src/processes/modules/operons/playback.test.mjs",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "Actual draw ranges and shared curve endpoints checked every .001 progress from .215 through .640 for all four conditions.",
+        "Restoring the overlapping .12-duration/.095-spacing schedule is rejected when region 2 first appears at p=.319."
+      ],
+      "limitations": []
+    },
+    {
+      "issueId": "20261004-operons-04",
+      "status": "fixed",
+      "changes": "The trp bubble opens via a smooth loading ramp and closes gradually during the terminating RNAP departure; readthrough remains active.",
+      "files": [
+        "src/processes/modules/operons/trpOperonProcess.js",
+        "src/processes/modules/operons/playback.test.mjs",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "Actual DNA instance motion converges through the prior .2/.96 discontinuities in all four conditions; maximum fine-step displacement is 0.00044235 world units.",
+        "Restoring binary bubble opening is rejected with an approximately .4272-unit discontinuity.",
+        "Existing attenuation/free-Trp/charging and duplex regressions pass."
+      ],
+      "limitations": []
+    },
+    {
+      "issueId": "20261004-operons-05",
+      "status": "fixed",
+      "changes": "GAL Pol II loading and departure drive continuous bubble ramps. The nascent exit strand survives release and relaxes as part of the connected GAL1 RNA; only the galactose-present/low-glucose branch transcribes.",
+      "files": [
+        "src/processes/modules/operons/yeastGalProcess.js",
+        "src/processes/modules/operons/structuralDetails.js",
+        "src/processes/modules/operons/playback.test.mjs",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "Actual DNA boundary motion converges; maximum fine-step displacement is 0.00044936 world units.",
+        "Connected RNA material and all exit-strand elements remain present throughout .97 release and at p=1; inactive controls remain hidden.",
+        "Separate mutations restoring abrupt DNA opening and disappearing RNA exits are rejected."
+      ],
+      "limitations": [
+        "Root rendered/continuous-playback review remains pending; numeric and unit checks are not visual acceptance.",
+        "Schematic RNA relaxation preserves every prebuilt exit-strand element and connection; it does not claim atomistic kinetics or fixed bond-scale contour length."
+      ]
+    },
+    {
+      "issueId": "20261004-operons-06",
+      "status": "fixed",
+      "changes": "Glycerol positions now follow the contracting cytoplasmic compartment while molecular geometry retains its original size and detail. No adaptive molecule appears outside the shrunken membrane.",
+      "files": [
+        "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+        "src/processes/modules/operons/playback.test.mjs",
+        "src/processes/modules/operons/science.test.mjs",
+        "src/processes/modules/operons/science.mutations.test.mjs"
+      ],
+      "verification": [
+        "Recovered the inner-leaflet ellipse from actual lipid-head instance centers, including head-radius clearance. Transformed every visible glycerol sphere/segment vertex into membrane-local coordinates at 201 frames for all four conditions.",
+        "Maximum normalized molecular radius: .97469497; inner leaflet surface bound: .98357386 (required additional clearance .001).",
+        "Restoring fixed world-space positions is rejected. Existing full Hog1 pore/activation and early-Fps1-closure invariants also pass."
+      ],
+      "limitations": []
+    },
+    {
+      "issueId": "20261004-operons-07",
+      "status": "fixed",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/operons/repair-discoveries.json",
+      "changes": "All named protein leaders now end on transformed protein surfaces. CAP/promoter/O1/gene and strand-end labels track actual DNA instances; the RNA-direction label follows a drawn transcript vertex; the lactose/allolactose annotation changes its real target when the substrate disappears. Expression output remains explicitly typed as a state annotation.",
+      "files": [
+        "src/processes/modules/operons/lacOperonProcess.js",
+        "src/processes/modules/operons/labelAnchors.js",
+        "src/processes/modules/operons/labelAnchors.test.mjs",
+        "src/processes/modules/operons/science.test.mjs"
+      ],
+      "verification": [
+        "Actual target checks cover all four lactose/glucose combinations, substrate/ligand handoff, beta-galactosidase disappearance, moving LacI/CAP and RNA appearance/release. Restoring the photographed LacI +.8 y offset fails the invariant.",
+        "4,707 actual target checks over 16 condition combinations, all supplied gallery stage times and additional boundaries; active and hidden branches, transformed geometry and irregular seeks pass.",
+        "Owned full science/mutation run passed after product changes; final focused labels run includes additional positive active-state checks. Four explicit legacy annotation negative controls rejected."
+      ],
+      "limitations": [
+        "The 28 supplied gallery frames are pre-annotation-repair evidence. New rendered captures are still required for post-repair visual acceptance by root."
+      ]
+    },
+    {
+      "issueId": "20261004-operons-08",
+      "status": "fixed",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/operons/repair-discoveries.json",
+      "changes": "TrpR, RNAP, ribosome, codon/U-rich and paired-hairpin labels track actual visible meshes. RNA-region and 5-prime/3-prime labels use the referenced visible triangle geometry, including the moving readthrough frontier. In the terminating branch, the label says Attenuator 3-prime end before actual RNAP disappearance and Leader RNA released only afterward.",
+      "files": [
+        "src/processes/modules/operons/trpOperonProcess.js",
+        "src/processes/modules/operons/labelAnchors.js",
+        "src/processes/modules/operons/labelAnchors.test.mjs",
+        "src/processes/modules/operons/science.test.mjs"
+      ],
+      "verification": [
+        "Actual anchors and active states checked in all four free-Trp/charging combinations. Restoring premature Leader RNA released text while RNAP is visible is rejected.",
+        "4,707 actual target checks over 16 condition combinations, all supplied gallery stage times and additional boundaries; active and hidden branches, transformed geometry and irregular seeks pass.",
+        "Owned full science/mutation run passed after product changes; final focused labels run includes additional positive active-state checks. Four explicit legacy annotation negative controls rejected."
+      ],
+      "limitations": [
+        "The 28 supplied gallery frames are pre-annotation-repair evidence. New rendered captures are still required for post-repair visual acceptance by root."
+      ]
+    },
+    {
+      "issueId": "20261004-operons-09",
+      "status": "fixed",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/operons/repair-discoveries.json",
+      "changes": "Gal4 DNA binding/activation domains, Gal80, Gal3 lobes, Mig1/corepressor and the coactivator ring now have real surface anchors. Promoter/GAL1/strand ends use DNA instances and RNA uses the visible transcript. Gal3 labeling names galactose/ATP only when both ligand meshes are present. Nuclear-detail wording is explicitly a region annotation; repression/activation status selects the corresponding actual target.",
+      "files": [
+        "src/processes/modules/operons/yeastGalProcess.js",
+        "src/processes/modules/operons/labelAnchors.js",
+        "src/processes/modules/operons/labelAnchors.test.mjs",
+        "src/processes/modules/operons/science.test.mjs"
+      ],
+      "verification": [
+        "All four galactose/glucose combinations, ligand absence, corepressor branch and hidden/unrevealed RNA states checked. Restoring the p=0 ligand-complex label is rejected.",
+        "4,707 actual target checks over 16 condition combinations, all supplied gallery stage times and additional boundaries; active and hidden branches, transformed geometry and irregular seeks pass.",
+        "Owned full science/mutation run passed after product changes; final focused labels run includes additional positive active-state checks. Four explicit legacy annotation negative controls rejected."
+      ],
+      "limitations": [
+        "The 28 supplied gallery frames are pre-annotation-repair evidence. New rendered captures are still required for post-repair visual acceptance by root."
+      ]
+    },
+    {
+      "issueId": "20261004-operons-10",
+      "status": "fixed",
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/operons/repair-discoveries.json",
+      "changes": "Sln1/Ypd1/Ssk1 and kinase leaders bind actual protein surfaces, including imported/exported Hog1. Fps1 tracks the actual moving gate; the glycerol label targets a visible carbon, and GPD1 response points to an actually drawn RNA vertex. Nuclear, whole-cell-state and volume/reference annotations are explicitly distinguished from named molecular labels.",
+      "files": [
+        "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+        "src/processes/modules/operons/labelAnchors.js",
+        "src/processes/modules/operons/labelAnchors.test.mjs",
+        "src/processes/modules/operons/science.test.mjs"
+      ],
+      "verification": [
+        "All four osmotic-step/Hog1 combinations checked. Actual shrinking/transport transforms and hidden GPD1 RNA state verified; a separately moved Pbs2 lobe is followed correctly, and restoring the photographed Pbs2 text offset is rejected.",
+        "4,707 actual target checks over 16 condition combinations, all supplied gallery stage times and additional boundaries; active and hidden branches, transformed geometry and irregular seeks pass.",
+        "Owned full science/mutation run passed after product changes; final focused labels run includes additional positive active-state checks. Four explicit legacy annotation negative controls rejected."
+      ],
+      "limitations": [
+        "The 28 supplied gallery frames are pre-annotation-repair evidence. New rendered captures are still required for post-repair visual acceptance by root."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/operons/science.mutations.test.mjs",
+      "result": "PASS: existing science + 1002-frame x 16-condition duplex suite, six fresh issue invariants, and 14 rejected mutants (6 historical, 8 fresh).",
+      "log": "docs/qa/process-review-2026-10-04/evidence/operons/phase-b-science-mutations.log"
+    },
+    {
+      "command": "node src/processes/modules/operons/smoke.mjs",
+      "result": "PASS: all 8 bacterial condition combinations, deterministic seeking and finite/stable geometry.",
+      "log": "docs/qa/process-review-2026-10-04/evidence/operons/phase-b-bacterial-smoke.log"
+    },
+    {
+      "command": "node src/processes/modules/operons/yeastSmoke.mjs",
+      "result": "PASS: all 8 yeast condition combinations and branch outcomes.",
+      "log": "docs/qa/process-review-2026-10-04/evidence/operons/phase-b-yeast-smoke.log"
+    },
+    {
+      "command": "node src/processes/modules/operons/refinementSmoke.mjs",
+      "result": "PASS: all 16 combinations; existing detailed instance counts, finite buffers, stable geometry and complete material inventory.",
+      "log": "docs/qa/process-review-2026-10-04/evidence/operons/phase-b-refinement-smoke.log"
+    },
+    {
+      "command": "Prettier check of eight changed owned files; git diff --check -- src/processes/modules/operons",
+      "result": "PASS after final formatting."
+    },
+    {
+      "command": "node src/processes/modules/operons/science.mutations.test.mjs",
+      "result": "PASS after annotation product changes: existing scientific/duplex/playback/label regressions and 14 old-code mutants rejected.",
+      "log": "docs/qa/process-review-2026-10-04/evidence/operons/rendered-repair-science.log"
+    },
+    {
+      "command": "node src/processes/modules/operons/labelAnchors.test.mjs",
+      "result": "PASS final focused run: 4707 actual-target checks, 16 conditions, four negative controls; positive active-state requirements included.",
+      "log": "docs/qa/process-review-2026-10-04/evidence/operons/rendered-repair-labels.log"
+    },
+    {
+      "command": "node src/processes/modules/operons/smoke.mjs; node src/processes/modules/operons/yeastSmoke.mjs; node src/processes/modules/operons/refinementSmoke.mjs",
+      "result": "PASS owned bacterial, yeast and refined-geometry smoke suites.",
+      "logs": [
+        "docs/qa/process-review-2026-10-04/evidence/operons/rendered-repair-bacterial-smoke.log",
+        "docs/qa/process-review-2026-10-04/evidence/operons/rendered-repair-yeast-smoke.log",
+        "docs/qa/process-review-2026-10-04/evidence/operons/rendered-repair-refinement-smoke.log"
+      ]
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "model": "lacOperon",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/235964/",
+      "support": "Primary inducer/operator-affinity measurements; opened/read in Phase A."
+    },
+    {
+      "model": "trpOperon",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/118451/",
+      "support": "Primary trp leader-transcript secondary-structure work; opened/read in Phase A."
+    }
+  ],
+  "remainingLimits": [
+    "Four existing sheets (28 default-condition stages) and four 960x640 originals inspected; repaired annotation output has not yet been recaptured.",
+    "No browser operation, shared-file edits, full-workspace suite, physical-device test or publication claim.",
+    "Phase A audit and original gallery evidence preserved."
+  ],
+  "renderedRepairReview": {
+    "report": "docs/qa/process-review-2026-10-04/resolutions/operons-rendered.md",
+    "contactSheets": 4,
+    "stageFrames": 28,
+    "originalResolutionFrames": 4,
+    "additionalIssues": 4,
+    "status": "source and actual-geometry regression verified; awaiting root recapture"
+  }
+}

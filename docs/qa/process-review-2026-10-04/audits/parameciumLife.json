@@ -1,0 +1,299 @@
+{
+  "group": "parameciumLife",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "parameciumFeeding",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "P. multimicronucleatum, oral uptake, one food-vacuole maturation and cytoproct egestion; one scenario.",
+      "checks": [
+        "Read current module source, helpers, entries, actual processesByRoot registry and shared contract; all assigned processes are registered only under paramecium.",
+        "Reviewed complete zh/en introductions, stage descriptions, labels and catalog summaries; no root-specific contexts or legends in these four definitions.",
+        "Ran only this group science.test.mjs: all four pass; these regressions are narrower than full topology/continuity acceptance.",
+        "Ran bounded diagnostic: 61 regular samples across the full [0,1] range per condition, six repeated irregular seek targets each with intervening 1/NaN/0.113/0.842/0 seeks; finite buffers/transforms and resource inventory checks passed.",
+        "Acidosome-before-lysosome sequence and membrane fusion boundaries agree with opened primary sources; existing actual-geometry regression passes.",
+        "Checked seven food particles begin outside and remain in tracked lumen after uptake; no chromosome-count claim for four depicted micronuclei.",
+        "Terminal egestion uses a separate static capped segment and never changes recipient membrane to an exit aperture."
+      ],
+      "sources": [
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch06/12-pmdv780609-7.html",
+          "title": "Allen EM Fig. 12: fusion of acidosomes with phagosome membrane",
+          "supports": "Opened primary EM caption: after phagosome release, acidosomes fuse at its perimeter through visible necks."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/3622528/",
+          "title": "Fok et al. (1987), Phagosomal acidification in Paramecium: effects on lysosomal fusion",
+          "supports": "Opened abstract: acidification precedes lysosomal fusion; perturbing acidosome fusion or the normal pH drop reduces later lysosome fusion."
+        },
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch07/02-pmcyp820525-17.html",
+          "title": "Allen EM Fig. 2: open cytoproct",
+          "supports": "Opened primary EM caption: spent-vacuole and plasma membranes become continuous at an open gap; membrane is retrieved into cytosolic vesicles rather than expelled."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-parameciumLife-01",
+          "severity": "P1",
+          "kind": "membrane topology",
+          "file": "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+          "location": "egestion geometry at lines 204-214, 338-397; scientificGeometry.js lines 60-99",
+          "evidence": "The egestion neck is a capped k.segment between fixed points; fusionVacuole opens only during acidosome/lysosome phases and restores a closed positive pole during p >= 0.88. Actual triangle rays from vacuole center toward the cytoproct intersect membrane at p=0.89/0.92/0.95 (0.368095/0.252957/0.099441 units). The vacuole shrinks independently while new residue markers travel outside.",
+          "whyWrong": "The stage explicitly claims a fused open vacuole-to-surface route, but the model never opens or joins that egestion membrane boundary. This is a topology defect separate from the intentional front viewing cut.",
+          "fix": "Create an actual paired-membrane egestion opening whose boundary remains joined to the cytoproct as the vacuole empties. Move tracked lumen cargo through that opening and recover membrane on the cytosolic side.",
+          "verification": "Assert shared world-space boundary curves and an unobstructed ray through the actual exit aperture during expulsion, closed membrane before fusion, tracked cargo staying in lumen until transit, and no detachment as vacuole shrinks.",
+          "sourceUrls": [
+            "https://www6.pbrc.hawaii.edu/allen/ch07/02-pmcyp820525-17.html"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": "Full formula review including arrival handoffs, p=0.28/0.34/0.47/0.51/0.62 fusion changes, digestive phases and p=0.88-1 egestion; targeted membrane triangle tests at 0.89/0.92/0.95.",
+        "findings": [],
+        "limits": [
+          "No rendered visibility/perceptual acceptance; geometry-derived discontinuities require root playback check after repair."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered playback was performed by this reviewer; root owns visual acceptance.",
+        "Schematic sizes, times, chromatin counts and protein silhouettes are not quantitative molecular/kinetic models.",
+        "Finite sampling complements full update-formula review; it is not a proof over every real-valued progress."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "contractileVacuole",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "One magnified P. multimicronucleatum CVC; osmotic=freshwater and mild, all 2 combinations.",
+      "checks": [
+        "Read current module source, helpers, entries, actual processesByRoot registry and shared contract; all assigned processes are registered only under paramecium.",
+        "Reviewed complete zh/en introductions, stage descriptions, labels and catalog summaries; no root-specific contexts or legends in these four definitions.",
+        "Ran only this group science.test.mjs: all four pass; these regressions are narrower than full topology/continuity acceptance.",
+        "Ran bounded diagnostic: 61 regular samples across the full [0,1] range per condition, six repeated irregular seek targets each with intervening 1/NaN/0.113/0.842/0 seeks; finite buffers/transforms and resource inventory checks passed.",
+        "Both conditions alter real flow counts/cycle speed; cycle rollover, arm isolation and pore states reviewed; source video supports the causal order.",
+        "Actual inlet/bladder boundaries pass existing tests, while distal arm alignment fails the newly measured invariant.",
+        "Opening/closing and recycling loops examined over both cycles; actual full-sized marker reset measured in each condition."
+      ],
+      "sources": [
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch09/video/vid-1/",
+          "title": "Tani/Allen in-vivo P. multimicronucleatum CVC filling and expulsion",
+          "supports": "Opened original microscopy caption: radial arm joins CV after systole, separates before systole, and its ampulla fills from the collecting canal while CV empties."
+        },
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch09/12-pmcvc800321-13.html",
+          "title": "Allen EM Fig. 12: collecting canal attachment to CV",
+          "supports": "Opened primary EM caption: ampulla is attached and open to CV during filling; the restricted connection severs before systole and reforms each cycle."
+        },
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch09/29-pmcvc.html",
+          "title": "Tominaga, Naitoh and Allen (1999), CVC structure and cycle, original Fig. 8",
+          "supports": "Opened original figure caption: collecting canal, ampulla and CV are continuous during filling; CV rounds, disconnects, fuses at the cortical pore and tubulates during expulsion."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-parameciumLife-02",
+          "severity": "P1",
+          "kind": "membrane route alignment",
+          "file": "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+          "location": "radial arm construction line 147; inlet updates lines 334-336; scientificGeometry.js port orientation",
+          "evidence": "Collecting canals/ampullae/water paths use angle i*pi/3+0.22, while bladder ports/inlets use i*pi/3. At radius 0.94, distal inlet and radial-arm centerlines differ by 0.206383 units; inlet outer half-width is only 0.075. Existing tests only compare inlet with bladder port and miss the distal mismatch.",
+          "whyWrong": "The supposed continuous collecting-canal/ampulla/inlet route is misaligned, and fluid follows the offset arm path instead of the drawn inlet. Primary microscopy requires open connected lumens during filling.",
+          "fix": "Use one shared radial-arm frame for collecting canals, ampullae, inlet boundaries, bladder ports and fluid paths; connect lumen boundaries through the ampulla.",
+          "verification": "Check distal inlet/ampulla alignment and continuous lumen paths across all six arms and both conditions throughout connected intervals; retain existing bladder-port and isolation checks.",
+          "sourceUrls": [
+            "https://www6.pbrc.hawaii.edu/allen/ch09/12-pmcvc800321-13.html",
+            "https://www6.pbrc.hawaii.edu/allen/ch09/29-pmcvc.html"
+          ]
+        },
+        {
+          "issueId": "20261004-parameciumLife-03",
+          "severity": "P2",
+          "kind": "continuous motion",
+          "file": "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+          "location": "water loops lines 342-364",
+          "evidence": "The %1 reset of a full-sized radial-water marker jumps it from the bladder to the distal canal while visible on both sides. At p=0.306184936 freshwater and p=0.414078675 mild, +/-1e-7 samples move the 0.08-diameter marker 2.09160 units. Entry-water and jet loops also reuse fully visible particles at modulo resets.",
+          "whyWrong": "The repeated loop is legitimate, but these fully visible end-to-start jumps are discontinuities, not continuous fluid motion.",
+          "fix": "Fade or shrink each flow marker at the path ends before deterministic reuse, with the reset occurring only while visually absent; preserve the condition-dependent flow and cycle.",
+          "verification": "Check particle visibility-weighted positions or sizes at every modulo reset in both conditions; any large reset must have negligible visible size/opacity.",
+          "sourceUrls": [
+            "https://www6.pbrc.hawaii.edu/allen/ch09/video/vid-1/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": "61 samples per each condition plus exact radial-water modulo boundaries, all cycle branches and terminal states. Both fresh/mild conditions have full-visible 2.0916-unit marker jumps.",
+        "findings": [
+          "20261004-parameciumLife-03"
+        ],
+        "limits": [
+          "No rendered visibility/perceptual acceptance; geometry-derived discontinuities require root playback check after repair."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered playback was performed by this reviewer; root owns visual acceptance.",
+        "Schematic sizes, times, chromatin counts and protein silhouettes are not quantitative molecular/kinetic models.",
+        "Finite sampling complements full update-formula review; it is not a proof over every real-valued progress.",
+        "The listed osmotic-stress PubMed page and Tani DOI could not be reliably opened as full text in this run; no precise osmotic rate or timing was validated. The qualitative condition branch is plausible and explicitly illustrative."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "parameciumDivision",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "P. caudatum with one diploid micronucleus and one polyploid macronucleus; one transverse fission scenario.",
+      "checks": [
+        "Read current module source, helpers, entries, actual processesByRoot registry and shared contract; all assigned processes are registered only under paramecium.",
+        "Reviewed complete zh/en introductions, stage descriptions, labels and catalog summaries; no root-specific contexts or legends in these four definitions.",
+        "Ran only this group science.test.mjs: all four pass; these regressions are narrower than full topology/continuity acceptance.",
+        "Ran bounded diagnostic: 61 regular samples across the full [0,1] range per condition, six repeated irregular seek targets each with intervening 1/NaN/0.113/0.842/0 seeks; finite buffers/transforms and resource inventory checks passed.",
+        "Closed-mitosis spindle/chromatid vertex containment passes focused existing regression over p=0.300-0.538.",
+        "Macronuclear bridge remains connected during its partition window; nuclei and oral apparatus reach both daughters.",
+        "Daughter-body swap was measured independently of nuclear counters, and shows nonmatching polar coordinates."
+      ],
+      "sources": [
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch10a/47-pca730323-15.html",
+          "title": "Allen EM Fig. 47: single micronucleus of P. caudatum",
+          "supports": "Opened primary specimen page documents the species-specific single micronucleus."
+        },
+        {
+          "url": "https://www6.pbrc.hawaii.edu/allen/ch10a/48-pca740125-46.html",
+          "title": "Allen EM Fig. 48: P. caudatum micronucleus in division",
+          "supports": "Opened primary EM caption: micronuclear division occurs within an intact envelope with intranuclear microtubules and condensed chromosomes."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/7440651/",
+          "title": "Tucker et al. (1980), Microtubules and control of macronuclear amitosis in Paramecium",
+          "supports": "Opened abstract: P. tetraurelia macronuclear division has coordinated shape changes and intranuclear microtubules. Supports the model caveat, not a literal P. caudatum shape trajectory."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-parameciumLife-04",
+          "severity": "P2",
+          "kind": "continuous motion",
+          "file": "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+          "location": "mother/daughter body visibility switch at lines 207-213",
+          "evidence": "At p=0.91 the pinched mother is replaced instantaneously by two fixed daughter shapes. With +/-1e-7 samples, each polar y extent moves from +/-3.385500 to +/-3.167934 (0.217566 units) and sampled boundary Hausdorff distance is 0.400519. The latter is a vertex-sample diagnostic, not triangle-surface distance.",
+          "whyWrong": "The shape mismatch creates a visible body contraction/pop at the terminal fission handoff even though the daughter counts and transverse orientation are correct.",
+          "fix": "Deform the connected envelope continuously into the daughter silhouettes and ensure the final connected-state halves coincide with the initial daughter surfaces before visibility changes. Preserve cortical rows and cilia.",
+          "verification": "Check matched body boundary positions and extrema immediately before/after the switch; test intermediate arbitrary seeks and stable resources. Rendered playback remains root acceptance.",
+          "sourceUrls": [
+            "https://www6.pbrc.hawaii.edu/allen/ch10a/48-pca740125-46.html"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": "Full update formula review including p=0.54/0.59/0.76 nuclear replacements and p=0.91 body replacement; exact body extrema measured on both sides of 0.91. Nuclear replacement contours should be checked during Phase B smoothing.",
+        "findings": [
+          "20261004-parameciumLife-04"
+        ],
+        "limits": [
+          "No rendered visibility/perceptual acceptance; geometry-derived discontinuities require root playback check after repair."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered playback was performed by this reviewer; root owns visual acceptance.",
+        "Schematic sizes, times, chromatin counts and protein silhouettes are not quantitative molecular/kinetic models.",
+        "Finite sampling complements full update-formula review; it is not a proof over every real-valued progress."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "parameciumConjugation",
+      "roots": [
+        "paramecium"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Compatible P. caudatum pair, meiosis, reciprocal pronuclear exchange, synkaryon divisions and nutrient-supported nuclear selection; two later cell fissions explicitly omitted.",
+      "checks": [
+        "Read current module source, helpers, entries, actual processesByRoot registry and shared contract; all assigned processes are registered only under paramecium.",
+        "Reviewed complete zh/en introductions, stage descriptions, labels and catalog summaries; no root-specific contexts or legends in these four definitions.",
+        "Ran only this group science.test.mjs: all four pass; these regressions are narrower than full topology/continuity acceptance.",
+        "Ran bounded diagnostic: 61 regular samples across the full [0,1] range per condition, six repeated irregular seek targets each with intervening 1/NaN/0.113/0.842/0 seeks; finite buffers/transforms and resource inventory checks passed.",
+        "Reviewed diploid/haploid identities and terminal 4 anlagen + 1 retained micronucleus per partner; species-specific nutritional caveat is supported.",
+        "Old macronuclear fragments persist rather than vanish, consistent with opened primary paper.",
+        "Actual migrant centerline lies outside modeled passage; descendant count thresholds add nuclei far from existing parents."
+      ],
+      "sources": [
+        {
+          "url": "https://www.jstage.jst.go.jp/article/pjab1977/76/7/76_7_87/_article/-char/en",
+          "title": "Yang and Takahashi (2000), Nutrient supply induces germinal nuclear selection in exconjugants of P. caudatum",
+          "supports": "Opened primary abstract: after third synkaryon division the four posterior nuclei form macronuclear anlagen; selection among anterior micronuclear candidates depends on nutritional conditions."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12919103/",
+          "title": "Kimura and Mikami (2003), Interactions between new and maternal macronuclei in P. caudatum",
+          "supports": "Opened primary abstract: maternal macronuclear fragments coexist with new nuclei, persist for at least eight cell cycles and remain transcriptionally active."
+        },
+        {
+          "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1550-7408.1961.tb01237.x",
+          "title": "Vivier and Andre (1961), Structural and ultrastructural observations on P. caudatum conjugation",
+          "supports": "Opened primary EM-study abstract: cytoplasmic communication occurs at the junction between conjugating partners; the pellicle changes at those communications."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-parameciumLife-05",
+          "severity": "P1",
+          "kind": "conjugation passage topology",
+          "file": "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+          "location": "passage construction lines 212-224; migrant positions lines 312-324",
+          "evidence": "The passage has axis y=0,z=0.35 and radius 0.19. At p=0.61 both migrant centers are at y=+/-0.12,z=0.57: axis distance 0.250599, already outside the passage before their 0.18 radius is counted. The passage primitive also has closed end caps.",
+          "whyWrong": "The reciprocal exchange is shown outside the very cytoplasmic passage that is supposed to carry it, falsely separating the depicted nuclear route from the cell-cell communication.",
+          "fix": "Build a connected open passage in the exchange plane, align each nuclear trajectory with its lumen, and accommodate nucleus dimensions without crossing membrane walls; retain separate partners and parental colors.",
+          "verification": "Measure world-space nuclear vertices/centers against actual passage lumen and openings across the exchange interval; verify endpoints remain joined to each partner as cells approach and separate.",
+          "sourceUrls": [
+            "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1550-7408.1961.tb01237.x"
+          ]
+        },
+        {
+          "issueId": "20261004-parameciumLife-06",
+          "severity": "P2",
+          "kind": "continuous motion and lineage",
+          "file": "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+          "location": "postzygotic descendant count/positions lines 276-293",
+          "evidence": "The 1->2->4->8 sequence is implemented by hard visibility/count thresholds at p=0.82,0.85,0.89. At p=0.89 four radius-0.15 nuclei appear abruptly in the anterior half (y=0.608544 and 0.951286); their four precursors remain in the posterior half. At p=0.82 the radius-0.26 synkaryon disappears and two radius-0.15 descendants appear coincident at another z.",
+          "whyWrong": "Final counts match the species, but the animation does not show the continuity of daughter nuclei from their dividing parents and visibly adds distant nuclei instantaneously.",
+          "fix": "Represent each postzygotic division with preallocated nuclei that begin at parent positions and separate/grow through a deterministic continuous transition; carry both parental origins through all descendants.",
+          "verification": "Boundary samples must show no full-sized distant newborn nuclei; verify each division originates from its parent, produces 2/4/8 nuclei, and keeps the terminal four posterior anlagen plus one anterior micronucleus.",
+          "sourceUrls": [
+            "https://www.jstage.jst.go.jp/article/pjab1977/76/7/76_7_87/_article/-char/en"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": "Full update-formula review for all p branches, 61 regular samples, targeted p=0.61 exchange cross-section, and +/-1e-7 around postzygotic divisions 0.82/0.85/0.89.",
+        "findings": [
+          "20261004-parameciumLife-06"
+        ],
+        "limits": [
+          "No rendered visibility/perceptual acceptance; geometry-derived discontinuities require root playback check after repair."
+        ]
+      },
+      "limitations": [
+        "No browser or rendered playback was performed by this reviewer; root owns visual acceptance.",
+        "Schematic sizes, times, chromatin counts and protein silhouettes are not quantitative molecular/kinetic models.",
+        "Finite sampling complements full update-formula review; it is not a proof over every real-valued progress."
+      ],
+      "confidence": "high"
+    }
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/parameciumLife/diagnostic.mjs",
+    "docs/qa/process-review-2026-10-04/evidence/parameciumLife/diagnostic.json",
+    "docs/qa/process-review-2026-10-04/evidence/parameciumLife/science-baseline.log"
+  ]
+}

@@ -274,4 +274,6 @@ console.log(
 // Existing local regression covers finite vertex data, finite world bounds,
 // deterministic backward/forward seeks, stable resources, every root/control
 // combination and browser-target compilation, without workspace-wide mutation.
+await import("./continuity.test.mjs");
+await import("./labels.test.mjs");
 await import("./refinement-smoke.mjs");

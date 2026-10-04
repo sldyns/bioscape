@@ -1,0 +1,91 @@
+{
+  "group": "original-infection",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "infection",
+      "roots": [
+        "phage"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issueId": "20261004-original-05",
+      "status": "fixed",
+      "changes": "Replace two separately parameterized visible DNA meshes with one material-coordinate duplex that remains whole throughout packing, contraction and delivery. Fixed 85 turns and 91 material base-pair markers move along an arclength route; both backbone tubes reuse the same 1440 x 6 topology and buffers. The pre-transfer pose is exactly the transfer=0 pose.",
+      "files": [
+        "src/processes/phageProcess.js"
+      ],
+      "verification": [
+        "Both actual backbone endpoints and arclengths at .599999 and .6 agree within 1e-7; original source rejects the same no-jump invariant.",
+        "Actual duplex centreline contour drift <= .0358% over twelve irregular timeline samples; individual rendered backbone drift <= .3154% (bounded discretization/curvature effects).",
+        "All 91 markers remain; both strand centres stay .036 apart and adjacent surface sections stay finely sampled.",
+        "Fixed tail tube extent, actual backbone surfaces fitting inside the .067-radius lumen, open central membrane outlet and surrounding annulus are verified.",
+        "All transforms, mesh normals/positions, instance buffers and node/geometry/material identities restore after irregular seeks; triangle winding agrees with normals."
+      ],
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/26283379/"
+      ],
+      "limitations": [
+        "The path and 85 displayed turns remain an educational abstraction, not molecular DNA length or a physical translocation-force simulation.",
+        "Remaining sampled contour/backbone drift is under .036%/.316%; do not claim exact mathematical arclength conservation for discretized helical strands."
+      ]
+    },
+    {
+      "issueId": "20261004-original-infection-labels-01",
+      "status": "fixed",
+      "changes": "Follow an actual capsid vertex and actual membrane/cytoplasmic surfaces through their world matrices, preserving attachment/contraction movement and the root offset.",
+      "files": [
+        "src/processes/phageProcess.js"
+      ],
+      "discovery": "docs/qa/process-review-2026-10-04/evidence/division/repair-discoveries.json",
+      "verification": [
+        "88 active triangle-surface anchor assertions across attachment, contraction and transfer, including translated/rotated roots and arbitrary seeks.",
+        "Capsid leader nearest actual surface distance .4241 at initial/.7729 at transfer becomes 0.",
+        "Membrane labels now sit on the actual slab surface (.035 from its midplane), accounting for root y=-.24; original omission was .24."
+      ],
+      "limitations": [
+        "Projected screen label placement/collision remains root browser acceptance."
+      ]
+    }
+  ],
+  "changedFiles": [
+    "src/processes/phageProcess.js",
+    "tests/original-infection-review.mjs"
+  ],
+  "tests": [
+    {
+      "command": "node tests/original-infection-review.mjs",
+      "result": "passed",
+      "log": "docs/qa/process-review-2026-10-04/evidence/division/infection-review-phase-b-final.log"
+    },
+    {
+      "command": "BIOSCAPE_INFECTION_REVIEW_SOURCE=.../infection-source.mjs node tests/original-infection-review.mjs",
+      "result": "expected baseline rejection at leading-endpoint invariant",
+      "log": "docs/qa/process-review-2026-10-04/evidence/division/infection-review-baseline-rejection.log"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/26283379/",
+      "title": "Hu et al. (2015), T4 and host membrane remodeling during infection initiation",
+      "supports": "Primary cryo-ET intermediate and figure evidence for contraction, DNA remaining inside capsid, and host membrane remodeling."
+    }
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/division/infection-peer.md",
+    "docs/qa/process-review-2026-10-04/evidence/division/infection-diagnostics.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/infection-junction.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/infection-phase-b-shape.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/repair-discoveries.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/label-before.json",
+    "docs/qa/process-review-2026-10-04/evidence/division/label-after.json"
+  ],
+  "remainingAcceptance": [
+    "Root must add the new infection test to its shared runner.",
+    "Root renders continuous infection playback, especially .6 handoff, and reviews projected labels.",
+    "No deployment, publication, sustained FPS or physical-device claim."
+  ],
+  "codeFrozen": true
+}

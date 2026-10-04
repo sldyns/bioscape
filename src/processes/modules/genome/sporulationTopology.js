@@ -1,5 +1,6 @@
 import { THREE, ease } from "../../kit.js";
 import { molecularKit } from "./molecularDetail.js";
+import { sporeGeometry as dimensions } from "./sporeGeometry.js";
 
 // Revolved membrane profiles share a literal boundary with the mother membrane.
 // A cutaway removes the front half, retaining the continuous rear surface.
@@ -168,8 +169,12 @@ export function sporulationTopology(group) {
           x = -capX + R * Math.cos(th);
           r = R * Math.sin(th);
         }
-        const targetX = center + 0.72 * 1.12 * Math.cos(Math.PI * t),
-          targetR = 0.72 * Math.sin(Math.PI * t);
+        const targetX =
+            center +
+            dimensions.inner.axial *
+              dimensions.axialStretch *
+              Math.cos(Math.PI * t),
+          targetR = dimensions.inner.radial * Math.sin(Math.PI * t);
         return [x + (targetX - x) * shape, r + (targetR - r) * shape];
       },
       p < 0.32 ? holes : [],
@@ -178,25 +183,36 @@ export function sporulationTopology(group) {
     engulf.update((t) => {
       if (wrap === 1)
         return [
-          center + 0.91 * 1.12 * Math.cos(Math.PI * t),
-          0.87 * Math.sin(Math.PI * t),
+          center +
+            dimensions.outer.axial *
+              dimensions.axialStretch *
+              Math.cos(Math.PI * t),
+          dimensions.outer.radial * Math.sin(Math.PI * t),
         ];
       // A cup grows from the septum, with its lip continuously joined to
       // the mother membrane. At the last pole the neck radius reaches zero.
       const theta = Math.PI / 2 + (Math.PI / 2) * wrap;
-      const bx = -1.3 + (-1.85 + 0.91 * 1.12 * Math.cos(theta) + 1.3) * shape;
-      const br = 0.87 * Math.sin(theta);
+      const bx =
+        -1.3 +
+        (-1.85 +
+          dimensions.outer.axial * dimensions.axialStretch * Math.cos(theta) +
+          1.3) *
+          shape;
+      const br = dimensions.outer.radial * Math.sin(theta);
       if (t < 0.8) {
         const q = t / 0.8,
           th = q * theta;
-        const sx = -1.85 + 0.91 * 1.12 * Math.cos(th);
+        const sx =
+          -1.85 +
+          dimensions.outer.axial * dimensions.axialStretch * Math.cos(th);
         return [
           -1.3 + (sx + 1.3) * shape,
-          0.87 * Math.sin(th) * shape + q * 0.87 * (1 - shape),
+          dimensions.outer.radial * Math.sin(th) * shape +
+            q * dimensions.outer.radial * (1 - shape),
         ];
       }
       const q = (t - 0.8) / 0.2;
-      const lipR = 0.87 * (1 - shape) + br * shape;
+      const lipR = dimensions.outer.radial * (1 - shape) + br * shape;
       return [bx, lipR + (wallRadius(bx) - lipR) * q];
     });
   }

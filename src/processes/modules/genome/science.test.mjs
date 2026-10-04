@@ -429,3 +429,8 @@ for (const model of [replication, repair])
 console.log(
   `PASS: ${bubbleStates} moving-fork/opening/reclosure states, ${nearbyPairs} nearby cross-strand pairs (${unequalIndexPairs} unequal indices), minimum tube clearance ${minClearance}.`,
 );
+
+await import("./review20261004.test.mjs");
+await import("./labelAnchors.test.mjs");
+await import("./tailVisibility.test.mjs");
+await import("./incisionLabel.test.mjs");

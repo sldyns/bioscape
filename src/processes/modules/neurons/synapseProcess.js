@@ -1,4 +1,5 @@
 import { bilayer, pore, ampaReceptor } from "./structural.js";
+import { anchorObject, anchorVertex } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, phase, bilingual as b } from "../../kit.js";
 
 export default {
@@ -110,7 +111,7 @@ export default {
       m.scale.set(sx, sy, sz);
       return m;
     }
-    slab(
+    const preTerminal = slab(
       -0.25,
       1.72,
       5.6,
@@ -134,6 +135,7 @@ export default {
     slab(3.06, 0.67, 0.12, 1.42, glial);
     slab(3.06, -1.08, 0.12, 1.38, glial);
     const uptake = k.ring([3.06, -0.19, 0.25], 0.19, 0.065, glial);
+    uptake.name = "astrocytic EAAT uptake opening";
     uptake.rotation.y = Math.PI / 2;
     // Bilayer has real openings at the fusion site, Ca channel and AMPA pores.
     const preSegments = [
@@ -179,6 +181,7 @@ export default {
       parent: plug,
     });
     const vesicle = new THREE.Group();
+    vesicle.name = "docked vesicle cutaway";
     vesicle.position.set(0, 1.12, 0.04);
     vesicle.scale.z = 0.82;
     group.add(vesicle);
@@ -210,6 +213,10 @@ export default {
           );
       }
     const omega = new THREE.Group();
+    omega.name = "fused vesicle cutaway";
+    // SphereGeometry uses (-cos(phi), sin(phi)) in X/Z, whereas a lathe
+    // uses (sin(phi), cos(phi)). Keep the same camera-facing cutaway sector.
+    omega.rotation.y = -Math.PI / 2;
     group.add(omega);
     const contour = [
       [0.24, 0.55],
@@ -444,6 +451,12 @@ export default {
           m.position.set(r.x, -0.43 - 1.07 * f, 0.25);
         });
       });
+      anchorObject(labels[0], preTerminal);
+      anchorObject(labels[1], caChannel.group);
+      if (fusion) anchorVertex(labels[2], omega.children[0], 3);
+      else anchorVertex(labels[2], vesicle.children[0], 12 * (36 + 1));
+      anchorObject(labels[4], receptors[0].channel.bindingAnchors[0]);
+      anchorObject(labels[5], uptake);
       group.userData = {
         process: "synapse",
         specimen: "mammalian central glutamatergic synapse",

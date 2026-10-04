@@ -1,0 +1,826 @@
+{
+  "generatedAt": "2026-10-04T06:17:11.266Z",
+  "method": "Actual native Play button, whole timeline at 1.5x in real ProcessExperience; same viewport, DPR and source fixture; no captures or full-suite/agent tests during measurements. Two runs per variant in AB/BA order. Frame intervals reflect local desktop scheduling, not GPU timer or physical-mobile measurements. All long intervals retained.",
+  "rows": [
+    {
+      "key": "baseline-play-a-00-apoptosis",
+      "id": "apoptosis",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 728,
+      "wallMs": 22734.5,
+      "updates": 1355,
+      "modelCpuMs": {
+        "count": 1355,
+        "mean": 3.022287818514553,
+        "median": 0,
+        "p95": 14.099999904632568,
+        "max": 23.200000047683716
+      },
+      "updateIntervalMs": {
+        "count": 1354,
+        "mean": 16.742245199409158,
+        "median": 16.800000190734863,
+        "p95": 18.800000190734863,
+        "max": 25.799999952316284
+      },
+      "rafIntervalMs": {
+        "count": 1357,
+        "mean": 16.739351510685335,
+        "median": 16.69999999999891,
+        "p95": 17.600000000002183,
+        "max": 33.400000000001455
+      },
+      "intervalsOver25ms": 1,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-a-01-differentiation",
+      "id": "differentiation",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 698.7000000476837,
+      "wallMs": 22726.599999904633,
+      "updates": 1361,
+      "modelCpuMs": {
+        "count": 1361,
+        "mean": 5.518736222664457,
+        "median": 8.399999856948853,
+        "p95": 11.299999952316284,
+        "max": 17.299999952316284
+      },
+      "updateIntervalMs": {
+        "count": 1360,
+        "mean": 16.667058823564474,
+        "median": 16.799999952316284,
+        "p95": 18.200000047683716,
+        "max": 25.59999990463257
+      },
+      "rafIntervalMs": {
+        "count": 1362,
+        "mean": 16.666666666666668,
+        "median": 16.69999999999709,
+        "p95": 17.700000000004366,
+        "max": 18.69999999999709
+      },
+      "intervalsOver25ms": 1,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-a-02-endocytosis",
+      "id": "endocytosis",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 657.7000000476837,
+      "wallMs": 22714.89999985695,
+      "updates": 1360,
+      "modelCpuMs": {
+        "count": 1360,
+        "mean": 12.355514707284815,
+        "median": 12.300000190734863,
+        "p95": 12.700000047683716,
+        "max": 18.5
+      },
+      "updateIntervalMs": {
+        "count": 1359,
+        "mean": 16.6671817513228,
+        "median": 16.700000047683716,
+        "p95": 18.09999990463257,
+        "max": 23.200000047683716
+      },
+      "rafIntervalMs": {
+        "count": 1361,
+        "mean": 16.665686994856724,
+        "median": 16.69999999999709,
+        "p95": 17.69999999999709,
+        "max": 18.60000000000582
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-a-03-autophagy",
+      "id": "autophagy",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 730.7000000476837,
+      "wallMs": 22070.5,
+      "updates": 1259,
+      "modelCpuMs": {
+        "count": 1259,
+        "mean": 14.828117552591374,
+        "median": 14.799999952316284,
+        "p95": 15.299999952316284,
+        "max": 22
+      },
+      "updateIntervalMs": {
+        "count": 1258,
+        "mean": 17.497376788591165,
+        "median": 18.09999990463257,
+        "p95": 19.5,
+        "max": 24.09999990463257
+      },
+      "rafIntervalMs": {
+        "count": 1261,
+        "mean": 17.486042823156232,
+        "median": 16.69999999999709,
+        "p95": 18.60000000000582,
+        "max": 35.10000000000582
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-a-04-meiosis",
+      "id": "meiosis",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 698.9000000953674,
+      "wallMs": 25414,
+      "updates": 1516,
+      "modelCpuMs": {
+        "count": 1516,
+        "mean": 4.690963062415966,
+        "median": 4.699999809265137,
+        "p95": 13.5,
+        "max": 43.90000009536743
+      },
+      "updateIntervalMs": {
+        "count": 1515,
+        "mean": 16.7111551155745,
+        "median": 16.700000047683716,
+        "p95": 18.5,
+        "max": 45.799999952316284
+      },
+      "rafIntervalMs": {
+        "count": 1519,
+        "mean": 16.711257406188288,
+        "median": 16.69999999999709,
+        "p95": 17.80000000000291,
+        "max": 34.39999999999418
+      },
+      "intervalsOver25ms": 3,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-b-00-apoptosis",
+      "id": "apoptosis",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 735.7000000476837,
+      "wallMs": 22725.200000047684,
+      "updates": 1353,
+      "modelCpuMs": {
+        "count": 1353,
+        "mean": 3.0359201753747436,
+        "median": 0.09999990463256836,
+        "p95": 14.200000047683716,
+        "max": 21.199999809265137
+      },
+      "updateIntervalMs": {
+        "count": 1352,
+        "mean": 16.75325443794036,
+        "median": 16.700000047683716,
+        "p95": 19.40000009536743,
+        "max": 29.300000190734863
+      },
+      "rafIntervalMs": {
+        "count": 1355,
+        "mean": 16.75269372693727,
+        "median": 16.69999999999891,
+        "p95": 17.80000000000291,
+        "max": 34.5
+      },
+      "intervalsOver25ms": 6,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-b-01-differentiation",
+      "id": "differentiation",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 725.8000001907349,
+      "wallMs": 22715.299999952316,
+      "updates": 1360,
+      "modelCpuMs": {
+        "count": 1360,
+        "mean": 5.512132354168331,
+        "median": 8.200000047683716,
+        "p95": 11.599999904632568,
+        "max": 19
+      },
+      "updateIntervalMs": {
+        "count": 1359,
+        "mean": 16.66747608546214,
+        "median": 16.600000143051147,
+        "p95": 18.09999990463257,
+        "max": 23.899999856948853
+      },
+      "rafIntervalMs": {
+        "count": 1361,
+        "mean": 16.666715650257164,
+        "median": 16.69999999999709,
+        "p95": 17.799999999995634,
+        "max": 18.799999999995634
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-b-02-endocytosis",
+      "id": "endocytosis",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 654.2000000476837,
+      "wallMs": 22751.200000047684,
+      "updates": 1361,
+      "modelCpuMs": {
+        "count": 1361,
+        "mean": 12.260102860810212,
+        "median": 12.200000047683716,
+        "p95": 12.599999904632568,
+        "max": 18.799999952316284
+      },
+      "updateIntervalMs": {
+        "count": 1360,
+        "mean": 16.667058823564474,
+        "median": 16.700000047683716,
+        "p95": 17.90000009536743,
+        "max": 23.799999952316284
+      },
+      "rafIntervalMs": {
+        "count": 1363,
+        "mean": 16.666617754952306,
+        "median": 16.69999999999709,
+        "p95": 17.60000000000582,
+        "max": 18.69999999999709
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-b-03-autophagy",
+      "id": "autophagy",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 739.5,
+      "wallMs": 22079.5,
+      "updates": 1276,
+      "modelCpuMs": {
+        "count": 1276,
+        "mean": 14.567868336801618,
+        "median": 14.5,
+        "p95": 15.200000047683716,
+        "max": 18.59999990463257
+      },
+      "updateIntervalMs": {
+        "count": 1275,
+        "mean": 17.266352941101673,
+        "median": 17.899999856948853,
+        "p95": 19.299999952316284,
+        "max": 23.700000047683716
+      },
+      "rafIntervalMs": {
+        "count": 1277,
+        "mean": 17.253954581049335,
+        "median": 16.69999999999709,
+        "p95": 18.30000000000291,
+        "max": 35.10000000000582
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "baseline-play-b-04-meiosis",
+      "id": "meiosis",
+      "variant": "baseline",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 703.5,
+      "wallMs": 25413.700000047684,
+      "updates": 1511,
+      "modelCpuMs": {
+        "count": 1511,
+        "mean": 4.649172735088002,
+        "median": 4.400000095367432,
+        "p95": 13.700000047683716,
+        "max": 47.299999952316284
+      },
+      "updateIntervalMs": {
+        "count": 1510,
+        "mean": 16.77754966896891,
+        "median": 16.700000047683716,
+        "p95": 18.59999990463257,
+        "max": 49.5
+      },
+      "rafIntervalMs": {
+        "count": 1513,
+        "mean": 16.77686715135492,
+        "median": 16.69999999999709,
+        "p95": 17.80000000000291,
+        "max": 34.70000000001164
+      },
+      "intervalsOver25ms": 6,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-a-00-apoptosis",
+      "id": "apoptosis",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 689.3999998569489,
+      "wallMs": 22712.5,
+      "updates": 1360,
+      "modelCpuMs": {
+        "count": 1360,
+        "mean": 0.9777205880950479,
+        "median": 0.09999990463256836,
+        "p95": 4.299999952316284,
+        "max": 5.699999809265137
+      },
+      "updateIntervalMs": {
+        "count": 1359,
+        "mean": 16.668064753565393,
+        "median": 16.799999952316284,
+        "p95": 18.5,
+        "max": 19.300000190734863
+      },
+      "rafIntervalMs": {
+        "count": 1361,
+        "mean": 16.667597354886112,
+        "median": 16.700000000000728,
+        "p95": 18,
+        "max": 18.700000000000728
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-a-01-differentiation",
+      "id": "differentiation",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 633.1000001430511,
+      "wallMs": 22741.199999809265,
+      "updates": 1360,
+      "modelCpuMs": {
+        "count": 1360,
+        "mean": 1.8869117628125582,
+        "median": 2.299999952316284,
+        "p95": 5.200000047683716,
+        "max": 8.899999856948853
+      },
+      "updateIntervalMs": {
+        "count": 1359,
+        "mean": 16.66946284028868,
+        "median": 16.700000047683716,
+        "p95": 18.5,
+        "max": 22.600000143051147
+      },
+      "rafIntervalMs": {
+        "count": 1363,
+        "mean": 16.666691122523847,
+        "median": 16.69999999999709,
+        "p95": 18,
+        "max": 18.60000000000582
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-a-02-endocytosis",
+      "id": "endocytosis",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 531.8999998569489,
+      "wallMs": 22714.60000014305,
+      "updates": 1360,
+      "modelCpuMs": {
+        "count": 1360,
+        "mean": 2.4969117609893576,
+        "median": 0.7000000476837158,
+        "p95": 6.5,
+        "max": 10.600000143051147
+      },
+      "updateIntervalMs": {
+        "count": 1359,
+        "mean": 16.66622516545765,
+        "median": 16.699999809265137,
+        "p95": 18.59999990463257,
+        "max": 28.299999952316284
+      },
+      "rafIntervalMs": {
+        "count": 1362,
+        "mean": 16.666666666666668,
+        "median": 16.69999999999709,
+        "p95": 18.099999999998545,
+        "max": 18.69999999999709
+      },
+      "intervalsOver25ms": 1,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-a-03-autophagy",
+      "id": "autophagy",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 591.6000001430511,
+      "wallMs": 22071,
+      "updates": 1321,
+      "modelCpuMs": {
+        "count": 1321,
+        "mean": 4.58357305205473,
+        "median": 6.200000047683716,
+        "p95": 6.900000095367432,
+        "max": 9.399999856948853
+      },
+      "updateIntervalMs": {
+        "count": 1320,
+        "mean": 16.667575757611882,
+        "median": 16.600000143051147,
+        "p95": 18.5,
+        "max": 23
+      },
+      "rafIntervalMs": {
+        "count": 1323,
+        "mean": 16.666666666666668,
+        "median": 16.69999999999709,
+        "p95": 18.10000000000582,
+        "max": 18.60000000000582
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-a-04-meiosis",
+      "id": "meiosis",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 697.9000000953674,
+      "wallMs": 25384.099999904633,
+      "updates": 1517,
+      "modelCpuMs": {
+        "count": 1517,
+        "mean": 3.7064601199439897,
+        "median": 0.5999999046325684,
+        "p95": 12.299999952316284,
+        "max": 46.90000009536743
+      },
+      "updateIntervalMs": {
+        "count": 1516,
+        "mean": 16.709894459134357,
+        "median": 16.700000047683716,
+        "p95": 18.59999990463257,
+        "max": 49.299999952316284
+      },
+      "rafIntervalMs": {
+        "count": 1518,
+        "mean": 16.70955204216074,
+        "median": 16.69999999999709,
+        "p95": 18.19999999999709,
+        "max": 48.5
+      },
+      "intervalsOver25ms": 2,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-b-00-apoptosis",
+      "id": "apoptosis",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 654.9000000953674,
+      "wallMs": 22731.699999809265,
+      "updates": 1360,
+      "modelCpuMs": {
+        "count": 1360,
+        "mean": 1.0316176463575923,
+        "median": 0,
+        "p95": 4.599999904632568,
+        "max": 6.300000190734863
+      },
+      "updateIntervalMs": {
+        "count": 1359,
+        "mean": 16.66651949977243,
+        "median": 16.600000143051147,
+        "p95": 18.799999952316284,
+        "max": 26.90000009536743
+      },
+      "rafIntervalMs": {
+        "count": 1363,
+        "mean": 16.665443873807778,
+        "median": 16.69999999999891,
+        "p95": 18.30000000000109,
+        "max": 18.600000000002183
+      },
+      "intervalsOver25ms": 3,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-b-01-differentiation",
+      "id": "differentiation",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 629.2999999523163,
+      "wallMs": 22726.200000047684,
+      "updates": 1360,
+      "modelCpuMs": {
+        "count": 1360,
+        "mean": 1.896470586517278,
+        "median": 2.299999952316284,
+        "p95": 5.299999952316284,
+        "max": 9
+      },
+      "updateIntervalMs": {
+        "count": 1359,
+        "mean": 16.66696100063057,
+        "median": 16.799999952316284,
+        "p95": 18.799999952316284,
+        "max": 19.200000047683716
+      },
+      "rafIntervalMs": {
+        "count": 1362,
+        "mean": 16.66674008810573,
+        "median": 16.69999999999709,
+        "p95": 18.30000000000291,
+        "max": 18.700000000004366
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-b-02-endocytosis",
+      "id": "endocytosis",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 528.3000001907349,
+      "wallMs": 22713.699999809265,
+      "updates": 1361,
+      "modelCpuMs": {
+        "count": 1361,
+        "mean": 2.5143276979430995,
+        "median": 0.7000000476837158,
+        "p95": 6.5,
+        "max": 10
+      },
+      "updateIntervalMs": {
+        "count": 1360,
+        "mean": 16.666250000105183,
+        "median": 16.799999952316284,
+        "p95": 19.100000143051147,
+        "max": 21.800000190734863
+      },
+      "rafIntervalMs": {
+        "count": 1362,
+        "mean": 16.666593245227606,
+        "median": 16.69999999999709,
+        "p95": 18.400000000001455,
+        "max": 18.69999999999709
+      },
+      "intervalsOver25ms": 0,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-b-03-autophagy",
+      "id": "autophagy",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 560.7999999523163,
+      "wallMs": 22037.10000014305,
+      "updates": 1320,
+      "modelCpuMs": {
+        "count": 1320,
+        "mean": 4.738333332357985,
+        "median": 6.5,
+        "p95": 7,
+        "max": 11.199999809265137
+      },
+      "updateIntervalMs": {
+        "count": 1319,
+        "mean": 16.666717210079884,
+        "median": 16.59999990463257,
+        "p95": 18.90000009536743,
+        "max": 28.299999952316284
+      },
+      "rafIntervalMs": {
+        "count": 1321,
+        "mean": 16.668130204390618,
+        "median": 16.69999999999709,
+        "p95": 18.5,
+        "max": 18.70000000001164
+      },
+      "intervalsOver25ms": 2,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    },
+    {
+      "key": "optimized-play-b-04-meiosis",
+      "id": "meiosis",
+      "variant": "optimized",
+      "result": "complete",
+      "errors": [],
+      "terminal": 1,
+      "timeline": 1000,
+      "viewport": [
+        1280,
+        720
+      ],
+      "dpr": 1,
+      "readyMs": 699.5,
+      "wallMs": 25391.699999809265,
+      "updates": 1518,
+      "modelCpuMs": {
+        "count": 1518,
+        "mean": 3.625559949749229,
+        "median": 0.5,
+        "p95": 12.299999952316284,
+        "max": 44.299999952316284
+      },
+      "updateIntervalMs": {
+        "count": 1517,
+        "mean": 16.69947264346938,
+        "median": 16.700000047683716,
+        "p95": 19.299999952316284,
+        "max": 49.69999980926514
+      },
+      "rafIntervalMs": {
+        "count": 1519,
+        "mean": 16.69835418038183,
+        "median": 16.69999999999709,
+        "p95": 18.5,
+        "max": 50.10000000000582
+      },
+      "intervalsOver25ms": 23,
+      "intervalsOver50ms": 0,
+      "backward": 0
+    }
+  ]
+}

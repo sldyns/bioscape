@@ -1,0 +1,205 @@
+{
+  "method": "Arithmetic mean of two per-run mean model-update CPU times; observed per-run interval ranges retained separately. Raw timing order baseline-a, optimized-a, optimized-b, baseline-b.",
+  "rows": [
+    {
+      "id": "apoptosis",
+      "baseline": {
+        "runs": 2,
+        "cpuMeanMs": 3.0291039969446483,
+        "cpuP95Range": [
+          14.099999904632568,
+          14.200000047683716
+        ],
+        "frameMeanRange": [
+          16.742245199409158,
+          16.75325443794036
+        ],
+        "frameP95Range": [
+          18.800000190734863,
+          19.40000009536743
+        ],
+        "over25": 7,
+        "over50": 0
+      },
+      "optimized": {
+        "runs": 2,
+        "cpuMeanMs": 1.00466911722632,
+        "cpuP95Range": [
+          4.299999952316284,
+          4.599999904632568
+        ],
+        "frameMeanRange": [
+          16.668064753565393,
+          16.66651949977243
+        ],
+        "frameP95Range": [
+          18.5,
+          18.799999952316284
+        ],
+        "over25": 3,
+        "over50": 0
+      },
+      "cpuReductionPercent": 66.83279549861297
+    },
+    {
+      "id": "differentiation",
+      "baseline": {
+        "runs": 2,
+        "cpuMeanMs": 5.515434288416394,
+        "cpuP95Range": [
+          11.299999952316284,
+          11.599999904632568
+        ],
+        "frameMeanRange": [
+          16.667058823564474,
+          16.66747608546214
+        ],
+        "frameP95Range": [
+          18.200000047683716,
+          18.09999990463257
+        ],
+        "over25": 1,
+        "over50": 0
+      },
+      "optimized": {
+        "runs": 2,
+        "cpuMeanMs": 1.891691174664918,
+        "cpuP95Range": [
+          5.200000047683716,
+          5.299999952316284
+        ],
+        "frameMeanRange": [
+          16.66946284028868,
+          16.66696100063057
+        ],
+        "frameP95Range": [
+          18.5,
+          18.799999952316284
+        ],
+        "over25": 0,
+        "over50": 0
+      },
+      "cpuReductionPercent": 65.70186361139541
+    },
+    {
+      "id": "endocytosis",
+      "baseline": {
+        "runs": 2,
+        "cpuMeanMs": 12.307808784047513,
+        "cpuP95Range": [
+          12.700000047683716,
+          12.599999904632568
+        ],
+        "frameMeanRange": [
+          16.6671817513228,
+          16.667058823564474
+        ],
+        "frameP95Range": [
+          18.09999990463257,
+          17.90000009536743
+        ],
+        "over25": 0,
+        "over50": 0
+      },
+      "optimized": {
+        "runs": 2,
+        "cpuMeanMs": 2.5056197294662286,
+        "cpuP95Range": [
+          6.5,
+          6.5
+        ],
+        "frameMeanRange": [
+          16.66622516545765,
+          16.666250000105183
+        ],
+        "frameP95Range": [
+          18.59999990463257,
+          19.100000143051147
+        ],
+        "over25": 1,
+        "over50": 0
+      },
+      "cpuReductionPercent": 79.64203235986385
+    },
+    {
+      "id": "autophagy",
+      "baseline": {
+        "runs": 2,
+        "cpuMeanMs": 14.697992944696496,
+        "cpuP95Range": [
+          15.299999952316284,
+          15.200000047683716
+        ],
+        "frameMeanRange": [
+          17.497376788591165,
+          17.266352941101673
+        ],
+        "frameP95Range": [
+          19.5,
+          19.299999952316284
+        ],
+        "over25": 0,
+        "over50": 0
+      },
+      "optimized": {
+        "runs": 2,
+        "cpuMeanMs": 4.660953192206357,
+        "cpuP95Range": [
+          6.900000095367432,
+          7
+        ],
+        "frameMeanRange": [
+          16.667575757611882,
+          16.666717210079884
+        ],
+        "frameP95Range": [
+          18.5,
+          18.90000009536743
+        ],
+        "over25": 2,
+        "over50": 0
+      },
+      "cpuReductionPercent": 68.28850571813496
+    },
+    {
+      "id": "meiosis",
+      "baseline": {
+        "runs": 2,
+        "cpuMeanMs": 4.670067898751984,
+        "cpuP95Range": [
+          13.5,
+          13.700000047683716
+        ],
+        "frameMeanRange": [
+          16.7111551155745,
+          16.77754966896891
+        ],
+        "frameP95Range": [
+          18.5,
+          18.59999990463257
+        ],
+        "over25": 9,
+        "over50": 0
+      },
+      "optimized": {
+        "runs": 2,
+        "cpuMeanMs": 3.666010034846609,
+        "cpuP95Range": [
+          12.299999952316284,
+          12.299999952316284
+        ],
+        "frameMeanRange": [
+          16.709894459134357,
+          16.69947264346938
+        ],
+        "frameP95Range": [
+          18.59999990463257,
+          19.299999952316284
+        ],
+        "over25": 25,
+        "over50": 0
+      },
+      "cpuReductionPercent": 21.49985579810728
+    }
+  ]
+}

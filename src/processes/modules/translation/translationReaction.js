@@ -1,6 +1,7 @@
 import { THREE, sceneKit, clamp, ease } from "../../kit.js";
 import { articulatedChain } from "./mechanics.js";
 import { ribosomeAssembly } from "./ribosomeAssembly.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 function movableBond(k, name, material, parent, radius = 0.045) {
   const mesh = k.segment([0, 0, 0], [0, 1, 0], radius, material, parent);
@@ -81,7 +82,7 @@ export function createTranslation({ rootId = "cell" } = {}) {
     aMat = k.material("#b78eac"),
     peptideMat = k.material("#d59a6e"),
     factorMat = k.material("#779bb2");
-  k.tube(
+  const mRNABackbone = k.tube(
     [
       [-2.65, -1.29, 0.08],
       [-1.5, -1.22, 0.08],
@@ -92,6 +93,7 @@ export function createTranslation({ rootId = "cell" } = {}) {
     rnaMat,
     mRNA,
   );
+  mRNABackbone.name = "schematic-mRNA-backbone";
   for (let codon = -1; codon <= 2; codon++)
     for (let base = 0; base < 3; base++)
       k.ball(
@@ -114,8 +116,9 @@ export function createTranslation({ rootId = "cell" } = {}) {
   const guides = new THREE.Group();
   guides.name = "schematic-exit-path";
   schematic.add(guides);
-  for (const x of [-0.25, 0.25])
-    k.tube(
+  const exitGuides = [];
+  for (const x of [-0.25, 0.25]) {
+    const guide = k.tube(
       [
         [x, 1.43, -0.08],
         [x, 2.02, -0.08],
@@ -125,6 +128,9 @@ export function createTranslation({ rootId = "cell" } = {}) {
       k.material("#adb8bb"),
       guides,
     );
+    guide.name = `schematic-exit-guide-${exitGuides.length}`;
+    exitGuides.push(guide);
+  }
   const ptc = k.ring(
     [0.12, 1.08, -0.1],
     0.56,
@@ -149,7 +155,13 @@ export function createTranslation({ rootId = "cell" } = {}) {
     factor,
   );
   k.ball([1.26, -0.63, 0.16], [0.18, 0.3, 0.16], factorMat, factor);
-  k.ball([0.56, 0.42, 0.14], [0.22, 0.26, 0.16], factorMat, factor);
+  const factorHead = k.ball(
+    [0.56, 0.42, 0.14],
+    [0.22, 0.26, 0.16],
+    factorMat,
+    factor,
+  );
+  factorHead.name = "release-factor-head";
   const labels = [
     k.label(
       [-3.65, 3.03, 0],
@@ -213,6 +225,28 @@ export function createTranslation({ rootId = "cell" } = {}) {
   labels[1].priority = -1;
   labels[12].priority = 0;
   labels[13].priority = 0;
+  const updateLabelAnchors = labelAnchors([
+    [labels[0], reference],
+    [labels[3], ptc],
+    [
+      labels[4],
+      exitGuides[1],
+      exitGuides[1].geometry.parameters.path.getPointAt(0.5),
+    ],
+    [labels[5], peptide.beads[25]],
+    [
+      labels[9],
+      mRNABackbone,
+      mRNABackbone.geometry.parameters.path.getPoint(0),
+    ],
+    [
+      labels[10],
+      mRNABackbone,
+      mRNABackbone.geometry.parameters.path.getPoint(1),
+    ],
+    [labels[11], factorHead],
+  ]);
+  const sitePoint = new THREE.Vector3();
   const pTip = new THREE.Vector3(),
     aTip = new THREE.Vector3();
   function update(progress) {
@@ -225,9 +259,6 @@ export function createTranslation({ rootId = "cell" } = {}) {
     const transferred = p >= 0.41,
       hydrolyzed = p >= 0.86;
     mRNA.position.x = -1.35 * trans;
-    labels[9].position[0] = -1.28 - 1.35 * trans;
-    // Keep the terminal 3′ callout to the right of A after the codon shift.
-    labels[10].position[0] = 4.65 - 1.35 * trans + 0.8 * ease(p, 0.68, 0.83);
     pTip.set(-1.35 * trans - 1.35 * exit, 1 - 0.7 * exit, 0.0);
     aTip.set(
       0.45 * (1 - trans) + 1.6 * (1 - dock),
@@ -237,7 +268,8 @@ export function createTranslation({ rootId = "cell" } = {}) {
     pRNA.set(-1.35 * trans - 1.35 * exit, pTip, exit);
     aRNA.set(1.35 * (1 - trans) + 1.6 * (1 - dock), aTip);
     pRNA.body.visible = p < 0.81;
-    aRNA.body.visible = p < 0.99;
+    // Hold the post-release complex: recycling is outside this animation.
+    aRNA.body.visible = true;
     for (let i = 0; i < 26; i++) {
       const t = i / 25,
         y = 1.32 + 1.85 * t;
@@ -262,13 +294,23 @@ export function createTranslation({ rootId = "cell" } = {}) {
     aEster.mesh.visible = !hydrolyzed;
     newBond.set(peptide.points[0], aa.position);
     newBond.mesh.visible = transferred;
-    factor.visible = p >= 0.71 && p < 0.99;
+    factor.visible = p >= 0.71;
     factor.position.set(0.7 * (1 - ease(p, 0.71, 0.83)), 0, 0);
-    labels[5].position = [
-      1.3 + peptide.points[25].x,
-      peptide.points[25].y + 0.2,
-      0.2,
-    ];
+    updateLabelAnchors();
+    // E/P/A are stationary ribosomal sites. Target the actual mRNA path
+    // crossing each site as the RNA moves through this fixed reference frame.
+    for (let i = 0; i < 3; i++) {
+      const x = (i - 1) * 1.35 - mRNA.position.x;
+      let lo = 0,
+        hi = 1;
+      for (let j = 0; j < 24; j++) {
+        const t = (lo + hi) / 2;
+        mRNABackbone.geometry.parameters.path.getPoint(t, sitePoint);
+        if (sitePoint.x < x) lo = t;
+        else hi = t;
+      }
+      mRNABackbone.localToWorld(sitePoint).toArray(labels[6 + i].position);
+    }
     labels[11].active = factor.visible;
     group.userData = {
       process: "translation",

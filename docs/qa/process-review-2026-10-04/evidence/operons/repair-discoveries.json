@@ -1,0 +1,301 @@
+{
+  "group": "operons",
+  "phase": "post-integration rendered discovery; Phase A unchanged",
+  "findings": [
+    {
+      "issueId": "20261004-operons-07",
+      "severity": "P2",
+      "kind": "annotation-target-and-visibility",
+      "model": "lacOperon",
+      "file": "src/processes/modules/operons/lacOperonProcess.js",
+      "location": "labels[0..12], moving LacI/CAP updates and RNA annotation",
+      "evidence": "LacI, CAP and beta-galactosidase leaders end above their actual protein surfaces; CAP site/promoter/O1/lacZYA leaders terminate below the DNA; the RNA direction leader ends in empty space below every transcript. Lactose-to-allolactose annotation retains a fixed old text position while its displayed molecular target changes.",
+      "whyWrong": "ProcessScene and exported capture interpret label.position as the biological leader endpoint, not a text-layout offset. Concrete proteins, genes and RNA must target their actual visible geometry; region/status annotations must be distinguished from named molecular targets.",
+      "fix": "Bind molecular labels to transformed mesh surfaces, DNA instances or visible RNA geometry; synchronize active state and condition-dependent wording with the actual target. Retain valid compartment/status regional annotations.",
+      "verification": "Check actual target vertices/instances/visible draw ranges and transform-following across all 16 conditions, stages and irregular seeks; include negative controls restoring original photographed offsets and premature labels.",
+      "sourceUrls": [],
+      "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-stable-036-lacOperon-bacterium.jpg",
+      "reviewedFrames": [
+        {
+          "name": "full-a-stable-036-lacOperon-bacterium-start.webp",
+          "progress": 0,
+          "width": 960,
+          "height": 640,
+          "bytes": 33720,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-036-lacOperon-bacterium-start.webp"
+        },
+        {
+          "name": "full-a-stable-036-lacOperon-bacterium-stage-2.webp",
+          "progress": 0.175,
+          "width": 960,
+          "height": 640,
+          "bytes": 33298,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-036-lacOperon-bacterium-stage-2.webp"
+        },
+        {
+          "name": "full-a-stable-036-lacOperon-bacterium-stage-3.webp",
+          "progress": 0.375,
+          "width": 960,
+          "height": 640,
+          "bytes": 33498,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-036-lacOperon-bacterium-stage-3.webp"
+        },
+        {
+          "name": "full-a-stable-036-lacOperon-bacterium-stage-4.webp",
+          "progress": 0.545,
+          "width": 960,
+          "height": 640,
+          "bytes": 31184,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-036-lacOperon-bacterium-stage-4.webp"
+        },
+        {
+          "name": "full-a-stable-036-lacOperon-bacterium-stage-5.webp",
+          "progress": 0.735,
+          "width": 960,
+          "height": 640,
+          "bytes": 40196,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-036-lacOperon-bacterium-stage-5.webp"
+        },
+        {
+          "name": "full-a-stable-036-lacOperon-bacterium-stage-6.webp",
+          "progress": 0.935,
+          "width": 960,
+          "height": 640,
+          "bytes": 44292,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-036-lacOperon-bacterium-stage-6.webp"
+        },
+        {
+          "name": "full-a-stable-036-lacOperon-bacterium-end.webp",
+          "progress": 1,
+          "width": 960,
+          "height": 640,
+          "bytes": 42886,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-036-lacOperon-bacterium-end.webp"
+        }
+      ]
+    },
+    {
+      "issueId": "20261004-operons-08",
+      "severity": "P2",
+      "kind": "annotation-target-and-visibility",
+      "model": "trpOperon",
+      "file": "src/processes/modules/operons/trpOperonProcess.js",
+      "location": "labels and update of labels[0], [3..15]",
+      "evidence": "TrpR and RNAP leaders end at vertical text offsets. Leader-region numbers and hairpin leaders terminate above/below the actual colored RNA; the growing-3-prime anchor remains near the final extension endpoint while extension is still growing. The terminated branch says leader RNA released from p=.78 even though modeled polymerase departure ends only at .96.",
+      "whyWrong": "ProcessScene and exported capture interpret label.position as the biological leader endpoint, not a text-layout offset. Concrete proteins, genes and RNA must target their actual visible geometry; region/status annotations must be distinguished from named molecular targets.",
+      "fix": "Bind molecular labels to transformed mesh surfaces, DNA instances or visible RNA geometry; synchronize active state and condition-dependent wording with the actual target. Retain valid compartment/status regional annotations.",
+      "verification": "Check actual target vertices/instances/visible draw ranges and transform-following across all 16 conditions, stages and irregular seeks; include negative controls restoring original photographed offsets and premature labels.",
+      "sourceUrls": [],
+      "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-stable-037-trpOperon-bacterium.jpg",
+      "reviewedFrames": [
+        {
+          "name": "full-a-stable-037-trpOperon-bacterium-start.webp",
+          "progress": 0,
+          "width": 960,
+          "height": 640,
+          "bytes": 25132,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-037-trpOperon-bacterium-start.webp"
+        },
+        {
+          "name": "full-a-stable-037-trpOperon-bacterium-stage-2.webp",
+          "progress": 0.15500000000000003,
+          "width": 960,
+          "height": 640,
+          "bytes": 25108,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-037-trpOperon-bacterium-stage-2.webp"
+        },
+        {
+          "name": "full-a-stable-037-trpOperon-bacterium-stage-3.webp",
+          "progress": 0.325,
+          "width": 960,
+          "height": 640,
+          "bytes": 30698,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-037-trpOperon-bacterium-stage-3.webp"
+        },
+        {
+          "name": "full-a-stable-037-trpOperon-bacterium-stage-4.webp",
+          "progress": 0.505,
+          "width": 960,
+          "height": 640,
+          "bytes": 38002,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-037-trpOperon-bacterium-stage-4.webp"
+        },
+        {
+          "name": "full-a-stable-037-trpOperon-bacterium-stage-5.webp",
+          "progress": 0.675,
+          "width": 960,
+          "height": 640,
+          "bytes": 39804,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-037-trpOperon-bacterium-stage-5.webp"
+        },
+        {
+          "name": "full-a-stable-037-trpOperon-bacterium-stage-6.webp",
+          "progress": 0.885,
+          "width": 960,
+          "height": 640,
+          "bytes": 41422,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-037-trpOperon-bacterium-stage-6.webp"
+        },
+        {
+          "name": "full-a-stable-037-trpOperon-bacterium-end.webp",
+          "progress": 1,
+          "width": 960,
+          "height": 640,
+          "bytes": 42296,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-037-trpOperon-bacterium-end.webp"
+        }
+      ]
+    },
+    {
+      "issueId": "20261004-operons-09",
+      "severity": "P2",
+      "kind": "annotation-target-and-visibility",
+      "model": "yeastGal",
+      "file": "src/processes/modules/operons/yeastGalProcess.js",
+      "location": "labels and update of labels[0..7], [9..11]",
+      "evidence": "The Gal80/Gal3/coactivator leaders miss their respective moving protein/ring geometry, and DNA/RNA leaders use old text offsets. At p=0 Gal3 is labeled with galactose/ATP although both ligand meshes are hidden. Gal4 activation-domain status points into empty lower nucleus rather than the domain. Nuclear-detail wording is a valid region annotation.",
+      "whyWrong": "ProcessScene and exported capture interpret label.position as the biological leader endpoint, not a text-layout offset. Concrete proteins, genes and RNA must target their actual visible geometry; region/status annotations must be distinguished from named molecular targets.",
+      "fix": "Bind molecular labels to transformed mesh surfaces, DNA instances or visible RNA geometry; synchronize active state and condition-dependent wording with the actual target. Retain valid compartment/status regional annotations.",
+      "verification": "Check actual target vertices/instances/visible draw ranges and transform-following across all 16 conditions, stages and irregular seeks; include negative controls restoring original photographed offsets and premature labels.",
+      "sourceUrls": [],
+      "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-stable-038-yeastGal-yeast.jpg",
+      "reviewedFrames": [
+        {
+          "name": "full-a-stable-038-yeastGal-yeast-start.webp",
+          "progress": 0,
+          "width": 960,
+          "height": 640,
+          "bytes": 38906,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-038-yeastGal-yeast-start.webp"
+        },
+        {
+          "name": "full-a-stable-038-yeastGal-yeast-stage-2.webp",
+          "progress": 0.185,
+          "width": 960,
+          "height": 640,
+          "bytes": 38978,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-038-yeastGal-yeast-stage-2.webp"
+        },
+        {
+          "name": "full-a-stable-038-yeastGal-yeast-stage-3.webp",
+          "progress": 0.385,
+          "width": 960,
+          "height": 640,
+          "bytes": 38936,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-038-yeastGal-yeast-stage-3.webp"
+        },
+        {
+          "name": "full-a-stable-038-yeastGal-yeast-stage-4.webp",
+          "progress": 0.5750000000000001,
+          "width": 960,
+          "height": 640,
+          "bytes": 40728,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-038-yeastGal-yeast-stage-4.webp"
+        },
+        {
+          "name": "full-a-stable-038-yeastGal-yeast-stage-5.webp",
+          "progress": 0.745,
+          "width": 960,
+          "height": 640,
+          "bytes": 46664,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-038-yeastGal-yeast-stage-5.webp"
+        },
+        {
+          "name": "full-a-stable-038-yeastGal-yeast-stage-6.webp",
+          "progress": 0.935,
+          "width": 960,
+          "height": 640,
+          "bytes": 49420,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-038-yeastGal-yeast-stage-6.webp"
+        },
+        {
+          "name": "full-a-stable-038-yeastGal-yeast-end.webp",
+          "progress": 1,
+          "width": 960,
+          "height": 640,
+          "bytes": 47942,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-038-yeastGal-yeast-end.webp"
+        }
+      ]
+    },
+    {
+      "issueId": "20261004-operons-10",
+      "severity": "P2",
+      "kind": "annotation-target-and-visibility",
+      "model": "yeastOsmoregulation",
+      "file": "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+      "location": "labels and dynamic Sln1/Hog1/Fps1 anchor updates",
+      "evidence": "At p=.695 Pbs2 and Ssk2/22 leaders visually approach cytoplasmic glycerol instead of kinase lobes; Hog1 leader is vertically offset from the imported kinase; Fps1 label points above the channel; cytoplasmic-glycerol leader ends below the molecules. GPD1-response anchor is near the top of the nuclear boundary rather than the visible nuclear response RNA. Nuclear/whole-cell state/volume descriptions are regional.",
+      "whyWrong": "ProcessScene and exported capture interpret label.position as the biological leader endpoint, not a text-layout offset. Concrete proteins, genes and RNA must target their actual visible geometry; region/status annotations must be distinguished from named molecular targets.",
+      "fix": "Bind molecular labels to transformed mesh surfaces, DNA instances or visible RNA geometry; synchronize active state and condition-dependent wording with the actual target. Retain valid compartment/status regional annotations.",
+      "verification": "Check actual target vertices/instances/visible draw ranges and transform-following across all 16 conditions, stages and irregular seeks; include negative controls restoring original photographed offsets and premature labels.",
+      "sourceUrls": [],
+      "sheet": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/sheets/full-a-stable-039-yeastOsmoregulation-yeast.jpg",
+      "reviewedFrames": [
+        {
+          "name": "full-a-stable-039-yeastOsmoregulation-yeast-start.webp",
+          "progress": 0,
+          "width": 960,
+          "height": 640,
+          "bytes": 52338,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-039-yeastOsmoregulation-yeast-start.webp"
+        },
+        {
+          "name": "full-a-stable-039-yeastOsmoregulation-yeast-stage-2.webp",
+          "progress": 0.16499999999999998,
+          "width": 960,
+          "height": 640,
+          "bytes": 57306,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-039-yeastOsmoregulation-yeast-stage-2.webp"
+        },
+        {
+          "name": "full-a-stable-039-yeastOsmoregulation-yeast-stage-3.webp",
+          "progress": 0.335,
+          "width": 960,
+          "height": 640,
+          "bytes": 51150,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-039-yeastOsmoregulation-yeast-stage-3.webp"
+        },
+        {
+          "name": "full-a-stable-039-yeastOsmoregulation-yeast-stage-4.webp",
+          "progress": 0.505,
+          "width": 960,
+          "height": 640,
+          "bytes": 51292,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-039-yeastOsmoregulation-yeast-stage-4.webp"
+        },
+        {
+          "name": "full-a-stable-039-yeastOsmoregulation-yeast-stage-5.webp",
+          "progress": 0.6950000000000001,
+          "width": 960,
+          "height": 640,
+          "bytes": 53994,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-039-yeastOsmoregulation-yeast-stage-5.webp"
+        },
+        {
+          "name": "full-a-stable-039-yeastOsmoregulation-yeast-stage-6.webp",
+          "progress": 0.915,
+          "width": 960,
+          "height": 640,
+          "bytes": 61198,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-039-yeastOsmoregulation-yeast-stage-6.webp"
+        },
+        {
+          "name": "full-a-stable-039-yeastOsmoregulation-yeast-end.webp",
+          "progress": 1,
+          "width": 960,
+          "height": 640,
+          "bytes": 58542,
+          "path": "/Users/kun/Documents/vc/docs/qa/process-review-2026-10-04/evidence/browser/full-a-stable-039-yeastOsmoregulation-yeast-end.webp"
+        }
+      ]
+    }
+  ],
+  "viewedOriginals": [
+    "full-a-stable-036-lacOperon-bacterium-stage-5.webp",
+    "full-a-stable-037-trpOperon-bacterium-stage-5.webp",
+    "full-a-stable-038-yeastGal-yeast-stage-5.webp",
+    "full-a-stable-039-yeastOsmoregulation-yeast-stage-5.webp"
+  ],
+  "reviewScope": "Four contact sheets cover all 28 captured stages; four 960x640 originals inspected at original resolution. Default controls only in supplied gallery. No browser operated."
+}

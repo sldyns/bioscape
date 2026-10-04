@@ -1,0 +1,237 @@
+{
+  "group": "translation",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "phase": "B",
+  "issues": [
+    {
+      "issueId": "20261004-translation-01",
+      "status": "fixed",
+      "changes": "Keep post-release P-site tRNA and release factor visible through progress 1, matching the stated boundary before recycling. The final complex no longer vanishes at .99.",
+      "files": [
+        "src/processes/modules/translation/translationReaction.js",
+        "src/processes/modules/translation/science.test.mjs",
+        "src/processes/modules/translation/review20261004.test.mjs"
+      ],
+      "verification": [
+        "Actual tRNA/factor effective visibility and world positions stay identical at .989999/.99/.999999/1 for every registered root.",
+        "New mutation regression hides the terminal tRNA and is rejected.",
+        "Existing full RNA-backbone/CCA, ester, new-peptide bond, corridor and 4UG0 coordinate/gap regressions remain. The old A-tRNA end-visibility expectation was updated from hidden at .99 to retained; its effective-visibility assertion was preserved and now enforces the corrected terminal behavior."
+      ],
+      "limitations": [
+        "Browser-rendered and continuous-playback acceptance belongs to root and has not been performed by this reviewer.",
+        "Illustrative molecular motion is not an atomistic simulation; original species/provenance/schematic boundaries remain."
+      ]
+    },
+    {
+      "issueId": "20261004-translation-02",
+      "status": "fixed",
+      "changes": "Reverse only the angular orientation of manually constructed final client alpha helix and all three Hsp70 lid helices. Endpoints, helix count, chain detail and chaperone motion remain intact. Add stable geometry names for direct regressions and scientific source links.",
+      "files": [
+        "src/processes/modules/translation/proteinFoldingProcess.js",
+        "src/processes/modules/translation/review20261004.test.mjs"
+      ],
+      "verification": [
+        "Final client actual bead-coordinate consecutive-edge triples are positive (minimum about +0.0031778853).",
+        "All three lid helices are verified from averaged rings of actual TubeGeometry vertices in world coordinates, throughout both cycle branches and all roots.",
+        "Known right-handed control and its reflected counterpart calibrate the handedness test. Reflecting the repaired client helix is rejected.",
+        "Every peptide backbone segment remains joined to its same adjacent beads; original 4UG0 common transform/gap test passes."
+      ],
+      "limitations": [
+        "Browser-rendered and continuous-playback acceptance belongs to root and has not been performed by this reviewer.",
+        "Illustrative molecular motion is not an atomistic simulation; original species/provenance/schematic boundaries remain."
+      ]
+    },
+    {
+      "issueId": "20261004-translation-03",
+      "status": "fixed",
+      "changes": "Precompute branch-ready, ligation-ready and product conformations for both isoforms. RNA endpoints approach before the first and second bond exchanges; flanking exon endpoints follow their covalent intron partners until cleavage. Short branch links replace overlapping endpoints. Only after ligation does the connected mature RNA move to its final presentation position.",
+      "files": [
+        "src/processes/modules/translation/alternativeSplicingProcess.js",
+        "src/processes/modules/translation/review20261004.test.mjs"
+      ],
+      "verification": [
+        "Every visible branch bond is .1 scene unit long, including the first visible frame at .34; partners are already apposed at .33.",
+        "Every new exon bond is .1 scene unit long before, at and after the .59 ligation switch, including both inclusion junctions and the skip junction.",
+        "Scissile donor/acceptor endpoints stay within .15 while their original covalent bonds are present. All actual cylinder endpoints match the correct RNA beads.",
+        "Both isoforms tested at 201 uniform samples plus exact boundary samples, preserving donor-cut then acceptor-cut order and distinct retained/excised sequences.",
+        "Fault injection displaces exon 8 and reattaches affected cylinders, recreating remote chemistry without detached-endpoint errors; the remote-ligation assertion rejects it."
+      ],
+      "limitations": [
+        "Browser-rendered and continuous-playback acceptance belongs to root and has not been performed by this reviewer.",
+        "Illustrative molecular motion is not an atomistic simulation; original species/provenance/schematic boundaries remain."
+      ]
+    },
+    {
+      "issueId": "20261004-translation-04",
+      "status": "fixed",
+      "changes": "Use the same two nitrogen meshes for N2 and both NH3 products. Remove duplicated product nitrogen meshes, transfer existing atoms continuously from substrate positions to product positions, and grow hydrogen/bond symbols from zero at conversion. N2 bonds retire when conversion begins; the exposed branch keeps substrate and no products.",
+      "files": [
+        "src/processes/modules/translation/nitrogenFixationProcess.js",
+        "src/processes/modules/translation/review20261004.test.mjs"
+      ],
+      "verification": [
+        "Exactly two effectively visible nitrogen spheres with identical UUIDs across every tested progress value and both oxygen branches.",
+        "Explicit .79999999/.8/.80000001/.805/.80999999/.81/.81000001 checks reject the original overlap interval.",
+        "Nitrogen position and radius changes across conversion +/-1e-8 are below 1e-6; each NH3 hydrogen-group origin tracks its persistent nitrogen atom.",
+        "Both NH3 groups and H2 coproduct are absent under exposed condition.",
+        "Adding a duplicate nitrogen mesh at .805 is rejected."
+      ],
+      "limitations": [
+        "Browser-rendered and continuous-playback acceptance belongs to root and has not been performed by this reviewer.",
+        "Illustrative molecular motion is not an atomistic simulation; original species/provenance/schematic boundaries remain."
+      ]
+    },
+    {
+      "issueId": "20261004-translation-05",
+      "status": "fixed",
+      "changes": "Bind the N callout to peptide bead 25, mRNA ends to actual tube endpoints, factor to its head and exit-path callout to a rendered guide center. Solve the fixed E/P/A x positions on the moving actual mRNA curve. PTC/reference-body labels use their real centers.",
+      "files": [
+        "src/processes/modules/translation/translationReaction.js",
+        "src/processes/modules/translation/labelAnchors.js",
+        "src/processes/modules/translation/labelAnchors20261004.test.mjs"
+      ],
+      "verification": [
+        "All 14 registered root/control combinations, 2912 sampled frames plus irregular seek sequences; actual beads, tube ring vertices, metal-cluster atoms, BufferGeometry vertices, active-target visibility, and fixed-site versus moving-mRNA behavior. Restored former offsets in all four models are rejected."
+      ],
+      "limitations": [
+        "This verifies targets, not label-box collision avoidance or continuous rendered playback. Root will capture integrated post-fix scenes."
+      ]
+    },
+    {
+      "issueId": "20261004-translation-06",
+      "status": "fixed",
+      "changes": "Attach N/hydrophobic/fold/outlet callouts to actual client beads. Hsp70 targets a rendered substrate-binding sheet vertex; J protein and exchange-factor targets follow their molecular centers; ADP targets the actual nucleotide base under Hsp70 transforms.",
+      "files": [
+        "src/processes/modules/translation/proteinFoldingProcess.js",
+        "src/processes/modules/translation/labelAnchors.js",
+        "src/processes/modules/translation/labelAnchors20261004.test.mjs"
+      ],
+      "verification": [
+        "All 14 registered root/control combinations, 2912 sampled frames plus irregular seek sequences; actual beads, tube ring vertices, metal-cluster atoms, BufferGeometry vertices, active-target visibility, and fixed-site versus moving-mRNA behavior. Restored former offsets in all four models are rejected."
+      ],
+      "limitations": [
+        "This verifies targets, not label-box collision avoidance or continuous rendered playback. Root will capture integrated post-fix scenes."
+      ]
+    },
+    {
+      "issueId": "20261004-translation-07",
+      "status": "fixed",
+      "changes": "Bind exon/intron and terminal labels to current RNA beads, mature RNA to an actual retained exon junction, branch label to its real branch marker, and spliceosome label to a rendered scaffold vertex. Both isoforms use their same actual geometry after every seek.",
+      "files": [
+        "src/processes/modules/translation/alternativeSplicingProcess.js",
+        "src/processes/modules/translation/labelAnchors.js",
+        "src/processes/modules/translation/labelAnchors20261004.test.mjs"
+      ],
+      "verification": [
+        "All 14 registered root/control combinations, 2912 sampled frames plus irregular seek sequences; actual beads, tube ring vertices, metal-cluster atoms, BufferGeometry vertices, active-target visibility, and fixed-site versus moving-mRNA behavior. Restored former offsets in all four models are rejected."
+      ],
+      "limitations": [
+        "This verifies targets, not label-box collision avoidance or continuous rendered playback. Root will capture integrated post-fix scenes."
+      ]
+    },
+    {
+      "issueId": "20261004-translation-08",
+      "status": "fixed",
+      "changes": "Bind FeMo to its actual cluster center and P-cluster to a named real cluster group with unchanged world coordinates/topology. NH3 follows one of the same two persistent nitrogen atoms throughout conversion; H2 follows its molecular center and is annotated only while visible. Protein surfaces, donor and nucleotide use actual rendered geometry/centers.",
+      "files": [
+        "src/processes/modules/translation/nitrogenFixationProcess.js",
+        "src/processes/modules/translation/labelAnchors.js",
+        "src/processes/modules/translation/labelAnchors20261004.test.mjs"
+      ],
+      "verification": [
+        "All 14 registered root/control combinations, 2912 sampled frames plus irregular seek sequences; actual beads, tube ring vertices, metal-cluster atoms, BufferGeometry vertices, active-target visibility, and fixed-site versus moving-mRNA behavior. Restored former offsets in all four models are rejected."
+      ],
+      "limitations": [
+        "This verifies targets, not label-box collision avoidance or continuous rendered playback. Root will capture integrated post-fix scenes."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/translation/review20261004.test.mjs",
+      "result": "PASS",
+      "log": "evidence/translation/phase-b-review-test.log"
+    },
+    {
+      "command": "node src/processes/modules/translation/science.test.mjs",
+      "result": "PASS: all 14 root/control combinations, 2814 frames, source-coordinate/gap checks and original mutation checks",
+      "log": "evidence/translation/phase-b-science-test.log"
+    },
+    {
+      "command": "node src/processes/modules/translation/refinementSmoke.mjs",
+      "result": "PASS: all 9 model/root pairs, both controls, finite buffers, bounds, resource stability, seek determinism and four browser-target esbuild bundles",
+      "log": "evidence/translation/phase-b-refinement-smoke.log"
+    },
+    {
+      "command": "npx prettier --check [six changed/new owned JS/MJS files]",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check -- src/processes/modules/translation",
+      "result": "PASS"
+    },
+    {
+      "command": "node src/processes/modules/translation/labelAnchors20261004.test.mjs",
+      "result": "PASS: 14 root/control combinations, 2912 frames, seek and mutation regressions",
+      "log": "evidence/translation/anchor-geometry-test.log"
+    },
+    {
+      "command": "node src/processes/modules/translation/review20261004.test.mjs",
+      "result": "PASS after supplementary anchor repair",
+      "log": "evidence/translation/anchor-existing-review-test.log"
+    },
+    {
+      "command": "node src/processes/modules/translation/science.test.mjs",
+      "result": "PASS after supplementary anchor repair; 14 combinations and 2814 frames",
+      "log": "evidence/translation/anchor-science-test.log"
+    },
+    {
+      "command": "node src/processes/modules/translation/refinementSmoke.mjs",
+      "result": "PASS after supplementary anchor repair: all 9 model/root pairs, controls, bounds/resources/seek and four esbuild bundles",
+      "log": "evidence/translation/anchor-refinement-smoke.log"
+    },
+    {
+      "command": "npx prettier --check [six anchor-related owned files]",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check -- src/processes/modules/translation",
+      "result": "PASS after supplementary anchor repair"
+    }
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://www.ebi.ac.uk/training/online/courses/foundations-protein-structure/principles-of-protein-folding-and-architecture/secondary-structure-%CE%B1-helices-and-%CE%B2-sheets/%CE%B1-helix/",
+      "supports": "Explicit right-handed alpha-helix convention for standard protein secondary structure."
+    },
+    {
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0103518",
+      "supports": "Primary human HSP70 structure with beta-sandwich substrate pocket and alpha-helical lid."
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/27459055/",
+      "supports": "Primary spliceosome structure and apposed first-step substrates, lariat-3-prime-exon intermediate, sequential chemistry."
+    }
+  ],
+  "evidence": [
+    "evidence/translation/phase-b-measurements.json",
+    "evidence/translation/phase-b-measurements.mjs",
+    "evidence/translation/repair-discoveries.json",
+    "evidence/translation/repair-discoveries.md",
+    "resolutions/translation-rendered.md"
+  ],
+  "sharedChanges": [],
+  "renderReviewTargets": [
+    "translation: .98 through 1",
+    "proteinFolding: .5 lid and final complete branch; hold branch remains clamped",
+    "alternativeSplicing: both isoforms .33/.34, .56/.59, .62 through .77",
+    "nitrogenFixation: protected .799/.8/.81/.98 and inactive exposed branch",
+    "All four models: start/end and moving molecular label leaders after supplemental anchor repair; nitrogen .845 NH3, final FeMo/NH3 box avoidance; both splicing isoforms and both folding/nitrogen branches."
+  ],
+  "remainingLimits": [
+    "Post-anchor integrated browser capture, text-box collision review and continuous-video acceptance remain root-owned and pending.",
+    "Earlier default-English static samples were reviewed in translation-rendered.md; they are not post-anchor screenshots.",
+    "Illustrative molecular motion is not an atomistic simulation; original species/provenance/schematic boundaries remain."
+  ]
+}

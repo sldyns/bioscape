@@ -1,0 +1,10 @@
+{
+  "verdict": "PASS",
+  "baselinePath": "/tmp/bioscape-performance-20261004-baseline/src/CellScene.jsx",
+  "baselineSha256": "c47fa18b0db2b8bee0eb5c209c73198c3efd034014bdcf2a819d94bcd68370f0",
+  "currentSha256": "f888c89cfbea283d7ad31300e68a38eaabf7f9e9c9e4fb49b38b76d8eb739eb1",
+  "originalCalculationUnchangedExceptName": true,
+  "exactNumberComparisons": 3888,
+  "repeatedOrdinaryFitsWithoutRecomputation": 648,
+  "scope": "Actual old/new CellScene calculation source, synthetic stored part bounds, no browser/GPU/timing benchmark. Custom-camera, oriented and separation export arguments use original uncached calculation."
+}

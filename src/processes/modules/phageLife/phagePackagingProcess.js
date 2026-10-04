@@ -1,3 +1,4 @@
+import { objectAnchor, instanceAnchor } from "./labelAnchors.js";
 import { pocketDomain } from "./refinedGeometry.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { cutawayHead } from "./assemblyGeometry.js";
@@ -78,6 +79,10 @@ export default {
   ],
   sources: [
     {
+      title: "B-DNA geometry reference: 1BNA, Structure of a B-DNA dodecamer",
+      url: "https://www.rcsb.org/structure/1BNA",
+    },
+    {
       title:
         "Cryo-EM structure of the bacteriophage T4 portal protein assembly",
       url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4493910/",
@@ -106,6 +111,7 @@ export default {
     );
     const motor = new THREE.Group();
     group.add(motor);
+    motor.name = "T4-gp17-packaging-motor";
     motor.position.y = -1.48;
     const subunits = [],
       nucleotides = [];
@@ -162,6 +168,7 @@ export default {
     }
     const dsDNA = new THREE.Group();
     group.add(dsDNA);
+    dsDNA.name = "T4-packaging-external-DNA";
     const rails = [[], []],
       rungs = [];
     const strand0 = k.material("#bb975f"),
@@ -280,7 +287,7 @@ export default {
       for (let i = 0; i < 54; i++) {
         const y = -4.1 + (i * 3.35) / 54,
           ny = y + 3.35 / 54,
-          a = i * 0.42;
+          a = -i * 0.42;
         const visible = y >= bottom && ny <= top - gap * 0.28;
         for (let s = 0; s < 2; s++) {
           const sign = s ? -1 : 1;
@@ -290,9 +297,9 @@ export default {
             sign * 0.09 * Math.cos(a),
             y,
             sign * 0.09 * Math.sin(a),
-            sign * 0.09 * Math.cos(a + 0.42),
+            sign * 0.09 * Math.cos(a - 0.42),
             ny,
-            sign * 0.09 * Math.sin(a + 0.42),
+            sign * 0.09 * Math.sin(a - 0.42),
             0.033,
           );
         }
@@ -308,18 +315,31 @@ export default {
           0.018,
         );
       }
-      dsDNA.position.y = -detach * 0.3;
+      // The downstream cut product clears the full portal/neck envelope.
+      // Motor departure alone left its end inside the eventual seal's lumen.
+      dsDNA.position.y = -gap * 0.45 - detach * 0.3;
       guide.visible = atp && p > 0.25 && p < 0.78;
       guide.position.y = -2.7 + 0.25 * Math.sin(load * Math.PI * 6);
       cutMarker.visible = atp && p > 0.78 && p < 0.87;
       cutMarker.position.y = portalY - 0.15;
-      labels[1].position[1] = portalY + 0.03;
       labels[2].active = detach < 1;
       labels[3].active = guide.visible;
       labels[4].active = p < 0.93 || !atp;
       labels[5].active = atp && p >= 0.78 && p < 0.92;
-      labels[6].active = atp && p >= 0.92;
+      labels[6].active = head.neck.visible;
       labels[7].active = !atp && p >= 0.25;
+      objectAnchor(labels[0], head.group, 0, 0.5, 0);
+      objectAnchor(labels[1], head.portal.children[1].children[0]);
+      objectAnchor(labels[2], subunits[0].atpase.children[0]);
+      objectAnchor(labels[3], guide);
+      objectAnchor(labels[4], rails[0][27]);
+      if (cutMarker.visible) objectAnchor(labels[5], cutMarker, 0.19, 0, 0);
+      else objectAnchor(labels[5], subunits[0].atpase.children[0]);
+      instanceAnchor(
+        labels[6],
+        head.neck.getObjectByName("gp14-seal-subunits"),
+      );
+      objectAnchor(labels[7], subunits[2].atpase.children[0]);
       group.userData = {
         rootId,
         phage: "T4",

@@ -1,0 +1,202 @@
+{
+  "group": "membrane",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "reviewer": "review_membrane",
+  "phase": "A",
+  "summary": {
+    "models": 4,
+    "registeredRootConditionCombinations": 26,
+    "confirmedIssues": 6,
+    "P1": 3,
+    "P2": 3,
+    "sharedHelperIssue": "20261004-membrane-01 affects diffusion, activeTransport and bacterialCellWall; recorded once below",
+    "sharedOwnedIssue": "20261004-membrane-05 is in src/exploration/conditionNotes.js; integrator owns repair"
+  },
+  "models": [
+    {
+      "id": "diffusion",
+      "roots": ["cell", "plant", "bacterium", "yeast"],
+      "verdict": "confirmed_issue",
+      "scope": "Plasma membrane cutaway, four aquaporin monomer pores and oxygen bilayer route; 4 registered roots × water/oxygen × outside/equal = 16 combinations. Bacterial outer envelope and plant/yeast wall omissions are explicitly labeled. No root-specific contexts override the mechanism.",
+      "checks": [
+        "Read introductions, stages, controls, labels, legends, entries summaries, root labels, source list, exploration relationships and shared condition notes in both languages.",
+        "Actual 32 molecule objects conserved. Existing dense geometry test measures inward-minus-outward crossings of 8 for outside-high and 0 for equal, and 16 particles per side at the endpoint.",
+        "At |y| < 0.76, water centers are in one of four (x,z)=(±0.46,±0.46) monomer paths; oxygen centers remain |x|>=1.15 in lipid regions. Terminal interval has four inward and four outward return crossings.",
+        "Return transition at p=.85 rejoins the prior endpoint position continuously; wander uses continuous linear interpolation across floor steps. No unsupported teleport defect assigned to this branch.",
+        "Primary AQP1 coordinates downloaded and opened. The long chain-A helix 5–34 gives 27/27 positive signed consecutive-Cα triple products; the drawn alphaHelix centerline gives a negative triple product, confirming opposite chirality.",
+        "All 16 actual registered root/control combinations pass finite-buffer, fixed-node/fixed-geometry and irregular-seek diagnostics. Protein geometry remains schematic, without claiming sequence-specific atomic fits."
+      ],
+      "sources": [
+        {"url":"https://pubmed.ncbi.nlm.nih.gov/11780053/","title":"Sui et al. (2001), Structural basis of water-specific transport through the AQP1 water channel","supports":"Opened primary abstract: water transport through an aqueous vestibule/selectivity-filter path in response to osmotic gradients; not proton transport."},
+        {"url":"https://www.rcsb.org/structure/1J4N","title":"RCSB PDB 1J4N: Crystal Structure of the AQP1 water channel","supports":"Opened primary structure record; tetrameric assembly and experimental 2.20 Å structure. Downloaded author coordinates provide an independent handedness reference; local file evidence/membrane/AQP1-1J4N.pdb."}
+      ],
+      "findings": [
+        {
+          "issueId":"20261004-membrane-01",
+          "severity":"P1",
+          "kind":"scientific_geometry_chirality",
+          "file":"src/processes/modules/membrane/membraneGeometry.js",
+          "location":"alphaHelix, lines 109–120; used by diffusion, activeTransport, bacterialCellWall",
+          "affectedModels":["diffusion","activeTransport","bacterialCellWall"],
+          "evidence":"The centerline is (0.084*cos(14*pi*t), 2*t-1, 0.084*sin(14*pi*t)). Its consecutive displacement scalar triple product at t=.20,.21,.22,.23 is -2.1874584530862557e-6. AQP1 1J4N chain A residues 5–34 gives 27 positive / 0 negative measurements using the same invariant. Positive scales and proper rotations preserve this sign in all three models.",
+          "whyWrong":"The helper mirrors the ordinary right-handed alpha-helical architecture of the depicted membrane proteins. A schematic may simplify a fold, but its alpha helices should not all have the opposite handedness.",
+          "fix":"Reverse the angular sense around the +y axis in the owned alphaHelix helper while preserving height, winding count, thickness, detail and resource reuse. Check all three consumers.",
+          "verification":"Measure signed triple products from the actual TubeGeometry centerline (and selected transformed instances) against a right-handed helix/reference Cα segment. Test must fail for the original helper. Re-run local geometry and resource regressions.",
+          "sourceUrls":["https://www.rcsb.org/structure/1J4N","https://pubmed.ncbi.nlm.nih.gov/11780053/"]
+        },
+        {
+          "issueId":"20261004-membrane-05",
+          "severity":"P2",
+          "kind":"shared_bilingual_condition_ambiguity",
+          "file":"src/exploration/conditionNotes.js",
+          "location":"diffusion gradient=equal rule, lines 882–895",
+          "evidence":"The rule matches gradient=equal for both routes, then says 两侧浓度相等 / Equal concentrations and concentration-driven net flux. The process deliberately defines the water control as equal water activity and warns that water activity is not solute concentration.",
+          "whyWrong":"For the water route the overlay silently changes the quantity being compared, undermining the module's explicit distinction between oxygen concentration, water activity and impermeant-solute concentration.",
+          "fix":"Integrator-owned: make the rule route-aware, or say equal oxygen concentration / equal water activity in both languages. Keep the balanced bidirectional exchange claim.",
+          "verification":"Evaluate the user-visible condition note for all four route/gradient combinations; the water+equal note must identify water activity and the oxygen+equal note oxygen concentration.",
+          "sourceUrls":["https://pubmed.ncbi.nlm.nih.gov/11780053/"]
+        }
+      ],
+      "continuity":{"checked":"Full 0–1 formula trace, 1000-step crossings in 16 combinations, exact .85 return seam, irregular seeks and topology inspection.","findings":[],"limits":["Linear random-walk interpolation is positional-continuity evidence, not a measured Brownian trajectory or a rendered smoothness acceptance."]},
+      "limitations":["No browser review by this agent; root owns rendered acceptance.","General aquaporin architecture is schematic and not a sequence-specific model for every species/root.","Finite particle counts are a teaching illustration, not water-activity or kinetic calibration."],
+      "confidence":"high"
+    },
+    {
+      "id":"activeTransport",
+      "roots":["cell"],
+      "verdict":"confirmed_issue",
+      "scope":"Animal plasma-membrane Na/K ATPase; ATP/no-ATP = 2 registered combinations. No neuron or muscle registration for this process ID.",
+      "checks":[
+        "Bilingual text and controls consistently identify 3 Na exported, 2 K imported and 1 ATP per cycle; N/P/A domains are cytoplasmic and beta-subunit head extracellular.",
+        "Actual ion centers move through the central membrane opening in the stated directions. Dense old regression validates exclusive gate access, sodium occlusion before the displayed phosphotransfer, potassium occlusion before Pi exit, and 3/2 terminal ion positions.",
+        "No-ATP q=min(p,.18) stops after sodium binding; no ATP/ADP or phosphate markers are displayed, and extracellular potassium remains outside.",
+        "Exactly one terminal-phosphate identity is visible before/after p=.29, so there is no duplicate visible phosphate; however position and radius change discontinuously.",
+        "Shared helper chirality issue 20261004-membrane-01 also affects alpha-subunit, beta-subunit and cytoplasmic-domain helices in this model.",
+        "Both energy combinations pass finite-buffer, fixed-node/fixed-geometry and irregular-seek diagnostics."
+      ],
+      "sources":[
+        {"url":"https://www.nature.com/articles/s41467-022-32990-x","title":"Nguyen et al. (2022), Structural basis for gating mechanism of the human sodium-potassium pump","supports":"Opened primary full text, introduction/Post–Albers description and structural results: 3 Na/2 K/1 ATP, cytoplasmic N/P/A domains, 10 alpha TM helices, alternating accessibility and conserved P-domain aspartate phosphorylation."},
+        {"url":"https://www.rcsb.org/structure/1J4N","title":"Primary alpha-helix chirality comparison for shared helper","supports":"Actual coordinate handedness comparison applies to the generic helix generator, not a claim that the pump has AQP1's fold."}
+      ],
+      "findings":[
+        {
+          "issueId":"20261004-membrane-02",
+          "severity":"P2",
+          "kind":"visible_motion_discontinuity",
+          "file":"src/processes/modules/membrane/activeTransportProcess.js",
+          "location":"update phosphate handoff, lines 298–313",
+          "evidence":"Across p=.29±1e-8 the visible terminal phosphate changes from (-.41,-1.59,.45), diameter .23, to (.12,-1.61,.39), diameter .30. The centers differ by .5337602458 units, more than two terminal-marker diameters, with no transfer segment.",
+          "whyWrong":"At the lesson's ATP-to-pump phosphotransfer event, the tracked chemical marker disappears and reappears at a separated position. This visible discontinuity omits the transfer path and fails the requested continuous playback despite correct phosphate counts.",
+          "fix":"Use one conserved phosphate marker or an exact-position handoff; smoothly move ATP gamma phosphate into the P-domain site over a short, gate-compatible interval. Retain the existing occlusion and dephosphorylation ordering.",
+          "verification":"Probe the visible phosphate's world-space position and scale immediately around transfer and through a short dense interval; displacement must converge toward zero with timestep. Confirm one phosphate, no ATP use in the none branch, and unchanged gate ordering.",
+          "sourceUrls":["https://www.nature.com/articles/s41467-022-32990-x"]
+        }
+      ],
+      "relatedIssueIds":["20261004-membrane-01"],
+      "continuity":{"checked":"All piecewise ease intervals, .29 identity seam, .78/.805 Pi exit and .985 endpoint; 1000-step gate scan in each energy branch plus irregular seeks.","findings":["20261004-membrane-02"],"limits":["Conformational movement is schematic; no physical-rate inference or rendered acceptance."]},
+      "limitations":["No browser review by this agent.","The diagram is not an atomic reconstruction; FXYD, ATP binding details and microscopic transition kinetics are omitted."],
+      "confidence":"high"
+    },
+    {
+      "id":"osmoticBalance",
+      "roots":["cell","erythrocyte"],
+      "verdict":"confirmed_issue",
+      "scope":"Mature mammalian erythrocyte, including the specialized erythrocyte processesByRoot registration absent from entries roots. 2 roots × hypotonic/isotonic/hypertonic = 6 combinations.",
+      "checks":[
+        "Bilingual text consistently names mature mammalian red cells without nucleus/wall, defines tonicity relative to interior, and excludes quantitative biomechanics, regulation and hemolysis. Both root relationships preserve that scope.",
+        "Actual outer/inner triangle area is conserved within 1e-6 relative across 101 samples/condition. Terminal V/V0 is 1.624757 hypotonic, 1 isotonic and .637394 hypertonic; trajectories are monotonic in the stated directions.",
+        "The cytoplasmic leaflet is .935 of outer coordinates, skeleton .9, and attachment endpoints follow those same deformed coordinates. The cutaway is bounded and all full-membrane triangle topology persists.",
+        "Impermeant external solute objects remain fixed outside; the count changes by selected condition only. The absent explicit intracellular solute pool is an omission, not evidence of solute crossing.",
+        "Water direction counts are 16 in/4 out hypotonic, 10/10 isotonic, 4/16 hypertonic. Twenty water tracers all use a modulus reset; exact first-reset probes were measured for all three conditions.",
+        "All six registered combinations pass finite-buffer, fixed inventory and irregular-seek checks."
+      ],
+      "sources":[
+        {"url":"https://pubmed.ncbi.nlm.nih.gov/7082818/","title":"Linderkamp and Meiselman (1982), Geometric, osmotic, and membrane mechanical properties of density-separated human red cells","supports":"Primary abstract opened via Europe PMC API after PubMed rendered incompletely: lowering osmolality increases red-cell volume while membrane area remains constant; saved rbc-primary-abstract.json."},
+        {"url":"https://pubmed.ncbi.nlm.nih.gov/37044097/","title":"Li et al. (2023), Structural basis of membrane skeleton organization in red blood cells","supports":"Opened primary abstract: a spectrin-based membrane skeleton sits beneath the lipid membrane; native porcine erythrocyte junctional-complex structures support the explicitly schematic cortex placement."}
+      ],
+      "findings":[
+        {
+          "issueId":"20261004-membrane-03",
+          "severity":"P2",
+          "kind":"visible_motion_discontinuity",
+          "file":"src/processes/modules/membrane/osmoticBalanceProcess.js",
+          "location":"water updates, lines 347–361",
+          "evidence":"t=(p*2.2+seeded(i,23))%1 resets each particle between radius 3.3 and 1.1. At the first reset for all 20 particles × 3 conditions, p±1e-7 positions differ by 2.199999032 units. The exterior endpoint at radius 3.3 has no opaque-membrane intersection from the prescribed camera; opacity remains 1 and visible remains true. Thus outward particles vanish from exterior fluid, and inward particles appear there abruptly.",
+          "whyWrong":"A repeated flow is valid, but this implementation resets the visible track through the cell instead of using a hidden/faded recycle interval. The discontinuity is observable well outside the membrane and recurs during the continuous-water-exchange lesson.",
+          "fix":"Give tracer trajectories a continuous return/recycle path with an explicitly invisible or smoothly faded reservoir interval, or use continuous finite bidirectional tracks. Preserve flux-direction teaching and do not reduce water detail.",
+          "verification":"Inspect every modulus seam in all three conditions and both registered roots. No fully visible marker may make a non-vanishing jump as timestep shrinks; preserve inside/outside crossing direction, relative direction counts, area and volume invariants and deterministic seeks.",
+          "sourceUrls":["https://pubmed.ncbi.nlm.nih.gov/7082818/"]
+        }
+      ],
+      "continuity":{"checked":"Continuous deformation across all stages; 101-sample area/volume integration per tonicity; exact first reset for all 60 particle-condition cases; later identical seams follow the same modulus formula.","findings":["20261004-membrane-03"],"limits":["Visibility test is an actual camera-ray/triangle test against the opaque membrane, not a browser-rendered recording."]},
+      "limitations":["Root must perform rendered continuous-playback review.","Crenation and the initial biconcavity are qualitative shape functions, not patient-specific mechanics.","The two named membrane faces have exaggerated separation for the cutaway; thickness is not measured."],
+      "confidence":"high"
+    },
+    {
+      "id":"bacterialCellWall",
+      "roots":["bacterium"],
+      "verdict":"confirmed_issue",
+      "scope":"E. coli elongation RodA/PBP2 glycan and transpeptidation schematic, pre-flipped lipid II, outer membrane omitted; none/betaLactam = 2 combinations.",
+      "checks":[
+        "Bilingual intros/stages/control/legend explicitly restrict E. coli and direct transpeptidation inhibition, without claiming lysis or all bacterial wall chemistries.",
+        "Actual four sugar objects persist through lipid-II-to-tetrasaccharide conversion. Existing bond endpoint checks confirm NAM–PP attachment, donor-carrier release and one retained acceptor lipid anchor.",
+        "The two normal crosslinks connect donor D-Ala4 to unoccupied acceptor mDAP3, each with terminal D-Ala release. Blocked branch keeps terminal D-Ala and makes zero new crosslinks. Existing mesh remains present.",
+        "The glycan synthesis bond appears only after substrates approach; visible bond creation/destruction is a chemical event and was not alone counted as a motion failure.",
+        "Actual PBP2 triangle-surface distances reveal missing catalytic contact at both transpeptidation times. Beta-lactam ring/covalent-bond endpoints were inspected separately.",
+        "Shared alphaHelix chirality issue 20261004-membrane-01 affects RodA/PBP2 helices. Both control combinations otherwise pass finite/stable/deterministic checks and existing 402-state molecular conservation regressions."
+      ],
+      "sources":[
+        {"url":"https://www.nature.com/articles/s41467-023-40483-8","title":"Structural basis of peptidoglycan synthesis by E. coli RodA-PBP2 complex (2023)","supports":"Opened primary full text through Europe PMC fullTextXML: RodA donor/acceptor lipid-II polymerization releases donor Und-PP, growing substrate reaches PBP2 TP active site, and PBP2 is mobile. Does not prescribe the schematic cartoon's spatial scale or a universal minimum chain length."},
+        {"url":"https://pmc.ncbi.nlm.nih.gov/articles/PMC3025346/","title":"Crystal Structures of Penicillin-Binding Protein 3 from Pseudomonas aeruginosa: Comparison of Native and Antibiotic-Bound Forms","supports":"Opened primary full text through Europe PMC fullTextXML: beta-lactam acyl complexes join active-site serine to the carbonyl of the opened cyclic amide. Used only for common serine-PBP acylation chemistry, not E. coli PBP2-specific kinetics."},
+        {"url":"https://www.rcsb.org/structure/1J4N","title":"Primary alpha-helix chirality comparison for shared helper","supports":"Independent chirality reference for the same generic alphaHelix geometry; not an assertion of aquaporin fold in RodA/PBP2."}
+      ],
+      "findings":[
+        {
+          "issueId":"20261004-membrane-04",
+          "severity":"P1",
+          "kind":"misleading_catalytic_contact",
+          "file":"src/processes/modules/membrane/bacterialCellWallProcess.js",
+          "location":"PBP2 cleft construction lines 180–192; substrate advance and transpeptidation lines 388–426",
+          "evidence":"At p=.69 first donor D-Ala4 is (0,1.94,.3), but the PBP2 catalytic marker is (1.501406,1.803177,-.184). Donor-to-marker distance is 1.583413 and exact nearest-triangle-surface distance to the PBP2 cleft is 1.048551. At p=.82 the second donor is (1.36,1.94,.3), still .477390 from the nearest PBP2 triangle. Donor sphere radius is only .064; both crosslinks appear while substrates are detached from the drawn catalytic protein.",
+          "whyWrong":"The lesson specifically shows PBP2 catalyzing these reactions, but neither reacting stem visits its depicted catalytic cleft. Correct bond identity/count cannot substitute for enzyme–substrate contact and therefore the geometry depicts catalysis at a distance.",
+          "fix":"Continuously position the catalytic PBP2 domain and/or flexible substrate stems so each terminal D-Ala cleavage and crosslink event takes place at the actual drawn active site. Preserve covalent glycan/stem/lipid continuity and existing acceptor occupancy; keep the membrane anchor attached while the domain moves.",
+          "verification":"For both sequential reactions, test the actual reacting stem atoms/markers against the real active-site marker and local cleft geometry before bond change; require contact-scale distances, correct timing, continuous movement, and preservation of all old molecular conservation invariants. Confirm blocked branch does not cleave or crosslink.",
+          "sourceUrls":["https://www.nature.com/articles/s41467-023-40483-8"]
+        },
+        {
+          "issueId":"20261004-membrane-06",
+          "severity":"P1",
+          "kind":"incorrect_covalent_topology",
+          "file":"src/processes/modules/membrane/bacterialCellWallProcess.js",
+          "location":"beta-lactam ring/carbonyl/covalent geometry lines 333–359 and drugBonds[3] visibility at line 437",
+          "evidence":"The explicitly constructed carbonyl substituent is at ring corner (+.12,+.12), but acylation removes edge 3 joining (-.12,+.12) to (-.12,-.12), which is not incident on that carbonyl. The covalent segment ends at the ring center, not any ring atom; at p=1 its drug-side endpoint is (1.68,1.8,.25), .169706 from the carbonyl corner (1.8,1.92,.25). Both carbonyl-incident ring edges remain drawn.",
+          "whyWrong":"Serine-PBP beta-lactam acylation opens the cyclic amide at the carbonyl C–N bond and connects the enzyme to that carbonyl carbon. The current geometry breaks an unrelated edge and draws a purported covalent bond into the empty middle of the ring, contradicting the claimed stable covalent complex.",
+          "fix":"Explicitly identify the ring carbonyl carbon and adjacent nitrogen in the owned schematic, open their connecting bond, and connect the enzyme active-site serine marker to the same carbonyl carbon. Derive bond endpoints from actual moving objects and preserve the inhibited-state mechanism.",
+          "verification":"Inspect actual world-space ring/bond endpoints: the cleaved edge must be incident on the marked carbonyl and adjacent nitrogen; covalent bond must end at that carbonyl and the enzyme residue; no detached endpoint in the center and no intact C–N edge after acylation. Test approach, reaction seam and terminal inhibited state.",
+          "sourceUrls":["https://pmc.ncbi.nlm.nih.gov/articles/PMC3025346/"]
+        }
+      ],
+      "relatedIssueIds":["20261004-membrane-01"],
+      "continuity":{"checked":"Full stage/order/formula trace, polymerization p=.32, carrier release, advance .39–.61, reactions .69/.82, drug approach .12–.42 and terminal states. 402 actual-geometry old regression states and irregular seeks; extra triangle/endpoint diagnostics.","findings":["20261004-membrane-04","20261004-membrane-06"],"limits":["No claim that a quantitative natural peptide/glycan path is known from this cartoon; sufficient physical contact and covalent continuity are the invariant."]},
+      "limitations":["Root owns browser/continuous playback acceptance.","Four-sugar synthesis is an explicitly reduced teaching segment, not a measured full-length natural RodA product; no minimum-chain-length defect is inferred from one structural modeling paper.","Precise lipid flipping, cytoplasmic precursor synthesis, outer membrane, Mre system and long-term antibiotic effects are omitted explicitly."],
+      "confidence":"high"
+    }
+  ],
+  "evidence": [
+    "docs/qa/process-review-2026-10-04/evidence/membrane/diagnostics.mjs",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/diagnostics.json",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/beta-lactam-diagnostics.json",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/science-test.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/refinement-test.log",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/AQP1-1J4N.pdb",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/roda-pbp2-source.xml",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/rbc-primary-abstract.json",
+    "docs/qa/process-review-2026-10-04/evidence/membrane/pbp-acylation-source.xml"
+  ],
+  "commands": [
+    "node src/processes/modules/membrane/science.test.mjs",
+    "node src/processes/modules/membrane/refinement.test.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/membrane/diagnostics.mjs"
+  ],
+  "phaseBoundary":"Product and tests remain unchanged. Await explicit root Phase B release; shared condition note repair belongs to root."
+}

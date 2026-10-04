@@ -146,6 +146,19 @@ try {
     /Oxygen.*Equal concentrations/,
   );
   assert.match(
+    note("diffusion", { route: "water", gradient: "equal" }).body,
+    /Equal water activity.*aquaporins/,
+  );
+  assert.doesNotMatch(
+    note("diffusion", { route: "water", gradient: "equal" }).body,
+    /concentration/i,
+  );
+  assert.match(
+    getConditionNote("diffusion", { route: "water", gradient: "equal" }, "zh")
+      .body,
+    /两侧水活度相等/,
+  );
+  assert.match(
     note("proteasome", { shell: "whole", tag: "untagged" }).body,
     /ubiquitin/,
   );

@@ -1,5 +1,6 @@
 import { THREE, sceneKit, bilingual as b, clamp, ease } from "../../kit.js";
 import { anatomy } from "./anatomy.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 function create() {
   const k = sceneKit();
@@ -222,6 +223,7 @@ function create() {
   }
   const sugar = new THREE.Group();
   group.add(sugar);
+  sugar.name = "tracked-sucrose";
   const ringGeometry = new THREE.TorusGeometry(0.16, 0.045, 8, 6);
   const r1 = mesh(ringGeometry, sucroseMat, [-0.13, 0, 0], sugar),
     r2 = mesh(ringGeometry, sucroseMat, [0.17, 0, 0], sugar);
@@ -239,8 +241,8 @@ function create() {
     phosphate.push(ph);
   }
   const labels = [
-    label([-3.1, 2.1, 0], "细胞壁 · 质外体", "Cell wall · apoplast", 3),
-    label([-2.9, -2.05, 0.25], "伴胞的细胞质", "Companion-cell cytosol", 3),
+    label([-3.1, 1.9, -1.1], "细胞壁 · 质外体", "Cell wall · apoplast", 3),
+    label([-2.9, -2.05, 0], "伴胞的细胞质", "Companion-cell cytosol", 3),
     label(
       [-1.95, -1.35, 0.4],
       "质膜 H⁺-ATPase",
@@ -248,7 +250,12 @@ function create() {
       3,
     ),
     label([2.7, -0.25, 0.65], "SUC2 同向转运体", "SUC2 symporter", 3),
-    label([0.4, 1.45, 0.2], "H⁺ 电化学梯度", "H⁺ electrochemical gradient", 2),
+    label(
+      [0.4, 0.98, -0.63],
+      "H⁺ 电化学梯度",
+      "H⁺ electrochemical gradient",
+      2,
+    ),
     label([3.1, 1.18, 0.4], "蔗糖", "Sucrose", 2),
     label(
       [-3.05, -0.75, 0.65],
@@ -263,6 +270,13 @@ function create() {
       1,
     ),
   ];
+  const updateLabelAnchors = labelAnchors([
+    [labels[2], catalytic.children[0]],
+    [labels[3], carrier.getObjectByName("SUC2-N-helix-1")],
+    [labels[5], sugar, [0.02, 0, 0]],
+    [labels[6], atp.children[0]],
+    [labels[7], pump.getObjectByName("H-ATPase-M1")],
+  ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       active = parameters.energy !== "depleted";
@@ -302,6 +316,8 @@ function create() {
     lobes[1].rotation.z = -0.18 + 0.36 * uptake;
     updateLinker();
     labels[4].active = active && p >= 0.26;
+    labels[6].active = active;
+    updateLabelAnchors();
     group.userData = {
       process: "plantTransport",
       trackedPumpCycles: active && p >= 0.34 ? 1 : 0,

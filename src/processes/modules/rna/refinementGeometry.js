@@ -1,5 +1,35 @@
 import { THREE } from "../../kit.js";
 
+// Keep a leader on an existing vertex or triangle centroid as its object moves.
+// Scratch objects and the label/position array are allocated only at creation.
+export function bindLabelToSurface(
+  label,
+  mesh,
+  vertexIndex = 0,
+  instanceIndex = null,
+) {
+  const vertices = Array.isArray(vertexIndex) ? vertexIndex : [vertexIndex];
+  const local = new THREE.Vector3();
+  const vertex = new THREE.Vector3();
+  for (const index of vertices)
+    local.add(
+      vertex.fromBufferAttribute(mesh.geometry.attributes.position, index),
+    );
+  local.divideScalar(vertices.length);
+  const point = new THREE.Vector3();
+  const instance = instanceIndex === null ? null : new THREE.Matrix4();
+  return function updateLabelAnchor() {
+    mesh.updateWorldMatrix(true, false);
+    point.copy(local);
+    if (instance) {
+      mesh.getMatrixAt(instanceIndex, instance);
+      point.applyMatrix4(instance);
+    }
+    point.applyMatrix4(mesh.matrixWorld);
+    point.toArray(label.position);
+  };
+}
+
 // Functional molecular surfaces and secondary-structure traces, not atomic fits.
 export function proteinDomain(k, parent, position, scale, material, phase = 0) {
   const geometry = new THREE.SphereGeometry(1, 32, 22);

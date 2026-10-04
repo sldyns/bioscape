@@ -4,6 +4,7 @@ import feedingModel from "./parameciumFeedingProcess.js";
 import cvModel from "./contractileVacuoleProcess.js";
 import divisionModel from "./parameciumDivisionProcess.js";
 import conjugationModel from "./parameciumConjugationProcess.js";
+import { runReview20261004 } from "./review20261004.test.mjs";
 
 const object = (scene, name) => {
   const o = scene.group.getObjectByName(name);
@@ -310,3 +311,10 @@ for (const model of [feedingModel, cvModel, divisionModel, conjugationModel]) {
     "scientific geometry + deterministic finite/resource checks PASS",
   );
 }
+
+runReview20261004({
+  feeding,
+  cv,
+  division,
+  conjugation: conjugationModel.create(),
+});

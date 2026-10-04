@@ -1,6 +1,13 @@
-import { duplex, pocketDomain } from "./refinedGeometry.js";
+import {
+  objectAnchor,
+  vertexAnchor,
+  instanceAnchor,
+  duplexAnchor,
+} from "./labelAnchors.js";
+import { duplex, pocketDomain, hollowCylinder } from "./refinedGeometry.js";
+import { lambdaChromosome, lambdaGenome } from "./lambdaTopology.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { hostCutaway, phage, chromosome } from "./geometry.js";
+import { hostCutaway, phage } from "./geometry.js";
 export default {
   id: "phageLysogenic",
   title: b("λ 噬菌体溶原与诱导", "Lambda lysogeny and induction"),
@@ -86,6 +93,16 @@ export default {
   ],
   sources: [
     {
+      title:
+        "Real-time observations of single bacteriophage lambda DNA ejections in vitro",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC1976217/",
+    },
+    {
+      title:
+        "A structural basis for allosteric control of DNA recombination by lambda integrase",
+      url: "https://www.nature.com/articles/nature03657",
+    },
+    {
       title: "NCBI Bookshelf: DNA Rearrangements",
       url: "https://www.ncbi.nlm.nih.gov/books/NBK9937/",
     },
@@ -103,16 +120,37 @@ export default {
       { group } = k,
       host0 = hostCutaway(k, group),
       host1 = hostCutaway(k, group);
-    const chr0 = chromosome(k, group, k.material("#899e9b")),
-      chr1 = chromosome(k, group, k.material("#899e9b"));
+    const chr0 = lambdaChromosome(k, group),
+      chr1 = lambdaChromosome(k, group);
     host0.group.name = "lambda-left-host";
     host1.group.name = "lambda-right-host";
     [chr0, chr1].forEach((chr, i) => {
       chr.group.name = `lambda-chromosome-${i}`;
-      chr.inserted.name = `lambda-integrated-prophage-${i}`;
     });
     const lambda = phage(k, group, { lambda: true, scale: 0.76 });
-    lambda.group.position.set(-0.35, 2.4, 0.15);
+    lambda.group.name = "lambda-attached-visitor";
+    lambda.group.position.set(-0.35, 2.292, 0.08);
+    lambda.genome.visible = false;
+    const genome0 = lambdaGenome(k, chr0.group),
+      genome1 = lambdaGenome(k, chr1.group);
+    genome0.group.name = "lambda-integrated-prophage-0";
+    genome1.group.name = "lambda-integrated-prophage-1";
+    genome1.update({ junction: 1 });
+    chr1.update(0.16);
+    const channel = hollowCylinder(
+      k,
+      group,
+      0.05,
+      0.035,
+      0.24,
+      k.material("#93aca6", {
+        transparent: true,
+        opacity: 0.42,
+        depthWrite: false,
+      }),
+      [-0.2512, 1.35, 0.08],
+    );
+    channel.name = "lambda-envelope-delivery-channel";
     const dnaCircle = (position, radius, thickness, material) => {
       const points = Array.from({ length: 65 }, (_, i) => {
         const a = (i * Math.PI * 2) / 64;
@@ -129,36 +167,12 @@ export default {
       d.group.position.set(...position);
       return d.group;
     };
-    const freeDNA = dnaCircle(
-      [0, 1.1, 0.18],
-      0.34,
-      0.043,
-      k.material("#ad82a9"),
-    );
-    const linearDNA = duplex(
-      k,
-      group,
-      [
-        [-0.3, 1.6, 0.12],
-        [-0.22, 1.1, 0.12],
-        [-0.45, 0.85, 0.13],
-        [0, 0.8, 0.13],
-        [0.35, 0.94, 0.13],
-      ],
-      {
-        radius: 0.024,
-        rail: 0.013,
-        turns: 15,
-        samples: 140,
-        pairs: 55,
-        colors: ["#ad82a9", "#c1a5c2"],
-        name: "lambda-incoming-dsDNA",
-      },
-    ).group;
-    const attP = k.ball([0, 1.43, 0.22], 0.075, k.material("#bd9a5f"));
+    const attP = k.ball([0, 0.61, 0.22], 0.075, k.material("#bd9a5f"));
     const attB = k.ball([0, 0.61, 0.17], 0.075, k.material("#bd9a5f"));
+    attP.name = "lambda-attP-contact";
+    attB.name = "lambda-attB-contact";
     const integrase = k.ring(
-      [0, 0.87, 0.25],
+      [0, 0.61, 0.25],
       0.21,
       0.06,
       k.material("#bba879"),
@@ -213,14 +227,11 @@ export default {
       damage,
       24,
     );
-    const excised = dnaCircle(
-      [-1.7, 0.64, 0.2],
-      0.3,
-      0.042,
-      k.material("#ad82a9"),
-    );
+    // Same mutable DNA buffers, mutually exclusive scene ownership after
+    // excision: the molecule is not duplicated during the conversion.
+    const excised = genome0.group.clone(true);
     excised.name = "lambda-excised-prophage";
-    excised.scale.x = 0.8;
+    chr0.group.add(excised);
     const replicas = Array.from({ length: 3 }, (_, i) => {
       const r = dnaCircle(
         [-2.15 + i * 0.43, 0.18, 0.3],
@@ -314,20 +325,25 @@ export default {
         chr.group.position.x = (i === 0 ? -1 : 1) * 1.7 * division;
         chr.group.scale.set(1 - 0.48 * division, 1, 1);
         chr.group.visible = i === 0 ? !induce || p < 0.97 : p >= 0.5;
-        chr.inserted.visible = p >= 0.29 && (i === 1 || excision < 0.5);
-        chr.normal.visible = !chr.inserted.visible;
       });
       // Both inherited chromosomes include the integrated prophage before induction.
       chr1.group.scale.y = 0.25 + 0.75 * ease(p, 0.5, 0.6);
       lambda.group.visible = p < 0.24;
-      lambda.genome.visible = p < 0.07;
-      lambda.genome.scale.setScalar(Math.max(0.01, 1 - ease(p, 0, 0.12)));
-      linearDNA.visible = p > 0.025 && p < 0.135;
-      freeDNA.visible = p > 0.1 && p < 0.3;
-      freeDNA.position.y = 1.12 - 0.21 * integration;
-      freeDNA.scale.set(1 + integration * 0.5, 1 - integration * 0.45, 1);
+      lambda.genome.visible = false;
+      channel.visible = p < 0.12;
+      const junction = integration * (1 - excision),
+        width = genome0.update({
+          entry: ease(p, 0, 0.105),
+          circularize: ease(p, 0.105, 0.165),
+          junction,
+          excised: induce ? ease(p, 0.83, 0.87) : 0,
+        });
+      chr0.update(width);
+      genome0.group.visible = !induce || p < 0.83;
+      excised.visible = induce && p >= 0.83 && p < 0.89;
       attP.visible = p >= 0.15 && p < 0.32;
-      attP.position.y = 1.43 - 0.45 * integration;
+      attP.position.set(-width, 0.61, 0.22);
+      attB.position.set(width, 0.61, 0.17);
       attB.visible = attP.visible;
       integrase.visible = p >= 0.18 && p < 0.33;
       repressors.forEach((r, i) => {
@@ -341,8 +357,6 @@ export default {
       });
       damage.visible = induce && p >= 0.67 && p < 0.8;
       recA.scale.x = 0.4 + 0.6 * ease(p, 0.67, 0.73);
-      excised.visible = induce && p >= 0.795 && p < 0.89;
-      excised.position.y = 0.83 - 0.53 * excision;
       replicas.forEach((r, i) => {
         r.visible = induce && p >= 0.83 + i * 0.008 && p < 0.92;
         r.scale.y = Math.max(0.01, ease(p, 0.83, 0.865));
@@ -366,12 +380,34 @@ export default {
       septum.scale.setScalar(Math.max(0.02, 1 - division));
       labels[0].active = p < 0.5;
       labels[1].active = p < 0.2;
-      labels[2].active = p >= 0.16 && p < 0.34;
+      labels[2].active = p >= 0.16 && attP.visible;
       labels[3].active = p >= 0.3 && p < 0.66;
       labels[4].active = p >= 0.35 && (!induce || p < 0.7);
       labels[5].active = p >= 0.65;
-      labels[6].active = induce && p >= 0.67 && p < 0.8;
+      labels[6].active = induce && p >= 0.67 && repressors[0].visible;
       labels[7].active = induce && p >= 0.78;
+      instanceAnchor(
+        labels[0],
+        host0.group.getObjectByName("paired-leaflet-headgroups"),
+        48,
+      );
+      vertexAnchor(
+        labels[1],
+        lambda.tail.getObjectByName("lambda-open-tail-tube"),
+        40 * 17,
+      );
+      objectAnchor(labels[2], attP);
+      duplexAnchor(labels[3], genome0.group);
+      objectAnchor(labels[4], repressors[0].children[0]);
+      objectAnchor(labels[5], host1.group);
+      objectAnchor(labels[6], repressors[0].children[0]);
+      if (p < 0.83) duplexAnchor(labels[7], genome0.group);
+      else if (p < 0.89) duplexAnchor(labels[7], excised);
+      else
+        vertexAnchor(
+          labels[7],
+          offspring[0].head.getObjectByName("lambda-capsid-shell"),
+        );
       group.userData = {
         rootId,
         host: "Escherichia coli",

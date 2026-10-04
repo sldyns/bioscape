@@ -1,11 +1,11 @@
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 import {
   helix,
   betaSheet,
   kinaseFold,
   membraneWall,
-  rearShell,
   chromatinFiber,
   poreComplex,
   materialInventory,
@@ -32,6 +32,7 @@ function create() {
   );
   const recMat = k.material("#638f98"),
     phosphateMat = k.material("#d5a453");
+  let receptorAnchor;
   const receptors = [],
     phosphates = [];
   for (let i = 0; i < 2; i++) {
@@ -54,12 +55,13 @@ function create() {
       const domain = new THREE.Group();
       r.add(domain);
       domain.position.set(0.07 * Math.sin(d), 1.83 + d * 0.15, 0.03);
-      k.ball(
+      const domainMesh = k.ball(
         [0, 0, 0],
         [0.15, 0.11, 0.12],
         d % 2 ? recMat : k.material("#7ca0aa"),
         domain,
       );
+      if (i === 0 && d === 2) receptorAnchor = domainMesh;
       betaSheet(k, domain, [0, 0, 0.13], 0.16, k.material("#bad1cf"), 3);
     }
     const catalytic = kinaseFold(k, r, recMat, 0.85);
@@ -124,25 +126,43 @@ function create() {
     opacity: 0.18,
     depthWrite: false,
   });
-  // An open cutaway shell lets the nuclear side and pore remain visible.
-  const nucleus = k.mesh(
-    new THREE.SphereGeometry(
+  // Every envelope layer terminates at the same pore plane. A pore placed on
+  // top of an intact rim would make ERK cross membrane rather than its opening.
+  const nuclearEnvelope = new THREE.Group();
+  nuclearEnvelope.name = "nuclear-envelope-with-open-portal";
+  group.add(nuclearEnvelope);
+  const portalX = 1.845,
+    nuclearCenter = [2.65, -1.5, 0.08];
+  function envelopeLayer(radii, mat, rearOnly = false) {
+    const cap = Math.acos((nuclearCenter[0] - portalX) / radii[0]);
+    const geometry = new THREE.SphereGeometry(
       1,
-      40,
-      24,
-      0,
-      Math.PI * 2,
-      0.2,
-      Math.PI - 0.2,
-    ).rotateZ(Math.PI / 2),
-    nucleusMat,
-    [2.65, -1.5, -0.12],
-  );
-  nucleus.scale.set(1.1, 1.2, 0.7);
-  const rim = k.ring([2.65, -1.5, 0.05], 1.08, 0.045, k.material("#999caf"));
-  rim.scale.y = 1.1;
-  const pore = k.ring([1.59, -1.38, 0.12], 0.18, 0.048, k.material("#7f8e9c"));
-  pore.rotation.y = Math.PI / 2;
+      48,
+      28,
+      rearOnly ? Math.PI : 0,
+      rearOnly ? Math.PI : Math.PI * 2,
+      cap,
+      Math.PI - cap,
+    ).rotateZ(Math.PI / 2);
+    const shell = k.mesh(geometry, mat, nuclearCenter, nuclearEnvelope);
+    shell.scale.set(...radii);
+    return shell;
+  }
+  envelopeLayer([1.1, 1.2, 0.7], nucleusMat);
+  function envelopeRim(rx, ry, z, thickness, mat) {
+    const cap = Math.acos((nuclearCenter[0] - portalX) / rx);
+    return k.tube(
+      Array.from({ length: 121 }, (_, i) => {
+        const a = -Math.PI + cap + (i / 120) * (Math.PI * 2 - 2 * cap);
+        return [2.65 + rx * Math.cos(a), -1.5 + ry * Math.sin(a), z];
+      }),
+      thickness,
+      mat,
+      nuclearEnvelope,
+      160,
+    );
+  }
+  envelopeRim(1.08, 1.188, 0.08, 0.045, k.material("#999caf"));
   for (let i = 0; i < 2; i++)
     k.tube(
       Array.from({ length: 18 }, (_, j) => [
@@ -171,31 +191,30 @@ function create() {
   );
   transcript.geometry.translate(-2.5, 1.65, -0.15);
   transcript.position.set(2.5, -1.65, 0.15);
-  const rear = rearShell(
-    k,
-    group,
-    [2.65, -1.5, -0.12],
+  envelopeLayer(
     [1.08, 1.18, 0.69],
-    "#b6b1c6",
-    0.65,
+    k.material("#b6b1c6", {
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.65,
+      depthWrite: false,
+    }),
+    true,
   );
-  const innerRear = rearShell(
-    k,
-    group,
-    [2.65, -1.5, -0.12],
+  envelopeLayer(
     [1.015, 1.115, 0.62],
-    "#cbc4d2",
-    0.36,
+    k.material("#cbc4d2", {
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.36,
+      depthWrite: false,
+    }),
+    true,
   );
-  const doubleRim = k.ring(
-    [2.65, -1.5, 0.045],
-    1.02,
-    0.019,
-    k.material("#bab2c5"),
-  );
-  doubleRim.scale.y = 1.105;
-  const nuclearPore = poreComplex(k, group, [1.59, -1.38, 0.12], 0.19);
+  envelopeRim(1.02, 1.1271, 0.08, 0.019, k.material("#bab2c5"));
+  const nuclearPore = poreComplex(k, group, [portalX, -1.5, 0.08], 0.46);
   nuclearPore.rotation.y = Math.PI / 2;
+  nuclearPore.scale.y = 1.72;
   chromatinFiber(
     k,
     group,
@@ -264,6 +283,18 @@ function create() {
     k.label([2.67, -2.91, 0], "细胞核", "Nucleus", 2),
     k.label([-1.65, -0.1, 0.2], "Grb2–SOS", "Grb2–SOS"),
   ];
+  const anchors = labelAnchors([
+    { label: labels[0], target: ligand.children[0] },
+    { label: labels[1], target: group, local: [-3.2, 1.1, 0], region: true },
+    { label: labels[2], target: receptorAnchor },
+    { label: labels[3], target: ras },
+    ...enzymes.map(({ e }, i) => ({
+      label: labels[i + 4],
+      target: e.children[0],
+    })),
+    { label: labels[7], target: group, local: [2.8, -2.0, 0], region: true },
+    { label: labels[8], target: adaptor.children[1] },
+  ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       ligandPresent = parameters.condition !== "noLigand";
@@ -298,18 +329,19 @@ function create() {
     });
     const rafDock = on ? ease(p, 0.43, 0.51) : 0;
     enzymes[0].e.position.set(0.1 - 0.57 * rafDock, 0.05 + 0.56 * rafDock, 0);
-    const erkImport = on ? ease(p, 0.78, 0.9) : 0;
+    const erkImport = on ? ease(p, 0.8, 0.9) : 0;
     enzymes[2].e.position.set(
-      0.9 + 1.19 * erkImport,
-      -1.55 + 0.17 * erkImport,
+      0.9 + 1.34 * erkImport,
+      -1.55 + (on ? 0.05 * ease(p, 0.78, 0.8) : 0),
       0.08,
     );
     tfMark.visible = on && p >= 0.91;
     tf.scale.y = 1 + (on ? ease(p, 0.9, 0.94) * 0.18 : 0);
     transcript.visible = on && p >= 0.94;
     transcript.scale.setScalar(Math.max(0.001, ease(p, 0.93, 1)));
-    labels[6].position[0] = 0.6 + 1.2 * erkImport;
+    labels[0].active = ligand.visible;
     labels[8].active = p >= 0.25;
+    anchors.update();
     group.userData = {
       mechanism: "PDGFR–Grb2–SOS–Ras–Raf–MEK–ERK",
       organism: "mammalian",
@@ -328,7 +360,17 @@ function create() {
     group,
     update,
     labels,
-    science: { ras, adaptor, sosContact, nucleotide },
+    science: {
+      ras,
+      adaptor,
+      sosContact,
+      nucleotide,
+      erk: enzymes[2].e,
+      nuclearEnvelope,
+      nuclearPore,
+      portalX,
+      labelAnchors: anchors.bindings,
+    },
     materials: materialInventory(group),
     camera: { position: [0, 1.4, 11.6], target: [0, 0, 0] },
   };
@@ -410,6 +452,10 @@ export default {
     },
   ],
   sources: [
+    {
+      title: "ERK2 enters the nucleus by a carrier-independent mechanism",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC124259/",
+    },
     {
       title: "Ras-SOS exchange complex (PDB 1BKD)",
       url: "https://www.rcsb.org/structure/1BKD",

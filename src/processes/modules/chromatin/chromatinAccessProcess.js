@@ -229,15 +229,11 @@ function create({ rootId = "cell" } = {}) {
     const exposed = siteDistance + 0.18 < center - 0.34 + 3.6;
     const bind = active ? ease(p, 0.77, 0.91) : 0;
     factor.position.set(a.x, a.y + 0.18 + 1.48 * (1 - bind), a.z + 0.1);
-    labels[0].position[0] = center;
-    labels[1].position[0] = center;
-    labels[1].position[1] = remodeler.position.y + 0.7;
-    labels[2].position[0] = a.x;
-    labels[2].position[1] = a.y - 0.55;
-    labels[2].position[2] = a.z + 0.2;
-    labels[3].position[0] = factor.position.x;
-    labels[3].position[1] = factor.position.y + 0.6;
-    labels[3].position[2] = factor.position.z;
+    // These positions are leader targets, not offsets for placing the text.
+    core.children[4].getWorldPosition(scratch).toArray(labels[0].position);
+    remodeler.children[0].getWorldPosition(scratch).toArray(labels[1].position);
+    a.toArray(labels[2].position);
+    factor.children[0].getWorldPosition(scratch).toArray(labels[3].position);
     Object.assign(group.userData, {
       process: "chromatinAccess",
       rootId,

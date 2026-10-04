@@ -3,12 +3,11 @@ import { THREE } from "../../kit.js";
 // The zero surface encloses the vesicle/cell-plate lumen. Union operations
 // really remove internal membrane caps when vesicles or the parental PM join.
 // Fixed buffers keep scrubbing deterministic without creating GPU resources.
-export function cellPlateMembrane(k, material) {
-  const nx = 40,
-    ny = 16,
-    nz = 24;
-  const lo = [-2.56, -0.5, -0.88],
-    hi = [2.56, 0.5, 0.88];
+export function fieldMembrane(
+  k,
+  material,
+  { nx, ny, nz, lo, hi, name, focus = false, maxVertices = nx * ny * nz * 36 },
+) {
   const count = (nx + 1) * (ny + 1) * (nz + 1);
   const points = new Float32Array(count * 3),
     values = new Float32Array(count);
@@ -21,7 +20,7 @@ export function cellPlateMembrane(k, material) {
         points[i + 1] = lo[1] + ((hi[1] - lo[1]) * y) / ny;
         points[i + 2] = lo[2] + ((hi[2] - lo[2]) * z) / nz;
       }
-  const positions = new Float32Array(nx * ny * nz * 36 * 3);
+  const positions = new Float32Array(maxVertices * 3);
   const normals = new Float32Array(positions.length);
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute(
@@ -40,7 +39,7 @@ export function cellPlateMembrane(k, material) {
     new THREE.Sphere(),
   );
   const mesh = k.mesh(geometry, material);
-  mesh.name = "Continuous cell-plate lumen membrane and parental junction";
+  mesh.name = name;
   const tetrahedra = [
     [0, 5, 1, 6],
     [0, 1, 2, 6],
@@ -50,30 +49,55 @@ export function cellPlateMembrane(k, material) {
     [0, 4, 5, 6],
   ];
   let cursor = 0;
-  function crossing(a, b) {
+  const ids = new Int32Array(8),
+    inside = new Int32Array(4),
+    outside = new Int32Array(4);
+  const crossings = Array.from({ length: 4 }, () => new Float64Array(3));
+  const interior = new Float64Array(3);
+  const xCoordinates = new Float32Array(nx + 1),
+    zCoordinates = new Float32Array(nz + 1);
+  function crossing(a, b, result) {
     const t = values[a] / (values[a] - values[b]);
-    return [0, 1, 2].map(
-      (c) => points[a * 3 + c] + t * (points[b * 3 + c] - points[a * 3 + c]),
-    );
+    for (let c = 0; c < 3; c++)
+      result[c] =
+        points[a * 3 + c] + t * (points[b * 3 + c] - points[a * 3 + c]);
+    return result;
   }
   function triangle(a, b, c, inside) {
-    const u = b.map((v, i) => v - a[i]),
-      v = c.map((s, i) => s - a[i]);
-    const n = [
-      u[1] * v[2] - u[2] * v[1],
-      u[2] * v[0] - u[0] * v[2],
-      u[0] * v[1] - u[1] * v[0],
-    ];
-    if (n.reduce((s, v, i) => s + v * (inside[i] - a[i]), 0) > 0) {
-      [b, c] = [c, b];
-      n.forEach((v, i) => (n[i] = -v));
+    const ux = b[0] - a[0],
+      uy = b[1] - a[1],
+      uz = b[2] - a[2];
+    const vx = c[0] - a[0],
+      vy = c[1] - a[1],
+      vz = c[2] - a[2];
+    let nx = uy * vz - uz * vy,
+      ny = uz * vx - ux * vz,
+      nz = ux * vy - uy * vx;
+    if (
+      nx * (inside[0] - a[0]) +
+        ny * (inside[1] - a[1]) +
+        nz * (inside[2] - a[2]) >
+      0
+    ) {
+      const swap = b;
+      b = c;
+      c = swap;
+      nx = -nx;
+      ny = -ny;
+      nz = -nz;
     }
-    const length = Math.hypot(...n) || 1;
-    for (const p of [a, b, c])
-      for (let j = 0; j < 3; j++) {
-        positions[cursor] = p[j];
-        normals[cursor++] = n[j] / length;
-      }
+    const length = Math.hypot(nx, ny, nz) || 1;
+    if (cursor + 9 > positions.length)
+      throw new Error("Membrane surface capacity exceeded");
+    for (let vertex = 0; vertex < 3; vertex++) {
+      const p = vertex === 0 ? a : vertex === 1 ? b : c;
+      positions[cursor] = p[0];
+      normals[cursor++] = nx / length;
+      positions[cursor] = p[1];
+      normals[cursor++] = ny / length;
+      positions[cursor] = p[2];
+      normals[cursor++] = nz / length;
+    }
   }
   function update(field, width, depth) {
     // Concentrate samples around the growing plate, while retaining the same
@@ -90,12 +114,20 @@ export function cellPlateMembrane(k, material) {
           : focus + ((a - fraction) * (limit - focus)) / (1 - fraction))
       );
     };
+    if (focus) {
+      for (let x = 0; x <= nx; x++)
+        xCoordinates[x] = stretch((2 * x) / nx - 1, focusX, 0.85, hi[0]);
+      for (let z = 0; z <= nz; z++)
+        zCoordinates[z] = stretch((2 * z) / nz - 1, focusZ, 0.8, hi[2]);
+    }
     for (let x = 0; x <= nx; x++)
-      for (let y = 0; y <= ny; y++)
-        for (let z = 0; z <= nz; z++) {
+      for (let z = 0; z <= nz; z++)
+        for (let y = 0; y <= ny; y++) {
           const i = index(x, y, z);
-          points[i * 3] = stretch((2 * x) / nx - 1, focusX, 0.85, hi[0]);
-          points[i * 3 + 2] = stretch((2 * z) / nz - 1, focusZ, 0.8, hi[2]);
+          if (focus) {
+            points[i * 3] = xCoordinates[x];
+            points[i * 3 + 2] = zCoordinates[z];
+          }
           values[i] = field(
             points[i * 3],
             points[i * 3 + 1],
@@ -106,39 +138,40 @@ export function cellPlateMembrane(k, material) {
     for (let x = 0; x < nx; x++)
       for (let y = 0; y < ny; y++)
         for (let z = 0; z < nz; z++) {
-          const ids = [
-            index(x, y, z),
-            index(x + 1, y, z),
-            index(x + 1, y + 1, z),
-            index(x, y + 1, z),
-            index(x, y, z + 1),
-            index(x + 1, y, z + 1),
-            index(x + 1, y + 1, z + 1),
-            index(x, y + 1, z + 1),
-          ];
-          if (
-            ids.every((i) => values[i] < 0) ||
-            ids.every((i) => values[i] >= 0)
-          )
-            continue;
+          ids[0] = index(x, y, z);
+          ids[1] = index(x + 1, y, z);
+          ids[2] = index(x + 1, y + 1, z);
+          ids[3] = index(x, y + 1, z);
+          ids[4] = ids[0] + 1;
+          ids[5] = ids[1] + 1;
+          ids[6] = ids[2] + 1;
+          ids[7] = ids[3] + 1;
+          let negatives = 0;
+          for (let j = 0; j < 8; j++) if (values[ids[j]] < 0) negatives++;
+          if (negatives === 0 || negatives === 8) continue;
           for (const tetra of tetrahedra) {
-            const inside = tetra
-              .map((i) => ids[i])
-              .filter((i) => values[i] < 0);
-            const outside = tetra
-              .map((i) => ids[i])
-              .filter((i) => values[i] >= 0);
-            if (!inside.length || !outside.length) continue;
-            const interior = [0, 1, 2].map((c) => points[inside[0] * 3 + c]);
-            if (inside.length === 1)
-              triangle(...outside.map((i) => crossing(inside[0], i)), interior);
-            else if (outside.length === 1)
-              triangle(...inside.map((i) => crossing(i, outside[0])), interior);
-            else {
-              const a = crossing(inside[0], outside[0]),
-                b = crossing(inside[0], outside[1]);
-              const c = crossing(inside[1], outside[0]),
-                d = crossing(inside[1], outside[1]);
+            let ni = 0,
+              no = 0;
+            for (let j = 0; j < 4; j++) {
+              const id = ids[tetra[j]];
+              if (values[id] < 0) inside[ni++] = id;
+              else outside[no++] = id;
+            }
+            if (!ni || !no) continue;
+            for (let c = 0; c < 3; c++) interior[c] = points[inside[0] * 3 + c];
+            if (ni === 1) {
+              for (let j = 0; j < 3; j++)
+                crossing(inside[0], outside[j], crossings[j]);
+              triangle(crossings[0], crossings[1], crossings[2], interior);
+            } else if (no === 1) {
+              for (let j = 0; j < 3; j++)
+                crossing(inside[j], outside[0], crossings[j]);
+              triangle(crossings[0], crossings[1], crossings[2], interior);
+            } else {
+              const a = crossing(inside[0], outside[0], crossings[0]),
+                b = crossing(inside[0], outside[1], crossings[1]);
+              const c = crossing(inside[1], outside[0], crossings[2]),
+                d = crossing(inside[1], outside[1], crossings[3]);
               triangle(a, b, c, interior);
               triangle(b, d, c, interior);
             }
@@ -153,6 +186,18 @@ export function cellPlateMembrane(k, material) {
     geometry.attributes.normal.needsUpdate = true;
   }
   return { mesh, update };
+}
+
+export function cellPlateMembrane(k, material) {
+  return fieldMembrane(k, material, {
+    nx: 40,
+    ny: 16,
+    nz: 24,
+    lo: [-2.56, -0.5, -0.88],
+    hi: [2.56, 0.5, 0.88],
+    focus: true,
+    name: "Continuous cell-plate lumen membrane and parental junction",
+  });
 }
 
 export function plateFootprint(x, z, width, depth) {

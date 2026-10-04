@@ -1,0 +1,279 @@
+{
+  "group": "yeastLife",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "yeastBudding",
+      "roots": [
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "S. cerevisiae vegetative budding; ploidy intentionally unspecified and conserved by mitosis; no controls.",
+      "checks": [
+        "Read actual process create/update functions, anatomy.js and topology.js, all bilingual metadata, labels, stages, legends and controls; reviewed external conditionNotes and relationship routing.",
+        "Resolved processesByRoot at runtime: only yeast for every assigned model; there are no context overrides or specialized-root registrations for these IDs.",
+        "Traced all progress intervals, stage boundaries and every visible/floor/modulus switch in source. Targeted actual vertex/end-point/visibility diagnostics are saved in evidence/yeastLife/diagnostics.json.",
+        "Ran existing focused science.test.mjs and smoke.mjs: PASS. Smoke checks finite buffers/bounds, all 7 root-condition scenarios, deterministic irregular seeks and fixed node/geometry/material inventories; this does not reject the newly found defects."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3384416/",
+          "title": "Nuclear envelope morphology constrains diffusion and promotes asymmetric protein segregation in closed mitosis",
+          "supports": "Primary imaging establishes a connected elongated nucleoplasm and nuclear envelope during budding-yeast closed mitosis. Full-text XML opened through Europe PMC and saved as evidence/yeastLife/PMC3384416.xml."
+        },
+        {
+          "url": "https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006195",
+          "title": "Timely Endocytosis of Cytokinetic Enzymes Prevents Premature Spindle Breakage during Mitotic Exit",
+          "supports": "Primary live imaging supports coordination of spindle disassembly with centripetal septum deposition and actomyosin ring constriction. Opened publisher full text, introduction and results."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10793147/",
+          "title": "Role of actin and Myo2p in polarized secretion and growth of Saccharomyces cerevisiae",
+          "supports": "Primary perturbation experiments and live microscopy support intracellular actin cables and Myo2-mediated polarized secretion/bud growth. PubMed abstract and figure descriptions opened. PMC117377 full-text retrieval failed and is not claimed as evidence."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-yeastLife-01",
+          "severity": "P1",
+          "kind": "nuclear-compartment geometry",
+          "file": "src/processes/modules/yeastLife/yeastBuddingProcess.js",
+          "location": "83-99; 211-230; 305-309",
+          "evidence": "The three visible chromatin tubes are stretched only along x while the nuclear neck narrows radially. At p=.749, 288/1971 actual tube vertices exceed the full underlying nuclear-envelope profile; maximum radial excess is .202961 scene units. The failure is already present at p=.65 (45 vertices) and is not the intentional front cutaway.",
+          "whyWrong": "The persistent chromosome/chromatin representation crosses out of an envelope explicitly described as intact closed mitosis. DNA bead fitting does not constrain the separate detailed chromatin tubes.",
+          "fix": "Drive detailed chromatin through the same inherited nuclear compartments and constrict/partition the tubes continuously with the nuclear shape, keeping visible DNA inside the persistent envelope and retaining detail.",
+          "verification": "Measure actual chromatin tube vertices against actual envelope cross sections over .60-.76, including irregular seeks and the daughter handoff; assert containment with margin and inheritance rather than checking only DNA beads.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC3384416/"
+          ]
+        },
+        {
+          "issueId": "20261004-yeastLife-02",
+          "severity": "P1",
+          "kind": "cytoplasmic-compartment geometry",
+          "file": "src/processes/modules/yeastLife/yeastBuddingProcess.js",
+          "location": "128-138; 295-298",
+          "evidence": "Cables are fixed curves extending to local x=1.4 and y=+/-.45; update changes only x scale. At p=.2, 112/1170 cable vertices are outside the underlying cell envelope (max radial excess .29915). At p=.12001 the cable ends extend beyond the small bud axial bound.",
+          "whyWrong": "Actin cables supporting polarized intracellular transport must remain within the connected mother-bud cytoplasm; the visible early cable runs into extracellular space rather than following the expanding bud.",
+          "fix": "Deform the preallocated cable geometry to the actual mother/neck/bud path and constrain both radius and length to growth; keep visible secretion carriers consistent with that intracellular route.",
+          "verification": "Sample all rendered cable vertices through early growth, especially .12-.30, against actual mother and daughter plasma-membrane profiles; verify smooth growth and finite/stable geometry inventories.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/10793147/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "Read full piecewise timeline; ran targeted boundary diagnostics and existing smoke. No browser playback or physical-display frame cadence measured."
+        ]
+      },
+      "limitations": [
+        "Chromosome counts and timing are schematic. Nuclear replacement at p=.75 and onset of cytoplasmic anatomy still require rendered visual review after containment corrections.",
+        "No browser review, full-workspace tests, performance benchmark, commit or deployment performed. Phase A product and tests are unchanged."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "yeastFermentation",
+      "roots": [
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "S. cerevisiae cytosolic EMP glycolysis/alcoholic fermentation; high glucose, anaerobic and aerobic controls; two ATP from glycolysis and NAD regeneration schematic.",
+      "checks": [
+        "Read actual process create/update functions, anatomy.js and topology.js, all bilingual metadata, labels, stages, legends and controls; reviewed external conditionNotes and relationship routing.",
+        "Resolved processesByRoot at runtime: only yeast for every assigned model; there are no context overrides or specialized-root registrations for these IDs.",
+        "Traced all progress intervals, stage boundaries and every visible/floor/modulus switch in source. Targeted actual vertex/end-point/visibility diagnostics are saved in evidence/yeastLife/diagnostics.json.",
+        "Ran existing focused science.test.mjs and smoke.mjs: PASS. Smoke checks finite buffers/bounds, all 7 root-condition scenarios, deterministic irregular seeks and fixed node/geometry/material inventories; this does not reject the newly found defects."
+      ],
+      "sources": [
+        {
+          "url": "https://onlinelibrary.wiley.com/doi/10.1111/j.1365-3040.2011.02308.x",
+          "title": "The intramolecular 13C-distribution in ethanol reveals the influence of the CO2-fixation pathway and environmental conditions on the site-specific 13C variation in glucose",
+          "supports": "Primary 13C measurements and Table 1 support glucose C1/C6 becoming ethanol methyl carbon and C2/C5 becoming methylene carbon; the paper explicitly assigns CO2 to C3/C4. Publisher full text and relevant Table 1/paragraphs opened."
+        },
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/25538251/",
+          "title": "Nonstatistical 13C distribution during carbon transfer from glucose to ethanol during fermentation is determined by the catabolic pathway exploited",
+          "supports": "Primary experimental abstract and figure captions identify the EMP route in S. cerevisiae and track glucose-to-ethanol carbon affiliation. PubMed abstract and figures opened; full-text mirror was unavailable."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-yeastLife-03",
+          "severity": "P1",
+          "kind": "carbon-lineage conservation",
+          "file": "src/processes/modules/yeastLife/yeastFermentationProcess.js",
+          "location": "169-213",
+          "evidence": "The initial chain is object indices 0-1-2-3-4-5. At the final frame indices 0 and 3 become CO2, while ethanol retains pairs 1-2 and 4-5. Thus one terminal glucose carbon becomes CO2 and one central cleavage carbon remains ethanol. This is wrong whichever end of the initial chain is called C1.",
+          "whyWrong": "EMP fermentation releases original glucose C3/C4 as CO2 and retains C1/C2 and C5/C6 in ethanol. This scene explicitly promises carbon-fate tracking with preserved connectivity; all six atoms surviving is insufficient if the identities take the wrong products.",
+          "fix": "Reverse the first triose carbon orientation before pyruvate formation, preserving object identity and bond connectivity, so original indices 2 and 3 are decarboxylated and original terminal pairs remain in ethanol.",
+          "verification": "Track actual six mesh identities from initial chain adjacency to final C-C bonds/CO2 oxygen bonds under both oxygen conditions. Require CO2 identities to equal the two atoms of the initially broken middle bond and retain six unique carbons throughout.",
+          "sourceUrls": [
+            "https://onlinelibrary.wiley.com/doi/10.1111/j.1365-3040.2011.02308.x",
+            "https://pubmed.ncbi.nlm.nih.gov/25538251/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "Read full piecewise timeline; ran targeted boundary diagnostics and existing smoke. No browser playback or physical-display frame cadence measured."
+        ]
+      },
+      "limitations": [
+        "The model omits full atoms, glycolysis intermediates, respiratory branch and quantitative flux. Chemical symbol visibility is an intentional state change; no claim of atomistic reaction kinetics.",
+        "No browser review, full-workspace tests, performance benchmark, commit or deployment performed. Phase A product and tests are unchanged."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "yeastMating",
+      "roots": [
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "S. cerevisiae a/alpha haploids through plasmogamy and karyogamy; compatible and same-type a/a controls; no mating-type switching.",
+      "checks": [
+        "Read actual process create/update functions, anatomy.js and topology.js, all bilingual metadata, labels, stages, legends and controls; reviewed external conditionNotes and relationship routing.",
+        "Resolved processesByRoot at runtime: only yeast for every assigned model; there are no context overrides or specialized-root registrations for these IDs.",
+        "Traced all progress intervals, stage boundaries and every visible/floor/modulus switch in source. Targeted actual vertex/end-point/visibility diagnostics are saved in evidence/yeastLife/diagnostics.json.",
+        "Ran existing focused science.test.mjs and smoke.mjs: PASS. Smoke checks finite buffers/bounds, all 7 root-condition scenarios, deterministic irregular seeks and fixed node/geometry/material inventories; this does not reject the newly found defects."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2080914/",
+          "title": "Nuclear fusion during yeast mating occurs by a three-step pathway",
+          "supports": "Primary electron tomography and live imaging support opposite-type mating, cell fusion before nuclear congression, cytoplasmic SPB-associated microtubules, and nuclear-envelope fusion before SPB fusion. PMC full text opened, paragraphs 104-125 and results."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-yeastLife-04",
+          "severity": "P2",
+          "kind": "visible-motion discontinuity",
+          "file": "src/processes/modules/yeastLife/yeastMatingProcess.js",
+          "location": "244-251; 271-279",
+          "evidence": "At p=.25, visible vesicles cross a modulus boundary and move 1.62060 scene units with radius .06 unchanged. A pheromone wrap at p=(1-6/7)/1.8 moves 1.099998 units with radius .055 unchanged. Both objects are visible immediately before and after the jump.",
+          "whyWrong": "The fully visible particles teleport across the scene during continuous playback; the issue is an actual finite screen-space trajectory jump, not the existence of a schematic flow loop.",
+          "fix": "Fade or taper particle size continuously to zero at each path endpoint before recycling and smoothly gate stage activation/deactivation; retain particles and deterministic phase.",
+          "verification": "Sample both sides of every active modulus boundary in the compatible branch; require opacity/size to tend to zero as the positional reset occurs. Check same-type branch remains inactive.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC2080914/"
+          ]
+        },
+        {
+          "issueId": "20261004-yeastLife-05",
+          "severity": "P2",
+          "kind": "visible-motion discontinuity",
+          "file": "src/processes/modules/yeastLife/yeastMatingProcess.js",
+          "location": "224-229",
+          "evidence": "The condition opening >= 1 changes the left MT endpoint from x=-.66 at p=.619999 to x=.13 at p=.62, with y=0/z=.53 and fixed .025 radius; the right side mirrors this .79-unit instant elongation.",
+          "whyWrong": "A cytoplasmic microtubule visibly snaps across the connection when the opening finishes. The current containment assertions sample on either side but do not detect the sudden growth.",
+          "fix": "Grow the MT tips continuously into the joined cytoplasm after a sufficient opening exists, maintaining containment and the NE anchor at every intermediate position.",
+          "verification": "Actual MT cylinder endpoints sampled around .62 must have a displacement converging to zero as time step shrinks; retain cell and nucleus containment tests for the entire interpolation.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC2080914/"
+          ]
+        },
+        {
+          "issueId": "20261004-yeastLife-06",
+          "severity": "P2",
+          "kind": "condition identity / bilingual legend consistency",
+          "file": "src/processes/modules/yeastLife/yeastMatingProcess.js",
+          "location": "103-124; 222; 243; 310-315; legend",
+          "evidence": "For partner=same the labels become a/a and right chromosome beads change to teal, but mating-inherited-chromatin-1 retains rose tubes (#b68190) while the legend still identifies rose as alpha-parent/alpha-factor. Both inherited chromatin groups stay visible.",
+          "whyWrong": "The negative-control nucleus simultaneously shows a-type beads and alpha-coded inherited chromatin. This is an important mismatch between the condition, object identity and color explanation.",
+          "fix": "Apply the same selected mating-type identity to every right-parent chromatin material and ensure the same-type state has a consistent legend/labels without removing detail.",
+          "verification": "Inspect real tube materials in both inherited-chromatin groups through both conditions and repeated toggles; require same a identity in a/a and separate parental colors in compatible mating.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC2080914/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-yeastLife-04",
+          "20261004-yeastLife-05"
+        ],
+        "limits": [
+          "Read full piecewise timeline; ran targeted boundary diagnostics and existing smoke. No browser playback or physical-display frame cadence measured."
+        ]
+      },
+      "limitations": [
+        "Nuclear-envelope double-bilayer fusion is shown as a coarse topology transition, not the resolved three-step molecular pathway; morphology at p=.77 requires integrator visual review.",
+        "No browser review, full-workspace tests, performance benchmark, commit or deployment performed. Phase A product and tests are unchanged."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "yeastSporulation",
+      "roots": [
+        "yeast"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "S. cerevisiae a/alpha diploid meiosis and representative four-spored ascus; starved+acetate and rich controls; one homolog pair and ordered wall compartments.",
+      "checks": [
+        "Read actual process create/update functions, anatomy.js and topology.js, all bilingual metadata, labels, stages, legends and controls; reviewed external conditionNotes and relationship routing.",
+        "Resolved processesByRoot at runtime: only yeast for every assigned model; there are no context overrides or specialized-root registrations for these IDs.",
+        "Traced all progress intervals, stage boundaries and every visible/floor/modulus switch in source. Targeted actual vertex/end-point/visibility diagnostics are saved in evidence/yeastLife/diagnostics.json.",
+        "Ran existing focused science.test.mjs and smoke.mjs: PASS. Smoke checks finite buffers/bounds, all 7 root-condition scenarios, deterministic irregular seeks and fixed node/geometry/material inventories; this does not reject the newly found defects."
+      ],
+      "sources": [
+        {
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10092644/",
+          "title": "Recruitment of the lipid kinase Mss4 to the meiotic spindle pole promotes prospore membrane formation in Saccharomyces cerevisiae",
+          "supports": "Primary study establishes vesicle fusion on the meiotic outer plaque, an initial prospore membrane anchored to an SPB embedded in nuclear envelope, and maintenance of membrane-SPB attachment. Full-text XML opened through Europe PMC and saved as evidence/yeastLife/PMC10092644.xml."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-yeastLife-07",
+          "severity": "P1",
+          "kind": "SPB / spindle / membrane attachment",
+          "file": "src/processes/modules/yeastLife/yeastSporulationProcess.js",
+          "location": "238-245; 310-315; 359-360; prosporeMembrane 75-84",
+          "evidence": "MII spindle endpoints remain at z=.02 and y=+/-(.25+1.45*mii)/2. The four visible SPB spheres are fixed at y=+/-.82,z=-.37. Their nearest spindle endpoint gaps are .77287 at p=.52, .45665 at .60, and .39115 at .67/.71, much greater than SPB radius .08. The nascent membrane cup basal pole is z=-.64, a further .27 from the SPB center.",
+          "whyWrong": "The illustrated organizing bodies are detached from the actual spindles and nascent membrane site, obscuring the SPB-based nuclear-envelope/meiotic-outer-plaque origin explicitly described by the scene.",
+          "fix": "Derive spindle endpoints, SPB surface anchors and nascent prospore membrane origin from one consistent changing nuclear geometry; retain four eventual nuclei, membrane growth and ordered wall deposition.",
+          "verification": "Assert actual MII cylinder endpoints meet SPB geometry and actual SPB sites are anchored at the common NE surface throughout MII; assert the initial PSM nucleation site adjoins the outer plaque before growth. Use triangle-surface or analytically exact surface constraints, not nearest arbitrary vertices.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC10092644/"
+          ]
+        },
+        {
+          "issueId": "20261004-yeastLife-08",
+          "severity": "P2",
+          "kind": "visible-motion discontinuity",
+          "file": "src/processes/modules/yeastLife/yeastSporulationProcess.js",
+          "location": "362-370",
+          "evidence": "At p=2/3 the active vesicle with index 8 resets its modulo parameter from almost 1 to 0, jumping .838151 scene units while remaining visible with radius .047. Additional wraps occur across q=.59-.82.",
+          "whyWrong": "Secretory vesicles visibly teleport from the growing membrane back into cytoplasm during playback instead of undergoing an unobtrusive replenishment transition.",
+          "fix": "Taper/fade vesicles at departure/delivery and their global active interval, retaining continuous transport and the current node inventory.",
+          "verification": "Check every active modulo boundary and .59/.82 activation edges under starved conditions for vanishing visible extent at reset; rich condition remains inactive and arbitrary seeks deterministic.",
+          "sourceUrls": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC10092644/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-yeastLife-08"
+        ],
+        "limits": [
+          "Read full piecewise timeline; ran targeted boundary diagnostics and existing smoke. No browser playback or physical-display frame cadence measured."
+        ]
+      },
+      "limitations": [
+        "Recombination is a stated color-exchange schematic; it is not a molecular trajectory. Common-envelope handoff at p=.8 and sequential opaque wall appearance require rendered review; no claim of smoothness acceptance based solely on metadata or unit tests.",
+        "No browser review, full-workspace tests, performance benchmark, commit or deployment performed. Phase A product and tests are unchanged."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

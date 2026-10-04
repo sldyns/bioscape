@@ -1,0 +1,229 @@
+{
+  "group": "plantWater",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "models": [
+    {
+      "id": "plasmolysis",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Onion epidermis cross-section; bath=recover|hold; all stages and complete update formulas.",
+      "checks": [
+        "Only plant is registered in actual processesByRoot, including inspection of specialized neuron/muscleFibre/erythrocyte routes.",
+        "Reviewed all Chinese/English titles, intros, 6 stages, control labels/options, labels, entry summaries and source identities; no contexts or legends are defined for these four modules.",
+        "Local smoke passed: both options, NaN/out-of-range clamp, finite buffers/bounds, geometry/material/node identity stability and repeated irregular seeks. No update path allocates geometry/materials/nodes.",
+        "Fixed cellulose wall remains unchanged; continuous plasma-membrane and tonoplast outlines scale with protoplast; viable-cell recovery is conditional; held hypertonic bath retains reduced volume.",
+        "Water paths cross the drawn tonoplast and plasma-membrane XY outlines outward during shrinkage, inward only during dilution; bath solute explicitly impermeant.",
+        "Gap solute onset and extents measured directly; full data in evidence/plantWater/diagnostics-phase-a.json."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10849197/",
+          "title": "Lang-Pauluzzi and Gunning — The behaviour of the plasma membrane during plasmolysis: a study by UV microscopy",
+          "supports": "Opened primary-study abstract: onion protoplast withdrawal retains membrane–wall attachments, and membrane re-expands and realigns during deplasmolysis. Supports reversible geometry; the chosen impermeant-solute condition is explicitly defined by the model, not established for every osmolyte."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantWater-01",
+          "severity": "P2",
+          "kind": "compartment-annotation",
+          "file": "src/processes/modules/plantWater/plasmolysisProcess.js",
+          "location": "215-219, 239-251",
+          "evidence": "The 12 bath-gap solute markers remain fixed at abs(x)=2.05, radius=0.055; they become fully visible when shrink > 0.45. At p=0.325, the straight-side membrane outer-head silhouette reaches x=2.07986 while each solute begins at x=1.995. Thus the supposedly extracellular impermeant-solute disks overlap the rendered membrane cross-sectional boundary by about 0.08486 units. This is a cross-sectional XY/silhouette error: markers are raised in z, so this is not claimed as a literal 3D membrane collision.",
+          "whyWrong": "The markers explicitly denote solute excluded by the plasma membrane; placing their visible disks across the boundary briefly contradicts the very distinction the model teaches.",
+          "fix": "Place gap markers from the current membrane outer silhouette and fixed wall inner boundary; preserve positive clearance for their full radius whenever visible.",
+          "verification": "At all visible samples in both baths, verify marker projected XY extent lies beyond the actual outer leaflet and inside the fixed wall, including the onset around p=0.325; test the original fixed-x placement as a negative control.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/10849197/"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-plantWater-01"
+        ],
+        "limits": [
+          "Water tracers use modulo recycling on finite paths. Identical marker resets and bath-state appearance are not classified as defects without rendered evidence; root should review normal-speed playback.",
+          "Hechtian attachments, membrane area reservoirs and osmotic kinetics are intentionally omitted; the model is a volume/compartment schematic."
+        ]
+      },
+      "limitations": [
+        "No browser inspection in Phase A.",
+        "Raised cut-face markers prevent interpreting XY overlap as a literal 3D collision."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "stomata",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Arabidopsis paired kidney guard cells; signal=aba|light; opening, closure and all intermediate formulas.",
+      "checks": [
+        "Only plant is registered in actual processesByRoot, including inspection of specialized neuron/muscleFibre/erythrocyte routes.",
+        "Reviewed all Chinese/English titles, intros, 6 stages, control labels/options, labels, entry summaries and source identities; no contexts or legends are defined for these four modules.",
+        "Local smoke passed: both options, NaN/out-of-range clamp, finite buffers/bounds, geometry/material/node identity stability and repeated irregular seeks. No update path allocates geometry/materials/nodes.",
+        "Swept kidney body, vacuole, pore-facing wall, paired membrane cut rails and radial cellulose share the same continuous opening parameter.",
+        "Pore narrows under ABA and stays open under continued light; walls/vacuoles remain present.",
+        "Blue-light outward proton flow precedes inward ion/water phase; ABA outward ions precede water loss. Marker colors and sides sampled during both branches."
+      ],
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/11740564/",
+          "title": "Kinoshita et al. — Phot1 and phot2 mediate blue light regulation of stomatal opening",
+          "supports": "Opened abstract: blue light activates plasma-membrane H+-ATPase and inside-negative potential drives guard-cell K+ accumulation; Arabidopsis phot1/phot2 act redundantly."
+        },
+        {
+          "url": "https://www.nature.com/articles/nature06608",
+          "title": "Vahisalu et al. — SLAC1 is required for plant guard cell S-type anion channel function in stomatal signalling",
+          "supports": "Opened publisher abstract/editorial summary: guard-cell membrane anion-channel function supports stimulus-induced stomatal closure. Each guard cell is an ion-regulating cell; opposite cells are not separate cation-only and anion-only pathways."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantWater-02",
+          "severity": "P2",
+          "kind": "molecular-identity-ambiguity",
+          "file": "src/processes/modules/plantWater/stomataProcess.js",
+          "location": "233-235, 324-333; K+/counter-anions label",
+          "evidence": "The same i % 2 controls ion color and guard-cell side. Consequently all eight left-hand ion nodes are #baa574 and all eight right-hand nodes are #a698b2 during influx and ABA efflux. There is one shared K+/counter-anions label and no identity/color legend.",
+          "whyWrong": "The paired colors read as the two named ion classes, but segregate them by guard cell. This is an important visual ambiguity rather than a claim that the underlying model quantitatively violates electroneutrality. Both members of the guard-cell pair should communicate the same ion-accumulation/efflux mechanism.",
+          "fix": "Decouple species/color from side, send both classes across each guard-cell boundary, and identify the colors bilingually. Preserve simplified non-stoichiometric marker counts.",
+          "verification": "Read actual visible mesh color and position in both conditions over influx and efflux; require both explicit ion identities on both sides and their correct directions. Negative control restores parity-coupled color/side and must fail.",
+          "sourceUrls": [
+            "https://pubmed.ncbi.nlm.nih.gov/11740564/",
+            "https://www.nature.com/articles/nature06608"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "Smoothstep cell deformation inspected algebraically; no position discontinuity in the cell meshes.",
+          "Finite-path flux tracer resets and discrete signal-icon appearance require root rendered review.",
+          "Proton pumps/channels and full signaling network are not explicitly modeled; time compression is schematic."
+        ]
+      },
+      "limitations": [
+        "No browser inspection in Phase A.",
+        "No quantitative ionic charge balance or membrane potential is claimed; the finding concerns identity/side encoding."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "plantLongDistanceTransport",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "confirmed_issue",
+      "scope": "Compressed angiosperm root–stem–leaf tissue section; stomata=close|open; all flow and closure states.",
+      "checks": [
+        "Only plant is registered in actual processesByRoot, including inspection of specialized neuron/muscleFibre/erythrocyte routes.",
+        "Reviewed all Chinese/English titles, intros, 6 stages, control labels/options, labels, entry summaries and source identities; no contexts or legends are defined for these four modules.",
+        "Local smoke passed: both options, NaN/out-of-range clamp, finite buffers/bounds, geometry/material/node identity stability and repeated irregular seeks. No update path allocates geometry/materials/nodes.",
+        "Three mature hollow vessel elements have thickness-bearing walls, lateral pits backed by membranes, open perforation rims and a continuous liquid column; no xylem active pump is represented.",
+        "Root radial transport is explicitly condensed; water stays liquid up xylem, air-space tracers represent vapor.",
+        "Integrated travel distance derivative decreases smoothly through closure and remains positive. Water column geometry persists in both branches.",
+        "Vapor-start distances use closest point on actual mesh triangles, not nearest-vertex distance.",
+        "Narrowing changes guard-cell gap smoothly, but vapor-count cutoff is discontinuous."
+      ],
+      "sources": [
+        {
+          "url": "https://www.nature.com/articles/nature07226",
+          "title": "Wheeler and Stroock — The transpiration of water at negative pressures in a synthetic tree",
+          "supports": "Opened primary experiment abstract: evaporation lowers liquid pressure, drawing liquid through the continuous pathway; liquid-to-vapor phase change at the leaf interface drives the passive system. This synthetic-tree experiment supports the physical mechanism, not detailed leaf anatomy."
+        }
+      ],
+      "findings": [
+        {
+          "issueId": "20261004-plantWater-03",
+          "severity": "P1",
+          "kind": "misleading-phase-change-topology",
+          "file": "src/processes/modules/plantWater/plantLongDistanceTransportProcess.js",
+          "location": "200-225, 288-297",
+          "evidence": "Vapor tracks begin at x=1.25, y=2.36+/-0.1, z=0.15+/-0.09. Exact point-to-triangle distances from the 15 track starts to the actual wet-wall tube are at least 0.25788, and to the four mesophyll surfaces at least 0.49122, versus vapor radius 0.052. All vapor is born in the middle of the air space, detached from both wet surfaces and the liquid branch ending near y=2.77.",
+          "whyWrong": "The central teaching event is evaporation from a wet wall into air. The visible event originates from empty air instead, leaving liquid delivery and vapor release disconnected despite correct stage text.",
+          "fix": "Connect liquid delivery to a wet mesophyll surface and begin every vapor path there before traversing the intercellular space and the stomatal aperture. Reuse prebuilt geometry and maintain the continuous xylem column.",
+          "verification": "Measure actual wet-wall/mesophyll-surface intersection and complete vapor-start attachment (radius-aware) for all lanes; sample all closure/open conditions and prove that trajectories traverse the pore without guard-cell intersection. Original start positions must fail.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/nature07226"
+          ]
+        },
+        {
+          "issueId": "20261004-plantWater-04",
+          "severity": "P2",
+          "kind": "visible-discontinuity",
+          "file": "src/processes/modules/plantWater/plantLongDistanceTransportProcess.js",
+          "location": "288-290",
+          "evidence": "At p=0.777 -> 0.778 in the closure condition, visible vapor nodes drop from 15 to 3 (80% vanish together), while relativeFlow varies smoothly from 0.42101 to 0.41526. The arbitrary closure<0.7 threshold removes full-size, opaque particles at unrelated positions in the air space.",
+          "whyWrong": "Unlike ordinary repeated flow at inlet/outlet boundaries, this deletes most visible in-flight tracers simultaneously in the interior during a smooth narrowing event; the flow cue visibly jumps.",
+          "fix": "Keep a smoothly weighted vapor population or continuously reduce each tracer appearance using closure and endpoint envelopes; avoid threshold-based mass removal of in-flight tracers.",
+          "verification": "Sample immediately either side of the analytically determined closure=0.7 threshold; visible screen-contributing tracer weights must change continuously while flow slows, and arbitrary seeks remain deterministic.",
+          "sourceUrls": [
+            "https://www.nature.com/articles/nature07226"
+          ]
+        }
+      ],
+      "continuity": {
+        "checked": true,
+        "findings": [
+          "20261004-plantWater-04"
+        ],
+        "limits": [
+          "Endpoint recycling of root/xylem tracer trains is distinguished from the confirmed deletion of in-flight vapor.",
+          "Full root apoplast/symplast/endodermis anatomy and leaf hydraulic network are intentionally compressed; no pressure calibration is claimed."
+        ]
+      },
+      "limitations": [
+        "No browser inspection in Phase A.",
+        "Detailed liquid-branch crossing of vessel side wall should be included when reconnecting the evaporation route; current report does not claim all pit connections are anatomically measured."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "chloroplastMovement",
+      "roots": [
+        "plant"
+      ],
+      "verdict": "qualified_pass",
+      "scope": "Arabidopsis mesophyll cortical relocation; genotype=wild|phot2; weak-light accumulation and high-light response.",
+      "checks": [
+        "Only plant is registered in actual processesByRoot, including inspection of specialized neuron/muscleFibre/erythrocyte routes.",
+        "Reviewed all Chinese/English titles, intros, 6 stages, control labels/options, labels, entry summaries and source identities; no contexts or legends are defined for these four modules.",
+        "Local smoke passed: both options, NaN/out-of-range clamp, finite buffers/bounds, geometry/material/node identity stability and repeated irregular seeks. No update path allocates geometry/materials/nodes.",
+        "Actual complete chloroplast meshes including envelope rims and all 15 instanced thylakoids per plastid tested at 404 inputs × 2 genotypes × 16 plastids. Minimum cell clearance 0.0678; conservative vacuole exclusion distance 1.0455; legacy boundary-crossing placements rejected.",
+        "Bend path is position/tangent-continuous between side descent, rounded corner and lower periclinal wall; organelles rotate as complete assemblies.",
+        "Independent 1001-step center sampling per genotype: largest step 0.022635 at delta-progress=0.001, no long center jumps.",
+        "Both branches accumulate on lower periclinal plane; only wild type subsequently returns to anticlinal orientation. phot2-loss response matches primary published observation.",
+        "Correct Jarillo source author/title/DOI checked by local regression; current publisher retrieval was blocked, so current independent mechanism evidence relies on opened Kasahara primary article."
+      ],
+      "sources": [
+        {
+          "url": "https://www.esalq.usp.br/lepse/imgs/conteudo_thumb/Chloroplast-avoidance-movement-reduces-photodamage-in-plants.pdf",
+          "title": "Kasahara et al. — Chloroplast avoidance movement reduces photodamage in plants (publisher article mirrored by Universidade de São Paulo)",
+          "supports": "Opened full primary article; page 2 reports anticlinal distribution in wild type under high light, while phot2-1 retains cell-surface accumulation and lacks avoidance. Mutants suffered more high-light damage. The model does not claim experimental intensity/time calibration."
+        }
+      ],
+      "findings": [],
+      "continuity": {
+        "checked": true,
+        "findings": [],
+        "limits": [
+          "Five schematic light arrows have small modulo bobbing resets (0.18 world units) and two appear at the programmed strong-light transition; not judged a confirmed important failure without rendered playback.",
+          "Path tangent is continuous but angular-velocity onset at curvature changes is piecewise; root should inspect normal-speed aesthetics."
+        ]
+      },
+      "limitations": [
+        "No browser inspection in Phase A.",
+        "cp-actin statement is biologically consistent but full Kadota source access was blocked by recaptcha/cookies during this review; actin geometry itself is explicitly omitted.",
+        "No calibration of illumination, force, rates or population counts; membrane/grana geometry is schematic, not atomic."
+      ],
+      "confidence": "high"
+    }
+  ]
+}

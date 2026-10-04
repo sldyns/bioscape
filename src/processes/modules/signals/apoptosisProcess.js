@@ -1,4 +1,5 @@
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 import {
   helix,
@@ -75,7 +76,12 @@ function create() {
       const a = start + ((end - start) * i) / 56;
       return [Math.cos(a) * rx, Math.sin(a) * ry, 0];
     });
-  k.tube(arc(0.99, 0.57, 0.28, Math.PI * 2 - 0.28), 0.075, outerMat, mito);
+  const outerEdge = k.tube(
+    arc(0.99, 0.57, 0.28, Math.PI * 2 - 0.28),
+    0.075,
+    outerMat,
+    mito,
+  );
   const closure = k.tube(arc(0.99, 0.57, -0.28, 0.28), 0.075, outerMat, mito);
   const mitoWall = membraneWall(
     k,
@@ -239,6 +245,25 @@ function create() {
       2,
     ),
   ];
+  const anchors = labelAnchors([
+    { label: labels[0], target: cell, local: [0, 1.1, 0], region: true },
+    { label: labels[1], target: outerEdge, local: [0, 0.57, 0] },
+    { label: labels[2], target: bax.children[0] },
+    { label: labels[3], target: arms[0].children[1] },
+    { label: labels[4], target: caspases[1].left },
+    { label: labels[5], target: nucleus },
+    { label: labels[6], target: chromatin[3].cargo, region: true },
+  ]);
+  const bodyLabels = {
+    chromatin: B("凝缩的染色质片段", "Condensed chromatin fragment"),
+    formation: B("膜出泡与小体形成", "Membrane blebbing and body formation"),
+    separated: labels[6].text,
+  };
+  const apoptosomeLabels = {
+    monomers: B("Apaf-1 单体", "Apaf-1 monomers"),
+    assembly: B("Apaf-1 · 凋亡小体组装", "Apaf-1 · apoptosome assembly"),
+    assembled: labels[3].text,
+  };
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       trigger = parameters.condition !== "noStress";
@@ -285,9 +310,12 @@ function create() {
     });
     arms.forEach((arm, i) => {
       const a = (i * Math.PI * 2) / 7;
+      // The free protomers occupy the cytosolic pocket between the intact
+      // nucleus and mitochondrion. Keep their complete folds and the same
+      // seven-arm assembly endpoint, without crossing either membrane.
       arm.position.set(
-        Math.cos(a) * 0.72 * (1 - assembly),
-        Math.sin(a) * 0.72 * (1 - assembly),
+        Math.cos(a) * 0.4 * (1 - assembly),
+        Math.sin(a) * 0.4 * (1 - assembly),
         0,
       );
     });
@@ -295,6 +323,13 @@ function create() {
     hub.visible = assembly > 0.8;
     casp9.visible = assembly > 0.9;
     apoptosome.scale.setScalar(1 - 0.18 * pack);
+    // Once the cell remnant contracts, its existing cytosolic complex moves
+    // inward with the local cytoplasm instead of protruding through the wall.
+    apoptosome.position.set(
+      1.25 * (1 - 0.18 * pack),
+      -0.88 * (1 - 0.18 * pack),
+      0.1,
+    );
     caspases.forEach((c, i) => {
       const active = ease(t, 0.56 + i * 0.025, 0.66 + i * 0.025);
       c.enzyme.position.set(0.68 - i * 0.56, -1.2 + i * 0.21, 0.16);
@@ -327,11 +362,23 @@ function create() {
       });
     });
     plasma.update(lobes, 0.14);
-    labels[2].active = t >= 0.16 && t < 0.81;
+    labels[2].active = bax.visible && t < 0.81;
     labels[3].active = t >= 0.36 && t < 0.85;
+    labels[3].text =
+      apoptosomeLabels[
+        assembly > 0.9 ? "assembled" : assembly > 0 ? "assembly" : "monomers"
+      ];
     labels[4].active = t >= 0.57 && t < 0.85;
     labels[6].active = t >= 0.81;
-    labels[5].active = t < 0.78;
+    // The tracked cargo is still inside the unbudded mother cell at .825.
+    // At .89 it occupies the forming bleb; by .94 the emitted membrane has
+    // six disconnected components (remnant plus five bodies). Keep the same
+    // anchor and name the visible event instead of naming its future product.
+    const bodyPhase =
+      t >= 0.94 ? "separated" : t >= 0.89 ? "formation" : "chromatin";
+    labels[6].text = bodyLabels[bodyPhase];
+    labels[5].active = nucleus.visible;
+    anchors.update();
     group.userData = {
       organism: "mammalian",
       mechanism: "intrinsic mitochondrial apoptosis",
@@ -342,7 +389,8 @@ function create() {
       apoptosomeAssembled: assembly > 0.9,
       caspase9Active: assembly > 0.9,
       executionerCaspasesActive: t >= 0.66,
-      apoptoticBodies: pack > 0.9 ? 5 : 0,
+      apoptoticBodies: bodyPhase === "separated" ? 5 : 0,
+      apoptoticBodyPhase: t >= 0.81 ? bodyPhase : "none",
       plasmaMembraneRupture: false,
     };
   }
@@ -351,7 +399,24 @@ function create() {
     group,
     update,
     labels,
-    science: { plasma, chromatin, mito, innerPath },
+    science: {
+      plasma,
+      chromatin,
+      mito,
+      innerPath,
+      apoptosome,
+      arms,
+      nuclearSurfaces: [nucleus, nuclearRim, nuclearBack],
+      mitochondrialMembranes: [
+        outerEdge,
+        closure,
+        mitoWall,
+        mitoClosure,
+        innerWall,
+        innerEdge,
+      ],
+      labelAnchors: anchors.bindings,
+    },
     materials: materialInventory(group, [activeMat, caspMat].filter(Boolean)),
     camera: { position: [0, 1.1, 11.8], target: [0, 0, 0] },
   };

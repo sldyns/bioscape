@@ -2,6 +2,7 @@ import { THREE } from "../../kit.js";
 
 // Repeated secondary structures are pedagogical folds, not atomic coordinates.
 export function molecularDetail(k) {
+  const replacedMaterials = new Set();
   const sphere = new THREE.SphereGeometry(1, 16, 12),
     sugar = new THREE.IcosahedronGeometry(1, 0),
     base = new THREE.BoxGeometry(1, 1, 1);
@@ -112,7 +113,7 @@ export function molecularDetail(k) {
     }
   }
   function inventory(group, extra = []) {
-    const all = new Set(extra);
+    const all = new Set([...replacedMaterials, ...extra]);
     group.traverse((o) => {
       if (o.material)
         (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) =>
@@ -121,6 +122,46 @@ export function molecularDetail(k) {
     });
     return [...all];
   }
+  // Each assembly owns its fading materials. Shared DNA, nearby proteins and
+  // other copies of an assembling subunit retain their native appearance.
+  // Keep the replaced materials in the disposal inventory even when their last
+  // mesh now uses a clone. No scene resources are allocated by the setter.
+  function fade(group) {
+    const copies = new Map();
+    const copy = (material) => {
+      if (!copies.has(material)) {
+        copies.set(material, {
+          material: material.clone(),
+          opacity: material.opacity,
+          transparent: material.transparent,
+          depthWrite: material.depthWrite,
+        });
+        replacedMaterials.add(material);
+      }
+      return copies.get(material).material;
+    };
+    group.traverse((object) => {
+      if (object.material)
+        object.material = Array.isArray(object.material)
+          ? object.material.map(copy)
+          : copy(object.material);
+    });
+    return (value) => {
+      const amount = Number.isFinite(value)
+        ? Math.min(1, Math.max(0, value))
+        : 0;
+      group.visible = amount > 0;
+      for (const source of copies.values()) {
+        const transparent = source.transparent || amount < 1;
+        if (source.material.transparent !== transparent) {
+          source.material.transparent = transparent;
+          source.material.needsUpdate = true;
+        }
+        source.material.opacity = source.opacity * amount;
+        source.material.depthWrite = amount === 1 && source.depthWrite;
+      }
+    };
+  }
   return {
     fold,
     instances,
@@ -128,6 +169,7 @@ export function molecularDetail(k) {
     bar,
     finish,
     inventory,
+    fade,
     sphere,
     sugar,
     base,

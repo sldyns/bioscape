@@ -1,0 +1,761 @@
+{
+  "result": "PASS",
+  "baseline": "/tmp/bioscape-performance-20261004-baseline/src",
+  "scope": "Full geometry buffers/indices/instance data, scene transforms/visibility, drawRange, materials, labels and science state. No timing measurements.",
+  "progress": [
+    0,
+    0.13,
+    0.175,
+    0.305,
+    0.36,
+    0.43,
+    0.445,
+    0.46,
+    0.59,
+    0.605,
+    0.76,
+    0.77,
+    0.79,
+    0.81,
+    0.825,
+    0.835,
+    0.87,
+    0.89,
+    0.91,
+    0.92,
+    0.94,
+    0.945,
+    0.97,
+    1,
+    0.81,
+    0.445,
+    0.13,
+    0
+  ],
+  "cases": [
+    {
+      "model": "apoptosisProcess.js",
+      "parameters": {
+        "condition": "stress"
+      },
+      "states": 28,
+      "modelSourceSha256": "3875154b630f6be98797fa947e0e41f3d78544723bc610ce0705e4752e312465",
+      "meshOutputHashes": [
+        {
+          "progress": 0,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.13,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.175,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.305,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.36,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.43,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.445,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.46,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.59,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.605,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.76,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.77,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.79,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.81,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.825,
+          "positions": "1a8140fe419a0c7fd56be01d8b35413f9a17e02c6d70e1bb047cc06bd9b730ec",
+          "normals": "5fa07525ac82102896e9204bf8bc4912ca34d3040468c6e1ba3a57779c5d6edd",
+          "vertices": 39144
+        },
+        {
+          "progress": 0.835,
+          "positions": "85e51ee76ad7e75d32b38808fbadc2a965b364fe4d45906f15a50d221b251853",
+          "normals": "1d5ddac0d82086b6a534bcbb0b2a02ec24f1efe08755f9be2813a3ff931531d3",
+          "vertices": 38280
+        },
+        {
+          "progress": 0.87,
+          "positions": "1e360765f8388b13983dfe3cfc89bc20432ff78136264d3dee03696918b59c56",
+          "normals": "f55f58aa75e82ec284b00a9310c06e2d3bef0711d4b10b2c3b4f5ae88b300064",
+          "vertices": 34476
+        },
+        {
+          "progress": 0.89,
+          "positions": "4a65e573b912065e208454e79b982458e45629c6f0223161381deccb40af8125",
+          "normals": "002f6eb0415d8a03151442c152b95dac4397d8c88fa4787bf986dbbb8e9229fd",
+          "vertices": 32472
+        },
+        {
+          "progress": 0.91,
+          "positions": "9412eb2929ab436926a86570a491c04aef3fefcb913551e11213d3b6a6dc4ffd",
+          "normals": "d3e4f8aee6183de0340ec636ca8f4d19d5c21c25f0cea754de3d741c7f69b313",
+          "vertices": 32916
+        },
+        {
+          "progress": 0.92,
+          "positions": "a00d8f72ebf47ccdea25b471d26231384606f162171ac057bc86f98ea87d132c",
+          "normals": "4655f44a1ed8ba57d805ff75e85f8ad8cbe2407e0b955ca204a8f65c42fcae2a",
+          "vertices": 33408
+        },
+        {
+          "progress": 0.94,
+          "positions": "7d44f50e3be2492892e9deb6fb7a478e2727d1d2a115e96c12b19896982dc7e0",
+          "normals": "b77648ceae4012f7dcc3f9f0524053bc4ed24896d3a04fd2f8acd09c3689c4f9",
+          "vertices": 32340
+        },
+        {
+          "progress": 0.945,
+          "positions": "463440a156ef6a42dce80a8b8587c18a89d5cdfbc46f0d90286b4bef5a5f9a6c",
+          "normals": "aa78df79a10f7c3300c489ce7ba04319b71f87527065cd60bbb5b470ec7ca63f",
+          "vertices": 32220
+        },
+        {
+          "progress": 0.97,
+          "positions": "7e8d5615d391f37aec183d8798725ba676024ec39b37a6150d61211e96c3fc66",
+          "normals": "3d1fcb1ddfa986f2e209eb06bc73195206e7454dd9d515559e143f7e0ef8ac46",
+          "vertices": 30480
+        },
+        {
+          "progress": 1,
+          "positions": "af5f45b87039f8efd91e6a885b06803b3da045d45f5e39002299103beb130988",
+          "normals": "84c5ab11740b5d0d79dda9975e0581256c2075a83dd10d8982da087c96b1d598",
+          "vertices": 29352
+        },
+        {
+          "progress": 0.81,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.445,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.13,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        }
+      ]
+    },
+    {
+      "model": "apoptosisProcess.js",
+      "parameters": {
+        "condition": "noStress"
+      },
+      "states": 28,
+      "modelSourceSha256": "3875154b630f6be98797fa947e0e41f3d78544723bc610ce0705e4752e312465",
+      "meshOutputHashes": [
+        {
+          "progress": 0,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.13,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.175,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.305,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.36,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.43,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.445,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.46,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.59,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.605,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.76,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.77,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.79,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.81,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.825,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.835,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.87,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.89,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.91,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.92,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.94,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.945,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.97,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 1,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.81,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.445,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0.13,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        },
+        {
+          "progress": 0,
+          "positions": "822cb6f9c1ce3c4270bf0d6d5e94fc7b8439214c16b31644e6d712c90c1b6cdc",
+          "normals": "a1cb4cb593f32446eee39c5d0133d5b3026b4aba8f85cc090cea26dccb43ca9e",
+          "vertices": 39216
+        }
+      ]
+    },
+    {
+      "model": "differentiationProcess.js",
+      "parameters": {
+        "program": "competent"
+      },
+      "states": 28,
+      "modelSourceSha256": "0e18c8717b3e396cbb736cf067e79c80529ad24381301ea13fb3c6155db99401",
+      "meshOutputHashes": [
+        {
+          "progress": 0,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.13,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.175,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.305,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.36,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.43,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.445,
+          "positions": "04b37a464e16a0dbc9866b084f50dab6acdfaefd7acf00c68e23fe6738f2e819",
+          "normals": "99be776630c03ad0867a8c8f141c3301f93cf02a01fa046c210597b187f6d95d",
+          "vertices": 41088
+        },
+        {
+          "progress": 0.46,
+          "positions": "47560a9e84a3cb4ed655c01a5261653d937c9426958051f13b01bbc4216844e4",
+          "normals": "46eb372e14f41abc579721e17d5ad43393b3677464e462c3e62d88e29114a8c5",
+          "vertices": 40476
+        },
+        {
+          "progress": 0.59,
+          "positions": "9ea3a2b30fbe709fdadad25288e9478eb555be20dcc82a193062394405477fad",
+          "normals": "d457124d8faee953a019c63e5ecad514a1f9a9975305703e812150daadba8013",
+          "vertices": 22188
+        },
+        {
+          "progress": 0.605,
+          "positions": "e0e1ad53290b1e3043c0e9319b248b11b232719cf29477de797e1d0f1dbfe121",
+          "normals": "1f7d2dc1d740a68dd8e0334983792053eaa3e2bf731bf72193753cd2eba42c9f",
+          "vertices": 21360
+        },
+        {
+          "progress": 0.76,
+          "positions": "9f455e4003ea8044db13aa54f3314ffe70befb33885b4448e40835fb39c3755e",
+          "normals": "daa13bc4e83f915ffc3f6d9dfc280ce7e86c58f5652279976b8d00644c3208e6",
+          "vertices": 20664
+        },
+        {
+          "progress": 0.77,
+          "positions": "cd97e59fd876ac3a34e775b44a7f8172cc5fe771d8db68de733b5bd0ca10730c",
+          "normals": "7a67b2fd7e7ce3732fefbd57ae2a7871f3ff06b2b47b765cc67a2d79e661355d",
+          "vertices": 20724
+        },
+        {
+          "progress": 0.79,
+          "positions": "24da755b1c2175854808c44bb27570ce6e3f8c7cac23c98d9e945f0febe5b476",
+          "normals": "e76329292aca89d2afb18bd8df2d253a9c086a0e81b2681c203589fd75bbc333",
+          "vertices": 21120
+        },
+        {
+          "progress": 0.81,
+          "positions": "40534c80f9859098e3d91d1debd4e040f60eae0957629704d9a5249599601a66",
+          "normals": "dc5308d70458bafe862d6a1b46272f6d1977df876dcf91bdd592a1fd7a1584b5",
+          "vertices": 22008
+        },
+        {
+          "progress": 0.825,
+          "positions": "f7d0c7d625a602784bdc37164dfbfef24486404885643c3782eaeeab5d173fe5",
+          "normals": "21f99e8ec048daecb12cf330d5e36510d9571a063ee63ce1a8001ae78bd44c48",
+          "vertices": 23088
+        },
+        {
+          "progress": 0.835,
+          "positions": "3b4d1dcc1242f0e340f9b78d5caf9451cc472f592c71d5ae5766bed885cc9ae8",
+          "normals": "f49b027b68f3af47ca63dff00748279fa1ccd3c644f11ead4f00a62e2a1e327c",
+          "vertices": 23784
+        },
+        {
+          "progress": 0.87,
+          "positions": "9cb7f79a9f5e19ae6f0e65c0b72f81c4c2ebb8f2ae940fb12e7c4e708a695c48",
+          "normals": "fdf9f54f209b64f85a1da6767a39500bfb0aa7951f1f4731c54c17479699024c",
+          "vertices": 25668
+        },
+        {
+          "progress": 0.89,
+          "positions": "ae12f36e0bdd817dd50a6f588c49f8987e5229c7aa07271349d30fd23f723124",
+          "normals": "7afdc01bd810b21971c08926dc3b282b14031ead7afe1c70bb24513d76520d3b",
+          "vertices": 25740
+        },
+        {
+          "progress": 0.91,
+          "positions": "ddd600aa00c73032c1a3ddc80d1b53880773f3adfc6af3321a172e81a018230f",
+          "normals": "31726229187719a71007ed258dfc9f2a7db679af861c5dbc13dcf93a769f8194",
+          "vertices": 25680
+        },
+        {
+          "progress": 0.92,
+          "positions": "b4a4807182e9f9bb557f21f121084e634dd736eba79ca12b7dd580a1356939ac",
+          "normals": "54a080fa6b10d3dc08eb1330ce38f6a67df5debe88219a15c54ec6ffbbc43b27",
+          "vertices": 25740
+        },
+        {
+          "progress": 0.94,
+          "positions": "b2276f72f1f1065fbe05684580def8e071abd072465011d8aa5e13aba5f6d058",
+          "normals": "e9ecd8461d48dad1f6f7422806425ab6a89b615f2eb2b685183b1b2c143f7fa6",
+          "vertices": 25632
+        },
+        {
+          "progress": 0.945,
+          "positions": "1c95e123c377d4951b84627c57fabad7fb4c61da590df006a668e9f58e46d12e",
+          "normals": "caa142cbab61c33ac98d0d6ea344cbbce0ffe85fef6e87c448fa2ebc39e82584",
+          "vertices": 25692
+        },
+        {
+          "progress": 0.97,
+          "positions": "1378a67989c6f140229d2a33feb0ee4db66e51e265014ed8280c03db7a275672",
+          "normals": "1252b1cee0bb539fdd8574844fb4c2092227fa8cc7cd7282c88e2357f4defe64",
+          "vertices": 25632
+        },
+        {
+          "progress": 1,
+          "positions": "a827290883e9a9406571bba836e1f45f4c7852eed10977aa3bca115b4012904d",
+          "normals": "25335020318f8a3a5ceb571c55ef56c2e7f5e0c90752ecc315cc1b9fcf6efeeb",
+          "vertices": 25584
+        },
+        {
+          "progress": 0.81,
+          "positions": "40534c80f9859098e3d91d1debd4e040f60eae0957629704d9a5249599601a66",
+          "normals": "dc5308d70458bafe862d6a1b46272f6d1977df876dcf91bdd592a1fd7a1584b5",
+          "vertices": 22008
+        },
+        {
+          "progress": 0.445,
+          "positions": "04b37a464e16a0dbc9866b084f50dab6acdfaefd7acf00c68e23fe6738f2e819",
+          "normals": "99be776630c03ad0867a8c8f141c3301f93cf02a01fa046c210597b187f6d95d",
+          "vertices": 41088
+        },
+        {
+          "progress": 0.13,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        }
+      ]
+    },
+    {
+      "model": "differentiationProcess.js",
+      "parameters": {
+        "program": "impaired"
+      },
+      "states": 28,
+      "modelSourceSha256": "0e18c8717b3e396cbb736cf067e79c80529ad24381301ea13fb3c6155db99401",
+      "meshOutputHashes": [
+        {
+          "progress": 0,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.13,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.175,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.305,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.36,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.43,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.445,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.46,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.59,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.605,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.76,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.77,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.79,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.81,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.825,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.835,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.87,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.89,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.91,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.92,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.94,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.945,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.97,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 1,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.81,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.445,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0.13,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        },
+        {
+          "progress": 0,
+          "positions": "bba462d687b3e0f86f50b98cb700d37dad1a8005c624a43dde63a06d838ca1f0",
+          "normals": "10af05854b24586f235a99ddc4071c3c8f57cbfb356db413f1717ed705c9adde",
+          "vertices": 41112
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "states": 112,
+    "nodes": 38080,
+    "uniqueGeometryStates": 23688,
+    "attributeBytes": 821177952,
+    "instanceBytes": 415744,
+    "labelStates": 728
+  },
+  "continuousMembrane": {
+    "beforeSha256": "ca3bf70e4f8e82eba4c83be803e77952c1e6bf0b16a43f6bf9c34dbc5efaab6c",
+    "afterSha256": "8c57480c6fd8ef150907da79af8b32612d8f946f372d700ee4652ebbe98f1a11"
+  }
+}

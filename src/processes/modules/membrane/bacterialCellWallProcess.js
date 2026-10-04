@@ -5,6 +5,7 @@ import {
   alphaHelix,
   foldedDomain,
   sugarRing,
+  bindSurfaceLabel,
   mix,
 } from "./membraneGeometry.js";
 
@@ -77,6 +78,11 @@ export default {
         "Genome-wide identification of genes required for alternative peptidoglycan cross-linking in Escherichia coli revealed unexpected impacts of β-lactams",
       url: "https://www.nature.com/articles/s41467-022-35528-3",
     },
+    {
+      title:
+        "Crystal Structures of Penicillin-Binding Protein 3 from Pseudomonas aeruginosa: Comparison of Native and Antibiotic-Bound Forms",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3025346/",
+    },
   ],
   controls: [
     {
@@ -112,6 +118,7 @@ export default {
       drugMat = k.material("#bd8170"),
       carrierMat = k.material("#c6b880");
     // Ten membrane helices surround RodA's periplasm-facing substrate groove.
+    let rodALabelMesh;
     for (let i = 0; i < 10; i++) {
       const a = (i * Math.PI) / 5;
       const h = alphaHelix(
@@ -121,6 +128,10 @@ export default {
         protein,
       );
       h.rotation.z = Math.cos(a) * 0.075;
+      if (i === 2) {
+        h.name = "RodA-callout-helix";
+        rodALabelMesh = h;
+      }
     }
     k.tube(
       [
@@ -151,17 +162,21 @@ export default {
       0.038,
       carrierMat,
     );
-    alphaHelix(k, [0.65, 0, -0.38], 1.8, enzyme);
-    k.tube(
+    const pbpAnchor = alphaHelix(k, [0.65, 0, -0.38], 1.8, enzyme);
+    pbpAnchor.name = "PBP2-membrane-anchor";
+    // A fixed-buffer bent stalk follows the mobile periplasmic domain while
+    // remaining connected to the same membrane anchor.
+    const pbpStalk = k.tube(
       [
-        [0.65, 0.5, -0.38],
-        [0.96, 0.83, -0.43],
-        [1.03, 1.12, -0.35],
-        [1.5, 1.48, -0.4],
+        [0, 0, 0],
+        [0.15, 0.33, -0.06],
+        [-0.1, 0.66, 0.03],
+        [0, 1, 0],
       ],
       0.12,
       enzyme,
     );
+    pbpStalk.name = "PBP2-attached-flexible-stalk";
     const pbpHead = foldedDomain(
       k,
       [1.5, 1.76, -0.4],
@@ -169,9 +184,24 @@ export default {
       enzyme,
       "PBP2-transpeptidase-cleft",
     );
-    k.ball([0, 0.06, 0.27], 0.055, carrierMat, pbpHead);
+    const pbpSerine = k.ball([0, 0.06, 0.27], 0.055, carrierMat, pbpHead);
+    pbpSerine.name = "PBP2-active-serine";
     k.segment([0, -0.12, 0.06], [0, 0.06, 0.27], 0.026, carrierMat, pbpHead);
+    const upperLip = k.tube(
+      [
+        [-0.15, 0.2, 0.35],
+        [-0.12, 0.4, 0.38],
+        [-0.03, 0.45, 0.38],
+        [0.12, 0.4, 0.34],
+      ],
+      0.03,
+      enzyme,
+      pbpHead,
+      28,
+    );
+    upperLip.name = "PBP2-cleft-upper-lip";
     const site = k.ring([1.5, 1.81, -0.05], 0.15, 0.045, drugMat);
+    site.name = "PBP2-catalytic-site-ring";
     const alanine = k.material("#c3a475"),
       mdap = k.material("#a18eac");
     // Bond cylinders have stable identities; their actual endpoints track the
@@ -236,7 +266,18 @@ export default {
             bond,
           );
         if (j % 2) {
-          stem(k.group, prefix, x, y, z, -1, 4);
+          const oldStem = stem(k.group, prefix, x, y, z, -1, 4);
+          if (row === 0 && (j === 5 || j === 7)) {
+            // mDAP3 accepts the new branch. Bend the nonreacting D-Ala4
+            // away from that corridor while keeping its own peptide bond.
+            oldStem.residues[3].position.x -= 0.23;
+            oldStem.residues[3].position.z -= 0.16;
+            moveBond(
+              oldStem.bonds[3],
+              oldStem.residues[2].position,
+              oldStem.residues[3].position,
+            );
+          }
           // Leave front-chain mDAP at j=5,7 free to accept the new chain.
           // Existing crosslinks connect rear D-Ala4 to front mDAP3.
           if (row === 1 && j !== 5 && j !== 7)
@@ -317,7 +358,14 @@ export default {
         0.055,
         peptide,
       );
-      return { group, carrier, attachment, crosslink, ...peptideStem };
+      return {
+        group,
+        carrier,
+        attachment,
+        crosslink,
+        sugar: m,
+        ...peptideStem,
+      };
     });
     const newGlycosidic = namedBond(
       "polymerization-glycosidic-bond",
@@ -328,7 +376,10 @@ export default {
     );
     const aPoint = new THREE.Vector3(),
       bPoint = new THREE.Vector3();
+    const catalyticPoint = new THREE.Vector3(),
+      stalkPoint = new THREE.Vector3();
     const antibiotic = new THREE.Group();
+    antibiotic.name = "beta-lactam";
     k.group.add(antibiotic);
     const corners = [
       [-0.12, -0.12, 0],
@@ -337,10 +388,22 @@ export default {
       [-0.12, 0.12, 0],
     ];
     const drugBonds = corners.map((v, i) =>
-      k.segment(v, corners[(i + 1) % 4], 0.04, drugMat, antibiotic),
+      namedBond(
+        `beta-lactam-ring-bond-${i}`,
+        v,
+        corners[(i + 1) % 4],
+        0.04,
+        drugMat,
+        antibiotic,
+      ),
     );
+    const carbonylCarbon = k.ball(corners[2], 0.038, drugMat, antibiotic);
+    carbonylCarbon.name = "beta-lactam-carbonyl-carbon";
+    const ringNitrogen = k.ball(corners[1], 0.04, protein, antibiotic);
+    ringNitrogen.name = "beta-lactam-ring-nitrogen";
     // Side substituent and carbonyl distinguish the strained beta-lactam ring
-    // from a generic inhibitor dot; opening the fourth bond indicates acylation.
+    // from a generic inhibitor dot. Acylation opens the adjacent C–N edge and
+    // joins catalytic serine to this same carbonyl carbon, never the ring center.
     k.segment(
       [-0.12, 0.12, 0],
       [-0.27, 0.22, 0.04],
@@ -349,9 +412,19 @@ export default {
       antibiotic,
     );
     k.ball([-0.3, 0.24, 0.04], 0.055, drugMat, antibiotic);
-    k.segment([0.12, 0.12, 0], [0.19, 0.26, 0], 0.028, drugMat, antibiotic);
-    k.ball([0.2, 0.29, 0], 0.06, carrierMat, antibiotic);
-    const covalent = k.segment(
+    for (const side of [-1, 1])
+      namedBond(
+        `beta-lactam-carbonyl-bond-${side}`,
+        [0.12 - side * 0.013, 0.12 + side * 0.006, 0],
+        [0.2 - side * 0.013, 0.29 + side * 0.006, 0],
+        0.017,
+        drugMat,
+        antibiotic,
+      );
+    const carbonylOxygen = k.ball([0.2, 0.29, 0], 0.06, carrierMat, antibiotic);
+    carbonylOxygen.name = "beta-lactam-carbonyl-oxygen";
+    const covalent = namedBond(
+      "PBP2-beta-lactam-acyl-bond",
       [1.5, 1.8, 0.01],
       [1.68, 1.8, 0.25],
       0.035,
@@ -380,6 +453,17 @@ export default {
         "Inner membrane · outer membrane omitted",
       ),
     ];
+    const anchorRodA = bindSurfaceLabel(
+      labels[2],
+      rodALabelMesh,
+      k.group,
+      [0, 0.4, 0.1],
+    );
+    const anchorSubstrate = bindSurfaceLabel(
+      labels[4],
+      units[1].sugar.children[1],
+      k.group,
+    );
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         blocked = parameters.antibiotic === "betaLactam";
@@ -415,9 +499,14 @@ export default {
         unit.residues[4].position.set(
           0.68 + release * 0.25,
           2.13 + release * 0.25,
-          0.3 + release,
+          0.5 + release,
         );
         unit.bonds[4].visible = !released;
+        moveBond(
+          unit.bonds[4],
+          unit.residues[3].position,
+          unit.residues[4].position,
+        );
         unit.crosslink.visible = released;
         // These acceptor mDAP groups were deliberately left unoccupied above.
         moveBond(
@@ -427,17 +516,48 @@ export default {
         );
         if (released) crosslinks++;
       });
-      const drugBind = ease(p, 0.12, 0.42);
+      // The catalytic cleft visits each reacting stem before the bond changes.
+      // The completed first crosslink stays in the wall while PBP2 moves on.
+      const approachStem = blocked ? 0 : ease(p, 0.42, 0.64);
+      const nextStem = ease(p, 0.72, 0.8);
+      const depart = blocked ? 0 : ease(p, 0.92, 1);
+      const contact = approachStem * (1 - depart);
+      const catalyticX = mix(1.5, nextStem * 1.36, contact);
+      const catalyticY = mix(1.8032, 1.94, contact);
+      const catalyticZ = mix(-0.184, 0.2, contact);
+      const tilt = blocked ? 0 : Math.sin(p * Math.PI * 2) * 0.035;
+      pbpHead.rotation.z = tilt;
+      pbpHead.position.set(
+        catalyticX + Math.sin(tilt) * 0.0432,
+        catalyticY - Math.cos(tilt) * 0.0432,
+        catalyticZ - 0.216,
+      );
+      pbpHead.updateMatrix();
+      catalyticPoint.copy(pbpSerine.position).applyMatrix4(pbpHead.matrix);
+      stalkPoint.set(0, -0.33, -0.15).applyMatrix4(pbpHead.matrix);
+      pbpStalk.position.set(0.65, 0.5, -0.38);
+      delta.subVectors(stalkPoint, pbpStalk.position);
+      pbpStalk.scale.y = delta.length();
+      pbpStalk.quaternion.setFromUnitVectors(up, delta.normalize());
+      site.position.copy(catalyticPoint);
+      site.position.z += 0.09;
+
+      const drugBind = ease(p, 0.12, 0.36);
+      const acylated = blocked && p >= 0.38;
       antibiotic.visible = blocked;
       antibiotic.position.set(
-        mix(3.1, 1.68, drugBind),
-        mix(0.8, 1.8, drugBind),
-        0.25,
+        mix(3.1, catalyticPoint.x - carbonylCarbon.position.x, drugBind),
+        mix(0.8, catalyticPoint.y - carbonylCarbon.position.y, drugBind),
+        mix(0.25, catalyticPoint.z + 0.19, drugBind),
       );
-      drugBonds[3].visible = drugBind < 0.98;
-      covalent.visible = blocked && drugBind >= 0.98;
+      drugBonds[1].visible = !acylated;
+      covalent.visible = acylated;
+      moveBond(
+        covalent,
+        catalyticPoint,
+        bPoint.copy(carbonylCarbon.position).add(antibiotic.position),
+      );
       site.material = blocked ? drugMat : enzyme;
-      pbpHead.rotation.z = blocked ? 0 : Math.sin(p * Math.PI * 2) * 0.035;
       labels[4].text = joined
         ? b(
             "四糖链 · 保留一枚脂质锚",
@@ -450,6 +570,13 @@ export default {
       labels[5].text = blocked
         ? b("PBP2 被占据 · 无新交联", "PBP2 occupied · no new crosslinks")
         : b("新肽交联", "New peptide crosslinks");
+      anchorRodA();
+      anchorSubstrate();
+      catalyticPoint.toArray(labels[3].position);
+      labels[5].active = blocked ? acylated : crosslinks > 0;
+      (blocked ? catalyticPoint : units[0].crosslink.position).toArray(
+        labels[5].position,
+      );
       k.group.userData = {
         process: "bacterialCellWall",
         species: "Escherichia coli",
@@ -463,7 +590,7 @@ export default {
         precursorSugarUnits: joined ? 0 : 4,
         newCrosslinks: crosslinks,
         terminalDAlanineReleased: crosslinks,
-        pbpCovalentlyBlocked: blocked && drugBind >= 0.98,
+        pbpCovalentlyBlocked: acylated,
         precursorAlreadyFlipped: true,
         outerMembraneOmitted: true,
         lysisSimulated: false,

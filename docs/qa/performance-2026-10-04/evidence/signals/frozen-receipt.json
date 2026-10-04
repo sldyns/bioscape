@@ -1,0 +1,54 @@
+{
+  "status": "implementation frozen; geometry/science verified; root owns timing/browser/deployment",
+  "productionFilesChanged": [
+    "src/processes/modules/signals/continuousMembrane.js"
+  ],
+  "testFilesChanged": [
+    "src/processes/modules/signals/continuousMembrane.reference.mjs",
+    "src/processes/modules/signals/continuousMembrane.test.mjs",
+    "src/processes/modules/signals/science.test.mjs"
+  ],
+  "baselineSourceSha256": "ca3bf70e4f8e82eba4c83be803e77952c1e6bf0b16a43f6bf9c34dbc5efaab6c",
+  "frozenSourceSha256": {
+    "src/processes/modules/signals/continuousMembrane.js": "8c57480c6fd8ef150907da79af8b32612d8f946f372d700ee4652ebbe98f1a11",
+    "src/processes/modules/signals/continuousMembrane.reference.mjs": "4045ced11addc83671f324092eb7e7ea7baf39465d63dd199d94d4a90347a086",
+    "src/processes/modules/signals/continuousMembrane.test.mjs": "ecc9ee839c63d74f216fa27f0524fe5db5c84e01679eb0a6d58d9e8530b6f6bf",
+    "src/processes/modules/signals/science.test.mjs": "a6a925bbd4cea888424415c2819af4863d8e97d63a4caed0af7e04e3a5d67fd0"
+  },
+  "equivalence": {
+    "states": 364,
+    "fullBufferBytes": 524160000,
+    "fieldNormalChecks": 1092,
+    "log": "evidence/signals/equivalence.log"
+  },
+  "fullModelEquivalence": {
+    "states": 112,
+    "nodes": 38080,
+    "uniqueGeometryStates": 23688,
+    "attributeBytes": 821177952,
+    "instanceBytes": 415744,
+    "labelStates": 728
+  },
+  "fullModelCases": 4,
+  "directionalCache": true,
+  "resolutionPreserved": {
+    "apoptosis": [
+      40,
+      32,
+      16
+    ],
+    "differentiation": [
+      44,
+      32,
+      16
+    ]
+  },
+  "capacityPreserved": 60000,
+  "fixedTypedArrayBytes": {
+    "apoptosis": 8287584,
+    "differentiation": 8676256
+  },
+  "timingsPerformedByOwner": false,
+  "browserUsedByOwner": false,
+  "deploymentPerformedByOwner": false
+}

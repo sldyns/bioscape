@@ -3,7 +3,7 @@ import {
   plateFootprint,
   plateMargin,
 } from "./cellPlateMembrane.js";
-import { chromatid, microtubule } from "./structuralDetail.js";
+import { chromatid, microtubule, anchorLabel } from "./structuralDetail.js";
 import {
   THREE,
   sceneKit,
@@ -123,6 +123,7 @@ function create() {
     k.label([1.3, -1.8, 0.75], "两个子细胞核", "Two daughter nuclei", 1),
   ];
   let membraneState;
+  const fusing = new Float64Array(48 * 4);
   function update(value) {
     const p = clamp(value),
       separation = ease(p, 0.13, 0.35),
@@ -174,51 +175,99 @@ function create() {
       m.position.set(x, side * 0.6, z);
       m.scale.set(1, 1 - 0.7 * ease(p, 0.87, 0.93), 1);
     });
-    const fusing = [];
+    let fusionCount = 0;
     vesicles.forEach(({ m, angle, side, offset }) => {
-      const t = (phase(p, 0.3, 0.9) * 3 + offset) % 1;
+      const cycle = (phase(Math.min(p, 0.82), 0.3, 0.9) * 3 + offset) % 1;
+      const t = p < 0.82 ? cycle : cycle + (1 - cycle) * ease(p, 0.82, 0.9);
       const [x, z] = plateMargin(angle, radius, depth);
       const y = side * (1.1 - 1.1 * t);
       m.position.set(x, y, z);
       m.visible = p >= 0.3 && p < 0.9 && t < 0.72;
-      if (p >= 0.3 && p < 0.9 && t >= 0.72) fusing.push([x, y, z]);
+      if (p >= 0.3 && p < 0.9 && t >= 0.72) {
+        // The connected vesicle settles into the growing sheet before reuse.
+        // Its lumen is already continuous; the outer rim cannot lose a whole
+        // vesicle-radius bulge instantaneously at a modulo boundary.
+        const dx =
+          plateFootprint(x + 1e-4, z, radius, depth) -
+          plateFootprint(x - 1e-4, z, radius, depth);
+        const dz =
+          plateFootprint(x, z + 1e-4, radius, depth) -
+          plateFootprint(x, z - 1e-4, radius, depth);
+        const norm = Math.hypot(dx, dz) || 1;
+        const absorption = ease(t, 0.92, 1);
+        const entry = fusionCount++ * 4;
+        fusing[entry] = x - (0.11 * absorption * dx) / norm;
+        fusing[entry + 1] = y;
+        fusing[entry + 2] = z - (0.11 * absorption * dz) / norm;
+        fusing[entry + 3] = 0.095 * (1 - absorption);
+      }
     });
     // A perforated lumen network widens into a sheet. Incoming vesicle lumens
     // join it through real necks; internal caps disappear in the union surface.
     const hole = 0.21 * (1 - ease(p, 0.45, 0.62));
     const nextMembraneState =
       p < 0.3 ? "before-plate" : p >= 0.9 ? "joined" : p;
-    if (membraneState !== nextMembraneState)
+    if (membraneState !== nextMembraneState) {
+      let lastX = NaN,
+        lastZ = NaN,
+        footprint = 0,
+        fenestra = -Infinity;
       plateMembrane.update(
         (x, y, z) => {
           let field = 2.36 - Math.abs(x);
           if (p >= 0.3) {
-            let plateField = Math.max(
-              plateFootprint(x, z, radius, depth),
-              Math.abs(y) - 0.095,
-            );
-            if (hole > 0.001) {
-              const hx = Math.abs(x / radius) - 0.43;
-              const hz = Math.abs(z / depth) - 0.43;
-              plateField = Math.max(
-                plateField,
-                (hole - Math.hypot(hx, hz)) * Math.min(radius, depth),
-              );
+            if (x !== lastX || z !== lastZ) {
+              lastX = x;
+              lastZ = z;
+              footprint = plateFootprint(x, z, radius, depth);
+              if (hole > 0.001) {
+                const hx = Math.abs(x / radius) - 0.43;
+                const hz = Math.abs(z / depth) - 0.43;
+                fenestra =
+                  (hole - Math.hypot(hx, hz)) * Math.min(radius, depth);
+              }
             }
+            let plateField = Math.max(footprint, Math.abs(y) - 0.095);
+            if (hole > 0.001) plateField = Math.max(plateField, fenestra);
             field = Math.min(field, plateField);
           }
-          for (const [vx, vy, vz] of fusing)
-            field = Math.min(field, Math.hypot(x - vx, y - vy, z - vz) - 0.095);
+          for (let i = 0; i < fusionCount; i++) {
+            const index = i * 4,
+              dx = x - fusing[index],
+              dy = y - fusing[index + 1],
+              dz = z - fusing[index + 2],
+              r = fusing[index + 3];
+            const bound = field + r;
+            if (
+              bound > 0 &&
+              Math.abs(dx) < bound &&
+              Math.abs(dy) < bound &&
+              Math.abs(dz) < bound
+            )
+              field = Math.min(
+                field,
+                Math.sqrt(dx * dx + dy * dy + dz * dz) - r,
+              );
+          }
           return field;
         },
         radius,
         depth,
       );
+    }
     membraneState = nextMembraneState;
     labels[1].active = p < 0.35;
+    labels[1].text.zh = separation > 0 ? "子染色体" : "已复制的染色体";
+    labels[1].text.en =
+      separation > 0 ? "Daughter chromosomes" : "Duplicated chromosomes";
     labels[2].active = p >= 0.3 && p < 0.93;
     labels[3].active = p >= 0.3;
     labels[4].active = p >= 0.48;
+    labels[0].position.splice(0, 3, -2.5, 2, 0.9);
+    anchorLabel(labels[1], sisters[5].m.children[0], group);
+    anchorLabel(labels[2], arrays[1].m.children[0], group);
+    labels[3].position.splice(0, 3, 0, 0.095, 0);
+    anchorLabel(labels[4], nuclei[0].m, group);
     group.userData = {
       mechanism: "phragmoplast-guided centrifugal cell plate",
       species: "Arabidopsis thaliana somatic meristem",

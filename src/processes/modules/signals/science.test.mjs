@@ -6,6 +6,9 @@ import signal from "./signalTransductionProcess.js";
 import apoptosis from "./apoptosisProcess.js";
 import differentiation from "./differentiationProcess.js";
 import immune from "./immuneResponseProcess.js";
+import "./labelEvents.test.mjs";
+import "./apoptosomeCytosol.test.mjs";
+import "./continuousMembrane.test.mjs";
 
 const world = (o) => o.getWorldPosition(new THREE.Vector3());
 function visibleMeshTriangles(mesh) {
@@ -374,4 +377,220 @@ for (const [spec, model] of [
 }
 console.log(
   "all signals: actual geometry bytes deterministic, finite, stable nodes/geometries/materials, all controls PASS",
+);
+
+// 20261004-signals-01: the complete kinase must fit an actual opening in every
+// envelope layer, rather than passing through a decorative pore on a closed rim.
+const entrySurfaces = [];
+for (const g of [s.science.nuclearEnvelope, s.science.nuclearPore])
+  g.traverse((o) => {
+    if (o.isMesh)
+      entrySurfaces.push({ mesh: o, tree: new MeshBVH(o.geometry) });
+  });
+assert(entrySurfaces.length > 10, "retain envelope layers and detailed pore");
+for (const condition of ["ligand", "noLigand", "kinaseInactive"])
+  for (const p of [
+    0.78, 0.795, 0.8, 0.81, 0.82, 0.835, 0.845, 0.85, 0.86, 0.87, 0.88, 0.9, 1,
+  ]) {
+    s.update(p, { condition });
+    s.group.updateMatrixWorld(true);
+    const erk = s.science.erk;
+    for (const { mesh, tree } of entrySurfaces) {
+      const inverse = mesh.matrixWorld.clone().invert();
+      erk.traverse((part) => {
+        if (part.isMesh)
+          assert(
+            !tree.intersectsGeometry(
+              part.geometry,
+              inverse.clone().multiply(part.matrixWorld),
+            ),
+            `ERK crosses nuclear membrane or pore solid p=${p}, condition=${condition}`,
+          );
+      });
+    }
+    if (p === 1)
+      assert.equal(world(erk).x > s.science.portalX, condition === "ligand");
+  }
+console.log(
+  "20261004-signals-01: complete ERK clears all envelope and pore solids, all receptor branches PASS",
+);
+
+// 20261004-signals-02: include the regulatory protein and every zinc-finger
+// decoration, not only the chromatin checked by the earlier regression.
+d.update(0);
+d.group.updateMatrixWorld(true);
+const gataEnvelope = new MeshBVH(d.science.nuclearSurface.geometry);
+let gataVertices = 0;
+for (const program of ["competent", "impaired"])
+  for (const p of [
+    0, 0.025, 0.05, 0.075, 0.1, 0.15, 0.17, 0.23, 0.35, 0.45, 0.46,
+  ]) {
+    d.update(p, { program });
+    d.group.updateMatrixWorld(true);
+    const inverse = d.science.nuclearSurface.matrixWorld.clone().invert();
+    if (!d.science.gata.visible) continue;
+    d.science.gata.traverse((part) => {
+      if (!part.isMesh) return;
+      const transform = inverse.clone().multiply(part.matrixWorld);
+      assert(
+        !gataEnvelope.intersectsGeometry(part.geometry, transform),
+        `GATA1 intersects NE at ${p}`,
+      );
+      const position = part.geometry.attributes.position;
+      const ray = new THREE.Ray(
+        new THREE.Vector3(),
+        new THREE.Vector3(1, 0.137, 0.061).normalize(),
+      );
+      for (let i = 0; i < position.count; i++) {
+        ray.origin.fromBufferAttribute(position, i).applyMatrix4(transform);
+        const hits = gataEnvelope
+          .raycast(ray, THREE.DoubleSide)
+          .map((x) => x.distance)
+          .sort((a, b) => a - b);
+        const crossings = hits.filter(
+          (x, j) => j === 0 || x - hits[j - 1] > 1e-7,
+        ).length;
+        assert.equal(crossings % 2, 1, `GATA1 vertex outside NE p=${p}`);
+        gataVertices++;
+      }
+    });
+  }
+console.log(
+  `20261004-signals-02: ${gataVertices} actual GATA1 vertices contained, no NE intersections PASS`,
+);
+
+// 20261004-signals-03: cargo must occupy the continuous luminal/extracellular
+// space, including the real budding and fusion necks. Only the named integral
+// membrane stem/helix is permitted to intersect lipid.
+let transportVertices = 0;
+for (const epitope of ["matched", "unmatched"])
+  for (const p of [
+    0.35, 0.4, 0.459999, 0.46, 0.5, 0.54, 0.58, 0.6, 0.615, 0.625, 0.63, 0.66,
+    0.7, 0.72, 0.735, 0.76, 0.78, 0.8, 0.81, 0.819999, 0.82, 1,
+  ]) {
+    im.update(p, { epitope });
+    im.group.updateMatrixWorld(true);
+    const membrane = im.science.secretory.mesh;
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(
+        membrane.geometry.attributes.position.array.slice(
+          0,
+          membrane.geometry.drawRange.count * 3,
+        ),
+        3,
+      ),
+    );
+    const tree = new MeshBVH(geometry);
+    const inverse = membrane.matrixWorld.clone().invert();
+    for (const molecule of [im.science.peptide, im.science.mhc])
+      molecule.traverse((part) => {
+        if (!part.isMesh || part.name.startsWith("MHC-I-transmembrane-"))
+          return;
+        const transform = inverse.clone().multiply(part.matrixWorld);
+        assert(
+          !tree.intersectsGeometry(part.geometry, transform),
+          `ER/carrier lipid intersects ${molecule.name} at p=${p}, epitope=${epitope}, part=${part.name || part.geometry.type}`,
+        );
+        const position = part.geometry.attributes.position;
+        for (let i = 0; i < position.count; i++) {
+          const v = new THREE.Vector3()
+            .fromBufferAttribute(position, i)
+            .applyMatrix4(part.matrixWorld);
+          assert(
+            im.science.secretory.field(v.x, v.y) < -0.018,
+            `luminal cargo leaves lumen at p=${p}`,
+          );
+          transportVertices++;
+        }
+      });
+    geometry.dispose();
+  }
+for (const epitope of ["matched", "unmatched"])
+  for (const boundary of [
+    0.19, 0.23, 0.35, 0.46, 0.5, 0.63, 0.71, 0.72, 0.81, 0.82,
+  ]) {
+    im.update(boundary - 1e-7, { epitope });
+    const before = im.science.peptide.position.clone();
+    im.update(boundary + 1e-7, { epitope });
+    assert(
+      before.distanceTo(im.science.peptide.position) < 1e-4,
+      `peptide jumps at ${boundary}`,
+    );
+  }
+// Verify the lumen connects/disconnects at the neck itself, not by toggling cargo.
+for (const [p, bridgeOpen, surfaceOpen] of [
+  [0.5, true, false],
+  [0.65, false, false],
+  [0.78, false, true],
+]) {
+  im.update(p);
+  const c = im.science.carrier.position;
+  const sampleLine = (from, to) =>
+    Array.from({ length: 101 }, (_, i) => {
+      const u = i / 100;
+      return im.science.secretory.field(
+        from[0] + (to[0] - from[0]) * u,
+        from[1] + (to[1] - from[1]) * u,
+      );
+    });
+  assert.equal(
+    sampleLine([-1.3, 0.8], [c.x, c.y]).every((x) => x < 0),
+    bridgeOpen,
+    `ER-neck state at ${p}`,
+  );
+  assert.equal(
+    sampleLine([c.x, c.y], [1.8, c.y]).every((x) => x < 0),
+    surfaceOpen,
+    `fusion-neck state at ${p}`,
+  );
+}
+console.log(
+  `20261004-signals-03: ${transportVertices} cargo vertices luminal, no lipid intersections, joined budding/fusion and continuous loading PASS`,
+);
+im.update(0.819999);
+const fusionBoundary = im.science.secretory.mesh.geometry,
+  fusionCount = fusionBoundary.drawRange.count,
+  fusionBytes = createHash("sha256")
+    .update(Buffer.from(fusionBoundary.attributes.position.array.buffer))
+    .digest("hex");
+im.update(0.82);
+assert.equal(fusionBoundary.drawRange.count, fusionCount);
+assert.equal(
+  createHash("sha256")
+    .update(Buffer.from(fusionBoundary.attributes.position.array.buffer))
+    .digest("hex"),
+  fusionBytes,
+  "removing a fully fused carrier must not pop the membrane surface",
+);
+
+// The optimization must skip identical field work, including unchanged membranes
+// during other molecular events, while preserving arbitrary-seek geometry bytes.
+for (const [model, parameters] of [
+  [a, { condition: "stress" }],
+  [d, { program: "impaired" }],
+]) {
+  model.update(0, parameters);
+  const g = model.science.plasma.mesh.geometry;
+  const version = g.attributes.position.version;
+  const before = createHash("sha256")
+    .update(Buffer.from(g.attributes.position.array.buffer))
+    .digest("hex");
+  model.update(0, parameters);
+  model.update(0.3, parameters);
+  assert.equal(
+    g.attributes.position.version,
+    version,
+    "unchanged membrane must not be regenerated/uploaded",
+  );
+  assert.equal(
+    createHash("sha256")
+      .update(Buffer.from(g.attributes.position.array.buffer))
+      .digest("hex"),
+    before,
+  );
+}
+console.log(
+  "signals membrane cache: stationary fields skip remesh/upload without changing buffers PASS",
 );

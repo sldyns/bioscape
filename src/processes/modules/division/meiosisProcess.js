@@ -1,6 +1,7 @@
 import { clamp, ease, bilingual as b } from "../../kit.js";
 import { divisionKit } from "./divisionShapes.js";
 import { germCellMembrane } from "./germCellMembrane.js";
+import { surfaceAnchor } from "./labelAnchors.js";
 
 function create() {
   const k = divisionKit();
@@ -20,6 +21,10 @@ function create() {
     r.rotation.x = Math.PI / 2;
     return r;
   });
+  const firstContour = (angle) => membrane.contourRadius("x", 0, angle);
+  const secondContours = [-1, 1].map(
+    (side) => (angle) => membrane.contourRadius("y", side * 2.05, angle),
+  );
   const polesI = [-1, 1].map((side) => {
     const pole = k.centrosome();
     pole.position.x = side * 2.7;
@@ -95,6 +100,22 @@ function create() {
     k.label([0, 0, 0.8], "保留胞质桥", "Cytoplasmic bridges retained", 5),
     k.label([0, 2.85, 0.5], "四个单倍体精细胞", "Four haploid spermatids", 9),
   ];
+  const membraneSurface = membrane.group.children[0];
+  const anchors = [
+    surfaceAnchor(labels[0], membraneSurface, [-3.2, 0.4, -0.1]),
+    surfaceAnchor(labels[1], chromosomes[1].centromere, [0, 0, 1]),
+    surfaceAnchor(labels[2], chromosomes[0].centromere, [0, 0, 1]),
+    surfaceAnchor(labels[3], chromosomes[1].centromere, [0, 0, 1]),
+    surfaceAnchor(labels[4], membraneSurface, [0, 1.32, -0.2]),
+    surfaceAnchor(labels[5], membraneSurface, [2.05, 2.2, -0.1]),
+  ];
+  const crossoverAnchor = surfaceAnchor(
+    labels[1],
+    chiasmata[0].marker,
+    [0, 0.065, 0],
+  );
+  let lastPinchI = -1,
+    lastPinchII = -1;
   function update(progress) {
     const p = clamp(progress);
     const pair = ease(p, 0.02, 0.17),
@@ -109,15 +130,18 @@ function create() {
     nuclei.forEach((n) => n.reveal(final));
     parentalEnvelope.reveal(1 - ease(p, 0.23, 0.29));
     firstRing.visible = p >= 0.43 && p < 0.56;
-    firstRing.scale.set(
-      1.35 * (1 - pinchI * 0.95),
-      2.15 * (1 - pinchI * 0.95),
-      1,
-    );
     secondRings.forEach((r) => {
       r.visible = p >= 0.8 && p < 0.94;
-      r.scale.set(1.58 * (1 - pinchII * 0.95), 1.15 * (1 - pinchII * 0.95), 1);
     });
+    const contourChanged = pinchI !== lastPinchI || pinchII !== lastPinchII;
+    if (!firstRing.visible) firstRing.resetContour();
+    else firstRing.fitContour(firstContour, contourChanged);
+    secondRings.forEach((r, i) => {
+      if (!r.visible) r.resetContour();
+      else r.fitContour(secondContours[i], contourChanged);
+    });
+    lastPinchI = pinchI;
+    lastPinchII = pinchII;
     polesI.forEach((pole) => {
       pole.visible = p >= 0.25 && p < 0.57;
       pole.scale.setScalar(
@@ -144,12 +168,14 @@ function create() {
       c.group.scale.setScalar(1 - final * 0.3);
       const recombinant =
         (homolog === -1 && sister === 1) || (homolog === 1 && sister === -1);
-      c.setDeflection(0);
-      const exchange = c.axisPoint(c.exchangeY);
+      const exchange = c.restAxisPoint(c.exchangeY);
       // The two nonsister paths meet at the same homologous coordinate. Beyond
       // this junction each path crosses to the opposite side; it relaxes in I.
-      if (recombinant)
-        c.setDeflection(-exchange.x * Math.min(1, cross * 2) * (1 - separateI));
+      const deflection = recombinant
+        ? -exchange.x * Math.min(1, cross * 2) * (1 - separateI)
+        : 0;
+      // The previous reset path kept +0 when its subsequent target was -0.
+      c.setDeflection(deflection === 0 ? 0 : deflection);
       c.setDistalMaterial(recombinant && cross >= 0.5 ? c.exchanged : c.base);
       const aI = p >= 0.28 && p < 0.55,
         aII = p >= 0.62 && p < 0.91;
@@ -233,8 +259,11 @@ function create() {
     labels[2].active = p >= 0.3 && p < 0.57;
     labels[3].active = p >= 0.57 && p < 0.94;
     labels[4].active = p >= 0.94;
-    labels[4].position[1] = 1.32 * pinchII;
     labels[5].active = p >= 0.94;
+    anchors.forEach((anchor, i) => {
+      if (i === 1 && chiasmata[0].marker.visible) crossoverAnchor();
+      else anchor(contourChanged && (i === 0 || i === 4 || i === 5));
+    });
     k.group.userData = {
       mechanism: "mouse-spermatocyte-meiosis",
       species: "Mus musculus",

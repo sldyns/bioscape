@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { molecularDetail } from "./molecularDetail.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 export default {
   id: "bacterialRepair",
@@ -203,6 +204,7 @@ export default {
       boxMat,
       [-0.95, -1.51, 0],
     );
+    operator.name = "SOS operator box";
     const lex = new THREE.Group();
     group.add(lex);
     const domains = [];
@@ -287,31 +289,32 @@ export default {
       );
     }
     const labels = [
+      // This describes the gap region between the intact ssDNA and its missing
+      // complement; molecular identity labels below bind to real mesh points.
       k.label(
-        [-2.5, 2.2, 0.2],
+        [0, 1.2, 0],
         "损伤相关 ssDNA 间隙",
         "Damage-associated ssDNA gap",
         3,
       ),
       k.label(
-        [0.8, 2.16, 0.2],
+        [0, 0, 0],
         "RecA* 核蛋白丝状体",
         "RecA* nucleoprotein filament",
         3,
       ),
-      k.label([-1, -0.52, 0.3], "LexA 二聚体", "LexA dimer", 3),
-      k.label([-1, -1.91, 0.1], "SOS box", "SOS box", 2),
-      k.label([2.2, -0.64, 0.1], "RNA 聚合酶", "RNA polymerase", 2),
-      k.label(
-        [2.5, -2.67, 0.1],
-        "应答 RNA · 5′ → 3′",
-        "Response RNA · 5′ → 3′",
-        2,
-      ),
-      k.label([-3.9, -0.7, 0], "编码链 5′ → 3′", "Coding strand 5′ → 3′", 1),
-      k.label([-3.9, -1.86, 0], "模板链 3′ → 5′", "Template strand 3′ → 5′", 1),
-      k.label([1.0, 0.68, 0.4], "LexA 自切割", "LexA autocleavage", 3),
+      k.label([0, 0, 0], "LexA 二聚体", "LexA dimer", 3),
+      k.label([0, 0, 0], "SOS box", "SOS box", 2),
+      k.label([0, 0, 0], "RNA 聚合酶", "RNA polymerase", 2),
+      k.label([0, 0, 0], "应答 RNA · 5′ → 3′", "Response RNA · 5′ → 3′", 2),
+      k.label([0, 0, 0], "编码链 5′ → 3′", "Coding strand 5′ → 3′", 1),
+      k.label([0, 0, 0], "模板链 3′ → 5′", "Template strand 3′ → 5′", 1),
+      k.label([0, 0, 0], "LexA 自切割", "LexA autocleavage", 3),
     ];
+    const anchor = labelAnchors(labels),
+      recAnchor = rec[0].children[0].children[0],
+      lexAnchor = domains[0].catalytic.children[0],
+      polAnchor = pol.getObjectByName("RNAP assembly lobe").children[0];
     const ra = new THREE.Vector3(),
       rb = new THREE.Vector3(),
       rd = new THREE.Vector3(),
@@ -409,6 +412,9 @@ export default {
       m.scale.set(radius, Math.max(rd.length(), 1e-6), radius);
       m.quaternion.setFromUnitVectors(up, rd.lengthSq() ? rd.normalize() : up);
     };
+    const revealRec = rec.map((subunit) => detail.fade(subunit)),
+      revealLex = detail.fade(lex),
+      revealPol = detail.fade(pol);
     const update = (value, parameters = {}) => {
       const p = clamp(value),
         cleavable = parameters.lexA !== "noncleavable",
@@ -416,9 +422,11 @@ export default {
         contact = ease(p, 0.36, 0.49),
         cleave = cleavable ? ease(p, 0.49, 0.64) : 0,
         returning = cleavable ? 0 : ease(p, 0.52, 0.7),
-        transcribe = cleavable ? ease(p, 0.64, 1) : 0;
+        transcribe = cleavable ? ease(p, 0.64, 1) : 0,
+        clearance = cleavable ? ease(p, 0.72, 0.86) : 0,
+        polymeraseAppearance = cleavable ? ease(p, 0.6, 0.635) : 0;
       rec.forEach((m, i) => {
-        m.visible = assemble > i / 15;
+        revealRec[i](ease(assemble, i / 15, (i + 1) / 15));
         m.scale.setScalar(0.88 + assemble * 0.12);
       });
       lex.position.set(
@@ -429,19 +437,19 @@ export default {
       domains.forEach(({ bind, catalytic, hinge, x }, i) => {
         const side = i ? 1 : -1;
         bind.position.set(
-          x + side * cleave * 0.63,
-          -0.19 - cleave * 0.46,
-          0.1 + cleave * 0.24,
+          x + side * (cleave * 0.63 + clearance * 0.6),
+          -0.19 - cleave * 0.46 - clearance * 0.24,
+          0.1 + cleave * 0.24 + clearance * 0.1,
         );
         catalytic.position.set(
-          x + side * cleave * 0.3,
-          0.23 + cleave * 0.3,
-          0.04,
+          x + side * (cleave * 0.3 + clearance * 0.35),
+          0.23 + cleave * 0.3 + clearance * 0.45,
+          0.04 + clearance * 0.15,
         );
         hinge.visible = cleave < 0.18;
       });
-      lex.visible = cleave < 0.99 || p < 0.84;
-      pol.visible = cleavable && p > 0.63;
+      revealLex(1 - clearance);
+      revealPol(polymeraseAppearance);
       const polX = -0.75 + transcribe * 3.5;
       const bubble = cleavable ? ease(p, 0.635, 0.65) : 0;
       const opening = (x) =>
@@ -514,14 +522,20 @@ export default {
         m.visible = cleavable && length > i && p > 0.65;
       });
       lesion.scale.setScalar(1 + 0.08 * Math.sin(p * Math.PI));
-      labels[1].active = p > 0.16;
-      labels[2].active = p < 0.51 || !cleavable;
-      labels[2].position[0] = lex.position.x;
-      labels[2].position[1] = lex.position.y + 0.65;
-      labels[4].active = pol.visible;
-      labels[4].position[0] = pol.position.x;
-      labels[5].active = transcribe > 0.05;
-      labels[8].active = cleavable && cleave > 0 && p < 0.84;
+      labels[1].active = p > 0.16 && rec[0].visible;
+      labels[2].active = (p < 0.51 || !cleavable) && lex.visible;
+      labels[4].active = polymeraseAppearance > 0.5;
+      labels[5].active = transcript[0].visible;
+      labels[8].active = cleavable && cleave > 0 && clearance < 0.95;
+      anchor[1](recAnchor);
+      anchor[2](lexAnchor);
+      anchor[3](operator);
+      anchor[4](polAnchor);
+      // The stable 5-prime endpoint remains on the growing/exiting transcript.
+      anchor[5](transcript[0], 0, -0.5, 0);
+      anchor[6](locusLinks[0][0], 0, -0.5, 0);
+      anchor[7](locusLinks[1][0], 0, -0.5, 0);
+      anchor[8](lexAnchor);
       for (let i = 0; i <= 28; i++) {
         const visible =
           cleavable && length > 0 && i <= Math.ceil(length) && p > 0.65;

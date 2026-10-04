@@ -1,0 +1,207 @@
+{
+  "group": "energy",
+  "phase": "B",
+  "issues": [
+    {
+      "issueId": "20261004-energy-01",
+      "status": "fixed",
+      "changes": "Moved CI/III/IV proton trajectories and their arrows into the actual drawn membrane-domain axes. Yeast retains only III/IV transfer. Fo return and its arrow now cross at the a/c interface rather than beside the motor.",
+      "files": [
+        "src/processes/modules/energy/respirationProcess.js",
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/continuity.test.mjs",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Actual transformed protein-box containment at both leaflet heights, full H+ radius at crossing, and exact distance to instanced lipid-head triangle surfaces; all four roots and both coupling states. Negative geometry control reinstates the original lipid-intersecting CI point and is rejected.",
+        "Owned legacy science regressions and refinement smoke passed without weakening assertions. See docs/qa/process-review-2026-10-04/evidence/energy/phase-b-science.log."
+      ],
+      "limitations": [
+        "Root rendered/continuous-playback acceptance remains separate and pending. Protein interiors and transport tracks are mechanism schematics, not resolved atomic proton trajectories."
+      ]
+    },
+    {
+      "issueId": "20261004-energy-02",
+      "status": "fixed",
+      "changes": "Q and cytochrome c now take smooth continuous outward/return legs while retaining full size and their membrane/IMS compartments. NADH-supply, electron, proton and ATP event glyphs grow/shrink at recycle endpoints and activation; leak activity still controls ATP return and rotor slowing.",
+      "files": [
+        "src/processes/modules/energy/respirationProcess.js",
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/continuity.test.mjs",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Dense carrier position/range/compartment checks; both travel directions; epsilon samples around p=1/3, 2/3 and 1; irregular backward/forward seeking; full-sized carrier assertion prevents hiding the carrier to pass continuity.",
+        "Owned legacy science regressions and refinement smoke passed without weakening assertions. See docs/qa/process-review-2026-10-04/evidence/energy/phase-b-science.log."
+      ],
+      "limitations": [
+        "Root rendered/continuous-playback acceptance remains separate and pending. Protein interiors and transport tracks are mechanism schematics, not resolved atomic proton trajectories."
+      ]
+    },
+    {
+      "issueId": "20261004-energy-03",
+      "status": "fixed",
+      "changes": "Moved NDH-I/bo3 pumping and arrows to the actual membrane-domain axes. Chemical protons enter the oxidase from cytoplasm and terminate in its core; quinol proton release begins on the periplasmic side. Fo return now lies at the a/c interface.",
+      "files": [
+        "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/continuity.test.mjs",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Both pump domains pass actual leaflet/protein/lipid-surface checks. Both branches retain chemical uptake inside the oxidase footprint. Dense alternative-branch checks retain absent active pumping; chemical protons never emerge as periplasmic pump flow. Restoring the original chemical-proton crossing is rejected.",
+        "Owned legacy science regressions and refinement smoke passed without weakening assertions. See docs/qa/process-review-2026-10-04/evidence/energy/phase-b-science.log."
+      ],
+      "limitations": [
+        "Root rendered/continuous-playback acceptance remains separate and pending. Protein interiors and transport tracks are mechanism schematics, not resolved atomic proton trajectories."
+      ]
+    },
+    {
+      "issueId": "20261004-energy-04",
+      "status": "fixed",
+      "changes": "The single Q/QH2 carrier now continuously returns along the curved membrane, with no visible endpoint reset. Repeated event glyphs smoothly recycle and enter while preserving qualitative branch-dependent output.",
+      "files": [
+        "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/continuity.test.mjs",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Both conditions checked over dense samples, turnaround/wrap boundaries and arbitrary seeking. Carrier remains full-size and y follows actual membrane curvature.",
+        "Owned legacy science regressions and refinement smoke passed without weakening assertions. See docs/qa/process-review-2026-10-04/evidence/energy/phase-b-science.log."
+      ],
+      "limitations": [
+        "Root rendered/continuous-playback acceptance remains separate and pending. Protein interiors and transport tracks are mechanism schematics, not resolved atomic proton trajectories."
+      ]
+    },
+    {
+      "issueId": "20261004-energy-05",
+      "status": "fixed",
+      "changes": "b6f-associated H+ crosses the actual b6f membrane domain with cytoplasm-to-lumen direction. ATP-synthase return crosses at its a/c interface. PSII proton release remains lumenal and dark mode retains zero light-driven flux.",
+      "files": [
+        "src/processes/modules/energy/bacterialPhotosynthesisProcess.js",
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/continuity.test.mjs",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Actual b6f domain containment and lipid-surface clearance at both leaflet heights; restored original b6f crossing intersects lipid and is rejected. Dark branch checks at six progress values keep b6f/Fo H+ hidden and rotor stationary.",
+        "Owned legacy science regressions and refinement smoke passed without weakening assertions. See docs/qa/process-review-2026-10-04/evidence/energy/phase-b-science.log."
+      ],
+      "limitations": [
+        "Root rendered/continuous-playback acceptance remains separate and pending. Protein interiors and transport tracks are mechanism schematics, not resolved atomic proton trajectories."
+      ]
+    },
+    {
+      "issueId": "20261004-energy-06",
+      "status": "fixed",
+      "changes": "PQ and PC/c6 are continuous full-size shuttles in their membrane and lumen compartments. Photon/electron/proton/ATP event glyphs use smooth activation and vanish at their recycle cut; carrier mobility remains distinct from dark-suppressed light-driven flux.",
+      "files": [
+        "src/processes/modules/energy/bacterialPhotosynthesisProcess.js",
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/continuity.test.mjs",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "Both light and dark controls receive dense continuous-carrier checks, p=0.5/1 epsilon checks, both movement directions and arbitrary seek checks; carrier sizes stay unchanged.",
+        "Owned legacy science regressions and refinement smoke passed without weakening assertions. See docs/qa/process-review-2026-10-04/evidence/energy/phase-b-science.log."
+      ],
+      "limitations": [
+        "Root rendered/continuous-playback acceptance remains separate and pending. Protein interiors and transport tracks are mechanism schematics, not resolved atomic proton trajectories."
+      ]
+    },
+    {
+      "issueId": "20261004-energy-07",
+      "status": "fixed",
+      "changes": "Bind concrete labels to transformed actual mesh-surface points. Moving carriers, glycolytic carbons, NAD and adenylates track their geometry. Branch-specific NDH/oxidase labels use the selected visible protein. Reword ion-reaction labels as named reaction sites and the cyanobacterial ATP label as F1. Keep compartment/accounting descriptions regional.",
+      "files": [
+        "src/processes/modules/energy/detailKit.js",
+        "src/processes/modules/energy/respirationProcess.js",
+        "src/processes/modules/energy/glycolysisProcess.js",
+        "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+        "src/processes/modules/energy/bacterialPhotosynthesisProcess.js",
+        "src/processes/modules/energy/labels.test.mjs",
+        "src/processes/modules/energy/science.test.mjs"
+      ],
+      "verification": [
+        "New labels.test.mjs: 1760 actual transformed-surface endpoint checks across 15 root/condition contexts, a translated real-protein test, and negative controls restoring photographed offsets. Legacy science, transport continuity, finite/stable-resource and deterministic-seek smoke all pass. New rendered frames still required for final visual acceptance.",
+        "Log: docs/qa/process-review-2026-10-04/evidence/energy/label-science.log"
+      ],
+      "limitations": [
+        "Default-root English stage sheets establish the original leader defect. Root must recapture corrected annotations; other rendered roots/conditions and Chinese labels remain separate gates."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    {
+      "command": "node src/processes/modules/energy/continuity.test.mjs",
+      "result": "PASS",
+      "log": "docs/qa/process-review-2026-10-04/evidence/energy/phase-b-continuity.log"
+    },
+    {
+      "command": "node src/processes/modules/energy/science.test.mjs",
+      "result": "PASS including new continuity regression, all legacy geometry assertions, full registered root/control smoke, finite buffers/bounds, arbitrary seeking, stable resources and browser-target esbuild",
+      "log": "docs/qa/process-review-2026-10-04/evidence/energy/phase-b-science.log"
+    },
+    {
+      "command": "npx prettier --write (six explicitly owned changed module/test files)",
+      "result": "PASS; owned files only",
+      "log": "docs/qa/process-review-2026-10-04/evidence/energy/phase-b-format.log"
+    },
+    {
+      "command": "git diff --check -- src/processes/modules/energy",
+      "result": "PASS"
+    },
+    {
+      "command": "node src/processes/modules/energy/science.test.mjs",
+      "purpose": "After rendered label follow-up, including labels.test.mjs",
+      "result": "PASS: 1760 anchor checks plus all original science and transport-continuity tests, 15-context smoke and esbuild",
+      "log": "docs/qa/process-review-2026-10-04/evidence/energy/label-science.log"
+    },
+    {
+      "command": "npx prettier --write (seven explicitly owned label/model/test files); git diff --check -- src/processes/modules/energy",
+      "result": "PASS; no shared files"
+    }
+  ],
+  "evidenceSummary": {
+    "actualProteinPortLeafletChecks": 50,
+    "minimumLipidSurfaceClearanceBeyondParticleRadius": 0.2451551250915095,
+    "maximumIndividualCarrierDifferenceAtFormerWrapBoundaryEpsilon1eMinus4": 1.0215037531402515e-06,
+    "previousCarrierJumps": [
+      1.14999931,
+      1.029999382,
+      1.859457772,
+      1.34999946,
+      1.34999946
+    ],
+    "registeredRootConditionContextsRetained": 15,
+    "newGeometryMaterialOrNodeAllocationsInUpdate": false,
+    "actualLabelSurfaceEndpointChecks": 1760
+  },
+  "sourcesAdded": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10655221/",
+      "file": "src/processes/modules/energy/respirationProcess.js",
+      "supports": "Opened primary III-IV/cyt c structural-functional study: protein-coupled translocation and mobile carrier in the IMS."
+    },
+    {
+      "url": "https://www.nature.com/articles/s41467-019-13122-4",
+      "file": "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+      "supports": "Opened primary E. coli bd-I structure: cytoplasmic proton uptake for oxygen reduction, periplasmic quinol proton release."
+    },
+    {
+      "url": "https://www.rcsb.org/structure/7ZXY",
+      "file": "src/processes/modules/energy/bacterialPhotosynthesisProcess.js",
+      "supports": "Opened primary Synechocystis PCC 6803 b6f structure and article abstract supporting membrane Q-cycle coupling."
+    }
+  ],
+  "remainingLimits": [
+    "No browser operated by module reviewer. Root must inspect visibility of the corrected transport paths, continuous playback and labels in the final integrated render.",
+    "No fixed-performance, FPS, physical-device or publication claim.",
+    "Original Phase A reports and measurements are retained unchanged."
+  ],
+  "mechanismsUnchangedInRenderedFollowup": [
+    "glycolysis"
+  ]
+}

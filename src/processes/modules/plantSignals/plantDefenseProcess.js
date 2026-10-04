@@ -6,6 +6,7 @@ import {
   instances,
   instanceWriter,
   flexibleLink,
+  bindSurfaceLabel,
 } from "./structures.js";
 
 export default {
@@ -78,6 +79,11 @@ export default {
     },
   ],
   sources: [
+    {
+      title:
+        "PDB 4MN8: FLS2–flg22–BAK1 ectodomain complex (structural reference)",
+      url: "https://www.rcsb.org/structure/4MN8",
+    },
     {
       title:
         "Sun et al. (2013) Structural basis for flg22-induced activation of the Arabidopsis FLS2–BAK1 immune complex",
@@ -157,6 +163,7 @@ export default {
     group.add(fls);
     helix(k, fls, [0, -0.37, 0], [0, 0.43, 0], 0.072, teal, 6);
     const ecto = new THREE.Group();
+    ecto.name = "fls2-ectodomain";
     ecto.position.set(-0.46, 1.57, 0);
     fls.add(ecto);
     lrr(k, ecto, {
@@ -202,6 +209,7 @@ export default {
     group.add(bak);
     helix(k, bak, [0, -0.38, 0], [0, 0.49, 0], 0.07, green, 6);
     const bakEcto = new THREE.Group();
+    bakEcto.name = "bak1-ectodomain";
     bakEcto.position.set(0.16, 0.98, 0.02);
     bak.add(bakEcto);
     lrr(k, bakEcto, {
@@ -232,13 +240,16 @@ export default {
     domain(k, bakKinase, [0, -0.62, -0.04], [0.58, 0.45, 0.6], green, teal);
     domain(k, bakKinase, [-0.08, -0.89, -0.04], [0.54, 0.4, 0.58], green, teal);
     const peptide = new THREE.Group();
+    peptide.name = "flg22";
     group.add(peptide);
     const ligandPoints = [];
     for (let i = 0; i < 12; i++) {
+      const y = 1.06 + i * 0.071;
       const p = [
-        Math.sin(i * 0.25) * 0.13,
+        // Follow the concave FLS2 face rather than bowing away from it.
+        -2.46 - 0.52 * Math.sqrt(1 - ((y - 1.57) / 1.06) ** 2) + 0.015 + 2.93,
         i * 0.071,
-        Math.cos(i * 0.5) * 0.04,
+        Math.cos(i * 0.5) * 0.005,
       ];
       ligandPoints.push(p);
       k.ball(p, 0.043, gold, peptide);
@@ -247,7 +258,7 @@ export default {
     const bik = new THREE.Group();
     bik.name = "bik1";
     group.add(bik);
-    domain(
+    const bikDomain = domain(
       k,
       bik,
       [-0.09, 0.07, -0.04],
@@ -255,6 +266,7 @@ export default {
       rose,
       k.material("#d0a9ab"),
     );
+    bikDomain.name = "bik1-domain";
     domain(
       k,
       bik,
@@ -322,7 +334,15 @@ export default {
       heme.rotation.x = Math.PI / 2;
       k.ball([0, y, 0.093], 0.025, gold, oxidase);
     }
-    domain(k, oxidase, [0.14, -0.69, -0.02], [0.99, 0.62, 0.84], navy, teal); // FAD-binding domain
+    const oxidaseDomain = domain(
+      k,
+      oxidase,
+      [0.14, -0.69, -0.02],
+      [0.99, 0.62, 0.84],
+      navy,
+      teal,
+    ); // FAD-binding domain
+    oxidaseDomain.name = "rbohd-fad-domain";
     domain(k, oxidase, [0.23, -1.11, -0.01], [0.91, 0.61, 0.83], navy, teal); // NADPH-binding domain
     // N-terminal regulatory region and paired helix-loop-helix calcium-binding motifs.
     k.tube(
@@ -368,6 +388,7 @@ export default {
     }
     k.ball([0.07, -0.62, 0.24], [0.075, 0.045, 0.025], gold, oxidase);
     const donor = new THREE.Group();
+    donor.name = "nadph-donor";
     group.add(donor);
     k.ball([0, 0, 0], [0.17, 0.09, 0.12], gold, donor);
     k.ball([0.2, 0, 0], [0.13, 0.1, 0.1], gold, donor);
@@ -375,11 +396,14 @@ export default {
     const pmarks = Array.from({ length: 5 }, () =>
       k.ball([0, 0, 0], 0.072, gold),
     );
-    const electrons = Array.from({ length: 5 }, () =>
-      k.ball([0, 0, 0], 0.033, gold),
-    );
-    const ros = Array.from({ length: 12 }, () => {
+    const electrons = Array.from({ length: 5 }, (_, i) => {
+      const electron = k.ball([0, 0, 0], 0.033, gold);
+      electron.name = `rbohd-electron-${i}`;
+      return electron;
+    });
+    const ros = Array.from({ length: 12 }, (_, i) => {
       const g = new THREE.Group();
+      g.name = `apoplastic-ros-${i}`;
       group.add(g);
       k.ball([-0.055, 0, 0], 0.069, rose, g);
       k.ball([0.055, 0, 0], 0.069, rose, g);
@@ -397,6 +421,32 @@ export default {
       k.label([3.3, -0.91, 0.1], "NADPH → NADP⁺", "NADPH → NADP⁺", 1),
       k.label([-0.05, 0.28, 0.7], "质膜", "Plasma membrane", 1),
     ];
+    // The first two labels name empty compartments. All named molecular and
+    // membrane labels below attach to represented surfaces, including motion.
+    let membraneAnchorIndex = 0,
+      membraneDistance = Infinity;
+    slots.forEach(([x, z], i) => {
+      const distance = x * x + (z - 0.54) ** 2;
+      if (distance < membraneDistance) {
+        membraneDistance = distance;
+        membraneAnchorIndex = i;
+      }
+    });
+    const labelAnchors = [
+      bindSurfaceLabel(labels[2], ecto.children[0], [-0.52, 0.45, 0.225]),
+      bindSurfaceLabel(labels[3], bakEcto.children[0], [0.28, 0.18, 0.175]),
+      bindSurfaceLabel(labels[4], bikDomain.children[0], [0, 0, 1]),
+      bindSurfaceLabel(labels[5], oxidaseDomain.children[0], [0, 0, 1]),
+      bindSurfaceLabel(labels[6], peptide.children[9], [0, 0, 1]),
+      bindSurfaceLabel(labels[7], ros[0].children[1], [0, 0, 1]),
+      bindSurfaceLabel(labels[8], donor.children[0], [0, 0, 1]),
+      bindSurfaceLabel(
+        labels[9],
+        lipidLayers.find(({ sign }) => sign === 1).heads,
+        [0, 0, 1],
+        membraneAnchorIndex,
+      ),
+    ];
     return {
       group,
       camera: { position: [0, 1.9, 12.5], target: [0, 0.25, 0] },
@@ -409,11 +459,17 @@ export default {
           signal = on ? ease(p, 0.54, 0.68) : 0,
           output = on ? ease(p, 0.7, 0.9) : 0;
         bak.position.x = 0.05 - join * 3.35;
-        bak.position.z = Math.sin(join * Math.PI) * 0.35;
+        // The ectodomains meet at their exposed surfaces in front of FLS2.
+        // The flexible cytosolic tether keeps the kinase contact in its plane.
+        bak.position.z = join * 0.39 + Math.sin(join * Math.PI) * 0.18;
         flsKinase.position.x = -0.34 * join;
         bakKinase.position.x = 0.34 * join;
+        bakKinase.position.z = -bak.position.z;
         flsLink.update([0, -0.37, 0], [flsKinase.position.x, -0.44, -0.05]);
-        bakLink.update([0, -0.38, 0], [bakKinase.position.x, -0.45, -0.04]);
+        bakLink.update(
+          [0, -0.38, 0],
+          [bakKinase.position.x, -0.45, bakKinase.position.z - 0.04],
+        );
         // Refill every vacated BAK1 site; only its CURRENT footprint excludes lipids.
         for (const { sign, heads, tails } of lipidLayers) {
           slots.forEach(([x, z], i) => {
@@ -447,7 +503,7 @@ export default {
         }
 
         peptide.visible = on;
-        peptide.position.set(-3.4 + bind * 0.53, 2.9 - bind * 1.84, 0.27);
+        peptide.position.set(-3.4 + bind * 0.47, 2.9 - bind * 1.84, 0.26);
         peptide.rotation.z = -0.65 * (1 - bind);
         const dockX = -1.93 - 0.34 * join;
         bik.position.set(
@@ -475,7 +531,10 @@ export default {
         });
         electrons.forEach((e, i) => {
           const t = (p * 2.6 + i / 5) % 1;
-          e.visible = output > 0.03;
+          const weight =
+            ease(output, 0, 0.06) * ease(t, 0, 0.12) * (1 - ease(t, 0.88, 1));
+          e.scale.setScalar(0.033 * weight);
+          e.visible = on && weight > 0;
           e.position.set(
             2.2 + Math.sin(t * Math.PI) * 0.04,
             -0.7 + t * 1.24,
@@ -492,16 +551,10 @@ export default {
           );
           g.scale.setScalar(0.6 + t * 0.4);
         });
-        labels[3].position[0] = bak.position.x;
-        labels[4].position = [bik.position.x, bik.position.y - 0.47, 0.3];
-        labels[6].active = on;
-        labels[6].position = [
-          peptide.position.x + 0.27,
-          peptide.position.y + 0.9,
-          0.4,
-        ];
-        labels[7].active = output > 0.05;
-        labels[8].active = output > 0.01;
+        for (const anchor of labelAnchors) anchor();
+        labels[6].active = peptide.visible;
+        labels[7].active = ros[0].visible;
+        labels[8].active = donor.visible && output > 0.01;
         group.userData = {
           process: "plantDefense",
           species: "Arabidopsis thaliana",

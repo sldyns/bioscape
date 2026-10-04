@@ -169,7 +169,7 @@ function cisterna(parent, color, radii, bend = 0.36) {
     m.transparent = true;
     m.depthWrite = false;
   }
-  return { root, cap, rim, materials, mouthY: ry * Math.cos(opening) };
+  return { root, body, cap, rim, materials, mouthY: ry * Math.cos(opening) };
 }
 
 function vesicle(parent, color) {
@@ -213,7 +213,7 @@ function vesicle(parent, color) {
     lip.visible = value;
   }
   setOpen(false);
-  return { root, setOpen, lipidGroup, lipids, sites };
+  return { root, setOpen, lipidGroup, lipids, sites, full };
 }
 
 function create() {
@@ -306,10 +306,21 @@ function create() {
     position: [...s.position],
     normal: [...s.normal],
   }));
+  // Preserve each lipid's material coordinate while the closed sphere opens
+  // toward +x. The carrier group is rotated by pi around z, so these are the
+  // existing local normals expressed in the future fusion surface's frame.
+  const carrierLipidCoordinates = outgoing.sites.map(({ normal: n }) => ({
+    u: Math.acos(-n[0]) / Math.PI,
+    phi: Math.atan2(n[2], -n[1]),
+  }));
 
   // The plasma membrane has a real opening. Its closure is hidden during fusion.
   const membraneX = 2.98;
   const holeRadius = 0.3;
+  // ShapeGeometry samples the circular hole at twice its curve-segment count.
+  // Use the same 96-sided boundary for the pore, receiving patch and carrier.
+  const fusionAround = 96,
+    fusionRows = 28;
   const shape = new THREE.Shape();
   shape.moveTo(-1.68, -0.85);
   shape.lineTo(1.68, -0.85);
@@ -324,22 +335,54 @@ function create() {
   hole.absarc(0, 0, holeRadius, 0, Math.PI * 2, true);
   shape.holes.push(hole);
   const membraneMat = material(colors.membrane, 0.68);
+  const plasmaSheets = [];
   for (const offset of [-0.035, 0.035]) {
     const sheet = mesh(group, new THREE.ShapeGeometry(shape, 48), membraneMat);
     // Shape's local xy become world yz.
     sheet.rotation.set(Math.PI / 2, Math.PI / 2, 0);
     sheet.position.x = membraneX + offset;
+    sheet.name =
+      offset < 0
+        ? "plasma-membrane-inner-leaflet"
+        : "plasma-membrane-outer-leaflet";
+    plasmaSheets.push(sheet);
   }
-  const closure = mesh(
-    group,
-    new THREE.CircleGeometry(holeRadius, 48),
-    material(colors.membrane, 0.68),
+  const closureGeometry = new THREE.BufferGeometry();
+  const closurePositions = new Float32Array((fusionAround + 1) * 2 * 3);
+  const closureIndices = [];
+  for (let j = 0; j < fusionAround; j++) {
+    const a = j,
+      b = j + fusionAround + 1;
+    closureIndices.push(a, b, a + 1, b, b + 1, a + 1);
+  }
+  closureGeometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(closurePositions, 3).setUsage(
+      THREE.DynamicDrawUsage,
+    ),
   );
-  closure.rotation.y = Math.PI / 2;
+  closureGeometry.setIndex(closureIndices);
+  const closure = mesh(group, closureGeometry, material(colors.membrane, 0.68));
+  closure.name = "receiving-membrane-pore-patch";
   closure.position.x = membraneX;
+  function updateClosure(poreRadius) {
+    for (let row = 0; row < 2; row++)
+      for (let j = 0; j <= fusionAround; j++) {
+        const phi = (j / fusionAround) * Math.PI * 2,
+          radius = row ? holeRadius : poreRadius,
+          index = (row * (fusionAround + 1) + j) * 3;
+        closurePositions[index] = 0;
+        closurePositions[index + 1] = radius * Math.cos(phi);
+        closurePositions[index + 2] = radius * Math.sin(phi);
+      }
+    closureGeometry.attributes.position.needsUpdate = true;
+    closureGeometry.computeVertexNormals();
+    closureGeometry.computeBoundingBox();
+    closureGeometry.computeBoundingSphere();
+  }
   const poreRim = mesh(
     group,
-    new THREE.TorusGeometry(holeRadius, 0.036, 10, 48),
+    new THREE.TorusGeometry(holeRadius, 0.036, 10, fusionAround),
     material(colors.membrane),
   );
   poreRim.rotation.y = Math.PI / 2;
@@ -370,29 +413,30 @@ function create() {
   // Its circular mouth is exactly the plasma-membrane aperture (radius 0.30).
   const fusion = new THREE.Group();
   group.add(fusion);
-  const fusionRadius = 0.4;
-  const fusionCut = Math.asin(holeRadius / fusionRadius);
+  const carrierRadius = 0.31,
+    fusionRadius = 0.4,
+    carrierContactX = membraneX - carrierRadius;
   const fusionShell = mesh(
     fusion,
     new THREE.SphereGeometry(
       fusionRadius,
-      40,
-      28,
+      fusionAround,
+      fusionRows,
       0,
       Math.PI * 2,
-      fusionCut,
-      Math.PI - fusionCut,
+      0,
+      Math.PI,
     ),
-    material(colors.trans, 0.4),
+    outgoing.full.material,
   );
   fusionShell.name = "continuous-fusion-shell";
-  const fusionCenter = membraneX - fusionRadius * Math.cos(fusionCut);
   const fusionPosition = fusionShell.geometry.attributes.position;
+  fusionPosition.setUsage(THREE.DynamicDrawUsage);
   const fusionIndices = [];
-  for (let r = 0; r < 28; r++)
-    for (let j = 0; j < 40; j++) {
-      const a = r * 41 + j,
-        b = a + 41,
+  for (let r = 0; r < fusionRows; r++)
+    for (let j = 0; j < fusionAround; j++) {
+      const a = r * (fusionAround + 1) + j,
+        b = a + fusionAround + 1,
         c = a + 1,
         d = b + 1;
       fusionIndices.push(a, b, c, b, d, c);
@@ -401,18 +445,22 @@ function create() {
   const fusionA = new THREE.Vector3(),
     fusionB = new THREE.Vector3(),
     fusionC = new THREE.Vector3();
-  function updateFusionSurface(flatten) {
-    for (let r = 0; r <= 28; r++)
-      for (let j = 0; j <= 40; j++) {
-        const u = r / 28,
-          angle = fusionCut + (Math.PI - fusionCut) * u,
-          phi = (j / 40) * Math.PI * 2;
+  function updateFusionSurface(poreOpening, flatten) {
+    const radius = mix(carrierRadius, fusionRadius, poreOpening),
+      poreRadius = holeRadius * poreOpening,
+      cut = Math.asin(poreRadius / radius),
+      center = membraneX - radius * Math.cos(cut);
+    for (let r = 0; r <= fusionRows; r++)
+      for (let j = 0; j <= fusionAround; j++) {
+        const u = r / fusionRows,
+          angle = cut + (Math.PI - cut) * u,
+          phi = (j / fusionAround) * Math.PI * 2;
         const rho =
-          fusionRadius * Math.sin(angle) * (1 - flatten) +
+          radius * Math.sin(angle) * (1 - flatten) +
           holeRadius * Math.sqrt(1 - u) * flatten;
         fusionPosition.setXYZ(
-          r * 41 + j,
-          (fusionCenter + fusionRadius * Math.cos(angle)) * (1 - flatten) +
+          r * (fusionAround + 1) + j,
+          (center + radius * Math.cos(angle)) * (1 - flatten) +
             membraneX * flatten,
           rho * Math.cos(phi),
           rho * Math.sin(phi),
@@ -426,14 +474,14 @@ function create() {
   // Evaluate the same rendered triangle, so lipid midplanes stay on the shell
   // during every intermediate flattening frame, not merely at both endpoints.
   function fusionLipidSite(u, phi, site) {
-    const rr = Math.min(u * 28, 27.999999),
-      cc = ((((phi / (2 * Math.PI)) % 1) + 1) % 1) * 40;
+    const rr = Math.min(u * fusionRows, fusionRows - 0.000001),
+      cc = ((((phi / (2 * Math.PI)) % 1) + 1) % 1) * fusionAround;
     const r = Math.floor(rr),
       j = Math.floor(cc),
       fr = rr - r,
       fc = cc - j;
-    const a = r * 41 + j,
-      b = a + 41,
+    const a = r * (fusionAround + 1) + j,
+      b = a + fusionAround + 1,
       c = a + 1,
       d = b + 1;
     let wa, wb, wc;
@@ -463,6 +511,28 @@ function create() {
     site.normal[0] = fusionA.x;
     site.normal[1] = fusionA.y;
     site.normal[2] = fusionA.z;
+  }
+  function carrierLocalSite(world, local) {
+    local.position[0] = carrierContactX - world.position[0];
+    local.position[1] = -world.position[1];
+    local.position[2] = world.position[2];
+    local.normal[0] = -world.normal[0];
+    local.normal[1] = -world.normal[1];
+    local.normal[2] = world.normal[2];
+  }
+  // The last travelling sphere and the first fusion frame share every rendered
+  // triangle. Place leaflet midpoints on those triangles before either is shown.
+  // Keeping the lipid group in the carrier's local frame also preserves its two
+  // tail branches across the handoff, instead of silently swapping their basis.
+  updateFusionSurface(0, 0);
+  outgoing.full.geometry.dispose();
+  outgoing.full.geometry = fusionShell.geometry.clone();
+  outgoing.full.geometry.translate(-carrierContactX, 0, 0);
+  outgoing.full.geometry.rotateZ(Math.PI);
+  for (let i = 0; i < outgoing.sites.length; i++) {
+    const { u, phi } = carrierLipidCoordinates[i];
+    fusionLipidSite(u, phi, contributionSites[i]);
+    carrierLocalSite(contributionSites[i], outgoing.sites[i]);
   }
 
   // One selected soluble secretory protein; its folded chain remains in the lumen.
@@ -539,6 +609,46 @@ function create() {
   pointerTip.rotation.z = Math.PI;
   pointerTip.position.y = 0.18;
 
+  // Leader endpoints belong on membrane geometry. The two Golgi faces follow
+  // the currently visible cis-most and trans-most sacs during maturation.
+  const labels = [
+    {
+      position: [-2.88, 1.49, 0],
+      text: { zh: "粗面内质网", en: "Rough ER" },
+    },
+    { position: [-0.49, 1.55, 0], text: { zh: "顺面", en: "Cis face" } },
+    { position: [1.05, 1.55, 0], text: { zh: "反面", en: "Trans face" } },
+    {
+      position: [2.98, 2.03, 0],
+      text: { zh: "细胞膜", en: "Plasma membrane" },
+    },
+    {
+      position: [3.66, -0.88, 0],
+      text: { zh: "细胞外", en: "Extracellular space" },
+    },
+    {
+      position: [-1.78, -1.89, 0],
+      text: { zh: "胞质侧", en: "Cytosolic side" },
+    },
+  ];
+  const labelPoint = new THREE.Vector3();
+  const rimVertex = 8 * 49 + 48;
+  const anchorVertex = (index, object, vertex) => {
+    labelPoint
+      .fromBufferAttribute(object.geometry.attributes.position, vertex)
+      .applyMatrix4(object.matrixWorld)
+      .toArray(labels[index].position);
+  };
+  const membranePositions = plasmaSheets[1].geometry.attributes.position;
+  let membraneVertex = 0,
+    membraneScore = -Infinity;
+  for (let i = 0; i < membranePositions.count; i++) {
+    const score = membranePositions.getX(i) + membranePositions.getY(i);
+    if (score > membraneScore) {
+      membraneVertex = i;
+      membraneScore = score;
+    }
+  }
   function update(progress) {
     const p = Number.isFinite(progress) ? clamp(progress) : 0;
     const maturation = ease(phase(p, 0.42, 0.67));
@@ -575,7 +685,11 @@ function create() {
     outgoing.root.position.set(transX + openingX, -1.42, 0);
     incoming.root.visible = p >= 0.12 && p < 0.42;
     incoming.setOpen(p < 0.2 || p >= 0.34);
-    incoming.root.rotation.z = p < 0.2 ? -Math.PI / 2 : Math.PI;
+    incoming.root.rotation.z = mix(
+      -Math.PI / 2,
+      -Math.PI,
+      ease(phase(p, 0.2, 0.32)),
+    );
     incoming.root.scale.setScalar(
       p >= 0.39 ? mix(1, 0.01, phase(p, 0.39, 0.42)) : 1,
     );
@@ -621,9 +735,13 @@ function create() {
 
     fusion.visible = p >= 0.9 && p < 0.992;
     poreRim.visible = p >= 0.9 && p < 0.992;
-    closure.visible = !fusion.visible;
+    const poreOpening = ease(phase(p, 0.9, 0.925));
+    poreRim.scale.setScalar(poreOpening);
+    closure.visible = !fusion.visible || poreOpening < 1;
+    updateClosure(fusion.visible ? holeRadius * poreOpening : 0);
     const flatten = ease(phase(p, 0.963, 0.992));
-    updateFusionSurface(flatten);
+    updateFusionSurface(poreOpening, flatten);
+    fusionShell.material.opacity = mix(0.39, 0.68, flatten);
     glycan.visible = p >= 0.56;
 
     if (p < 0.12) {
@@ -670,47 +788,38 @@ function create() {
       outgoing.lipidGroup.rotation.copy(outgoing.root.rotation);
       outgoing.lipids.update(outgoing.sites);
     } else {
-      outgoing.lipidGroup.position.set(0, 0, 0);
-      outgoing.lipidGroup.rotation.set(0, 0, 0);
+      outgoing.lipidGroup.position.set(carrierContactX, 0, 0);
+      outgoing.lipidGroup.rotation.set(0, 0, Math.PI);
       for (let i = 0; i < contributionSites.length; i++) {
-        const old = outgoing.sites[i].normal;
-        fusionLipidSite(
-          Math.acos(old[1]) / 2.4,
-          Math.atan2(old[2], old[0]),
-          contributionSites[i],
-        );
+        const { u, phi } = carrierLipidCoordinates[i];
+        fusionLipidSite(u, phi, contributionSites[i]);
+        carrierLocalSite(contributionSites[i], contributionSites[i]);
       }
       outgoing.lipids.update(contributionSites);
     }
     closure.material.color.set(p >= 0.992 ? colors.trans : colors.membrane);
 
     group.updateMatrixWorld(true);
+    anchorVertex(0, sacs[0].body, rimVertex);
+    const faces = golgi.filter(
+      (sac) => sac.root.visible && sac.materials[0].opacity > 0.068,
+    );
+    const cisFace = faces.reduce((a, b) =>
+      a.root.position.x < b.root.position.x ? a : b,
+    );
+    const transFace = faces.reduce((a, b) =>
+      a.root.position.x > b.root.position.x ? a : b,
+    );
+    anchorVertex(1, cisFace.body, rimVertex);
+    anchorVertex(2, transFace.body, rimVertex);
+    anchorVertex(3, plasmaSheets[1], membraneVertex);
   }
   update(0);
   return {
     group,
     update,
     camera: { position: [1.6, 2.6, 13], target: [0, 0.05, 0] },
-    labels: [
-      {
-        position: [-2.88, 1.49, 0],
-        text: { zh: "粗面内质网", en: "Rough ER" },
-      },
-      { position: [-0.49, 1.55, 0], text: { zh: "顺面", en: "Cis face" } },
-      { position: [1.05, 1.55, 0], text: { zh: "反面", en: "Trans face" } },
-      {
-        position: [2.98, 2.03, 0],
-        text: { zh: "细胞膜", en: "Plasma membrane" },
-      },
-      {
-        position: [3.66, -0.88, 0],
-        text: { zh: "细胞外", en: "Extracellular space" },
-      },
-      {
-        position: [-1.78, -1.89, 0],
-        text: { zh: "胞质侧", en: "Cytosolic side" },
-      },
-    ],
+    labels,
   };
 }
 

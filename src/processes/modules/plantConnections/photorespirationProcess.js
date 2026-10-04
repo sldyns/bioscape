@@ -1,5 +1,6 @@
 import { THREE, sceneKit, bilingual as b, clamp, ease } from "../../kit.js";
 import { anatomy } from "./anatomy.js";
+import { labelAnchors } from "./labelAnchors.js";
 
 function create() {
   const k = sceneKit(),
@@ -202,9 +203,9 @@ function create() {
     o.quaternion.setFromUnitVectors(axis, d.normalize());
   };
   const labels = [
-    label([-2.65, 2.24, 0.1], "叶绿体 · 基质", "Chloroplast · stroma", 3),
-    label([0.12, -2.7, 0.15], "过氧化物酶体", "Peroxisome", 3),
-    label([2.65, -0.75, 0.1], "线粒体 · 基质", "Mitochondrion · matrix", 3),
+    label([-2.65, 0.6, 0.1], "叶绿体 · 基质", "Chloroplast · stroma", 3),
+    label([0.1, -1.48, 0.1], "过氧化物酶体", "Peroxisome", 3),
+    label([2.65, 0.3, 0.1], "线粒体 · 基质", "Mitochondrion · matrix", 3),
     label([-2.38, 0.12, 0.9], "2 × 2C 碳骨架", "2 × 2C carbon skeletons", 2),
     label(
       [2.5, 1.65, 0.5],
@@ -220,12 +221,21 @@ function create() {
       2,
     ),
     label(
-      [0, 2.65, 0.2],
+      // Carbon balance describes the mitochondrial split reaction region,
+      // rather than a fifth tracked atom or a point above the visible pathway.
+      [2.55, 0.58, 0.35],
       "4C = 3C 回收 + 1C 释放",
       "4C = 3C recovered + 1C released",
       3,
     ),
   ];
+  bonds[0].name = "tracked-photorespiratory-carbon-bond";
+  const updateLabelAnchors = labelAnchors([
+    [labels[3], bonds[0]],
+    [labels[4], gdc.children[0]],
+    [labels[5], atoms[3]],
+    [labels[6], kinase.children[0]],
+  ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       functional = parameters.glyk !== "absent";
@@ -275,6 +285,7 @@ function create() {
     labels[6].text = functional
       ? b("GLYK：甘油酸 → 3-PGA", "GLYK: glycerate → 3-PGA")
       : b("缺失 GLYK：甘油酸滞留", "GLYK absent: glycerate remains");
+    updateLabelAnchors();
     group.userData = {
       process: "photorespiration",
       structuralDetail:

@@ -1,3 +1,4 @@
+import { objectAnchor, instanceAnchor, duplexAnchor } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { cutawayHead, assemblyTail } from "./assemblyGeometry.js";
 export default {
@@ -77,6 +78,11 @@ export default {
   ],
   sources: [
     {
+      title:
+        "Cryo-EM structure of the bacteriophage T4 portal protein assembly at near-atomic resolution",
+      url: "https://www.nature.com/articles/ncomms8548",
+    },
+    {
       title: "Structure and function of bacteriophage T4",
       url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4275845/",
     },
@@ -96,6 +102,7 @@ export default {
       tail = assemblyTail(k, group);
     const membrane = new THREE.Group();
     group.add(membrane);
+    membrane.name = "T4-assembly-inner-membrane";
     for (let i = 0; i < 18; i++) {
       const x = -3.65 + i * 0.18;
       for (const y of [-0.61, -0.8])
@@ -113,25 +120,17 @@ export default {
         membrane,
       );
     }
-    const fragments = Array.from({ length: 9 }, (_, i) =>
-      k.ball([0, 0, 0], [0.055, 0.09, 0.05], k.material("#b8b19d")),
-    );
+    const fragments = Array.from({ length: 9 }, (_, i) => {
+      const mesh = k.ball(
+        [0, 0, 0],
+        [0.055, 0.09, 0.05],
+        k.material("#b8b19d"),
+      );
+      mesh.name = `T4-scaffold-fragment-${i}`;
+      return { mesh, baseScale: mesh.scale.clone() };
+    });
     const motor = k.ring([-2, -0.79, 0.1], 0.36, 0.09, k.material("#849b99"));
     motor.rotation.x = Math.PI / 2;
-    const fiberPreview = new THREE.Group();
-    group.add(fiberPreview);
-    for (let i = 0; i < 3; i++)
-      k.tube(
-        [
-          [3.1 + i * 0.2, 1.2, 0.1],
-          [3.5 + i * 0.2, 0.83, 0.1],
-          [3.35 + i * 0.2, 0.25, 0.1],
-        ],
-        0.03,
-        k.material("#819da8"),
-        fiberPreview,
-        20,
-      );
     const labels = [
       k.label(
         [-2, 3.3, 0],
@@ -198,12 +197,37 @@ export default {
         r.visible = tailGrow > (i + 1) / 19;
       });
       tail.terminator.visible = p > 0.59;
-      tail.fibers.visible = active && p > 0.93;
-      tail.fibers.scale.setScalar(0.72 + 0.28 * ease(p, 0.93, 0.99));
-      fiberPreview.visible = p > 0.55 && (!active || p < 0.95);
-      fiberPreview.position.x = -join * 0.9;
+      const attach = active ? ease(p, 0.94, 0.99) : 0;
+      tail.fiberComponents.forEach(({ group: fiber, angle, root }, i) => {
+        const grow = ease(p, 0.4 + i * 0.01, 0.55 + i * 0.01),
+          rotation =
+            (angle > Math.PI ? angle - Math.PI * 2 : angle) * (1 - attach),
+          c = Math.cos(rotation),
+          s = Math.sin(rotation),
+          previewX = 3.1 + (i % 2) * 0.45,
+          previewY = 1.2 - Math.floor(i / 2) * 0.48,
+          targetX = tail.group.position.x + root[0],
+          targetY = tail.group.position.y + root[1];
+        fiber.visible = grow > 0;
+        fiber.rotation.y = rotation;
+        fiber.scale.setScalar(Math.max(1e-8, grow));
+        // Compensate rotation/scale about the actual binding root. During
+        // docking the full-length fiber moves from its independent assembly
+        // site into the baseplate; no second preview fiber is substituted.
+        fiber.position.set(
+          previewX +
+            (targetX - previewX) * attach -
+            tail.group.position.x -
+            grow * (c * root[0] + s * root[2]),
+          previewY +
+            (targetY - previewY) * attach -
+            tail.group.position.y -
+            grow * root[1],
+          0.1 + (root[2] - 0.1) * attach - grow * (-s * root[0] + c * root[2]),
+        );
+      });
       membrane.visible = p < 0.56 || !active;
-      fragments.forEach((m, i) => {
+      fragments.forEach(({ mesh: m, baseScale }, i) => {
         m.visible = clear > 0 && clear < 1;
         const a = (i * Math.PI * 2) / 9;
         m.position.set(
@@ -211,7 +235,10 @@ export default {
           1.05 + 0.85 * Math.sin(a) - clear * 0.4,
           0.25,
         );
-        m.scale.setScalar(1 - clear * 0.7);
+        // Preserve peptide dimensions and fade continuously at both ends.
+        m.scale
+          .copy(baseScale)
+          .multiplyScalar(ease(clear, 0, 0.08) * (1 - clear));
       });
       motor.visible = active && p > 0.51 && p < 0.73;
       motor.position.set(
@@ -222,11 +249,23 @@ export default {
       labels[0].active = p < 0.33;
       labels[1].active = p < 0.85 || !active;
       labels[2].active = membrane.visible;
-      labels[3].active = active && p >= 0.33 && p < 0.5;
-      labels[4].active = active && p >= 0.5 && p < 0.8;
-      labels[5].active = active && p >= 0.8 && p < 0.95;
-      labels[6].active = active && p >= 0.95;
+      labels[3].active = active && p >= 0.33 && head.scaffolding.visible;
+      labels[4].active = head.genome.visible && p < 0.8;
+      labels[5].active = active && p >= 0.8 && p < 0.99;
+      labels[6].active = active && p >= 0.99;
       labels[7].active = !active && p >= 0.33;
+      objectAnchor(labels[0], head.protease.children[0]);
+      objectAnchor(labels[1], tail.base);
+      objectAnchor(labels[2], membrane.children[27]);
+      objectAnchor(labels[3], head.protease.children[0]);
+      const drawnDNA = duplexAnchor(labels[4], head.genome);
+      labels[4].active = labels[4].active && drawnDNA;
+      instanceAnchor(
+        labels[5],
+        head.neck.getObjectByName("gp14-seal-subunits"),
+      );
+      instanceAnchor(labels[6], tail.sheath[10].children[0]);
+      objectAnchor(labels[7], head.protease.children[0]);
       group.userData = {
         rootId,
         phage: "T4",

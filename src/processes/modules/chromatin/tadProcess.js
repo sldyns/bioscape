@@ -45,7 +45,12 @@ function create() {
       cohesin,
     );
   }
-  k.ball([0, -2.06, 0], [0.16, 0.14, 0.13], cohesinMat, cohesin);
+  const cohesinHinge = k.ball(
+    [0, -2.06, 0],
+    [0.16, 0.14, 0.13],
+    cohesinMat,
+    cohesin,
+  );
   k.tube(
     [
       [-0.3, -1.0, 0.13],
@@ -201,6 +206,7 @@ function create() {
     nucleotideDetail.update(sampleA, sampleB);
     cohesin.visible = !depleted;
     cohesin.position.y = -(1 - ease(p, 0.02, 0.15)) * 0.65;
+    cohesinHinge.getWorldPosition(scratch).toArray(labels[1].position);
     for (let i = 0; i < 2; i++) {
       const s = i === 0 ? 0.23 : 0.77;
       sample(s, a);
@@ -211,15 +217,16 @@ function create() {
       ctcf[i].position.copy(a);
       ctcf[i].quaternion.setFromUnitVectors(up, v);
       ctcf[i].visible = !(deleted && i === 1);
-      labels[i + 2].position[0] = a.x + (i === 0 ? -0.55 : 0.55);
-      labels[i + 2].position[1] = a.y + 0.7;
-      labels[i + 2].position[2] = a.z;
+      ctcf[i].children[0]
+        .getWorldPosition(scratch)
+        .toArray(labels[i + 2].position);
     }
     labels[3].text = deleted
       ? B("右侧 CTCF 位点删除", "Right CTCF site deleted")
       : B("← CTCF", "← CTCF");
     sample(0.77, rightSite.position);
     rightSite.visible = deleted;
+    if (deleted) rightSite.position.toArray(labels[3].position);
     sample(0.34, loci[0].position);
     sample(0.66, loci[1].position);
     a.copy(loci[0].position);
@@ -233,7 +240,8 @@ function create() {
     }
     labels[4].active = contactShown;
     labels[4].position[0] = (a.x + b.x) / 2;
-    labels[4].position[1] = (a.y + b.y) / 2 + 0.4;
+    labels[4].position[1] = (a.y + b.y) / 2;
+    labels[4].position[2] = (a.z + b.z) / 2;
     labels[0].position[1] = Math.max(0.3, -0.9 + 2 * loopRadius) + 0.65;
     labels[1].text = depleted
       ? B(

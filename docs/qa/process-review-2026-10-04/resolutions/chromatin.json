@@ -1,0 +1,162 @@
+{
+  "group": "chromatin",
+  "baseline": "be81aa5ac4e2ed05ed057fbbdd5dade930188ec0",
+  "issues": [
+    {
+      "issueId": "20261004-chromatin-01",
+      "status": "fixed",
+      "changes": [
+        "Replaced independently translating Pol IV/RDR2 with adjacent producer complexes at the source locus, with actual enzyme-owned RNA ports and a connecting transfer corridor.",
+        "Kept the nascent first-strand 3-prime end at Pol IV during synthesis; handed the same completed end through the corridor into RDR2, then threaded the same first-strand template while the complementary 3-prime end remains at the RDR2 product port.",
+        "Released only the completed duplex and decreased its curvature to move the same continuous precursor into the existing DCL3 site. Rotating the strand-normal separation during unbending avoids a strand-crossing artifact.",
+        "Preserved original fragment/strand object identities, all downstream RNA trajectories from progress .34 onward, guide/passenger processing, scaffold pairing, target cytosine and DRM2 condition behavior. Added bilingual mechanism text and primary RDR2 source.",
+        "Added actual-buffer/actual-port regressions and imported them from the owned scientific suite so the existing shared runner includes them.",
+        "With explicit root authorization, corrected a demonstrably stale smoke assertion of seven marks to the baseline model's one-cytosine invariant, and strengthened it with actual methyl-carbon count, cytosine parent identity, and active/inactive visibility checks."
+      ],
+      "files": [
+        "src/processes/modules/chromatin/plantRdDMProcess.js",
+        "src/processes/modules/chromatin/upstream.test.mjs",
+        "src/processes/modules/chromatin/science.test.mjs",
+        "src/processes/modules/chromatin/plantSmoke.test.mjs"
+      ],
+      "verification": [
+        "New regression passes in both DRM2 conditions: 242 actual growing-end/transfer/template-contact checks, 24624 actual strand-separation checks, 32 phase-boundary checks.",
+        "The same regression against the original baseline fails at its physical nascent-end-to-Pol-IV assertion, before depending on new object names. Evidence: upstream-baseline-rejection.log and baseline-rejection.json.",
+        "Existing scientific suite remains intact and passes: 13 root/control combinations, 161 stage/seek states, original NPC/contour/base-identity invariants, plus the new imported regression.",
+        "Fresh diagnostic still passes 432 state/seek checks over all 13 combinations and 1089 motion samples across nine distinct geometry branches; buffers, transforms, bounds and resource inventories remain finite/stable/deterministic. Evidence: diagnostics-after.json.",
+        "All downstream precursor/guide RNA float buffers, visibility and draw ranges are exactly unchanged in 12 post-delivery comparison states across both conditions. Evidence: preservation.json.",
+        "All four owned suites pass: science.test.mjs, plantSmoke.test.mjs, refinementSmoke.test.mjs and smoke.test.mjs. Owned-file Prettier check and git diff --check pass."
+      ],
+      "limitations": [
+        "Root still must complete rendered continuous-playback, label legibility and performance review; unit and geometry diagnostics are not rendered acceptance.",
+        "Producer complexes, ports and curved transport paths remain educational schematics, not atom-coordinate structures or measured kinetic trajectories.",
+        "The qualified-pass chromatinAccess/TAD sharp-contact frame turns remain root-rendered-review limits; their product modules were not altered."
+      ]
+    },
+    {
+      "issueId": "20261004-chromatin-02",
+      "status": "fixed",
+      "changes": [
+        "Histone, ISWI and binding-factor leaders now use actual existing subunit positions through motion.",
+        "The same-sequence leader now targets its actual dynamic marked centerline; the nuclear/sliding caption remains a region annotation."
+      ],
+      "files": [
+        "src/processes/modules/chromatin/chromatinAccessProcess.js",
+        "src/processes/modules/chromatin/labelAnchors.test.mjs",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs passes 1015 actual-object/RNA/DNA target checks over 195 non-monotonic states and all 13 registered root/control combinations; imported by science.test.mjs.",
+        "Each of the four retained pre-label-repair models fails the new actual-geometry assertion for its principal misleading leader. Evidence: label-anchor-baseline-rejections.json.",
+        "No mechanism geometry changed: position/normal/instance buffers, local transforms, visibility and draw ranges are byte-identical in 104 states across all 13 root/control combinations. Evidence: label-geometry-preservation.json.",
+        "All four owned suites and owned-file formatting/whitespace checks pass after the annotation changes. Root must still render the updated labels."
+      ],
+      "limitations": [
+        "Updated native/export leader placement and text collisions still require the root rerender; prior reviewed sheets show the pre-label-repair state.",
+        "No frame-rate or physical-device claim."
+      ]
+    },
+    {
+      "issueId": "20261004-chromatin-03",
+      "status": "fixed",
+      "changes": [
+        "CTCF leaders now target the actual green protein bodies; the deleted-right-site branch targets its retained site marker.",
+        "Cohesin follows its actual hinge during loading; the contact annotation reaches the drawn dashed relationship. Mammalian/non-Hi-C captions and the explicit depletion explanation remain contextual annotations."
+      ],
+      "files": [
+        "src/processes/modules/chromatin/tadProcess.js",
+        "src/processes/modules/chromatin/labelAnchors.test.mjs",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs passes 1015 actual-object/RNA/DNA target checks over 195 non-monotonic states and all 13 registered root/control combinations; imported by science.test.mjs.",
+        "Each of the four retained pre-label-repair models fails the new actual-geometry assertion for its principal misleading leader. Evidence: label-anchor-baseline-rejections.json.",
+        "No mechanism geometry changed: position/normal/instance buffers, local transforms, visibility and draw ranges are byte-identical in 104 states across all 13 root/control combinations. Evidence: label-geometry-preservation.json.",
+        "All four owned suites and owned-file formatting/whitespace checks pass after the annotation changes. Root must still render the updated labels."
+      ],
+      "limitations": [
+        "Updated native/export leader placement and text collisions still require the root rerender; prior reviewed sheets show the pre-label-repair state.",
+        "No frame-rate or physical-device claim."
+      ]
+    },
+    {
+      "issueId": "20261004-chromatin-04",
+      "status": "fixed",
+      "changes": [
+        "Genome labels now target DNA within their correct compartments and each cytosolic ribosome has an actual body anchor.",
+        "TOC/TIC and TOM/TIM labels target real pore positions. Each nuclear-encoded cargo label follows the actual precursor midpoint, including the cytosol-retained control, and is hidden until that precursor is visible.",
+        "The Arabidopsis cutaway caption remains a region annotation."
+      ],
+      "files": [
+        "src/processes/modules/chromatin/plantGenomeProcess.js",
+        "src/processes/modules/chromatin/labelAnchors.test.mjs",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs passes 1015 actual-object/RNA/DNA target checks over 195 non-monotonic states and all 13 registered root/control combinations; imported by science.test.mjs.",
+        "Each of the four retained pre-label-repair models fails the new actual-geometry assertion for its principal misleading leader. Evidence: label-anchor-baseline-rejections.json.",
+        "No mechanism geometry changed: position/normal/instance buffers, local transforms, visibility and draw ranges are byte-identical in 104 states across all 13 root/control combinations. Evidence: label-geometry-preservation.json.",
+        "All four owned suites and owned-file formatting/whitespace checks pass after the annotation changes. Root must still render the updated labels."
+      ],
+      "limitations": [
+        "Updated native/export leader placement and text collisions still require the root rerender; prior reviewed sheets show the pre-label-repair state.",
+        "No frame-rate or physical-device claim."
+      ]
+    },
+    {
+      "issueId": "20261004-chromatin-05",
+      "status": "fixed",
+      "changes": [
+        "Pol IV, RDR2, DCL3, AGO4, Pol V and DRM2 leaders now target actual drawn subunits, including jaw rotation and carrier/recruitment movement.",
+        "The target-DNA annotation follows the original cytosine through flipping; the scaffold annotation uses the same actual midpoint sampling function as its RNA tube. The Arabidopsis/canonical caption remains contextual."
+      ],
+      "files": [
+        "src/processes/modules/chromatin/plantRdDMProcess.js",
+        "src/processes/modules/chromatin/labelAnchors.test.mjs",
+        "src/processes/modules/chromatin/science.test.mjs"
+      ],
+      "verification": [
+        "labelAnchors.test.mjs passes 1015 actual-object/RNA/DNA target checks over 195 non-monotonic states and all 13 registered root/control combinations; imported by science.test.mjs.",
+        "Each of the four retained pre-label-repair models fails the new actual-geometry assertion for its principal misleading leader. Evidence: label-anchor-baseline-rejections.json.",
+        "No mechanism geometry changed: position/normal/instance buffers, local transforms, visibility and draw ranges are byte-identical in 104 states across all 13 root/control combinations. Evidence: label-geometry-preservation.json.",
+        "All four owned suites and owned-file formatting/whitespace checks pass after the annotation changes. Root must still render the updated labels."
+      ],
+      "limitations": [
+        "Updated native/export leader placement and text collisions still require the root rerender; prior reviewed sheets show the pre-label-repair state.",
+        "No frame-rate or physical-device claim."
+      ]
+    }
+  ],
+  "unchangedModels": [],
+  "commands": [
+    "node src/processes/modules/chromatin/upstream.test.mjs",
+    "node src/processes/modules/chromatin/science.test.mjs",
+    "node src/processes/modules/chromatin/plantSmoke.test.mjs",
+    "node src/processes/modules/chromatin/refinementSmoke.test.mjs",
+    "node src/processes/modules/chromatin/smoke.test.mjs",
+    "node docs/qa/process-review-2026-10-04/evidence/chromatin/diagnose-after.mjs",
+    "CHROMATIN_RDDM_MODEL=<baseline module artifact> node src/processes/modules/chromatin/upstream.test.mjs (expected geometry failure)",
+    "npx prettier --check src/processes/modules/chromatin/plantRdDMProcess.js src/processes/modules/chromatin/plantSmoke.test.mjs src/processes/modules/chromatin/science.test.mjs src/processes/modules/chromatin/upstream.test.mjs",
+    "git diff --check -- src/processes/modules/chromatin",
+    "node src/processes/modules/chromatin/labelAnchors.test.mjs",
+    "CHROMATIN_LABEL_MODEL_DIR=<retained pre-label-repair models> CHROMATIN_LABEL_ONLY=<id> node src/processes/modules/chromatin/labelAnchors.test.mjs (four expected geometry failures)"
+  ],
+  "sourcesAdded": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8713982/",
+      "title": "Fukudome et al. (2021), Structure and RNA template requirements of Arabidopsis RNA-DEPENDENT RNA POLYMERASE 2",
+      "supports": "Physical Pol IV-RDR2 association, first-transcript 3-prime-end engagement, coupled complementary-strand synthesis, and dsRNA release before DCL3 processing. Primary full text was opened during Phase A."
+    }
+  ],
+  "renderedFollowup": {
+    "discovery": "docs/qa/process-review-2026-10-04/evidence/chromatin/repair-discoveries.json",
+    "newIssues": [
+      "20261004-chromatin-02",
+      "20261004-chromatin-03",
+      "20261004-chromatin-04",
+      "20261004-chromatin-05"
+    ],
+    "annotationOnly": true,
+    "updatedRenderPending": true
+  }
+}

@@ -9,6 +9,7 @@ import {
   materialInventory,
 } from "./structuralDetails.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
+import { labelAnchors } from "./labelAnchors.js";
 const model = {
   id: "yeastOsmoregulation",
   title: b(
@@ -128,11 +129,13 @@ const model = {
       inactive = k.material("#bbc6bf"),
       rnaMat = k.material("#c8917a");
     const wall = k.ring([0, 0, -0.2], 3.12, 0.09, wallmat);
+    wall.name = "Yeast cell-wall reference";
     wall.scale.set(1.3, 0.9, 1);
     const membrane = new THREE.Group();
+    membrane.name = "Osmotic plasma membrane";
     group.add(membrane);
     lipidRim(k, membrane);
-    nuclearRim(k, {
+    const nucleus = nuclearRim(k, {
       center: [1.18, 0.12, -0.04],
       rx: 0.95,
       ry: 0.91,
@@ -150,6 +153,7 @@ const model = {
     const sensor = new THREE.Group();
     group.add(sensor);
     k.ball([0, 0.28, 0], [0.24, 0.24, 0.2], green, sensor);
+    sensor.children[0].name = "Sln1 extracellular sensor surface";
     for (const x of [-0.14, 0.14])
       k.segment([x, 0.15, 0], [x, -0.3, 0], 0.065, green, sensor);
     k.ball([0, -0.42, 0], [0.29, 0.2, 0.24], green, sensor);
@@ -167,6 +171,8 @@ const model = {
     });
     const ypd = k.ball([-2.3, 0.82, 0], [0.26, 0.21, 0.22], blue),
       ssk = k.ball([-1.65, 0.34, 0], [0.31, 0.23, 0.25], green);
+    ypd.name = "Ypd1 phosphorelay protein";
+    ssk.name = "Ssk1 response regulator";
     for (let i = 0; i < 4; i++) {
       helix(k, ypd, [(i - 1.5) * 0.3, 0, 0.65], blue, {
         length: 1.4,
@@ -188,10 +194,12 @@ const model = {
     group.add(kinase1);
     kinase1.position.set(-1.43, -0.38, 0);
     kinaseDetail(k, kinase1, plum);
+    kinase1.children[0].children[0].name = "Ssk2-Ssk22 kinase N lobe";
     const pbs = new THREE.Group();
     group.add(pbs);
     pbs.position.set(-0.52, -0.46, 0);
     kinaseDetail(k, pbs, blue, { scale: 0.8 });
+    pbs.children[0].children[0].name = "Pbs2 kinase N lobe";
     const pbsP = k.ball([-0.3, -0.29, 0.14], 0.08, gold);
     pbsP.name = "Pbs2 activation phosphate";
     const hog = new THREE.Group();
@@ -199,6 +207,7 @@ const model = {
     hog.name = "Hog1 transport cargo";
     hog.scale.setScalar(0.65);
     kinaseDetail(k, hog, plum, { scale: 0.9 });
+    hog.children[0].children[0].name = "Hog1 kinase N lobe";
     const hogP = k.ball([0, 0.27, 0.18], 0.075, gold, hog);
     hogP.name = "Hog1 activation phosphate";
     // Radial transit segment traverses the real left pore; approach and exit
@@ -242,6 +251,7 @@ const model = {
       k.ball([0, 0.16, 0], [0.22, 0.12, 0.19], blue, channel),
       k.ball([0, -0.16, 0], [0.22, 0.12, 0.19], blue, channel),
     ];
+    jaws.forEach((mesh, i) => (mesh.name = `Fps1 gate surface ${i}`));
     jaws.forEach((jaw) => {
       for (let j = 0; j < 3; j++)
         helix(k, jaw, [(j - 1) * 0.6, 0, 0.5], blue, {
@@ -265,6 +275,7 @@ const model = {
       spacing: 0.08,
       radius: 0.026,
     });
+    rna.name = "Nuclear GPD1 response RNA";
     const enzyme = k.ball([0.1, -1.47, 0], [0.4, 0.23, 0.24], green);
     for (let i = 0; i < 3; i++)
       helix(k, enzyme, [(i - 1) * 0.45, 0, 0.8], green, {
@@ -274,6 +285,7 @@ const model = {
       });
     const glycerol = Array.from({ length: 15 }, (_, i) => {
       const g = new THREE.Group();
+      g.name = `Cytoplasmic glycerol ${i}`;
       group.add(g);
       for (let j = 0; j < 3; j++) {
         k.ball([j * 0.105, (j % 2) * 0.07, 0], 0.06, gold, g);
@@ -299,6 +311,7 @@ const model = {
         -1.25 - Math.floor(i / 5) * 0.3,
         0.08,
       );
+      g.children[0].name = `Glycerol ${i} first carbon`;
       return g;
     });
     const waters = Array.from({ length: 10 }, (_, i) =>
@@ -328,6 +341,7 @@ const model = {
         1,
       ),
     ];
+    const anchors = labelAnchors(labels);
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         stress = parameters.osmolarity !== "unchanged",
@@ -335,6 +349,7 @@ const model = {
         shock = stress ? ease(p, 0.12, 0.26) : 0,
         recovery = stress && functional ? ease(p, 0.7, 1) : 0,
         volume = 1 - 0.2 * shock + 0.18 * recovery;
+      labels.forEach((label) => (label.active = true));
       membrane.scale.setScalar(volume);
       sensor.position.set(-2.47 * volume, 2.06 * volume, 0);
       channel.position.set(3.86 * volume, 0, 0);
@@ -363,6 +378,10 @@ const model = {
         (stress ? Math.floor((functional ? 12 : 2) * ease(p, 0.64, 0.95)) : 0);
       glycerol.forEach((g, i) => {
         g.visible = i < count;
+        // Solutes move with the contracting cytoplasmic compartment; their
+        // molecular geometry keeps its size, with clearance from the leaflet.
+        g.position.x = (-2.3 + (i % 5) * 0.85) * volume;
+        g.position.y = (-1.25 - Math.floor(i / 5) * 0.3) * volume;
         g.scale.setScalar(0.85);
       });
       waters.forEach((w, i) => {
@@ -376,18 +395,13 @@ const model = {
         w.rotation.z = a - Math.PI / 2;
       });
       rnaDetail.update();
-      labels[0].position[0] = sensor.position.x;
-      labels[0].position[1] = sensor.position.y + 0.55;
       labels[2].text =
         stress && p > 0.32 && recovery < 0.85
           ? b("Ssk1 去磷酸化", "Ssk1 dephosphorylated")
           : b("Ssk1-P：抑制支路", "Ssk1-P: branch restrained");
-      labels[5].position[0] = hog.position.x;
-      labels[5].position[1] = hog.position.y + 0.5;
       labels[5].text = functional
         ? b("Hog1", "Hog1")
         : b("Hog1 不可磷酸化", "Hog1 nonphosphorylatable");
-      labels[7].position[0] = channel.position.x;
       labels[7].text =
         shock > 0.8
           ? b("Fps1 关闭", "Fps1 closed")
@@ -402,6 +416,19 @@ const model = {
             : functional
               ? b("HOG 适应性应答", "HOG adaptive response")
               : b("适应性恢复受损", "Adaptive recovery impaired");
+      group.updateMatrixWorld(true);
+      anchors.surface(0, sensor.children[0]);
+      anchors.surface(1, ypd);
+      anchors.surface(2, ssk);
+      anchors.surface(3, kinase1.children[0].children[0]);
+      anchors.surface(4, pbs.children[0].children[0]);
+      anchors.surface(5, hog.children[0].children[0]);
+      anchors.point(6, nucleus, 0, 0.45, 0, "region");
+      anchors.surface(7, jaws[0]);
+      anchors.surface(8, glycerol[1].children[0]);
+      anchors.point(9, group, 0, 2.1 * volume, 0, "state");
+      anchors.tube(10, rna);
+      anchors.point(11, wall, 0, -3.21, 0, "region");
       group.userData = {
         rootId,
         species: "Saccharomyces cerevisiae",

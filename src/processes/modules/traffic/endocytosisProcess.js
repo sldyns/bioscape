@@ -28,7 +28,10 @@ function create() {
   const endosome = membraneSurface(group, membrane, 129, 64, "x");
   endosome.mesh.name = "early-endosome-membrane";
   const neck = k.ring([-1.5, 1.45, 0], 0.22, 0.035, k.material("#9c799b"));
+  neck.name = "dynamin-collar-ring";
   neck.rotation.x = Math.PI / 2;
+  neck.material.transparent = true;
+  const neckRest = neck.geometry.attributes.position.array.slice();
   const coat = clathrinLattice(k, coatMat);
   const receptors = [],
     cargo = [],
@@ -61,10 +64,14 @@ function create() {
     k.label([-3.55, 2.6, 0], "细胞外 · LDL", "Extracellular · LDL", 2),
     k.label([-3.4, -2.6, 0], "胞质", "Cytosol", 2),
     k.label([-2.9, 0.4, 0.6], "胞质侧网格蛋白", "Cytosolic clathrin", 2),
-    k.label([2.1, -2.5, 0.5], "早期内体腔", "Early endosome lumen", 2),
+    k.label([2.35, -1.25, 0], "早期内体腔", "Early endosome lumen", 2),
     k.label([3.7, -0.5, 0.4], "受体回收分选", "Receptor recycling domain", 1),
     k.label([-1.4, 1.9, 0.3], "动力蛋白颈环", "Dynamin neck collar", 1),
   ];
+  const labelPoint = new THREE.Vector3(),
+    coatAnchorMatrix = new THREE.Matrix4(),
+    coatHubs = group.getObjectByName("three-legged clathrin hubs");
+  let coatAnchorIndex = -1;
   const fusedShape = [
     [-0.61, 0],
     [-0.38, 0.65],
@@ -94,22 +101,39 @@ function create() {
       travel = ease(p, 0.49, 0.65),
       fused = p >= 0.67,
       sort = ease(p, 0.73, 0.96);
+    const constriction = ease(p, 0.34, 0.43),
+      thetaMax = Math.PI * (0.96 + 0.04 * constriction),
+      neckRadius = (1 - bend) * 1.15 + bend * 0.96 * Math.sin(thetaMax),
+      neckBase = 1.4 - bend * (1.7 + 0.96 * Math.cos(thetaMax)),
+      neckHeight = 0.2 * bend,
+      retract = ease(p, 0.43, 0.48);
     const cx = -1.5 + travel * 1.85,
       cy = -0.3 - travel * 0.95;
     plane.set((t) => {
-      if (detached) return [1.4, 2.5 * t];
-      if (t < 0.7) {
-        const q = t / 0.7,
-          theta = q * Math.PI * 0.96;
+      if (detached) {
+        const q = t,
+          y =
+            neckBase +
+            neckHeight +
+            (1.4 - neckBase - neckHeight) * Math.min(1, q * 5);
+        return [y + (1.4 - y) * retract, 2.5 * q];
+      }
+      if (t < 0.64) {
+        const q = t / 0.64,
+          theta = q * thetaMax;
         return [
           1.4 - bend * (1.7 + 0.96 * Math.cos(theta)),
           (1 - bend) * 1.15 * q + bend * 0.96 * Math.sin(theta),
         ];
       }
-      const q = (t - 0.7) / 0.3,
-        rr = (1 - bend) * 1.15 + bend * 0.96 * Math.sin(Math.PI * 0.96),
-        yy = 1.4 - bend * (1.7 + 0.96 * Math.cos(Math.PI * 0.96));
-      return [yy + (1.4 - yy) * Math.min(1, q * 5), rr + (2.5 - rr) * q];
+      if (t < 0.74)
+        return [neckBase + (neckHeight * (t - 0.64)) / 0.1, neckRadius];
+      const q = (t - 0.74) / 0.26,
+        yy = neckBase + neckHeight;
+      return [
+        yy + (1.4 - yy) * Math.min(1, q * 5),
+        neckRadius + (2.5 - neckRadius) * q,
+      ];
     });
     carrier.mesh.visible = detached && !fused;
     for (const [surface, r] of [[carrier, 0.96]]) {
@@ -119,12 +143,42 @@ function create() {
         r * Math.sin(Math.PI * t),
       ]);
     }
-    neck.visible = p > 0.29 && p < 0.44;
-    neck.scale.setScalar(1 - 0.67 * ease(p, 0.34, 0.43));
-    neck.position.y = 0.65;
+    const recruitment = ease(p, 0.27, 0.31) * (1 - ease(p, 0.415, 0.43));
+    neck.visible = recruitment > 0 && !detached;
+    neck.material.opacity = recruitment;
+    neck.position.y = neckBase + neckHeight * 0.5;
+    const neckVertices = neck.geometry.attributes.position;
+    for (let i = 0; i < neckVertices.count; i++) {
+      const x = neckRest[i * 3],
+        y = neckRest[i * 3 + 1],
+        radial = Math.hypot(x, y),
+        next = neckRadius + 0.085 + (radial - 0.22) * recruitment;
+      neckVertices.setXYZ(
+        i,
+        (next * x) / radial,
+        (next * y) / radial,
+        neckRest[i * 3 + 2] * recruitment,
+      );
+    }
+    neckVertices.needsUpdate = true;
+    neck.geometry.computeVertexNormals();
+    neck.geometry.computeBoundingBox();
+    neck.geometry.computeBoundingSphere();
     dynamin.visible = neck.visible;
     dynamin.position.copy(neck.position);
-    dynamin.scale.copy(neck.scale);
+    for (let i = 0; i < dynamin.children.length; i++) {
+      const a = (i * Math.PI) / 6;
+      dynamin.children[i].position.set(
+        (neckRadius + 0.085) * Math.cos(a),
+        neckHeight * 0.3 * (i / 23 - 0.5),
+        (neckRadius + 0.085) * Math.sin(a),
+      );
+      dynamin.children[i].scale.set(
+        0.039 * recruitment,
+        0.02 * recruitment * Math.min(1, neckHeight / 0.2),
+        0.053 * recruitment,
+      );
+    }
     coat.update({
       bend,
       detached,
@@ -146,8 +200,7 @@ function create() {
         az = -1.05 + i * 1.05,
         r = 0.96;
       const rho =
-        ((1 - bend) * 1.15 * theta) / (Math.PI * 0.96) +
-        bend * r * Math.sin(theta);
+        ((1 - bend) * 1.15 * theta) / thetaMax + bend * r * Math.sin(theta);
       const x =
         (detached ? cx : -1.5) +
         (detached ? r * Math.sin(theta) : rho) * Math.sin(az);
@@ -216,8 +269,27 @@ function create() {
       receptor.adaptor.visible = p > 0.12 && p < 0.54;
       receptor.repeats.rotation.z = -0.9 * ease(p, 0.72, 0.9);
     }
-    labels[2].active = p > 0.12 && p < 0.54;
-    labels[4].active = fused;
+    // Positions are leader endpoints on the subject, not text-layout offsets.
+    cargo[1].getWorldPosition(labelPoint).toArray(labels[0].position);
+    labels[0].active = !detached;
+    if (coatAnchorIndex < 0) {
+      for (let i = 0; i < coatHubs.count; i++) {
+        coatHubs.getMatrixAt(i, coatAnchorMatrix);
+        if (coatAnchorMatrix.getMaxScaleOnAxis() > 0.001) {
+          coatAnchorIndex = i;
+          break;
+        }
+      }
+    }
+    coatHubs.getMatrixAt(coatAnchorIndex, coatAnchorMatrix);
+    labelPoint.setFromMatrixPosition(coatAnchorMatrix);
+    coatHubs.localToWorld(labelPoint).toArray(labels[2].position);
+    labels[2].active = coatHubs.visible;
+    receptors[2].getWorldPosition(labelPoint).toArray(labels[4].position);
+    labels[4].active = p >= 0.8;
+    dynamin.children[11]
+      .getWorldPosition(labelPoint)
+      .toArray(labels[5].position);
     labels[5].active = neck.visible;
     group.userData = {
       process: "endocytosis",

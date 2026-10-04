@@ -395,3 +395,5 @@ console.log(
 
 // Peer bubble-extension regressions: all 1001 sampled times and all conditions.
 await import("./bubble.test.mjs");
+await import("./continuity.test.mjs");
+await import("./labels.test.mjs");
