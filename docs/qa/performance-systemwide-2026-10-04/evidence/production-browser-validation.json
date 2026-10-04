@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-04T08:59:01.168785+00:00",
+  "result": "passed",
+  "build": "first candidate production build, before detail-worker box-only adjustment; shared UI/process/export source unchanged by that later adjustment",
+  "checks": [
+    "production /bioscape/ homepage to real Paramecium structure link",
+    "labels and explosion separation 75",
+    "PNG and six-second MP4 creation; cancel and subsequent successful recording; scene state restored exactly",
+    "structure to process catalog to ciliaryMotion",
+    "ATP absent selected, timeline 720, annotations hidden, language switched to English: condition response correct",
+    "390x844 responsive: document scrollWidth375, five visible annotation markers21x21; returned to catalog",
+    "viewport override reset"
+  ],
+  "exports": "production-export.json",
+  "screenshot": "browser/production-narrow-ciliary.png",
+  "productionParameciumPrepareMs": {
+    "baseline": [
+      940.4
+    ],
+    "optimized": [
+      979.0,
+      959.2
+    ]
+  },
+  "timingBoundary": "DOM prepareMs only; this small production diagnostic is not a paired full-ready acceptance result. Dev all-root/follow-up regressions remain preserved."
+}

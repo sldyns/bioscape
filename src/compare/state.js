@@ -1,4 +1,4 @@
-import { comparisonIds } from "./catalog.js";
+import { comparisonIds } from "./ids.js";
 
 const ids = new Set(comparisonIds);
 export const isComparisonId = (id) => typeof id === "string" && ids.has(id);

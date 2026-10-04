@@ -27,22 +27,52 @@ export function indexRepeatedGeometry(geometry) {
     ),
     stride: attribute.itemSize * attribute.array.BYTES_PER_ELEMENT,
   }));
-  const unique = new Map();
+  let capacity = 1;
+  while (capacity < count * 2) capacity *= 2;
+  const table = new Uint32Array(capacity),
+    mask = capacity - 1;
+  let uniqueCount = 0;
   const indices =
     count <= 65535 ? new Uint16Array(count) : new Uint32Array(count);
   for (let vertex = 0; vertex < count; vertex++) {
-    const key = views
-      .map(({ bytes, stride }) =>
-        bytes.subarray(vertex * stride, (vertex + 1) * stride).join(","),
-      )
-      .join("|");
-    let index = unique.get(key);
-    if (index === undefined) {
-      index = vertex;
-      unique.set(key, index);
+    let hash = 2166136261;
+    for (const { bytes, stride } of views) {
+      const start = vertex * stride;
+      for (let offset = 0; offset < stride; offset++)
+        hash = Math.imul(hash ^ bytes[start + offset], 16777619);
     }
-    indices[vertex] = index;
+    // Avalanche the shared low bits common in Float32 primitive attributes.
+    hash ^= hash >>> 16;
+    hash = Math.imul(hash, 0x85ebca6b);
+    hash ^= hash >>> 13;
+    let slot = hash & mask;
+    for (;;) {
+      const entry = table[slot];
+      if (!entry) {
+        table[slot] = vertex + 1;
+        indices[vertex] = vertex;
+        uniqueCount++;
+        break;
+      }
+      const candidate = entry - 1;
+      let same = true;
+      for (const { bytes, stride } of views) {
+        const start = vertex * stride,
+          previous = candidate * stride;
+        for (let offset = 0; offset < stride; offset++)
+          if (bytes[start + offset] !== bytes[previous + offset]) {
+            same = false;
+            break;
+          }
+        if (!same) break;
+      }
+      if (same) {
+        indices[vertex] = candidate;
+        break;
+      }
+      slot = (slot + 1) & mask;
+    }
   }
-  if (unique.size < count) geometry.setIndex(new BufferAttribute(indices, 1));
+  if (uniqueCount < count) geometry.setIndex(new BufferAttribute(indices, 1));
   return geometry;
 }

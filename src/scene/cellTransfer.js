@@ -7,12 +7,14 @@ import {
   InstancedBufferAttribute,
   MaterialLoader,
   DataTexture,
+  Box3,
+  Sphere,
   Vector3,
 } from "three";
 
 // Preserve the shared scene graph and typed buffers; no tessellation, texture, or
 // numeric precision changes are made when moving construction off the UI thread.
-export function packCell(model) {
+export function packCell(model, { prepareBounds = false } = {}) {
   const buffers = new Set(),
     objects = [],
     objectIds = new Map(),
@@ -37,6 +39,10 @@ export function packCell(model) {
   });
   function geometry(g) {
     if (geometryIds.has(g)) return geometryIds.get(g);
+    if (prepareBounds) {
+      if (g.boundingBox === null) g.computeBoundingBox();
+      if (g.boundingSphere === null) g.computeBoundingSphere();
+    }
     const id = geometries.length;
     geometryIds.set(g, id);
     geometries.push({
@@ -46,6 +52,7 @@ export function packCell(model) {
       index: attribute(g.index),
       groups: g.groups,
       drawRange: g.drawRange,
+      ...packBounds(g),
     });
     return id;
   }
@@ -87,31 +94,38 @@ export function packCell(model) {
     });
     return id;
   }
-  const nodes = objects.map((o) => ({
-    parent: objectIds.get(o.parent) ?? null,
-    position: o.position.toArray(),
-    quaternion: o.quaternion.toArray(),
-    scale: o.scale.toArray(),
-    userData: o.userData,
-    visible: o.visible,
-    renderOrder: o.renderOrder,
-    ...(o.isMesh
-      ? {
-          geometry: geometry(o.geometry),
-          material: material(o.material),
-          castShadow: o.castShadow,
-          receiveShadow: o.receiveShadow,
-          frustumCulled: o.frustumCulled,
-          ...(o.isInstancedMesh
-            ? {
-                count: o.count,
-                instanceMatrix: attribute(o.instanceMatrix),
-                instanceColor: attribute(o.instanceColor),
-              }
-            : {}),
-        }
-      : {}),
-  }));
+  const nodes = objects.map((o) => {
+    if (prepareBounds && o.isInstancedMesh) {
+      if (o.boundingBox === null) o.computeBoundingBox();
+      if (o.boundingSphere === null) o.computeBoundingSphere();
+    }
+    return {
+      parent: objectIds.get(o.parent) ?? null,
+      position: o.position.toArray(),
+      quaternion: o.quaternion.toArray(),
+      scale: o.scale.toArray(),
+      userData: o.userData,
+      visible: o.visible,
+      renderOrder: o.renderOrder,
+      ...(o.isMesh
+        ? {
+            geometry: geometry(o.geometry),
+            material: material(o.material),
+            castShadow: o.castShadow,
+            receiveShadow: o.receiveShadow,
+            frustumCulled: o.frustumCulled,
+            ...(o.isInstancedMesh
+              ? {
+                  count: o.count,
+                  instanceMatrix: attribute(o.instanceMatrix),
+                  instanceColor: attribute(o.instanceColor),
+                  ...packBounds(o),
+                }
+              : {}),
+          }
+        : {}),
+    };
+  });
   return {
     payload: {
       nodes,
@@ -134,6 +148,34 @@ export function packCell(model) {
     },
     buffers: [...buffers],
   };
+}
+function packBounds(object) {
+  return {
+    boundingBox: object.boundingBox
+      ? {
+          min: object.boundingBox.min.toArray(),
+          max: object.boundingBox.max.toArray(),
+        }
+      : null,
+    boundingSphere: object.boundingSphere
+      ? {
+          center: object.boundingSphere.center.toArray(),
+          radius: object.boundingSphere.radius,
+        }
+      : null,
+  };
+}
+function restoreBounds(object, data) {
+  if (data.boundingBox)
+    object.boundingBox = new Box3(
+      new Vector3(...data.boundingBox.min),
+      new Vector3(...data.boundingBox.max),
+    );
+  if (data.boundingSphere)
+    object.boundingSphere = new Sphere(
+      new Vector3(...data.boundingSphere.center),
+      data.boundingSphere.radius,
+    );
 }
 export function unpackCell(data) {
   const textures = Object.fromEntries(
@@ -161,6 +203,7 @@ export function unpackCell(data) {
     if (d.index) g.setIndex(attr(d.index));
     g.groups = d.groups.map((group) => ({ ...group }));
     g.setDrawRange(d.drawRange.start, d.drawRange.count);
+    restoreBounds(g, d);
     return g;
   });
   const materials = data.materials.map((d) => {
@@ -183,6 +226,7 @@ export function unpackCell(data) {
     if (d.count !== undefined) {
       o.instanceMatrix = attr(d.instanceMatrix, true);
       o.instanceColor = attr(d.instanceColor, true);
+      restoreBounds(o, d);
     }
     o.position.fromArray(d.position);
     o.quaternion.fromArray(d.quaternion);

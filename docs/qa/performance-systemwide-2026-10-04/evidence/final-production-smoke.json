@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-04T09:14:14.197Z",
+  "result": "passed",
+  "url": "http://127.0.0.1:4209/bioscape/#/paramecium",
+  "build": "Final production dist from successful 2026-10-04 09:05:59 UTC full check",
+  "indexSha256": "9a09a8d02a02c4c3c148b3460b32ed73618798a8be4b6c7a648ed14e6e10401f",
+  "checks": [
+    "final production subdirectory bundle mounts original Paramecium geometry",
+    "cutaway to exploded mode",
+    "all nine structure labels visible",
+    "English to Chinese language switch",
+    "idle settled rendering",
+    "full screenshot visually inspected"
+  ],
+  "dataset": {
+    "node": "paramecium",
+    "mode": "explode",
+    "prepareSource": "build",
+    "prepareMs": 981.9,
+    "drawCalls": 49,
+    "renderState": "idle"
+  },
+  "labels": 9,
+  "screenshot": "browser/final-production-paramecium.png",
+  "screenshotSha256": "da59c07a4538cb3c332af62af79e94c2f2fdc525d8d2bb930b4ea8a7e85866c9",
+  "measurementBoundary": "Functional smoke only; prepareMs is partial instrumentation. Paired readiness results are in final-loading-browser.json.",
+  "relatedUnchangedUiAndExport": "production-browser-validation.json"
+}

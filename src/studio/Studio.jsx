@@ -132,6 +132,12 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
     [preferences, mode],
   );
   const { width, height } = outputDimensions(effectivePreferences);
+  // A larger stage can retain the same pixel cap; keep its preview clock alive.
+  const scale = previewScale(
+    { width, height },
+    previewBounds,
+    window.devicePixelRatio,
+  );
   const canExplode = Boolean(
     originalSource.canExplode || originalSource.api?.canExplode,
   );
@@ -222,11 +228,6 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
   useEffect(() => {
     if (exportBusy || (mode === "video" && video)) return;
     const canvas = previewCanvas.current;
-    const scale = previewScale(
-      { width, height },
-      previewBounds,
-      window.devicePixelRatio,
-    );
     let firstFrame = true;
     setPreviewBusy(true);
     setPlayingPreview(false);
@@ -284,7 +285,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
     refresh,
     exportBusy,
     video,
-    previewBounds,
+    scale,
     width,
     height,
   ]);

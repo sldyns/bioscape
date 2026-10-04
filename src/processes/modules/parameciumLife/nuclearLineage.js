@@ -1,4 +1,5 @@
 import { THREE, ease } from "../../kit.js";
+import { shapeState } from "./shapeState.js";
 
 // Invert the map from a parent hemisphere to one full daughter sphere. Eight
 // patches tessellate the initial synkaryon and remain the same eight patches as
@@ -81,6 +82,7 @@ export function nuclearLineage(k, parent, colors, name) {
     });
   }
   base.dispose();
+  const shapeChanged = shapeState();
   function update(p) {
     const split1 = ease(p, 0.78, 0.805),
       separate1 = ease(p, 0.805, 0.83),
@@ -91,6 +93,19 @@ export function nuclearLineage(k, parent, colors, name) {
       development = ease(p, 0.94, 0.975),
       selection = ease(p, 0.975, 1);
     group.visible = p >= 0.78;
+    if (
+      !shapeChanged(
+        split1,
+        separate1,
+        split2,
+        separate2,
+        split3,
+        separate3,
+        development,
+        selection,
+      )
+    )
+      return;
     leaves.forEach(({ levels, layers, rootSide, xSide, lastSide }, j) => {
       const cx1 = 0.3 * (1 - separate1),
         cy1 = rootSide * (0.205 + 0.345 * separate1),

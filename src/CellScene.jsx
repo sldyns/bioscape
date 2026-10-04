@@ -1,5 +1,6 @@
 import { createDetailLoader } from "./scene/detailLoader";
 import { createPickingIndex } from "./scene/picking";
+import { createPickingCandidates } from "./scene/pickingCandidates.js";
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -11,6 +12,11 @@ import { createPresentationAppearance } from "./scene/presentationAppearance";
 import { explodedFitDistance } from "./scene/viewFraming";
 import { createFramingDistanceCache } from "./scene/framingDistanceCache.js";
 import { supportsExplosion } from "./scene/viewCapabilities";
+import {
+  setStyleIfChanged,
+  setAttributeIfChanged,
+  setHiddenIfChanged,
+} from "./scene/structureDomUpdates.js";
 import { getNode } from "./hierarchy";
 import {
   isStructureLabelVisible,
@@ -191,7 +197,8 @@ export default function CellScene({
       cameraStates = new Map();
     let model = null;
     let currentKey = null,
-      pickable = [];
+      pickable = [],
+      collectPickingCandidates = createPickingCandidates([], null);
     let matricesDirty = true,
       updateAppearance;
     let current = null,
@@ -468,6 +475,7 @@ export default function CellScene({
         }
       });
 
+      collectPickingCandidates = createPickingCandidates(pickable, id);
       pickingIndex.prepare(pickable);
       labelElements.forEach((l) => {
         l.pin.remove();
@@ -682,54 +690,15 @@ export default function CellScene({
         (-(e.clientY - r.top) / r.height) * 2 + 1,
       );
       raycaster.setFromCamera(pointer, camera);
-      const visible = pickable.filter((o) => {
-        if (o.userData.nonInteractive) return false;
-        for (let p = o; p; p = p.parent) if (!p.visible) return false;
-        return true;
-      });
-      let hits;
-      if (
-        [
-          "cell",
-          "cytoplasm",
-          "plant",
-          "bacterium",
-          "yeast",
-          "paramecium",
-          "phage",
-        ].includes(live.current.nodeId)
-      ) {
-        const backdrop = [
-          "membrane",
-          "cytoplasm",
-          "cytosol",
-          "cytoskeleton",
-          "cellWall",
-          "plantMembrane",
-          "plantCytoplasm",
-          "vacuole",
-          "bacterialEnvelope",
-          "bacterialCytoplasm",
-          "yeastWall",
-          "yeastMembrane",
-          "paraSurface",
-          "paraCilia",
-          "phageHead",
-        ];
-        hits = raycaster.intersectObjects(
-          visible.filter((o) => !backdrop.includes(o.userData.hitId)),
-          false,
-        );
-        if (!hits.length)
-          hits = raycaster.intersectObjects(
-            visible.filter((o) => backdrop.includes(o.userData.hitId)),
-            false,
-          );
-      } else hits = raycaster.intersectObjects(visible, false);
+      const candidates = collectPickingCandidates();
+      let hits = raycaster.intersectObjects(candidates.primary, false);
+      if (!hits.length && candidates.fallback.length)
+        hits = raycaster.intersectObjects(candidates.fallback, false);
       el.dataset.pickMs = (performance.now() - pickStart).toFixed(2);
-      el.dataset.indexedMeshes = pickable.filter(
-        (o) => o.geometry.boundsTree,
-      ).length;
+      let indexedMeshes = 0;
+      for (const mesh of pickable)
+        if (mesh.geometry.boundsTree) indexedMeshes++;
+      el.dataset.indexedMeshes = indexedMeshes;
       const id = hits[0]?.object.userData.hitId;
       return getNode(live.current.nodeId).children.includes(id) ? id : null;
     }
@@ -932,8 +901,8 @@ export default function CellScene({
           if (label.textContent !== text) label.textContent = text;
           const visible =
             p.labels && isStructureLabelVisible(part.userData, p.mode);
-          label.style.display = visible ? "block" : "none";
-          label.leader.style.display = label.style.display;
+          setStyleIfChanged(label, "display", visible ? "block" : "none");
+          setStyleIfChanged(label.leader, "display", label.style.display);
           if (visible) {
             const v = tempProjected
               .copy(part.userData.labelAnchor)
@@ -953,8 +922,8 @@ export default function CellScene({
           p.labels &&
           p.mode !== "explode" &&
           isStructureLabelVisible(label.landmark, p.mode);
-        label.style.display = visible ? "block" : "none";
-        label.leader.style.display = label.style.display;
+        setStyleIfChanged(label, "display", visible ? "block" : "none");
+        setStyleIfChanged(label.leader, "display", label.style.display);
         if (visible) {
           const text = label.landmark[p.lang === "en" ? "en" : "zh"];
           if (label.textContent !== text) label.textContent = text;
@@ -971,17 +940,32 @@ export default function CellScene({
       }
       const compact = viewWidth < 560;
       el.classList.toggle("compact-labels", compact);
-      labelList.hidden = !p.labels;
-      leaders.style.display = p.labels && !compact ? "block" : "none";
+      setHiddenIfChanged(labelList, !p.labels);
+      setStyleIfChanged(
+        leaders,
+        "display",
+        p.labels && !compact ? "block" : "none",
+      );
       for (const label of [...labelElements.values(), ...landmarkElements])
-        label.pin.style.display =
-          compact && label.style.display !== "none" ? "block" : "none";
+        setStyleIfChanged(
+          label.pin,
+          "display",
+          compact && label.style.display !== "none" ? "block" : "none",
+        );
       if (compact) {
         for (const entry of projectedLabels) {
-          entry.label.style.left = "";
-          entry.label.style.top = "";
-          entry.label.pin.style.left = `${Math.max(10, Math.min(viewWidth - 10, entry.x))}px`;
-          entry.label.pin.style.top = `${Math.max(10, Math.min(viewHeight - 10, entry.y))}px`;
+          setStyleIfChanged(entry.label, "left", "");
+          setStyleIfChanged(entry.label, "top", "");
+          setStyleIfChanged(
+            entry.label.pin,
+            "left",
+            `${Math.max(10, Math.min(viewWidth - 10, entry.x))}px`,
+          );
+          setStyleIfChanged(
+            entry.label.pin,
+            "top",
+            `${Math.max(10, Math.min(viewHeight - 10, entry.y))}px`,
+          );
         }
       } else
         for (const side of [-1, 1]) {
@@ -1012,13 +996,13 @@ export default function CellScene({
               entry.label.labelWidth / 2 + 8,
             );
             const x = side < 0 ? inset : viewWidth - inset;
-            entry.label.style.left = `${x}px`;
-            entry.label.style.top = `${y}px`;
+            setStyleIfChanged(entry.label, "left", `${x}px`);
+            setStyleIfChanged(entry.label, "top", `${y}px`);
             const line = entry.label.leader;
-            line.setAttribute("x1", entry.x);
-            line.setAttribute("y1", entry.y);
-            line.setAttribute("x2", x);
-            line.setAttribute("y2", y);
+            setAttributeIfChanged(line, "x1", entry.x);
+            setAttributeIfChanged(line, "y1", entry.y);
+            setAttributeIfChanged(line, "x2", x);
+            setAttributeIfChanged(line, "y2", y);
           });
         }
       const railHeight =

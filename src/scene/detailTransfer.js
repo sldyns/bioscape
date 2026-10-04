@@ -4,14 +4,24 @@ import {
   Group,
   Mesh,
   MaterialLoader,
+  Box3,
+  Sphere,
+  Vector3,
 } from "three";
 
 // Transfer the original typed buffers, without quantization or mesh simplification.
-export function packDetail(group) {
+export function packDetail(
+  group,
+  { prepareBounds = false, prepareSpheres = prepareBounds } = {},
+) {
   if (!group) return { payload: null, buffers: [] };
   const buffers = new Set(),
     meshes = [];
   for (const mesh of group.children) {
+    if (prepareBounds && mesh.geometry.boundingBox === null)
+      mesh.geometry.computeBoundingBox();
+    if (prepareSpheres && mesh.geometry.boundingSphere === null)
+      mesh.geometry.computeBoundingSphere();
     const attributes = Object.fromEntries(
       Object.entries(mesh.geometry.attributes).map(([name, attribute]) => {
         buffers.add(attribute.array.buffer);
@@ -32,6 +42,18 @@ export function packDetail(group) {
       index,
       groups: mesh.geometry.groups,
       drawRange: mesh.geometry.drawRange,
+      boundingBox: mesh.geometry.boundingBox
+        ? {
+            min: mesh.geometry.boundingBox.min.toArray(),
+            max: mesh.geometry.boundingBox.max.toArray(),
+          }
+        : null,
+      boundingSphere: mesh.geometry.boundingSphere
+        ? {
+            center: mesh.geometry.boundingSphere.center.toArray(),
+            radius: mesh.geometry.boundingSphere.radius,
+          }
+        : null,
       material: mesh.material.toJSON(),
       linearColors: Object.fromEntries(
         Object.entries(mesh.material)
@@ -64,6 +86,16 @@ export function unpackDetail(payload) {
     if (data.index) geometry.setIndex(new BufferAttribute(data.index, 1));
     geometry.groups = data.groups.map((group) => ({ ...group }));
     geometry.setDrawRange(data.drawRange.start, data.drawRange.count);
+    if (data.boundingBox)
+      geometry.boundingBox = new Box3(
+        new Vector3(...data.boundingBox.min),
+        new Vector3(...data.boundingBox.max),
+      );
+    if (data.boundingSphere)
+      geometry.boundingSphere = new Sphere(
+        new Vector3(...data.boundingSphere.center),
+        data.boundingSphere.radius,
+      );
     const material = loader.parse(structuredClone(data.material));
     for (const [key, color] of Object.entries(data.linearColors))
       material[key].fromArray(color);

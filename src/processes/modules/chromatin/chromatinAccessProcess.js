@@ -202,6 +202,7 @@ function create({ rootId = "cell" } = {}) {
     labels[1].text = B("ISWI 类 · CHR11/17", "ISWI family · CHR11/17");
   if (rootId === "yeast")
     labels[1].text = B("ISWI 类 · Isw1", "ISWI family · Isw1");
+  let geometryCenter;
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       active = parameters.hydrolysis !== "disabled";
@@ -214,16 +215,20 @@ function create({ rootId = "cell" } = {}) {
     remodeler.rotation.z = active
       ? 0.08 * Math.sin(p * 24) * ease(p, 0.32, 0.4) * (1 - ease(p, 0.7, 0.8))
       : 0;
-    duplex.update();
-    strands[0].update(sampleA);
-    strands[1].update(sampleB);
-    site.update(siteSample);
-    nucleotideDetail.update(sampleA, sampleB);
-    for (let i = 0; i < rungs.length; i++) {
-      const s = (i + 0.5) / rungs.length;
-      sampleA(s, a);
-      sampleB(s, b);
-      moveSegment(rungs[i], a, b, 0.017, scratch);
+    // Only the nucleosome center deforms this DNA; factor poses still advance.
+    if (center !== geometryCenter) {
+      duplex.update();
+      strands[0].update(sampleA);
+      strands[1].update(sampleB);
+      site.update(siteSample);
+      nucleotideDetail.update(sampleA, sampleB);
+      for (let i = 0; i < rungs.length; i++) {
+        const s = (i + 0.5) / rungs.length;
+        sampleA(s, a);
+        sampleB(s, b);
+        moveSegment(rungs[i], a, b, 0.017, scratch);
+      }
+      geometryCenter = center;
     }
     centerline(siteDistance / total, a);
     const exposed = siteDistance + 0.18 < center - 0.34 + 3.6;

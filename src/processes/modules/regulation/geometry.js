@@ -4,6 +4,12 @@ import { THREE } from "../../kit.js";
 export function dynamicTube(kit, count, radius, material, parent = kit.group) {
   const sides = 8,
     positions = new Float32Array((count + 1) * sides * 3);
+  const cosines = new Float64Array(sides),
+    sines = new Float64Array(sides);
+  for (let j = 0; j < sides; j++) {
+    cosines[j] = radius * Math.cos((j / sides) * Math.PI * 2);
+    sines[j] = radius * Math.sin((j / sides) * Math.PI * 2);
+  }
   const indices = [];
   for (let i = 0; i < count; i++)
     for (let j = 0; j < sides; j++) {
@@ -42,8 +48,8 @@ export function dynamicTube(kit, count, radius, material, parent = kit.group) {
         normal.crossVectors(tangent, axis).normalize();
         binormal.crossVectors(tangent, normal).normalize();
         for (let j = 0; j < sides; j++) {
-          const c = radius * Math.cos((j / sides) * Math.PI * 2),
-            s = radius * Math.sin((j / sides) * Math.PI * 2);
+          const c = cosines[j],
+            s = sines[j];
           const index = (i * sides + j) * 3;
           positions[index] = samples[i].x + c * normal.x + s * binormal.x;
           positions[index + 1] = samples[i].y + c * normal.y + s * binormal.y;

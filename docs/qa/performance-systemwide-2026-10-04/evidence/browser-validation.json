@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-04T08:30:09.224239+00:00",
+  "result": "passed",
+  "scope": "Real IAB browser on final candidate source at port 4207; functional lifecycle checks only, concurrent npm check means fixture timing output is not accepted as performance evidence.",
+  "checks": [
+    {
+      "entry": "tests/studio-preview-resize.html",
+      "result": "pass",
+      "covers": "unchanged capped scale preserves paused pixels and playing clock; changed scale/refresh repaints; unmount releases clock/observer/capture"
+    },
+    {
+      "entry": "tests/scene-capture-browser.html",
+      "result": "pass",
+      "covers": "actual GPU pixels, transparent alpha, dimensions, camera/renderer/shadow preservation, failure restoration"
+    },
+    {
+      "entry": "tests/scene-capture-performance.html",
+      "result": "pass",
+      "covers": "readback/canvas/shadow pooling, detached snapshots, zero static shadow redraws, dispose"
+    },
+    {
+      "entry": "tests/scene-bridge-browser.html",
+      "result": "pass",
+      "covers": "structure/process readiness, initial/silent views, fit-relative resize, pose restoration, capture release and null notification"
+    },
+    {
+      "entry": "evidence/annotation-probe.html",
+      "result": "pass",
+      "evidence": "browser/annotation-recovery.json",
+      "covers": "zero hidden DOM work; timeline/lang/resize/font changes; exact fresh visible recovery; export with labels"
+    }
+  ]
+}

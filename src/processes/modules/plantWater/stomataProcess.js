@@ -2,6 +2,18 @@ import * as THREE from "three";
 import { sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { dynamicSegments, chloroplastFactory } from "./structuralDetail.js";
 import { bindPointLabel, bindVertexLabel } from "./labelAnchors.js";
+const sweepRows = Array.from({ length: 65 }, (_, i) => {
+  const t = (Math.PI * i) / 64,
+    sine = Math.sin(t);
+  return { sine, cosine: Math.cos(t), width: Math.pow(sine, 0.6) };
+});
+const circleSamples = (segments) =>
+  Array.from({ length: segments + 1 }, (_, j) => {
+    const v = (2 * Math.PI * j) / segments;
+    return { sine: Math.sin(v), cosine: Math.cos(v) };
+  });
+const kidneyCircle = circleSamples(24),
+  wallCircle = circleSamples(8);
 // Smooth kidney-shaped swept surfaces. Geometry buffers are allocated only at construction.
 function kidneyGeometry(side, cutaway = false) {
   const g = new THREE.BufferGeometry(),
@@ -22,23 +34,22 @@ function kidneyGeometry(side, cutaway = false) {
 function fillKidney(g, side, opening, layer) {
   const a = g.attributes.position;
   for (let i = 0; i <= 64; i++) {
-    const t = (Math.PI * i) / 64,
-      s = Math.sin(t),
+    const { sine: s, cosine, width } = sweepRows[i],
       cx = 0.075 + (0.49 + 0.68 * opening) * s,
-      cy = 2.5 * Math.cos(t),
-      dx = (0.49 + 0.68 * opening) * Math.cos(t),
+      cy = 2.5 * cosine,
+      dx = (0.49 + 0.68 * opening) * cosine,
       dy = -2.5 * s,
       n = Math.hypot(dx, dy),
       nx = -dy / n,
       ny = dx / n,
-      r = (0.012 + (0.465 + 0.045 * opening) * Math.pow(s, 0.6)) * layer;
+      r = (0.012 + (0.465 + 0.045 * opening) * width) * layer;
     for (let j = 0; j <= 24; j++) {
-      const v = (2 * Math.PI * j) / 24;
+      const { sine, cosine } = kidneyCircle[j];
       a.setXYZ(
         i * 25 + j,
-        side * (cx + nx * r * Math.cos(v)),
-        cy + ny * r * Math.cos(v),
-        r * 0.73 * Math.sin(v),
+        side * (cx + nx * r * cosine),
+        cy + ny * r * cosine,
+        r * 0.73 * sine,
       );
     }
   }
@@ -67,21 +78,20 @@ function wallGeometry(side) {
 function fillWall(g, side, o, layer = 1, thickness = 0.055, height = 0.045) {
   const a = g.attributes.position;
   for (let i = 0; i <= 64; i++) {
-    const t = (Math.PI * i) / 64,
-      s = Math.sin(t),
+    const { sine: s, cosine, width } = sweepRows[i],
       cx = 0.075 + (0.49 + 0.68 * o) * s,
-      cy = 2.5 * Math.cos(t),
-      dx = (0.49 + 0.68 * o) * Math.cos(t),
+      cy = 2.5 * cosine,
+      dx = (0.49 + 0.68 * o) * cosine,
       dy = -2.5 * s,
       n = Math.hypot(dx, dy),
-      r = (0.012 + (0.465 + 0.045 * o) * Math.pow(s, 0.6)) * layer;
+      r = (0.012 + (0.465 + 0.045 * o) * width) * layer;
     for (let j = 0; j <= 8; j++) {
-      const v = (2 * Math.PI * j) / 8;
+      const { sine, cosine } = wallCircle[j];
       a.setXYZ(
         i * 9 + j,
-        side * (cx + (dy / n) * r + thickness * Math.cos(v)),
+        side * (cx + (dy / n) * r + thickness * cosine),
         cy - (dx / n) * r,
-        height + thickness * Math.sin(v),
+        height + thickness * sine,
       );
     }
   }
@@ -294,61 +304,65 @@ const process = {
       bindPointLabel(labels[5], light, [0, 0, 0]),
       bindPointLabel(labels[6], aba, [0, 0, 0]),
     ];
+    let lastOpening = NaN;
     function update(value, parameters = {}) {
       const p = clamp(value),
         hasABA = parameters.signal !== "light",
         opened = ease(p, 0.22, 0.49),
         closed = hasABA ? ease(p, 0.69, 0.94) : 0,
         o = opened * (1 - closed);
-      for (const c of cells) {
-        fillKidney(c.body.geometry, c.side, o, 1);
-        fillKidney(c.vac.geometry, c.side, o, 0.7);
-        fillWall(c.wall.geometry, c.side, o);
-        c.membranes.forEach((m, i) =>
-          fillWall(
-            m.geometry,
-            c.side,
-            o,
-            [-0.95, -0.89, 0.95, 0.89][i],
-            0.013,
-            0.075,
-          ),
-        );
-        let ribIndex = 0;
-        for (let n = 0; n < 19; n++) {
-          const t = 0.22 + (n * (Math.PI - 0.44)) / 18,
-            s = Math.sin(t),
-            cx = 0.075 + (0.49 + 0.68 * o) * s,
-            cy = 2.5 * Math.cos(t),
-            dx = (0.49 + 0.68 * o) * Math.cos(t),
-            dy = -2.5 * s,
-            length = Math.hypot(dx, dy),
-            r = 0.012 + (0.465 + 0.045 * o) * Math.pow(s, 0.6);
-          for (const j of [0, 1, 2, 9, 10, 11]) {
-            const a = (j * Math.PI) / 12,
-              b = ((j + 1) * Math.PI) / 12;
-            c.ribs.put(
-              ribIndex++,
-              c.side * (cx - (dy / length) * r * Math.cos(a)),
-              cy + (dx / length) * r * Math.cos(a),
-              0.01 + r * 0.73 * Math.sin(a),
-              c.side * (cx - (dy / length) * r * Math.cos(b)),
-              cy + (dx / length) * r * Math.cos(b),
-              0.01 + r * 0.73 * Math.sin(b),
-              0.012,
-            );
-          }
-        }
-        c.ribs.finish();
-        c.plastids.forEach((m, i) => {
-          const t = 0.5 + i * 0.53;
-          m.position.set(
-            c.side * (0.075 + (0.49 + 0.68 * o) * Math.sin(t) + 0.12),
-            2.5 * Math.cos(t),
-            0.29,
+      if (o !== lastOpening) {
+        for (const c of cells) {
+          fillKidney(c.body.geometry, c.side, o, 1);
+          fillKidney(c.vac.geometry, c.side, o, 0.7);
+          fillWall(c.wall.geometry, c.side, o);
+          c.membranes.forEach((m, i) =>
+            fillWall(
+              m.geometry,
+              c.side,
+              o,
+              [-0.95, -0.89, 0.95, 0.89][i],
+              0.013,
+              0.075,
+            ),
           );
-        });
-        c.nucleus.position.set(c.side * (0.6 + 0.64 * o), -0.82, 0.27);
+          let ribIndex = 0;
+          for (let n = 0; n < 19; n++) {
+            const t = 0.22 + (n * (Math.PI - 0.44)) / 18,
+              s = Math.sin(t),
+              cx = 0.075 + (0.49 + 0.68 * o) * s,
+              cy = 2.5 * Math.cos(t),
+              dx = (0.49 + 0.68 * o) * Math.cos(t),
+              dy = -2.5 * s,
+              length = Math.hypot(dx, dy),
+              r = 0.012 + (0.465 + 0.045 * o) * Math.pow(s, 0.6);
+            for (const j of [0, 1, 2, 9, 10, 11]) {
+              const a = (j * Math.PI) / 12,
+                b = ((j + 1) * Math.PI) / 12;
+              c.ribs.put(
+                ribIndex++,
+                c.side * (cx - (dy / length) * r * Math.cos(a)),
+                cy + (dx / length) * r * Math.cos(a),
+                0.01 + r * 0.73 * Math.sin(a),
+                c.side * (cx - (dy / length) * r * Math.cos(b)),
+                cy + (dx / length) * r * Math.cos(b),
+                0.01 + r * 0.73 * Math.sin(b),
+                0.012,
+              );
+            }
+          }
+          c.ribs.finish();
+          c.plastids.forEach((m, i) => {
+            const t = 0.5 + i * 0.53;
+            m.position.set(
+              c.side * (0.075 + (0.49 + 0.68 * o) * Math.sin(t) + 0.12),
+              2.5 * Math.cos(t),
+              0.29,
+            );
+          });
+          c.nucleus.position.set(c.side * (0.6 + 0.64 * o), -0.82, 0.27);
+        }
+        lastOpening = o;
       }
       const influx = p > 0.21 && p < 0.48,
         efflux = hasABA && p > 0.66 && p < 0.93;

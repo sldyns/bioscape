@@ -91,14 +91,38 @@ function wrapText(text, maxWidth, measure) {
   return lines;
 }
 
+// Optional scratch belongs to one synchronous capture. No array may escape the
+// layout; a borrowed mask is consumed before the next capture reuses its storage.
+function captureArray(scratch, key, Type, length, value = 0) {
+  let array = scratch?.[key];
+  if (!array || array.length < length) {
+    array = new Type(length);
+    if (scratch) scratch[key] = array;
+  }
+  array.fill(value, 0, length);
+  return array;
+}
+
 // Read the alpha already returned by the export pass; no additional GPU pass
 // or canvas readback is needed. Every visible pixel contributes conservatively
 // to a grid bounded to about 480 columns, including thin/translucent geometry.
-export function createCaptureLabelMask(pixels, width, height, scale = 1) {
+// Without scratch, the returned mask remains independent of all later calls.
+export function createCaptureLabelMask(
+  pixels,
+  width,
+  height,
+  scale = 1,
+  scratch,
+) {
   const cell = Math.max(1, Math.ceil(width / 480));
   const columns = Math.ceil(width / cell),
     rows = Math.ceil(height / cell);
-  const occupied = new Uint8Array(columns * rows);
+  const occupied = captureArray(
+    scratch,
+    "occupied",
+    Uint8Array,
+    columns * rows,
+  );
   for (let y = 0; y < height; y++) {
     const row = Math.floor(y / cell) * columns;
     for (let x = 0; x < width; x++)
@@ -106,7 +130,12 @@ export function createCaptureLabelMask(pixels, width, height, scale = 1) {
         occupied[row + Math.floor(x / cell)] = 1;
   }
   const stride = columns + 1;
-  const integral = new Uint32Array(stride * (rows + 1));
+  const integral = captureArray(
+    scratch,
+    "integral",
+    Uint32Array,
+    stride * (rows + 1),
+  );
   for (let y = 0; y < rows; y++) {
     let sum = 0;
     for (let x = 0; x < columns; x++) {
@@ -141,7 +170,7 @@ export function createCaptureLabelMask(pixels, width, height, scale = 1) {
 // minimizes occupied model cells, then movement from the original leader y.
 // Prefix minima make this O(labels * height), with constant-time rectangle cost.
 // Even a full silhouette keeps every chosen caption: it finds least occlusion.
-function avoidCaptureGeometry(items, height, margin, gap, occupied) {
+function avoidCaptureGeometry(items, height, margin, gap, occupied, scratch) {
   if (!items.length) return;
   // labelScale can make logical coordinates much larger than physical pixels.
   // Bound the search grid even then; normal exports retain one-pixel steps.
@@ -152,9 +181,27 @@ function avoidCaptureGeometry(items, height, margin, gap, occupied) {
   let previousOverlap, previousMovement;
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
-    const overlap = new Float64Array(count).fill(Infinity);
-    const movement = new Float64Array(count).fill(Infinity);
-    const parent = new Int32Array(count).fill(-1);
+    const overlap = captureArray(
+      scratch,
+      `overlap${index % 2}`,
+      Float64Array,
+      count,
+      Infinity,
+    );
+    const movement = captureArray(
+      scratch,
+      `movement${index % 2}`,
+      Float64Array,
+      count,
+      Infinity,
+    );
+    const parent = captureArray(
+      scratch,
+      `parent${index}`,
+      Int32Array,
+      count,
+      -1,
+    );
     const last = Math.floor((height - margin - item.height - first) / step);
     const clearance = item.fontSize * 0.2;
     let best = -1,
@@ -212,7 +259,14 @@ function avoidCaptureGeometry(items, height, margin, gap, occupied) {
 
 // Captions use the same source anchors as the live annotations. Export can have
 // a different aspect ratio, so lay them out anew instead of scaling DOM pixels.
-export function layoutCaptureLabels(labels, width, height, measure, occupied) {
+export function layoutCaptureLabels(
+  labels,
+  width,
+  height,
+  measure,
+  occupied,
+  scratch,
+) {
   if (
     !Number.isFinite(width) ||
     !Number.isFinite(height) ||
@@ -267,7 +321,8 @@ export function layoutCaptureLabels(labels, width, height, measure, occupied) {
       top = item.top + item.height + gap;
       remaining -= item.height + gap;
     }
-    if (occupied) avoidCaptureGeometry(chosen, height, margin, gap, occupied);
+    if (occupied)
+      avoidCaptureGeometry(chosen, height, margin, gap, occupied, scratch);
   }
   return result;
 }
@@ -288,6 +343,7 @@ export function drawCaptureLabels(
   height,
   background,
   occupied,
+  scratch,
 ) {
   const projected = [];
   for (const label of sources) {
@@ -317,6 +373,7 @@ export function drawCaptureLabels(
       return context.measureText(text).width;
     },
     occupied,
+    scratch,
   );
   const palette = captureLabelPalette(background);
   const lineWidth = Math.max(1, width / 1100);
@@ -378,6 +435,7 @@ export function createSceneCapture({
 }) {
   let linearTarget, outputTarget, outputPass, pixelCanvas, pixelContext;
   let pixels, image, frameCanvas, exportCamera;
+  let labelScratch;
   const shadowCache = new Map();
   const dispose = () => {
     linearTarget?.dispose();
@@ -394,6 +452,7 @@ export function createSceneCapture({
       image =
       frameCanvas =
       exportCamera =
+      labelScratch =
         null;
   };
   function captureFrame({
@@ -584,6 +643,7 @@ export function createSceneCapture({
       if (labels) {
         const scale =
           Number.isFinite(labelScale) && labelScale > 0 ? labelScale : 1;
+        const scratch = (labelScratch ??= {});
         context.save();
         try {
           context.scale(scale, scale);
@@ -594,7 +654,8 @@ export function createSceneCapture({
             width / scale,
             height / scale,
             background,
-            createCaptureLabelMask(pixels, width, height, scale),
+            createCaptureLabelMask(pixels, width, height, scale, scratch),
+            scratch,
           );
         } finally {
           context.restore();

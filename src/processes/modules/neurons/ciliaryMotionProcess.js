@@ -398,6 +398,9 @@ export default {
     tubes.forEach((t) => {
       if (!t.isMembrane) t.track = motion.track(t.ox);
     });
+    tubulinRows.forEach((v) => {
+      v.track = motion.track(v.ox);
+    });
     const sampleX = motion.X,
       sampleY = motion.Y;
     const materialPoint = new THREE.Vector3(),
@@ -463,53 +466,75 @@ export default {
             position.getZ(d) * (1 - v),
         );
     }
+    let lastGeometryGain = NaN,
+      lastGeometryTime = NaN;
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         enabled = parameters.atp !== "absent";
       const gain = enabled ? phase(p, 0.17, 0.36) : 0,
         time = phase(p, 0.17, 1) * Math.PI * 4;
       motion.update(gain, time);
-      let membraneTip = N;
-      for (const t of motion.tracks)
-        membraneTip = Math.max(membraneTip, t.endParameter);
-      for (const r of tubes) {
-        const pos = r.mesh.geometry.attributes.position;
-        for (let i = 0; i < pos.count; i++) {
-          const fraction = clamp((r.initial[i * 3 + 1] + L / 2) / L);
-          if (r.isMembrane)
-            motion.geometric(0, fraction * membraneTip, materialPoint);
-          else motion.point(r.track, fraction, materialPoint);
-          const a = materialPoint.z,
-            radialX = r.initial[i * 3];
-          pos.setXYZ(
-            i,
-            materialPoint.x + radialX * Math.cos(a),
-            materialPoint.y - radialX * Math.sin(a),
-            r.initial[i * 3 + 2] + r.oz,
-          );
+      // At zero gain every track is straight; time still controls the motor
+      // state below, but cannot change the rendered tube or bead coordinates.
+      if (
+        gain !== lastGeometryGain ||
+        (gain !== 0 && time !== lastGeometryTime)
+      ) {
+        let membraneTip = N;
+        for (const t of motion.tracks)
+          membraneTip = Math.max(membraneTip, t.endParameter);
+        for (const r of tubes) {
+          const pos = r.mesh.geometry.attributes.position,
+            stride = r.mesh.geometry.parameters.radialSegments + 1;
+          // Keep each doublet's own arc-length track. Only vertices on the
+          // same actual Float32 longitudinal row share its material lookup.
+          for (let row = 0; row < pos.count; row += stride) {
+            const fraction = clamp((r.initial[row * 3 + 1] + L / 2) / L);
+            if (r.isMembrane)
+              motion.geometric(0, fraction * membraneTip, materialPoint);
+            else motion.point(r.track, fraction, materialPoint);
+            const cosine = Math.cos(materialPoint.z),
+              sine = Math.sin(materialPoint.z);
+            for (let i = row; i < row + stride; i++) {
+              const radialX = r.initial[i * 3];
+              pos.setXYZ(
+                i,
+                materialPoint.x + radialX * cosine,
+                materialPoint.y - radialX * sine,
+                r.initial[i * 3 + 2] + r.oz,
+              );
+            }
+          }
+          pos.needsUpdate = true;
+          r.mesh.geometry.computeVertexNormals();
+          r.mesh.geometry.computeBoundingSphere();
+          r.mesh.geometry.computeBoundingBox();
         }
-        pos.needsUpdate = true;
-        r.mesh.geometry.computeVertexNormals();
-        r.mesh.geometry.computeBoundingSphere();
-        r.mesh.geometry.computeBoundingBox();
+        let cosine = 1,
+          sine = 0;
+        tubulinRows.forEach((v, i) => {
+          if (i % 6 === 0) {
+            motion.point(v.track, v.t, materialPoint);
+            cosine = Math.cos(materialPoint.z);
+            sine = Math.sin(materialPoint.z);
+          }
+          const radialX = v.x - v.ox;
+          beadTransform.position.set(
+            materialPoint.x + radialX * cosine,
+            materialPoint.y - radialX * sine,
+            v.z,
+          );
+          beadTransform.rotation.set(0, 0, -materialPoint.z);
+          beadTransform.scale.set(0.02, 0.058, 0.02);
+          beadTransform.updateMatrix();
+          tubulinBeads.setMatrixAt(i, beadTransform.matrix);
+        });
+        tubulinBeads.instanceMatrix.needsUpdate = true;
+        tubulinBeads.computeBoundingSphere();
+        tubulinBeads.computeBoundingBox();
+        lastGeometryGain = gain;
+        lastGeometryTime = time;
       }
-      tubulinRows.forEach((v, i) => {
-        motion.point(motion.track(v.ox), v.t, materialPoint);
-        const a = materialPoint.z,
-          radialX = v.x - v.ox;
-        beadTransform.position.set(
-          materialPoint.x + radialX * Math.cos(a),
-          materialPoint.y - radialX * Math.sin(a),
-          v.z,
-        );
-        beadTransform.rotation.set(0, 0, -a);
-        beadTransform.scale.set(0.02, 0.058, 0.02);
-        beadTransform.updateMatrix();
-        tubulinBeads.setMatrixAt(i, beadTransform.matrix);
-      });
-      tubulinBeads.instanceMatrix.needsUpdate = true;
-      tubulinBeads.computeBoundingSphere();
-      tubulinBeads.computeBoundingBox();
       const side = Math.sin(time) >= 0 ? 1 : -1;
       armRows.forEach((r) => {
         const active = enabled && p >= 0.17 && Math.cos(r.a) * side > 0,

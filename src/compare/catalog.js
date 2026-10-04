@@ -184,7 +184,7 @@ for (const specimen of specializedSpecimens) {
 }
 
 export const comparisonEntries = entries;
-export const comparisonIds = entries.map((entry) => entry.id);
+export { comparisonIds } from "./ids.js";
 const entryById = new Map(entries.map((entry) => [entry.id, entry]));
 export const getComparisonEntry = (id) =>
   entryById.get(id) || entryById.get("cell");

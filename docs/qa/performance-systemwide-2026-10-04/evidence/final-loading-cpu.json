@@ -1,0 +1,377 @@
+{
+  "recordedAt": "2026-10-04T09:07:49.016Z",
+  "errors": 0,
+  "executions": 108,
+  "method": "Final source after detail-worker bounding-box-only preparation. Four serial AB/BA Node runs; 3 constructions per root per run. Full cell prepares box and sphere; detail workers prepare box and preserve any existing sphere without eagerly calculating missing spheres. Six samples per root/version. CPU phases only; full readiness measured separately.",
+  "structures": [
+    {
+      "id": "cell",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 1972.5555488333332,
+        "workerPrepareMs": 2035.802736166667,
+        "packMs": 63.24718733333316,
+        "unpackMs": 5.082715500000025,
+        "presentationMs": 28.983902500000113,
+        "mainPreparationMs": 34.06661800000014,
+        "transferBytes": 185303282,
+        "geometry": {
+          "nodes": 212,
+          "meshes": 190,
+          "instances": 13285,
+          "geometries": 190,
+          "materials": 190,
+          "geometryBackingBytes": 184882546
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 1821.2619724999997,
+        "workerPrepareMs": 1930.303812833333,
+        "packMs": 109.04184033333324,
+        "unpackMs": 4.631812499999948,
+        "presentationMs": 3.124527833333483,
+        "mainPreparationMs": 7.756340333333431,
+        "transferBytes": 168764658,
+        "geometry": {
+          "nodes": 212,
+          "meshes": 190,
+          "instances": 13285,
+          "geometries": 148,
+          "materials": 150,
+          "geometryBackingBytes": 168343922
+        }
+      },
+      "workerChangePercent": -5.1821780892182145,
+      "mainPreparationChangePercent": -77.23184516486667
+    },
+    {
+      "id": "plant",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 2218.9322289999996,
+        "workerPrepareMs": 2221.3455344999998,
+        "packMs": 2.413305500000206,
+        "unpackMs": 1.8651181666670407,
+        "presentationMs": 16.042764000000414,
+        "mainPreparationMs": 17.907882166667452,
+        "transferBytes": 142645242,
+        "geometry": {
+          "nodes": 104,
+          "meshes": 103,
+          "instances": 0,
+          "geometries": 103,
+          "materials": 103,
+          "geometryBackingBytes": 142645242
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 2219.519500333334,
+        "workerPrepareMs": 2237.5604585000005,
+        "packMs": 18.04095816666677,
+        "unpackMs": 1.9451458333332994,
+        "presentationMs": 0.31864566666657385,
+        "mainPreparationMs": 2.2637914999998734,
+        "transferBytes": 142645242,
+        "geometry": {
+          "nodes": 104,
+          "meshes": 103,
+          "instances": 0,
+          "geometries": 103,
+          "materials": 103,
+          "geometryBackingBytes": 142645242
+        }
+      },
+      "workerChangePercent": 0.7299595559612237,
+      "mainPreparationChangePercent": -87.35868664462431
+    },
+    {
+      "id": "bacterium",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 785.4403263333334,
+        "workerPrepareMs": 786.6703818333335,
+        "packMs": 1.2300555000001623,
+        "unpackMs": 0.9968679999998736,
+        "presentationMs": 11.381736166666997,
+        "mainPreparationMs": 12.37860416666687,
+        "transferBytes": 111935248,
+        "geometry": {
+          "nodes": 51,
+          "meshes": 50,
+          "instances": 0,
+          "geometries": 50,
+          "materials": 50,
+          "geometryBackingBytes": 111935248
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 792.7052011666661,
+        "workerPrepareMs": 805.2263329999993,
+        "packMs": 12.52113183333313,
+        "unpackMs": 0.969034999999773,
+        "presentationMs": 0.1447084999999788,
+        "mainPreparationMs": 1.113743499999752,
+        "transferBytes": 111935248,
+        "geometry": {
+          "nodes": 51,
+          "meshes": 50,
+          "instances": 0,
+          "geometries": 50,
+          "materials": 50,
+          "geometryBackingBytes": 111935248
+        }
+      },
+      "workerChangePercent": 2.3587962118798877,
+      "mainPreparationChangePercent": -91.00267295888787
+    },
+    {
+      "id": "yeast",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 985.2418054999993,
+        "workerPrepareMs": 986.6332499999995,
+        "packMs": 1.3914445000003373,
+        "unpackMs": 1.020201666666253,
+        "presentationMs": 7.167117999999998,
+        "mainPreparationMs": 8.18731966666625,
+        "transferBytes": 66969256,
+        "geometry": {
+          "nodes": 55,
+          "meshes": 54,
+          "instances": 0,
+          "geometries": 54,
+          "materials": 54,
+          "geometryBackingBytes": 66969256
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 995.2950138333332,
+        "workerPrepareMs": 1003.8136390000003,
+        "packMs": 8.51862516666703,
+        "unpackMs": 1.0598681666663954,
+        "presentationMs": 0.14118733333361888,
+        "mainPreparationMs": 1.2010555000000143,
+        "transferBytes": 66969256,
+        "geometry": {
+          "nodes": 55,
+          "meshes": 54,
+          "instances": 0,
+          "geometries": 54,
+          "materials": 54,
+          "geometryBackingBytes": 66969256
+        }
+      },
+      "workerChangePercent": 1.7413146171589844,
+      "mainPreparationChangePercent": -85.33029674058072
+    },
+    {
+      "id": "paramecium",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 1167.146367666667,
+        "workerPrepareMs": 1168.5209788333334,
+        "packMs": 1.3746111666666063,
+        "unpackMs": 1.0377361666669458,
+        "presentationMs": 10.806666500000574,
+        "mainPreparationMs": 11.84440266666752,
+        "transferBytes": 94379368,
+        "geometry": {
+          "nodes": 53,
+          "meshes": 52,
+          "instances": 0,
+          "geometries": 52,
+          "materials": 52,
+          "geometryBackingBytes": 94379368
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 1162.793139,
+        "workerPrepareMs": 1174.200152999999,
+        "packMs": 11.407013999999132,
+        "unpackMs": 1.0132571666660322,
+        "presentationMs": 0.14789600000040082,
+        "mainPreparationMs": 1.161153166666433,
+        "transferBytes": 94379368,
+        "geometry": {
+          "nodes": 53,
+          "meshes": 52,
+          "instances": 0,
+          "geometries": 52,
+          "materials": 52,
+          "geometryBackingBytes": 94379368
+        }
+      },
+      "workerChangePercent": 0.48601388161091386,
+      "mainPreparationChangePercent": -90.19660847959732
+    },
+    {
+      "id": "phage",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 190.5937291666663,
+        "workerPrepareMs": 191.49999299999945,
+        "packMs": 0.9062638333331657,
+        "unpackMs": 0.9841181666664246,
+        "presentationMs": 2.3073748333323842,
+        "mainPreparationMs": 3.291492999998809,
+        "transferBytes": 19347672,
+        "geometry": {
+          "nodes": 31,
+          "meshes": 30,
+          "instances": 0,
+          "geometries": 30,
+          "materials": 30,
+          "geometryBackingBytes": 19347672
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 187.00915966666676,
+        "workerPrepareMs": 190.7258750000001,
+        "packMs": 3.7167153333333167,
+        "unpackMs": 0.7030553333346082,
+        "presentationMs": 0.08807650000077653,
+        "mainPreparationMs": 0.7911318333353847,
+        "transferBytes": 19347672,
+        "geometry": {
+          "nodes": 31,
+          "meshes": 30,
+          "instances": 0,
+          "geometries": 30,
+          "materials": 30,
+          "geometryBackingBytes": 19347672
+        }
+      },
+      "workerChangePercent": -0.40423917926689645,
+      "mainPreparationChangePercent": -75.96434708092434
+    },
+    {
+      "id": "erythrocyte",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 36.15652083333347,
+        "workerPrepareMs": 36.34827783333458,
+        "packMs": 0.19175700000111343,
+        "unpackMs": 0.2292360000004313,
+        "presentationMs": 0.4788263333327147,
+        "mainPreparationMs": 0.7080623333331459,
+        "transferBytes": 3339892,
+        "geometry": {
+          "nodes": 7,
+          "meshes": 6,
+          "instances": 0,
+          "geometries": 6,
+          "materials": 6,
+          "geometryBackingBytes": 3339892
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 37.51881933333425,
+        "workerPrepareMs": 38.196437333334565,
+        "packMs": 0.6776180000003175,
+        "unpackMs": 0.25088883333410195,
+        "presentationMs": 0.08411816666678835,
+        "mainPreparationMs": 0.3350070000008903,
+        "transferBytes": 3339892,
+        "geometry": {
+          "nodes": 7,
+          "meshes": 6,
+          "instances": 0,
+          "geometries": 6,
+          "materials": 6,
+          "geometryBackingBytes": 3339892
+        }
+      },
+      "workerChangePercent": 5.084586148686965,
+      "mainPreparationChangePercent": -52.68679264099927
+    },
+    {
+      "id": "neuron",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 108.17038866666614,
+        "workerPrepareMs": 109.22623566666577,
+        "packMs": 1.0558469999996305,
+        "unpackMs": 1.3785206666664938,
+        "presentationMs": 0.8766249999995731,
+        "mainPreparationMs": 2.255145666666067,
+        "transferBytes": 5741196,
+        "geometry": {
+          "nodes": 34,
+          "meshes": 33,
+          "instances": 0,
+          "geometries": 33,
+          "materials": 33,
+          "geometryBackingBytes": 5741196
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 109.58593749999879,
+        "workerPrepareMs": 111.61795133333301,
+        "packMs": 2.032013833334228,
+        "unpackMs": 1.5574513333334228,
+        "presentationMs": 0.13408316666755127,
+        "mainPreparationMs": 1.691534500000974,
+        "transferBytes": 5741196,
+        "geometry": {
+          "nodes": 34,
+          "meshes": 33,
+          "instances": 0,
+          "geometries": 33,
+          "materials": 33,
+          "geometryBackingBytes": 5741196
+        }
+      },
+      "workerChangePercent": 2.189689731655875,
+      "mainPreparationChangePercent": -24.99222888330389
+    },
+    {
+      "id": "muscleFibre",
+      "baseline": {
+        "runs": 6,
+        "buildMs": 251.26143033333332,
+        "workerPrepareMs": 251.80016649999985,
+        "packMs": 0.5387361666665432,
+        "unpackMs": 0.45047233333328524,
+        "presentationMs": 2.0353613333336398,
+        "mainPreparationMs": 2.485833666666925,
+        "transferBytes": 16634904,
+        "geometry": {
+          "nodes": 18,
+          "meshes": 17,
+          "instances": 0,
+          "geometries": 17,
+          "materials": 17,
+          "geometryBackingBytes": 16634904
+        }
+      },
+      "optimized": {
+        "runs": 6,
+        "buildMs": 251.06488199999936,
+        "workerPrepareMs": 253.57370833333212,
+        "packMs": 2.508826333332763,
+        "unpackMs": 0.5700279999994867,
+        "presentationMs": 0.1595693333329109,
+        "mainPreparationMs": 0.7295973333323976,
+        "transferBytes": 16634904,
+        "geometry": {
+          "nodes": 18,
+          "meshes": 17,
+          "instances": 0,
+          "geometries": 17,
+          "materials": 17,
+          "geometryBackingBytes": 16634904
+        }
+      },
+      "workerChangePercent": 0.7043449803804114,
+      "mainPreparationChangePercent": -70.64979273892199
+    }
+  ]
+}

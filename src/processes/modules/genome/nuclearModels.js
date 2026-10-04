@@ -409,6 +409,7 @@ export function createRepair({ rootId = "cell" } = {}) {
     }
     k.finish(s.rail, s.phosphates, s.bases);
   }
+  let paintedProgress;
   function update(progress, parameters = {}) {
     const raw = clamp(progress),
       blocked = parameters.incision === "blocked";
@@ -418,9 +419,14 @@ export function createRepair({ rootId = "cell" } = {}) {
     released = ease(p, 0.48, 0.63);
     fill = ease(p, 0.64, 0.87);
     seal = ease(p, 0.89, 0.97);
-    paint(top, 0);
-    paint(bottom, 1);
-    paint(patch, 0, true);
+    // All strand geometry is a function of the effective repair progress.
+    // The blocked label and userData below still use the current raw condition.
+    if (p !== paintedProgress) {
+      paint(top, 0);
+      paint(bottom, 1);
+      paint(patch, 0, true);
+      paintedProgress = p;
+    }
     point(0, 0, a, p >= 0.48);
     lesion.position.copy(a).add(new THREE.Vector3(0, 0.12, 0.1));
     lesion.visible = p < 0.8;

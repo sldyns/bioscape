@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-04T09:06:05.737Z",
+  "runs": [
+    {
+      "name": "baseline-0",
+      "startedAt": "2026-10-04T09:06:05.739Z",
+      "finishedAt": "2026-10-04T09:06:29.819Z",
+      "exitCode": 0
+    },
+    {
+      "name": "optimized-1",
+      "startedAt": "2026-10-04T09:06:29.821Z",
+      "finishedAt": "2026-10-04T09:06:53.482Z",
+      "exitCode": 0
+    },
+    {
+      "name": "optimized-2",
+      "startedAt": "2026-10-04T09:06:53.483Z",
+      "finishedAt": "2026-10-04T09:07:17.062Z",
+      "exitCode": 0
+    },
+    {
+      "name": "baseline-3",
+      "startedAt": "2026-10-04T09:07:17.062Z",
+      "finishedAt": "2026-10-04T09:07:40.953Z",
+      "exitCode": 0
+    }
+  ],
+  "finishedAt": "2026-10-04T09:07:40.954Z"
+}

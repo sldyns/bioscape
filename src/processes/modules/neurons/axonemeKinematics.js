@@ -8,7 +8,13 @@ export function arcLengthTracks(
     X = new Float64Array(extended + 1),
     Y = new Float64Array(extended + 1),
     A = new Float64Array(extended + 1),
+    sine = new Float64Array(extended + 1),
+    cosine = new Float64Array(extended + 1),
     map = new Map();
+  cosine.fill(1);
+  let initialized = false,
+    previousGain = NaN,
+    previousTime = NaN;
   for (const offset of offsets) {
     const key = offset.toFixed(10);
     if (!map.has(key))
@@ -26,10 +32,10 @@ export function arcLengthTracks(
       f = Math.max(0, Math.min(1, u - i)),
       a = A[i] + (A[i + 1] - A[i]) * f;
     out.set(
-      (X[i] + offset * Math.cos(A[i])) * (1 - f) +
-        (X[i + 1] + offset * Math.cos(A[i + 1])) * f,
-      (Y[i] - offset * Math.sin(A[i])) * (1 - f) +
-        (Y[i + 1] - offset * Math.sin(A[i + 1])) * f,
+      (X[i] + offset * cosine[i]) * (1 - f) +
+        (X[i + 1] + offset * cosine[i + 1]) * f,
+      (Y[i] - offset * sine[i]) * (1 - f) +
+        (Y[i + 1] - offset * sine[i + 1]) * f,
       a,
     );
     return out;
@@ -57,9 +63,17 @@ export function arcLengthTracks(
     return t.cumulative[i] * (1 - f) + t.cumulative[i + 1] * f;
   }
   function update(gain, time) {
+    if (
+      initialized &&
+      Object.is(gain, previousGain) &&
+      Object.is(time, previousTime)
+    )
+      return;
     X[0] = baseX;
     Y[0] = baseY;
     A[0] = 0;
+    sine[0] = 0;
+    cosine[0] = 1;
     for (let s = 1; s <= extended; s++) {
       const t = Math.min(1, s / segments),
         angle =
@@ -67,6 +81,8 @@ export function arcLengthTracks(
           (0.78 * Math.sin(time - 2.5 * t) * t +
             0.22 * Math.sin(2 * time - 4 * t) * t * t);
       A[s] = angle;
+      sine[s] = Math.sin(angle);
+      cosine[s] = Math.cos(angle);
       const mid = (angle + A[s - 1]) * 0.5;
       X[s] = X[s - 1] + (Math.sin(mid) * length) / segments;
       Y[s] = Y[s - 1] + (Math.cos(mid) * length) / segments;
@@ -74,14 +90,15 @@ export function arcLengthTracks(
     for (const t of map.values()) {
       t.cumulative[0] = 0;
       for (let s = 1; s <= extended; s++) {
-        const dx =
-            X[s] - X[s - 1] + t.offset * (Math.cos(A[s]) - Math.cos(A[s - 1])),
-          dy =
-            Y[s] - Y[s - 1] - t.offset * (Math.sin(A[s]) - Math.sin(A[s - 1]));
+        const dx = X[s] - X[s - 1] + t.offset * (cosine[s] - cosine[s - 1]),
+          dy = Y[s] - Y[s - 1] - t.offset * (sine[s] - sine[s - 1]);
         t.cumulative[s] = t.cumulative[s - 1] + Math.hypot(dx, dy);
       }
       t.endParameter = parameter(t, length);
     }
+    previousGain = gain;
+    previousTime = time;
+    initialized = true;
   }
   return {
     track,

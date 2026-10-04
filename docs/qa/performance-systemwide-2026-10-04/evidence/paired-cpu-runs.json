@@ -1,0 +1,77 @@
+{
+  "method": "Separate serial processes; same source-level inventory; AB/BA order. Worker bound preparation is enabled only where the actual worker enables it. No tests, build, capture or native playback runs concurrently. Browser/GPU effects measured separately.",
+  "runs": [
+    {
+      "kind": "processes",
+      "version": "baseline",
+      "name": "paired-processes-baseline-0",
+      "source": "/tmp/bioscape-systemwide-20261004-baseline-ae697be",
+      "startedAt": "2026-10-04T08:31:48.440Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-04T08:32:33.438Z"
+    },
+    {
+      "kind": "processes",
+      "version": "optimized",
+      "name": "paired-processes-optimized-1",
+      "source": "/Users/kun/Documents/vc",
+      "startedAt": "2026-10-04T08:32:33.439Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-04T08:33:07.028Z"
+    },
+    {
+      "kind": "processes",
+      "version": "optimized",
+      "name": "paired-processes-optimized-2",
+      "source": "/Users/kun/Documents/vc",
+      "startedAt": "2026-10-04T08:33:07.029Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-04T08:33:40.155Z"
+    },
+    {
+      "kind": "processes",
+      "version": "baseline",
+      "name": "paired-processes-baseline-3",
+      "source": "/tmp/bioscape-systemwide-20261004-baseline-ae697be",
+      "startedAt": "2026-10-04T08:33:40.155Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-04T08:34:24.649Z"
+    },
+    {
+      "kind": "structures",
+      "version": "baseline",
+      "name": "paired-structures-baseline-0",
+      "source": "/tmp/bioscape-systemwide-20261004-baseline-ae697be",
+      "startedAt": "2026-10-04T08:34:24.649Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-04T08:34:48.832Z"
+    },
+    {
+      "kind": "structures",
+      "version": "optimized",
+      "name": "paired-structures-optimized-1",
+      "source": "/Users/kun/Documents/vc",
+      "startedAt": "2026-10-04T08:34:48.833Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-04T08:35:12.552Z"
+    },
+    {
+      "kind": "structures",
+      "version": "optimized",
+      "name": "paired-structures-optimized-2",
+      "source": "/Users/kun/Documents/vc",
+      "startedAt": "2026-10-04T08:35:12.553Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-04T08:35:36.225Z"
+    },
+    {
+      "kind": "structures",
+      "version": "baseline",
+      "name": "paired-structures-baseline-3",
+      "source": "/tmp/bioscape-systemwide-20261004-baseline-ae697be",
+      "startedAt": "2026-10-04T08:35:36.225Z",
+      "exitCode": 0,
+      "finishedAt": "2026-10-04T08:36:00.171Z"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { THREE } from "../../kit.js";
 import { corticalRows } from "./fineStructure.js";
+import { shapeState } from "./shapeState.js";
 
 // Slipper-shaped cortical envelope. Each cell owns its deformable buffers.
 export function nuclearCell(
@@ -57,7 +58,7 @@ export function nuclearCell(
       k.material("#98ac99"),
       group,
     );
-    hairs.push({ h, a });
+    hairs.push({ h, c: Math.cos(a), s: Math.sin(a) });
   }
   function shape(
     u,
@@ -119,7 +120,15 @@ export function nuclearCell(
     group,
   );
   inner.scale.set(0.969, 0.986, 0.93);
+  const shapeChanged = shapeState();
+  const edgePoints = Array.from({ length: 100 }, (_, i) => {
+    const a = fissionHalf
+      ? (fissionHalf < 0 ? Math.PI : 0) + (i / 99) * Math.PI
+      : (i / 100) * Math.PI * 2;
+    return [Math.cos(a), Math.sin(a)];
+  });
   function deform(pinch = 0, stretch = 1, division = 0, separation = 0) {
+    if (!shapeChanged(pinch, stretch, division, separation)) return;
     fineCortex.update(pinch, stretch, division, separation);
     const attr = geometry.attributes.position;
     for (let i = 0; i < attr.count; i++) {
@@ -140,38 +149,23 @@ export function nuclearCell(
     geometry.computeBoundingBox();
     const edgeAttr = edgeGeometry.attributes.position;
     for (let i = 0; i < 100; i++) {
-      const a = fissionHalf
-          ? (fissionHalf < 0 ? Math.PI : 0) + (i / 99) * Math.PI
-          : (i / 100) * Math.PI * 2,
-        q = shape(
-          Math.cos(a),
-          Math.sin(a),
-          0,
-          pinch,
-          stretch,
-          division,
-          separation,
-        );
-      edgeAttr.setXYZ(i, q[0], q[1], 0.07);
-    }
-    edgeAttr.needsUpdate = true;
-    edgeGeometry.computeBoundingSphere();
-    edgeGeometry.computeBoundingBox();
-    hairs.forEach(({ h, a }) => {
       const q = shape(
-        Math.cos(a),
-        Math.sin(a),
+        edgePoints[i][0],
+        edgePoints[i][1],
         0,
         pinch,
         stretch,
         division,
         separation,
       );
-      h.position.set(
-        q[0] + Math.cos(a) * 0.08,
-        q[1] + Math.sin(a) * 0.08,
-        0.08,
-      );
+      edgeAttr.setXYZ(i, q[0], q[1], 0.07);
+    }
+    edgeAttr.needsUpdate = true;
+    edgeGeometry.computeBoundingSphere();
+    edgeGeometry.computeBoundingBox();
+    hairs.forEach(({ h, c, s }) => {
+      const q = shape(c, s, 0, pinch, stretch, division, separation);
+      h.position.set(q[0] + c * 0.08, q[1] + s * 0.08, 0.08);
     });
   }
   deform();

@@ -101,6 +101,14 @@ export default {
     const k = sceneKit();
     const geometry = new THREE.SphereGeometry(1, 64, 40);
     const base = Float32Array.from(geometry.attributes.position.array);
+    const radialSquared = new Float64Array(base.length / 3),
+      corrugation = new Float64Array(base.length / 3);
+    for (let i = 0; i < base.length; i += 3) {
+      const x = base[i],
+        z = base[i + 2];
+      radialSquared[i / 3] = x * x + z * z;
+      corrugation[i / 3] = Math.cos(Math.atan2(z, x) * 11);
+    }
     const outerMat = k.material("#bc8184", { roughness: 0.43 });
     const windowMat = k.material("#d4a5a5", {
       transparent: true,
@@ -272,6 +280,9 @@ export default {
     }
     let initialVolume = 0;
     let initialArea = 0;
+    let lastHypo = NaN,
+      lastHyper = NaN,
+      currentVolume = 0;
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         mode = ["hypotonic", "isotonic", "hypertonic"].includes(
@@ -282,81 +293,86 @@ export default {
       const shape = ease(p, 0.15, 0.9),
         hypo = mode === "hypotonic" ? shape : 0,
         hyper = mode === "hypertonic" ? shape : 0;
-      const arr = geometry.attributes.position.array;
-      for (let i = 0; i < base.length; i += 3) {
-        const x = base[i],
-          y = base[i + 1],
-          z = base[i + 2],
-          r2 = x * x + z * z,
-          a = Math.atan2(z, x);
-        const crenation = 1 + hyper * 0.22 * Math.cos(a * 11) * r2;
-        const flatten = 1 - hyper * 0.25;
-        arr[i] = mix(x * 2.1, x * 1.72, hypo) * crenation;
-        arr[i + 1] =
-          mix(y * (0.27 + 1.35 * r2 - 0.55 * r2 * r2), y * 1.72, hypo) *
-          flatten *
-          (1 + hyper * 0.16 * Math.cos(a * 11) * r2);
-        arr[i + 2] = mix(z * 2.1, z * 1.72, hypo) * crenation;
+      if (hypo !== lastHypo || hyper !== lastHyper) {
+        const arr = geometry.attributes.position.array;
+        for (let i = 0; i < base.length; i += 3) {
+          const x = base[i],
+            y = base[i + 1],
+            z = base[i + 2],
+            r2 = radialSquared[i / 3],
+            wave = corrugation[i / 3];
+          const crenation = 1 + hyper * 0.22 * wave * r2;
+          const flatten = 1 - hyper * 0.25;
+          arr[i] = mix(x * 2.1, x * 1.72, hypo) * crenation;
+          arr[i + 1] =
+            mix(y * (0.27 + 1.35 * r2 - 0.55 * r2 * r2), y * 1.72, hypo) *
+            flatten *
+            (1 + hyper * 0.16 * wave * r2);
+          arr[i + 2] = mix(z * 2.1, z * 1.72, hypo) * crenation;
+        }
+        // Osmotic shape changes redistribute an approximately inextensible
+        // membrane. Normalize the actual triangulated area, not only a radius.
+        // Corrugation and flattening lower enclosed volume at conserved area.
+        const area = surfaceArea();
+        if (!initialArea) initialArea = area;
+        const areaScale = Math.sqrt(initialArea / area);
+        for (let i = 0; i < arr.length; i++) arr[i] *= areaScale;
+        const innerArray = innerGeometry.attributes.position.array;
+        for (let i = 0; i < arr.length; i++) innerArray[i] = arr[i] * 0.935;
+        innerGeometry.attributes.position.needsUpdate = true;
+        innerGeometry.computeVertexNormals();
+        innerGeometry.computeBoundingBox();
+        innerGeometry.computeBoundingSphere();
+        const point = (index, out, r = 0.9) =>
+          out.set(
+            arr[index * 3] * r,
+            arr[index * 3 + 1] * r,
+            arr[index * 3 + 2] * r,
+          );
+        const edge = (mesh, index, a, b, radius) => {
+          cd.subVectors(b, a);
+          const length = cd.length();
+          corticalTemp.position.copy(a).add(b).multiplyScalar(0.5);
+          corticalTemp.quaternion.setFromUnitVectors(
+            up,
+            cd.divideScalar(length || 1),
+          );
+          corticalTemp.scale.set(radius, length, radius);
+          corticalTemp.updateMatrix();
+          mesh.setMatrixAt(index, corticalTemp.matrix);
+        };
+        cortexEdges.forEach(([i, j], n) => {
+          point(i, ca);
+          point(j, cb);
+          edge(cortex, n, ca, cb, 0.012);
+        });
+        cortexNodes.forEach((i, n) => {
+          point(i, ca);
+          corticalTemp.position.copy(ca);
+          corticalTemp.quaternion.identity();
+          corticalTemp.scale.setScalar(0.027);
+          corticalTemp.updateMatrix();
+          junctions.setMatrixAt(n, corticalTemp.matrix);
+          point(i, cb, 0.935);
+          edge(anchors, n, ca, cb, 0.012);
+        });
+        for (const mesh of [cortex, junctions, anchors]) {
+          mesh.instanceMatrix.needsUpdate = true;
+          mesh.computeBoundingBox();
+          mesh.computeBoundingSphere();
+        }
+        point(cortexLabelNode, ca).toArray(labels[5].position);
+        point(membraneLabelVertex, ca, 1).toArray(labels[1].position);
+        geometry.attributes.position.needsUpdate = true;
+        geometry.computeVertexNormals();
+        geometry.computeBoundingBox();
+        geometry.computeBoundingSphere();
+        currentVolume = volume();
+        if (!initialVolume) initialVolume = currentVolume;
+        lastHypo = hypo;
+        lastHyper = hyper;
       }
-      // Osmotic shape changes redistribute an approximately inextensible
-      // membrane. Normalize the actual triangulated area, not only a radius.
-      // Corrugation and flattening lower enclosed volume at conserved area.
-      const area = surfaceArea();
-      if (!initialArea) initialArea = area;
-      const areaScale = Math.sqrt(initialArea / area);
-      for (let i = 0; i < arr.length; i++) arr[i] *= areaScale;
-      const innerArray = innerGeometry.attributes.position.array;
-      for (let i = 0; i < arr.length; i++) innerArray[i] = arr[i] * 0.935;
-      innerGeometry.attributes.position.needsUpdate = true;
-      innerGeometry.computeVertexNormals();
-      innerGeometry.computeBoundingBox();
-      innerGeometry.computeBoundingSphere();
-      const point = (index, out, r = 0.9) =>
-        out.set(
-          arr[index * 3] * r,
-          arr[index * 3 + 1] * r,
-          arr[index * 3 + 2] * r,
-        );
-      const edge = (mesh, index, a, b, radius) => {
-        cd.subVectors(b, a);
-        const length = cd.length();
-        corticalTemp.position.copy(a).add(b).multiplyScalar(0.5);
-        corticalTemp.quaternion.setFromUnitVectors(
-          up,
-          cd.divideScalar(length || 1),
-        );
-        corticalTemp.scale.set(radius, length, radius);
-        corticalTemp.updateMatrix();
-        mesh.setMatrixAt(index, corticalTemp.matrix);
-      };
-      cortexEdges.forEach(([i, j], n) => {
-        point(i, ca);
-        point(j, cb);
-        edge(cortex, n, ca, cb, 0.012);
-      });
-      cortexNodes.forEach((i, n) => {
-        point(i, ca);
-        corticalTemp.position.copy(ca);
-        corticalTemp.quaternion.identity();
-        corticalTemp.scale.setScalar(0.027);
-        corticalTemp.updateMatrix();
-        junctions.setMatrixAt(n, corticalTemp.matrix);
-        point(i, cb, 0.935);
-        edge(anchors, n, ca, cb, 0.012);
-      });
-      for (const mesh of [cortex, junctions, anchors]) {
-        mesh.instanceMatrix.needsUpdate = true;
-        mesh.computeBoundingBox();
-        mesh.computeBoundingSphere();
-      }
-      point(cortexLabelNode, ca).toArray(labels[5].position);
-      point(membraneLabelVertex, ca, 1).toArray(labels[1].position);
-      geometry.attributes.position.needsUpdate = true;
-      geometry.computeVertexNormals();
-      geometry.computeBoundingBox();
-      geometry.computeBoundingSphere();
-      const v = volume();
-      if (!initialVolume) initialVolume = v;
+      const v = currentVolume;
       const soluteCount =
         mode === "hypotonic" ? 8 : mode === "isotonic" ? 17 : 30;
       solutes.forEach((m, i) => {

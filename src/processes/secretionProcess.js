@@ -321,6 +321,13 @@ function create() {
   // Use the same 96-sided boundary for the pore, receiving patch and carrier.
   const fusionAround = 96,
     fusionRows = 28;
+  const fusionCos = new Float64Array(fusionAround + 1),
+    fusionSin = new Float64Array(fusionAround + 1);
+  for (let j = 0; j <= fusionAround; j++) {
+    const phi = (j / fusionAround) * Math.PI * 2;
+    fusionCos[j] = Math.cos(phi);
+    fusionSin[j] = Math.sin(phi);
+  }
   const shape = new THREE.Shape();
   shape.moveTo(-1.68, -0.85);
   shape.lineTo(1.68, -0.85);
@@ -365,20 +372,22 @@ function create() {
   const closure = mesh(group, closureGeometry, material(colors.membrane, 0.68));
   closure.name = "receiving-membrane-pore-patch";
   closure.position.x = membraneX;
+  let closurePoreRadius = NaN;
   function updateClosure(poreRadius) {
+    if (poreRadius === closurePoreRadius) return;
     for (let row = 0; row < 2; row++)
       for (let j = 0; j <= fusionAround; j++) {
-        const phi = (j / fusionAround) * Math.PI * 2,
-          radius = row ? holeRadius : poreRadius,
+        const radius = row ? holeRadius : poreRadius,
           index = (row * (fusionAround + 1) + j) * 3;
         closurePositions[index] = 0;
-        closurePositions[index + 1] = radius * Math.cos(phi);
-        closurePositions[index + 2] = radius * Math.sin(phi);
+        closurePositions[index + 1] = radius * fusionCos[j];
+        closurePositions[index + 2] = radius * fusionSin[j];
       }
     closureGeometry.attributes.position.needsUpdate = true;
     closureGeometry.computeVertexNormals();
     closureGeometry.computeBoundingBox();
     closureGeometry.computeBoundingSphere();
+    closurePoreRadius = poreRadius;
   }
   const poreRim = mesh(
     group,
@@ -445,31 +454,39 @@ function create() {
   const fusionA = new THREE.Vector3(),
     fusionB = new THREE.Vector3(),
     fusionC = new THREE.Vector3();
+  let surfacePoreOpening = NaN,
+    surfaceFlatten = NaN;
   function updateFusionSurface(poreOpening, flatten) {
+    if (poreOpening === surfacePoreOpening && flatten === surfaceFlatten)
+      return;
     const radius = mix(carrierRadius, fusionRadius, poreOpening),
       poreRadius = holeRadius * poreOpening,
       cut = Math.asin(poreRadius / radius),
       center = membraneX - radius * Math.cos(cut);
-    for (let r = 0; r <= fusionRows; r++)
+    for (let r = 0; r <= fusionRows; r++) {
+      const u = r / fusionRows,
+        angle = cut + (Math.PI - cut) * u;
+      const rho =
+        radius * Math.sin(angle) * (1 - flatten) +
+        holeRadius * Math.sqrt(1 - u) * flatten;
+      const x =
+        (center + radius * Math.cos(angle)) * (1 - flatten) +
+        membraneX * flatten;
       for (let j = 0; j <= fusionAround; j++) {
-        const u = r / fusionRows,
-          angle = cut + (Math.PI - cut) * u,
-          phi = (j / fusionAround) * Math.PI * 2;
-        const rho =
-          radius * Math.sin(angle) * (1 - flatten) +
-          holeRadius * Math.sqrt(1 - u) * flatten;
         fusionPosition.setXYZ(
           r * (fusionAround + 1) + j,
-          (center + radius * Math.cos(angle)) * (1 - flatten) +
-            membraneX * flatten,
-          rho * Math.cos(phi),
-          rho * Math.sin(phi),
+          x,
+          rho * fusionCos[j],
+          rho * fusionSin[j],
         );
       }
+    }
     fusionPosition.needsUpdate = true;
     fusionShell.geometry.computeVertexNormals();
     fusionShell.geometry.computeBoundingBox();
     fusionShell.geometry.computeBoundingSphere();
+    surfacePoreOpening = poreOpening;
+    surfaceFlatten = flatten;
   }
   // Evaluate the same rendered triangle, so lipid midplanes stay on the shell
   // during every intermediate flattening frame, not merely at both endpoints.
@@ -649,6 +666,28 @@ function create() {
       membraneScore = score;
     }
   }
+  // Both ER boundary rings are fixed in world space. Build every original
+  // vertex once; visibility and all carrier motion still update independently.
+  const mouthWidth = Math.sin(2.76) ** 0.48;
+  erConnection.set(
+    (phi, out) =>
+      out.set(
+        -2.92 - 0.95 * Math.cos(2.76),
+        0.68 + 0.14 * mouthWidth * Math.cos(phi),
+        0.55 * mouthWidth * Math.sin(phi),
+      ),
+    (phi, out) =>
+      out.set(
+        -1.68 + 0.31 * Math.cos(2.4),
+        0.68 + 0.31 * Math.sin(2.4) * Math.cos(phi),
+        0.31 * Math.sin(2.4) * Math.sin(phi),
+      ),
+  );
+  let golgiActiveX = NaN,
+    golgiBridgeScale = NaN,
+    lipidMode = null,
+    lipidPoreOpening = NaN,
+    lipidFlatten = NaN;
   function update(progress) {
     const p = Number.isFinite(progress) ? clamp(progress) : 0;
     const maturation = ease(phase(p, 0.42, 0.67));
@@ -699,39 +738,30 @@ function create() {
     outgoing.root.scale.setScalar(1);
     // Weld each connection to the exact cisterna ellipse and transformed
     // carrier circle; donor/carrier boundary coordinates are shared.
-    const mouthWidth = Math.sin(2.76) ** 0.48;
-    erConnection.set(
-      (phi, out) =>
-        out.set(
-          -2.92 - 0.95 * Math.cos(2.76),
-          0.68 + 0.14 * mouthWidth * Math.cos(phi),
-          0.55 * mouthWidth * Math.sin(phi),
-        ),
-      (phi, out) =>
-        out.set(
-          -1.68 + 0.31 * Math.cos(2.4),
-          0.68 + 0.31 * Math.sin(2.4) * Math.cos(phi),
-          0.31 * Math.sin(2.4) * Math.sin(phi),
-        ),
-    );
     const incomingDock = p >= 0.34 && p < 0.42;
     const bridgeScale = incomingDock ? incoming.root.scale.x : 1;
-    golgiConnection.set(
-      (phi, out) =>
-        out.set(
-          activeX + openingX + 0.15 * mouthWidth * Math.cos(phi),
-          active.mouthY,
-          0.68 * mouthWidth * Math.sin(phi),
-        ),
-      (phi, out) =>
-        out.set(
-          activeX +
-            openingX +
-            bridgeScale * 0.31 * Math.sin(2.4) * Math.cos(phi),
-          -1.42 - bridgeScale * 0.31 * Math.cos(2.4),
-          bridgeScale * 0.31 * Math.sin(2.4) * Math.sin(phi),
-        ),
-    );
+    // Position and docked-carrier scale are the complete shape inputs, including
+    // maturation while the bridge is hidden and reverse seeks across docking.
+    if (activeX !== golgiActiveX || bridgeScale !== golgiBridgeScale) {
+      golgiConnection.set(
+        (phi, out) =>
+          out.set(
+            activeX + openingX + 0.15 * mouthWidth * Math.cos(phi),
+            active.mouthY,
+            0.68 * mouthWidth * Math.sin(phi),
+          ),
+        (phi, out) =>
+          out.set(
+            activeX +
+              openingX +
+              bridgeScale * 0.31 * Math.sin(2.4) * Math.cos(phi),
+            -1.42 - bridgeScale * 0.31 * Math.cos(2.4),
+            bridgeScale * 0.31 * Math.sin(2.4) * Math.sin(phi),
+          ),
+      );
+      golgiActiveX = activeX;
+      golgiBridgeScale = bridgeScale;
+    }
 
     fusion.visible = p >= 0.9 && p < 0.992;
     poreRim.visible = p >= 0.9 && p < 0.992;
@@ -786,16 +816,30 @@ function create() {
     if (p < 0.9) {
       outgoing.lipidGroup.position.copy(outgoing.root.position);
       outgoing.lipidGroup.rotation.copy(outgoing.root.rotation);
-      outgoing.lipids.update(outgoing.sites);
+      if (lipidMode !== "carrier") {
+        outgoing.lipids.update(outgoing.sites);
+        lipidMode = "carrier";
+      }
     } else {
       outgoing.lipidGroup.position.set(carrierContactX, 0, 0);
       outgoing.lipidGroup.rotation.set(0, 0, Math.PI);
-      for (let i = 0; i < contributionSites.length; i++) {
-        const { u, phi } = carrierLipidCoordinates[i];
-        fusionLipidSite(u, phi, contributionSites[i]);
-        carrierLocalSite(contributionSites[i], contributionSites[i]);
+      // Carrier-local instance matrices only change when the fusion surface
+      // changes. Group transforms above remain absolute on every update.
+      if (
+        lipidMode !== "fusion" ||
+        poreOpening !== lipidPoreOpening ||
+        flatten !== lipidFlatten
+      ) {
+        for (let i = 0; i < contributionSites.length; i++) {
+          const { u, phi } = carrierLipidCoordinates[i];
+          fusionLipidSite(u, phi, contributionSites[i]);
+          carrierLocalSite(contributionSites[i], contributionSites[i]);
+        }
+        outgoing.lipids.update(contributionSites);
+        lipidMode = "fusion";
+        lipidPoreOpening = poreOpening;
+        lipidFlatten = flatten;
       }
-      outgoing.lipids.update(contributionSites);
     }
     closure.material.color.set(p >= 0.992 ? colors.trans : colors.membrane);
 

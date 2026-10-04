@@ -184,13 +184,21 @@ function ProcessPlayer({
     definition.stages.findLastIndex((stage) => progress + 0.00001 >= stage.at),
   );
   const stage = definition.stages[stageIndex];
-  const conditionNote = getConditionNote(definition.id, parameters, lang);
-  const related = groupProcessStructures(
-    rootId,
-    definition.id,
-    definition.stages,
-    progress,
-    parameters,
+  const conditionNote = useMemo(
+    () => getConditionNote(definition.id, parameters, lang),
+    [definition.id, parameters, lang],
+  );
+  const related = useMemo(
+    () =>
+      groupProcessStructures(
+        rootId,
+        definition.id,
+        definition.stages,
+        progress,
+        parameters,
+      ),
+    // Structure links depend on the selected stage, not progress within it.
+    [rootId, definition, stageIndex, parameters],
   );
   const locationButton = (item) => (
     <button

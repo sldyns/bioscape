@@ -1,0 +1,629 @@
+{
+  "recordedAt": "2026-10-04T09:12:29.279Z",
+  "errors": 0,
+  "executions": 72,
+  "method": "Final source; same IAB, Apple M1/16 GiB, viewport and full-quality settings. AB/BA; each root cold prepared-model cache then immediate warm remount, readiness includes scene setup and two rendered frames. HTTP/module cache is warm. 1.8 seconds auto-rotation, labels enabled. No parallel tests, build, CPU profiling or agent work. Two samples per root/cache/version; variability is retained.",
+  "structures": [
+    {
+      "nodeId": "cell",
+      "baseline": {
+        "coldReadyMs": 2135,
+        "warmReadyMs": 340.1999999284744,
+        "coldSamples": [
+          2143.2000000476837,
+          2126.7999999523163
+        ],
+        "warmSamples": [
+          338.7999999523163,
+          341.59999990463257
+        ],
+        "frameCpuMs": 1.653428571428572,
+        "rafIntervalMs": 20.80057803468209,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 2062.1999999284744,
+        "warmReadyMs": 284.2500001192093,
+        "coldSamples": [
+          2067.2000000476837,
+          2057.199999809265
+        ],
+        "warmSamples": [
+          290.10000014305115,
+          278.40000009536743
+        ],
+        "frameCpuMs": 1.6,
+        "rafIntervalMs": 21.03965014577259,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": -3.4098360689239104,
+      "warmChangePercent": -16.446208060267008
+    },
+    {
+      "nodeId": "plant",
+      "baseline": {
+        "coldReadyMs": 2081.350000023842,
+        "warmReadyMs": 244.14999985694885,
+        "coldSamples": [
+          2083.7000000476837,
+          2079
+        ],
+        "warmSamples": [
+          249.09999990463257,
+          239.19999980926514
+        ],
+        "frameCpuMs": 1.2740983606557381,
+        "rafIntervalMs": 24.027906976744184,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 2130.899999976158,
+        "warmReadyMs": 216.29999995231628,
+        "coldSamples": [
+          2141.2999999523163,
+          2120.5
+        ],
+        "warmSamples": [
+          210.39999985694885,
+          222.20000004768372
+        ],
+        "frameCpuMs": 1.2122923588039864,
+        "rafIntervalMs": 24.23872053872054,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": 2.3806663920892035,
+      "warmChangePercent": -11.406921941818682
+    },
+    {
+      "nodeId": "bacterium",
+      "baseline": {
+        "coldReadyMs": 911.5,
+        "warmReadyMs": 177,
+        "coldSamples": [
+          899.7000000476837,
+          923.2999999523163
+        ],
+        "warmSamples": [
+          176.20000004768372,
+          177.79999995231628
+        ],
+        "frameCpuMs": 0.969724770642202,
+        "rafIntervalMs": 16.662499999999994,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 902.7500001192093,
+        "warmReadyMs": 163.20000004768372,
+        "coldSamples": [
+          905.9000000953674,
+          899.6000001430511
+        ],
+        "warmSamples": [
+          163.60000014305115,
+          162.79999995231628
+        ],
+        "frameCpuMs": 0.8231651376146805,
+        "rafIntervalMs": 16.66620370370371,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": -0.9599561032134662,
+      "warmChangePercent": -7.796610142551574
+    },
+    {
+      "nodeId": "phage",
+      "baseline": {
+        "coldReadyMs": 369.450000166893,
+        "warmReadyMs": 113.35000002384186,
+        "coldSamples": [
+          363.30000019073486,
+          375.60000014305115
+        ],
+        "warmSamples": [
+          99.70000004768372,
+          127
+        ],
+        "frameCpuMs": 0.7697247706422018,
+        "rafIntervalMs": 16.666666666666668,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 363.59999990463257,
+        "warmReadyMs": 96.79999995231628,
+        "coldSamples": [
+          364.59999990463257,
+          362.59999990463257
+        ],
+        "warmSamples": [
+          97.29999995231628,
+          96.29999995231628
+        ],
+        "frameCpuMs": 0.5949541284403642,
+        "rafIntervalMs": 16.662962962962965,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": -1.5834349058378105,
+      "warmChangePercent": -14.600794060912637
+    },
+    {
+      "nodeId": "yeast",
+      "baseline": {
+        "coldReadyMs": 984.8999999761581,
+        "warmReadyMs": 155.84999990463257,
+        "coldSamples": [
+          996,
+          973.7999999523163
+        ],
+        "warmSamples": [
+          149.29999995231628,
+          162.39999985694885
+        ],
+        "frameCpuMs": 1.1268348623853195,
+        "rafIntervalMs": 16.658564814814813,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 1005.950000166893,
+        "warmReadyMs": 146.20000004768372,
+        "coldSamples": [
+          998.3000001907349,
+          1013.6000001430511
+        ],
+        "warmSamples": [
+          145.70000004768372,
+          146.70000004768372
+        ],
+        "frameCpuMs": 0.9504587155963296,
+        "rafIntervalMs": 16.665509259259267,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": 2.1372728389932316,
+      "warmChangePercent": -6.191851050916819
+    },
+    {
+      "nodeId": "paramecium",
+      "baseline": {
+        "coldReadyMs": 1154.1500000953674,
+        "warmReadyMs": 171.5,
+        "coldSamples": [
+          1163.9000000953674,
+          1144.4000000953674
+        ],
+        "warmSamples": [
+          162.59999990463257,
+          180.40000009536743
+        ],
+        "frameCpuMs": 1.0055045871559636,
+        "rafIntervalMs": 16.667592592592605,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 1204.7999999523163,
+        "warmReadyMs": 164.39999997615814,
+        "coldSamples": [
+          1214.0999999046326,
+          1195.5
+        ],
+        "warmSamples": [
+          164.20000004768372,
+          164.59999990463257
+        ],
+        "frameCpuMs": 1.0471264367816104,
+        "rafIntervalMs": 16.677030162412983,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": 4.3885110126728355,
+      "warmChangePercent": -4.139941704864059
+    },
+    {
+      "nodeId": "neuron",
+      "baseline": {
+        "coldReadyMs": 244.14999997615814,
+        "warmReadyMs": 95.75,
+        "coldSamples": [
+          245.59999990463257,
+          242.70000004768372
+        ],
+        "warmSamples": [
+          80.29999995231628,
+          111.20000004768372
+        ],
+        "frameCpuMs": 0.5123853211009183,
+        "rafIntervalMs": 16.669212962962977,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 237.89999997615814,
+        "warmReadyMs": 79.5,
+        "coldSamples": [
+          246.29999995231628,
+          229.5
+        ],
+        "warmSamples": [
+          78.5,
+          80.5
+        ],
+        "frameCpuMs": 0.5045871559633031,
+        "rafIntervalMs": 16.669444444444455,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": -2.5599017000247137,
+      "warmChangePercent": -16.97127937336814
+    },
+    {
+      "nodeId": "muscleFibre",
+      "baseline": {
+        "coldReadyMs": 412.0500000715256,
+        "warmReadyMs": 112.04999995231628,
+        "coldSamples": [
+          411.40000009536743,
+          412.7000000476837
+        ],
+        "warmSamples": [
+          112.89999985694885,
+          111.20000004768372
+        ],
+        "frameCpuMs": 0.592857142857143,
+        "rafIntervalMs": 16.66627906976746,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 411.14999997615814,
+        "warmReadyMs": 105.29999995231628,
+        "coldSamples": [
+          413.5,
+          408.7999999523163
+        ],
+        "warmSamples": [
+          97.20000004768372,
+          113.39999985694885
+        ],
+        "frameCpuMs": 0.5011467889908263,
+        "rafIntervalMs": 16.66180555555556,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": -0.21842011775542458,
+      "warmChangePercent": -6.024096388105771
+    },
+    {
+      "nodeId": "erythrocyte",
+      "baseline": {
+        "coldReadyMs": 185.39999997615814,
+        "warmReadyMs": 133.89999997615814,
+        "coldSamples": [
+          180.29999995231628,
+          190.5
+        ],
+        "warmSamples": [
+          127.79999995231628,
+          140
+        ],
+        "frameCpuMs": 0.4298165137614679,
+        "rafIntervalMs": 16.66527777777778,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "optimized": {
+        "coldReadyMs": 209.45000004768372,
+        "warmReadyMs": 126.79999995231628,
+        "coldSamples": [
+          195.79999995231628,
+          223.10000014305115
+        ],
+        "warmSamples": [
+          112.5,
+          141.09999990463257
+        ],
+        "frameCpuMs": 0.4169724770642201,
+        "rafIntervalMs": 16.666898148148146,
+        "prepareSources": [
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          },
+          {
+            "cacheState": "cold",
+            "prepareSource": "build"
+          },
+          {
+            "cacheState": "warm",
+            "prepareSource": "prepared-cache"
+          }
+        ]
+      },
+      "coldChangePercent": 12.971952575306545,
+      "warmChangePercent": -5.302464544515361
+    }
+  ]
+}

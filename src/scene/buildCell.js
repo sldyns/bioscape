@@ -138,9 +138,17 @@ export function buildCell() {
     pieces.forEach((g) => g.dispose());
     return mesh(parent, joined, material);
   }
+  // Beads only vary their instance transforms and colors. Keep one immutable
+  // primitive per detail level within this build (worker transfers detach it).
+  const beadGeometries = new Map();
   function beads(parent, samples, material, detail = 1) {
+    if (!beadGeometries.has(detail))
+      beadGeometries.set(
+        detail,
+        indexRepeatedGeometry(new THREE.IcosahedronGeometry(1, detail)),
+      );
     const m = new THREE.InstancedMesh(
-      indexRepeatedGeometry(new THREE.IcosahedronGeometry(1, detail)),
+      beadGeometries.get(detail),
       material,
       samples.length,
     );
@@ -365,8 +373,9 @@ export function buildCell() {
   anchors.smoothER.set(-0.12, 0.4, 0.16);
 
   const mitochondria = group("mitochondria", [0, 0, 0]);
+  const mitochondrionTemplate = mergeMitochondrion(rawMitochondrion());
   function makeMito(position, angle, size) {
-    const g = mergeMitochondrion(rawMitochondrion());
+    const g = mitochondrionTemplate.clone(true);
     g.position.set(...position);
     g.rotation.set(-0.14, 0.18, angle);
     g.scale.setScalar(size);

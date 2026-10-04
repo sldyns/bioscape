@@ -5,6 +5,7 @@ import cvModel from "./contractileVacuoleProcess.js";
 import divisionModel from "./parameciumDivisionProcess.js";
 import conjugationModel from "./parameciumConjugationProcess.js";
 import { runReview20261004 } from "./review20261004.test.mjs";
+import { runGeometryEquivalence } from "./geometry-equivalence.test.mjs";
 
 const object = (scene, name) => {
   const o = scene.group.getObjectByName(name);
@@ -318,3 +319,5 @@ runReview20261004({
   division,
   conjugation: conjugationModel.create(),
 });
+
+await runGeometryEquivalence();

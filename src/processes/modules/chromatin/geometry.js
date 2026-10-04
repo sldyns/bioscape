@@ -3,6 +3,13 @@ import { THREE } from "../../kit.js";
 // Fixed-topology tube. All buffers and scratch vectors are allocated at creation.
 export function dynamicTube(parent, material, count = 240, radius = 0.05) {
   const sides = 8;
+  const cosines = new Float64Array(sides),
+    sines = new Float64Array(sides);
+  for (let j = 0; j < sides; j++) {
+    const a = (j * Math.PI * 2) / sides;
+    cosines[j] = radius * Math.cos(a);
+    sines[j] = radius * Math.sin(a);
+  }
   const geometry = new THREE.BufferGeometry();
   const positions = new Float32Array((count + 1) * sides * 3);
   const indices = [];
@@ -35,9 +42,8 @@ export function dynamicTube(parent, material, count = 240, radius = 0.05) {
       n.crossVectors(tangent, axis).normalize();
       b.crossVectors(tangent, n).normalize();
       for (let j = 0; j < sides; j++) {
-        const a = (j * Math.PI * 2) / sides,
-          c = radius * Math.cos(a),
-          s = radius * Math.sin(a);
+        const c = cosines[j],
+          s = sines[j];
         const k = (i * sides + j) * 3;
         positions[k] = p.x + n.x * c + b.x * s;
         positions[k + 1] = p.y + n.y * c + b.y * s;

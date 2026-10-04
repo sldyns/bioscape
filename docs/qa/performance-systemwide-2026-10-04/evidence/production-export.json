@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-04T08:57:42.579102+00:00",
+  "cancel": "passed: UI returned Recording cancelled and restored controls",
+  "mp4": {
+    "duration": 6.058267,
+    "width": 1920,
+    "height": 1080,
+    "readyState": 4
+  },
+  "sceneRestoration": {
+    "mode": "explode",
+    "separation": 75,
+    "labels": true
+  },
+  "files": [
+    {
+      "file": "docs/qa/performance-systemwide-2026-10-04/evidence/browser/production-paramecium.mp4",
+      "bytes": 6050585,
+      "sha256": "ef8cc9c7f94dc0cad1f61446102a47a26b7e75b3c5a2c77d7ca61c6187b2910b"
+    },
+    {
+      "file": "docs/qa/performance-systemwide-2026-10-04/evidence/browser/production-paramecium.png",
+      "bytes": 507288,
+      "sha256": "8843d73ddfeccc91884785ba7b180a123cc223b0f31d2f6945889a5416fe74eb"
+    }
+  ]
+}

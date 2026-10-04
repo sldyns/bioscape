@@ -1,4 +1,5 @@
 import { THREE, clamp, ease } from "../../kit.js";
+import { shapeState } from "./shapeState.js";
 
 // Longitudinal open-front membrane. Adjacent components share complete terminal
 // rings, not merely overlapping filled primitives. The front half is a viewing cut.
@@ -16,15 +17,32 @@ function surface(k, parent, material, name, rows = 40, columns = 32) {
   geometry.setIndex(indices);
   const mesh = k.mesh(geometry, material, [0, 0, 0], parent);
   mesh.name = name;
+  const phases = Array.from({ length: columns + 1 }, (_, j) => {
+    const a = -Math.PI + (j / columns) * Math.PI;
+    return [Math.cos(a), Math.sin(a)];
+  });
+  const profileValues = new Float64Array((rows + 1) * 2);
+  let initialized = false;
   function shape(profile) {
+    let changed = !initialized;
     for (let i = 0; i <= rows; i++) {
       const [x, r] = profile(i / rows);
+      changed ||=
+        !Object.is(x, profileValues[i * 2]) ||
+        !Object.is(r, profileValues[i * 2 + 1]);
+      profileValues[i * 2] = x;
+      profileValues[i * 2 + 1] = r;
+    }
+    if (!changed) return;
+    initialized = true;
+    for (let i = 0; i <= rows; i++) {
+      const x = profileValues[i * 2],
+        r = profileValues[i * 2 + 1];
       for (let j = 0; j <= columns; j++) {
-        const a = -Math.PI + (j / columns) * Math.PI,
-          q = (i * (columns + 1) + j) * 3;
+        const q = (i * (columns + 1) + j) * 3;
         vertices[q] = x;
-        vertices[q + 1] = r * Math.cos(a);
-        vertices[q + 2] = r * Math.sin(a);
+        vertices[q + 1] = r * phases[j][0];
+        vertices[q + 2] = r * phases[j][1];
       }
     }
     geometry.attributes.position.needsUpdate = true;
@@ -253,6 +271,10 @@ export function macronuclearBridge(k, parent, material) {
 const portRows = 12,
   portColumns = 32,
   portAngle = 0.16;
+const portPhases = Array.from({ length: portColumns + 1 }, (_, col) => {
+  const phase = -Math.PI + (col / portColumns) * Math.PI;
+  return { phase, c: Math.cos(phase), s: Math.sin(phase) };
+});
 function portPoint(angle, phase, opening, scale = 1) {
   const phi = angle + opening * Math.cos(phase),
     latitude = opening * Math.sin(phase);
@@ -298,8 +320,10 @@ export function collectingBladder(k, parent, material) {
     mesh,
   );
   inner.name = "central-contractile-bladder-inner";
+  const shapeChanged = shapeState();
   function update(connected) {
     const opening = connected ? portAngle : 0;
+    if (!shapeChanged(opening)) return;
     for (const [layer, factor] of [
       [mesh, 1],
       [inner, 0.91],
@@ -340,23 +364,33 @@ export function hollowInlet(k, parent, material, name) {
     );
   outer.name = `${name}-outer`;
   inner.name = `${name}-inner`;
+  const layers = [
+    { mesh: outer, factor: 1, width: 0.075 },
+    { mesh: inner, factor: 0.91, width: 0.057 },
+  ];
+  const shapeChanged = shapeState(),
+    angleChanged = shapeState();
   function update(radius, depth, angle) {
-    for (const [layer, factor, width] of [
-      [outer, 1, 0.075],
-      [inner, 0.91, 0.057],
-    ]) {
-      const attr = layer.geometry.attributes.position;
+    if (!shapeChanged(radius, depth, angle)) return;
+    if (angleChanged(angle))
+      for (const layer of layers)
+        layer.points = portPhases.map(({ phase, c, s }) => {
+          const across = layer.width * c;
+          return {
+            v: portPoint(angle, phase, portAngle, layer.factor),
+            end: [
+              0.94 * Math.cos(angle) - across * Math.sin(angle),
+              0.94 * Math.sin(angle) + across * Math.cos(angle),
+              layer.width * s,
+            ],
+          };
+        });
+    for (const { mesh, points } of layers) {
+      const attr = mesh.geometry.attributes.position;
       for (let row = 0; row <= portRows; row++)
         for (let col = 0; col <= portColumns; col++) {
           const t = row / portRows,
-            phase = -Math.PI + (col / portColumns) * Math.PI,
-            v = portPoint(angle, phase, portAngle, factor),
-            across = width * Math.cos(phase),
-            end = [
-              0.94 * Math.cos(angle) - across * Math.sin(angle),
-              0.94 * Math.sin(angle) + across * Math.cos(angle),
-              width * Math.sin(phase),
-            ];
+            { v, end } = points[col];
           attr.setXYZ(
             row * (portColumns + 1) + col,
             radius * v[0] * (1 - t) + end[0] * t,
@@ -364,7 +398,7 @@ export function hollowInlet(k, parent, material, name) {
             (0.22 + depth * v[2]) * (1 - t) + end[2] * t,
           );
         }
-      finishGeometry(layer.geometry);
+      finishGeometry(mesh.geometry);
     }
   }
   return { group: g, update };
@@ -394,7 +428,9 @@ export function collectingAmpulla(k, parent, angle, name) {
   layers[1].name = `${name}-inner`;
   const c = Math.cos(angle),
     s = Math.sin(angle);
+  const shapeChanged = shapeState();
   function update(bulge = 1) {
+    if (!shapeChanged(bulge)) return;
     layers.forEach((layer, index) => {
       const start = index ? 0.057 : 0.075,
         end = index ? 0.076 : 0.105,
@@ -405,13 +441,13 @@ export function collectingAmpulla(k, parent, angle, name) {
           radius =
             start * (1 - t) + end * t + 0.105 * bulge * Math.sin(Math.PI * t);
         for (let col = 0; col <= portColumns; col++) {
-          const phase = -Math.PI + (col / portColumns) * Math.PI,
-            across = radius * Math.cos(phase);
+          const phase = portPhases[col],
+            across = radius * phase.c;
           attr.setXYZ(
             row * (portColumns + 1) + col,
             c * distance - s * across,
             s * distance + c * across,
-            radius * Math.sin(phase),
+            radius * phase.s,
           );
         }
       }

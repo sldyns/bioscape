@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useRef,
   useCallback,
+  useMemo,
   lazy,
   Suspense,
 } from "react";
@@ -231,6 +232,13 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     capabilities.labels &&
     (!capabilities.labelModes || capabilities.labelModes.includes(mode));
   const viewContext = describeView(path, lang);
+  const relatedProcesses = useMemo(
+    () =>
+      experience === "structure" && !comparison
+        ? getProcessesForStructure(path)
+        : [],
+    [path, experience, comparison],
+  );
   function receiveCapabilities(next) {
     if (next.nodeId !== id) return;
     setCapabilities(next);
@@ -1142,10 +1150,10 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                 ))}
               </div>
             )}
-            {getProcessesForStructure(path).length > 0 && (
+            {relatedProcesses.length > 0 && (
               <section className="structure-processes">
                 <h3>{t("相关生物学过程", "Explore related processes")}</h3>
-                {getProcessesForStructure(path)
+                {relatedProcesses
                   .slice(0, path.length > 1 ? 6 : 3)
                   .map((item) => (
                     <button

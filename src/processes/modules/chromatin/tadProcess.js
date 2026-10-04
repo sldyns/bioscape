@@ -186,6 +186,7 @@ function create() {
       2,
     ),
   ];
+  let geometryLeft, geometryRight;
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       condition = ["boundaryDeleted", "cohesinDepleted"].includes(
@@ -199,11 +200,16 @@ function create() {
       extension = deleted ? ease(p, 0.68, 0.93) : 0;
     left = 0.48 - 0.25 * extrusion;
     right = 0.52 + 0.25 * extrusion + 0.15 * extension;
-    updateLoop();
-    duplex.update();
-    fiber.update(sampleA);
-    fiberPartner.update(sampleB);
-    nucleotideDetail.update(sampleA, sampleB);
+    // These material coordinates fully determine the loop, in every condition.
+    if (left !== geometryLeft || right !== geometryRight) {
+      updateLoop();
+      duplex.update();
+      fiber.update(sampleA);
+      fiberPartner.update(sampleB);
+      nucleotideDetail.update(sampleA, sampleB);
+      geometryLeft = left;
+      geometryRight = right;
+    }
     cohesin.visible = !depleted;
     cohesin.position.y = -(1 - ease(p, 0.02, 0.15)) * 0.65;
     cohesinHinge.getWorldPosition(scratch).toArray(labels[1].position);

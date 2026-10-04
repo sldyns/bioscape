@@ -1,0 +1,2438 @@
+[
+  {
+    "id": "secretion",
+    "root": "cell",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "transcription",
+    "root": "cell",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "transcription",
+    "root": "plant",
+    "parameters": {},
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "photosynthesis",
+    "root": "plant",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "infection",
+    "root": "phage",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "replication",
+    "root": "cell",
+    "parameters": {
+      "ligase": "active"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "replication",
+    "root": "cell",
+    "parameters": {
+      "ligase": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "replication",
+    "root": "plant",
+    "parameters": {
+      "ligase": "active"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "replication",
+    "root": "plant",
+    "parameters": {
+      "ligase": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "replication",
+    "root": "yeast",
+    "parameters": {
+      "ligase": "active"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "replication",
+    "root": "yeast",
+    "parameters": {
+      "ligase": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "dnaRepair",
+    "root": "cell",
+    "parameters": {
+      "incision": "active"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "dnaRepair",
+    "root": "cell",
+    "parameters": {
+      "incision": "blocked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "dnaRepair",
+    "root": "plant",
+    "parameters": {
+      "incision": "active"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "dnaRepair",
+    "root": "plant",
+    "parameters": {
+      "incision": "blocked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "dnaRepair",
+    "root": "yeast",
+    "parameters": {
+      "incision": "active"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "dnaRepair",
+    "root": "yeast",
+    "parameters": {
+      "incision": "blocked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "transduction",
+    "root": "phage",
+    "parameters": {
+      "route": "p1"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "transduction",
+    "root": "phage",
+    "parameters": {
+      "route": "lambda"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "transduction",
+    "root": "bacterium",
+    "parameters": {
+      "route": "p1"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "transduction",
+    "root": "bacterium",
+    "parameters": {
+      "route": "lambda"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialSporulation",
+    "root": "bacterium",
+    "parameters": {
+      "engulfment": "normal"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialSporulation",
+    "root": "bacterium",
+    "parameters": {
+      "engulfment": "blocked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "promoterRegulation",
+    "root": "cell",
+    "parameters": {
+      "bindingSite": "intact"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "promoterRegulation",
+    "root": "cell",
+    "parameters": {
+      "bindingSite": "altered"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "enhancerRegulation",
+    "root": "cell",
+    "parameters": {
+      "coactivator": "competent"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "enhancerRegulation",
+    "root": "cell",
+    "parameters": {
+      "coactivator": "impaired"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "chromatinAccess",
+    "root": "cell",
+    "parameters": {
+      "hydrolysis": "active"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "chromatinAccess",
+    "root": "cell",
+    "parameters": {
+      "hydrolysis": "disabled"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "chromatinAccess",
+    "root": "plant",
+    "parameters": {
+      "hydrolysis": "active"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "chromatinAccess",
+    "root": "plant",
+    "parameters": {
+      "hydrolysis": "disabled"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "chromatinAccess",
+    "root": "yeast",
+    "parameters": {
+      "hydrolysis": "active"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "chromatinAccess",
+    "root": "yeast",
+    "parameters": {
+      "hydrolysis": "disabled"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "tad",
+    "root": "cell",
+    "parameters": {
+      "condition": "normal"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "tad",
+    "root": "cell",
+    "parameters": {
+      "condition": "boundaryDeleted"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "tad",
+    "root": "cell",
+    "parameters": {
+      "condition": "cohesinDepleted"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "plantGenome",
+    "root": "plant",
+    "parameters": {
+      "targeting": "intact"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "plantGenome",
+    "root": "plant",
+    "parameters": {
+      "targeting": "removed"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "plantRdDM",
+    "root": "plant",
+    "parameters": {
+      "drm2": "active"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "plantRdDM",
+    "root": "plant",
+    "parameters": {
+      "drm2": "inactive"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "rnaProcessing",
+    "root": "cell",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "rnaProcessing",
+    "root": "plant",
+    "parameters": {},
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "nuclearTransport",
+    "root": "cell",
+    "parameters": {
+      "nls": "exposed"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "nuclearTransport",
+    "root": "cell",
+    "parameters": {
+      "nls": "masked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "nuclearTransport",
+    "root": "plant",
+    "parameters": {
+      "nls": "exposed"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "nuclearTransport",
+    "root": "plant",
+    "parameters": {
+      "nls": "masked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "nuclearTransport",
+    "root": "yeast",
+    "parameters": {
+      "nls": "exposed"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "nuclearTransport",
+    "root": "yeast",
+    "parameters": {
+      "nls": "masked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "motorTransport",
+    "root": "cell",
+    "parameters": {
+      "motor": "kinesin",
+      "atp": "available"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "motorTransport",
+    "root": "cell",
+    "parameters": {
+      "motor": "kinesin",
+      "atp": "depleted"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "motorTransport",
+    "root": "cell",
+    "parameters": {
+      "motor": "dynein",
+      "atp": "available"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "motorTransport",
+    "root": "cell",
+    "parameters": {
+      "motor": "dynein",
+      "atp": "depleted"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "organelleImport",
+    "root": "plant",
+    "parameters": {
+      "transit": "present"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "organelleImport",
+    "root": "plant",
+    "parameters": {
+      "transit": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "translation",
+    "root": "cell",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "translation",
+    "root": "plant",
+    "parameters": {},
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "translation",
+    "root": "yeast",
+    "parameters": {},
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "translation",
+    "root": "paramecium",
+    "parameters": {},
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteinFolding",
+    "root": "cell",
+    "parameters": {
+      "cycle": "complete"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "proteinFolding",
+    "root": "cell",
+    "parameters": {
+      "cycle": "hold"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteinFolding",
+    "root": "plant",
+    "parameters": {
+      "cycle": "complete"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteinFolding",
+    "root": "plant",
+    "parameters": {
+      "cycle": "hold"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteinFolding",
+    "root": "yeast",
+    "parameters": {
+      "cycle": "complete"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteinFolding",
+    "root": "yeast",
+    "parameters": {
+      "cycle": "hold"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "alternativeSplicing",
+    "root": "cell",
+    "parameters": {
+      "isoform": "include"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "alternativeSplicing",
+    "root": "cell",
+    "parameters": {
+      "isoform": "skip"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "nitrogenFixation",
+    "root": "bacterium",
+    "parameters": {
+      "oxygen": "protected"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "nitrogenFixation",
+    "root": "bacterium",
+    "parameters": {
+      "oxygen": "exposed"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "rnaSilencing",
+    "root": "cell",
+    "parameters": {
+      "pairing": "seed"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "rnaSilencing",
+    "root": "cell",
+    "parameters": {
+      "pairing": "slice"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "rnaSilencing",
+    "root": "cell",
+    "parameters": {
+      "pairing": "mismatch"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "cell",
+    "parameters": {
+      "tag": "ubiquitin",
+      "shell": "cutaway"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "cell",
+    "parameters": {
+      "tag": "ubiquitin",
+      "shell": "whole"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "cell",
+    "parameters": {
+      "tag": "untagged",
+      "shell": "cutaway"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "cell",
+    "parameters": {
+      "tag": "untagged",
+      "shell": "whole"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "plant",
+    "parameters": {
+      "tag": "ubiquitin",
+      "shell": "cutaway"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "plant",
+    "parameters": {
+      "tag": "ubiquitin",
+      "shell": "whole"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "plant",
+    "parameters": {
+      "tag": "untagged",
+      "shell": "cutaway"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "plant",
+    "parameters": {
+      "tag": "untagged",
+      "shell": "whole"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "yeast",
+    "parameters": {
+      "tag": "ubiquitin",
+      "shell": "cutaway"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "yeast",
+    "parameters": {
+      "tag": "ubiquitin",
+      "shell": "whole"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "yeast",
+    "parameters": {
+      "tag": "untagged",
+      "shell": "cutaway"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "proteasome",
+    "root": "yeast",
+    "parameters": {
+      "tag": "untagged",
+      "shell": "whole"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "crispr",
+    "root": "bacterium",
+    "parameters": {
+      "target": "matched"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "crispr",
+    "root": "bacterium",
+    "parameters": {
+      "target": "noPam"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "crispr",
+    "root": "bacterium",
+    "parameters": {
+      "target": "mismatch"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialRepair",
+    "root": "bacterium",
+    "parameters": {
+      "lexA": "wildtype"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialRepair",
+    "root": "bacterium",
+    "parameters": {
+      "lexA": "noncleavable"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "respiration",
+    "root": "cell",
+    "parameters": {
+      "coupling": "coupled"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "respiration",
+    "root": "cell",
+    "parameters": {
+      "coupling": "leak"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "respiration",
+    "root": "plant",
+    "parameters": {
+      "coupling": "coupled"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "respiration",
+    "root": "plant",
+    "parameters": {
+      "coupling": "leak"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "respiration",
+    "root": "yeast",
+    "parameters": {
+      "coupling": "coupled"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "respiration",
+    "root": "yeast",
+    "parameters": {
+      "coupling": "leak"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "respiration",
+    "root": "paramecium",
+    "parameters": {
+      "coupling": "coupled"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "respiration",
+    "root": "paramecium",
+    "parameters": {
+      "coupling": "leak"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "glycolysis",
+    "root": "cell",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "glycolysis",
+    "root": "plant",
+    "parameters": {},
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "glycolysis",
+    "root": "yeast",
+    "parameters": {},
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialEnergetics",
+    "root": "bacterium",
+    "parameters": {
+      "route": "ndh1-bo"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialEnergetics",
+    "root": "bacterium",
+    "parameters": {
+      "route": "ndh2-bd"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialPhotosynthesis",
+    "root": "bacterium",
+    "parameters": {
+      "light": "light"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialPhotosynthesis",
+    "root": "bacterium",
+    "parameters": {
+      "light": "dark"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "cell",
+    "parameters": {
+      "route": "water",
+      "gradient": "outside"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "cell",
+    "parameters": {
+      "route": "water",
+      "gradient": "equal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "cell",
+    "parameters": {
+      "route": "oxygen",
+      "gradient": "outside"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "cell",
+    "parameters": {
+      "route": "oxygen",
+      "gradient": "equal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "plant",
+    "parameters": {
+      "route": "water",
+      "gradient": "outside"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "plant",
+    "parameters": {
+      "route": "water",
+      "gradient": "equal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "plant",
+    "parameters": {
+      "route": "oxygen",
+      "gradient": "outside"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "plant",
+    "parameters": {
+      "route": "oxygen",
+      "gradient": "equal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "bacterium",
+    "parameters": {
+      "route": "water",
+      "gradient": "outside"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "bacterium",
+    "parameters": {
+      "route": "water",
+      "gradient": "equal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "bacterium",
+    "parameters": {
+      "route": "oxygen",
+      "gradient": "outside"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "bacterium",
+    "parameters": {
+      "route": "oxygen",
+      "gradient": "equal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "yeast",
+    "parameters": {
+      "route": "water",
+      "gradient": "outside"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "yeast",
+    "parameters": {
+      "route": "water",
+      "gradient": "equal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "yeast",
+    "parameters": {
+      "route": "oxygen",
+      "gradient": "outside"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "diffusion",
+    "root": "yeast",
+    "parameters": {
+      "route": "oxygen",
+      "gradient": "equal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "activeTransport",
+    "root": "cell",
+    "parameters": {
+      "energy": "atp"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "activeTransport",
+    "root": "cell",
+    "parameters": {
+      "energy": "none"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "osmoticBalance",
+    "root": "cell",
+    "parameters": {
+      "tonicity": "hypotonic"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "osmoticBalance",
+    "root": "cell",
+    "parameters": {
+      "tonicity": "isotonic"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "osmoticBalance",
+    "root": "cell",
+    "parameters": {
+      "tonicity": "hypertonic"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "osmoticBalance",
+    "root": "erythrocyte",
+    "parameters": {
+      "tonicity": "hypotonic"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "osmoticBalance",
+    "root": "erythrocyte",
+    "parameters": {
+      "tonicity": "isotonic"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "osmoticBalance",
+    "root": "erythrocyte",
+    "parameters": {
+      "tonicity": "hypertonic"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialCellWall",
+    "root": "bacterium",
+    "parameters": {
+      "antibiotic": "none"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialCellWall",
+    "root": "bacterium",
+    "parameters": {
+      "antibiotic": "betaLactam"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "endocytosis",
+    "root": "cell",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "autophagy",
+    "root": "cell",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "mitosis",
+    "root": "cell",
+    "parameters": {
+      "attachment": "normal"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "mitosis",
+    "root": "cell",
+    "parameters": {
+      "attachment": "unattached"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "meiosis",
+    "root": "cell",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "signalTransduction",
+    "root": "cell",
+    "parameters": {
+      "condition": "ligand"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "signalTransduction",
+    "root": "cell",
+    "parameters": {
+      "condition": "noLigand"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "signalTransduction",
+    "root": "cell",
+    "parameters": {
+      "condition": "kinaseInactive"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "apoptosis",
+    "root": "cell",
+    "parameters": {
+      "condition": "stress"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "apoptosis",
+    "root": "cell",
+    "parameters": {
+      "condition": "noStress"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "differentiation",
+    "root": "cell",
+    "parameters": {
+      "program": "competent"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "differentiation",
+    "root": "cell",
+    "parameters": {
+      "program": "impaired"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "immuneResponse",
+    "root": "cell",
+    "parameters": {
+      "epitope": "matched"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "immuneResponse",
+    "root": "cell",
+    "parameters": {
+      "epitope": "unmatched"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "actionPotential",
+    "root": "cell",
+    "parameters": {
+      "stimulus": "on"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "actionPotential",
+    "root": "cell",
+    "parameters": {
+      "stimulus": "off"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "actionPotential",
+    "root": "neuron",
+    "parameters": {
+      "stimulus": "on"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "actionPotential",
+    "root": "neuron",
+    "parameters": {
+      "stimulus": "off"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "synapse",
+    "root": "cell",
+    "parameters": {
+      "calcium": "available"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "synapse",
+    "root": "cell",
+    "parameters": {
+      "calcium": "blocked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "synapse",
+    "root": "neuron",
+    "parameters": {
+      "calcium": "available"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "synapse",
+    "root": "neuron",
+    "parameters": {
+      "calcium": "blocked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "muscle",
+    "root": "cell",
+    "parameters": {
+      "calcium": "released"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "muscle",
+    "root": "cell",
+    "parameters": {
+      "calcium": "low"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "muscle",
+    "root": "muscleFibre",
+    "parameters": {
+      "calcium": "released"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "muscle",
+    "root": "muscleFibre",
+    "parameters": {
+      "calcium": "low"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "ciliaryMotion",
+    "root": "paramecium",
+    "parameters": {
+      "atp": "available"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "ciliaryMotion",
+    "root": "paramecium",
+    "parameters": {
+      "atp": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "plasmolysis",
+    "root": "plant",
+    "parameters": {
+      "bath": "recover"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "plasmolysis",
+    "root": "plant",
+    "parameters": {
+      "bath": "hold"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "stomata",
+    "root": "plant",
+    "parameters": {
+      "signal": "aba"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "stomata",
+    "root": "plant",
+    "parameters": {
+      "signal": "light"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "plantLongDistanceTransport",
+    "root": "plant",
+    "parameters": {
+      "stomata": "close"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "plantLongDistanceTransport",
+    "root": "plant",
+    "parameters": {
+      "stomata": "open"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "chloroplastMovement",
+    "root": "plant",
+    "parameters": {
+      "genotype": "wild"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "chloroplastMovement",
+    "root": "plant",
+    "parameters": {
+      "genotype": "phot2"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "plantDivision",
+    "root": "plant",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "cellWallGrowth",
+    "root": "plant",
+    "parameters": {
+      "extensibility": "yielding"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "cellWallGrowth",
+    "root": "plant",
+    "parameters": {
+      "extensibility": "restrained"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "doubleFertilization",
+    "root": "plant",
+    "parameters": {
+      "assignment": "frontEgg"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "doubleFertilization",
+    "root": "plant",
+    "parameters": {
+      "assignment": "frontCentral"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "fungalHyphae",
+    "root": "yeast",
+    "parameters": {
+      "delivery": "normal"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "fungalHyphae",
+    "root": "yeast",
+    "parameters": {
+      "delivery": "reduced"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "auxin",
+    "root": "plant",
+    "parameters": {
+      "auxin": "present"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "auxin",
+    "root": "plant",
+    "parameters": {
+      "auxin": "low"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "plantDefense",
+    "root": "plant",
+    "parameters": {
+      "ligand": "flg22"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "plantDefense",
+    "root": "plant",
+    "parameters": {
+      "ligand": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "plantTransport",
+    "root": "plant",
+    "parameters": {
+      "energy": "available"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "plantTransport",
+    "root": "plant",
+    "parameters": {
+      "energy": "depleted"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "plasmodesmata",
+    "root": "plant",
+    "parameters": {
+      "gate": "open"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "plasmodesmata",
+    "root": "plant",
+    "parameters": {
+      "gate": "callose"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "photorespiration",
+    "root": "plant",
+    "parameters": {
+      "glyk": "active"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "photorespiration",
+    "root": "plant",
+    "parameters": {
+      "glyk": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "c4cam",
+    "root": "plant",
+    "parameters": {
+      "strategy": "c4"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "c4cam",
+    "root": "plant",
+    "parameters": {
+      "strategy": "cam"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "lacOperon",
+    "root": "bacterium",
+    "parameters": {
+      "lactose": "present",
+      "glucose": "low"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "lacOperon",
+    "root": "bacterium",
+    "parameters": {
+      "lactose": "present",
+      "glucose": "high"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "lacOperon",
+    "root": "bacterium",
+    "parameters": {
+      "lactose": "absent",
+      "glucose": "low"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "lacOperon",
+    "root": "bacterium",
+    "parameters": {
+      "lactose": "absent",
+      "glucose": "high"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "trpOperon",
+    "root": "bacterium",
+    "parameters": {
+      "tryptophan": "low",
+      "charging": "normal"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "trpOperon",
+    "root": "bacterium",
+    "parameters": {
+      "tryptophan": "low",
+      "charging": "limited"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "trpOperon",
+    "root": "bacterium",
+    "parameters": {
+      "tryptophan": "high",
+      "charging": "normal"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "trpOperon",
+    "root": "bacterium",
+    "parameters": {
+      "tryptophan": "high",
+      "charging": "limited"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastGal",
+    "root": "yeast",
+    "parameters": {
+      "galactose": "present",
+      "glucose": "low"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "yeastGal",
+    "root": "yeast",
+    "parameters": {
+      "galactose": "present",
+      "glucose": "high"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastGal",
+    "root": "yeast",
+    "parameters": {
+      "galactose": "absent",
+      "glucose": "low"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastGal",
+    "root": "yeast",
+    "parameters": {
+      "galactose": "absent",
+      "glucose": "high"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastOsmoregulation",
+    "root": "yeast",
+    "parameters": {
+      "osmolarity": "high",
+      "hog1": "active"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "yeastOsmoregulation",
+    "root": "yeast",
+    "parameters": {
+      "osmolarity": "high",
+      "hog1": "inhibited"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastOsmoregulation",
+    "root": "yeast",
+    "parameters": {
+      "osmolarity": "unchanged",
+      "hog1": "active"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastOsmoregulation",
+    "root": "yeast",
+    "parameters": {
+      "osmolarity": "unchanged",
+      "hog1": "inhibited"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialExpression",
+    "root": "bacterium",
+    "parameters": {
+      "sigma": "present"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialExpression",
+    "root": "bacterium",
+    "parameters": {
+      "sigma": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialDivision",
+    "root": "bacterium",
+    "parameters": {
+      "septalSynthesis": "active"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "bacterialDivision",
+    "root": "bacterium",
+    "parameters": {
+      "septalSynthesis": "blocked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "conjugation",
+    "root": "bacterium",
+    "parameters": {
+      "oriT": "intact"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "conjugation",
+    "root": "bacterium",
+    "parameters": {
+      "oriT": "blocked"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "transformation",
+    "root": "bacterium",
+    "parameters": {
+      "homology": "matched"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "transformation",
+    "root": "bacterium",
+    "parameters": {
+      "homology": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "chemotaxis",
+    "root": "bacterium",
+    "parameters": {
+      "environment": "gradient"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "chemotaxis",
+    "root": "bacterium",
+    "parameters": {
+      "environment": "uniform"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "twoComponent",
+    "root": "bacterium",
+    "parameters": {
+      "nitrate": "present"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "twoComponent",
+    "root": "bacterium",
+    "parameters": {
+      "nitrate": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "quorumSensing",
+    "root": "bacterium",
+    "parameters": {
+      "exchange": "retained"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "quorumSensing",
+    "root": "bacterium",
+    "parameters": {
+      "exchange": "diluted"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "biofilm",
+    "root": "bacterium",
+    "parameters": {
+      "cue": "NO"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "biofilm",
+    "root": "bacterium",
+    "parameters": {
+      "cue": "none"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastBudding",
+    "root": "yeast",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "yeastFermentation",
+    "root": "yeast",
+    "parameters": {
+      "condition": "anaerobic"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "yeastFermentation",
+    "root": "yeast",
+    "parameters": {
+      "condition": "aerobic"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastMating",
+    "root": "yeast",
+    "parameters": {
+      "partner": "compatible"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "yeastMating",
+    "root": "yeast",
+    "parameters": {
+      "partner": "same"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "yeastSporulation",
+    "root": "yeast",
+    "parameters": {
+      "nutrients": "starved"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "yeastSporulation",
+    "root": "yeast",
+    "parameters": {
+      "nutrients": "rich"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "parameciumFeeding",
+    "root": "paramecium",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "contractileVacuole",
+    "root": "paramecium",
+    "parameters": {
+      "osmotic": "freshwater"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "contractileVacuole",
+    "root": "paramecium",
+    "parameters": {
+      "osmotic": "mild"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "parameciumDivision",
+    "root": "paramecium",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "parameciumConjugation",
+    "root": "paramecium",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "phageLytic",
+    "root": "phage",
+    "parameters": {},
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "phageLysogenic",
+    "root": "phage",
+    "parameters": {
+      "fate": "induce"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "phageLysogenic",
+    "root": "phage",
+    "parameters": {
+      "fate": "maintain"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "phageAssembly",
+    "root": "phage",
+    "parameters": {
+      "protease": "active"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "phageAssembly",
+    "root": "phage",
+    "parameters": {
+      "protease": "inactive"
+    },
+    "poses": [
+      0.83
+    ]
+  },
+  {
+    "id": "phagePackaging",
+    "root": "phage",
+    "parameters": {
+      "atp": "present"
+    },
+    "poses": [
+      0.31,
+      0.83
+    ]
+  },
+  {
+    "id": "phagePackaging",
+    "root": "phage",
+    "parameters": {
+      "atp": "absent"
+    },
+    "poses": [
+      0.83
+    ]
+  }
+]

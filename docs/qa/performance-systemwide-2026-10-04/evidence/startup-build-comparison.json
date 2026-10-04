@@ -1,0 +1,62 @@
+{
+  "recordedAt": "2026-10-04T09:12:29.394Z",
+  "method": "Actual Vite production HTML entry/preload modules and recursively parsed static imports only; gzip per file. Dynamic chunks are excluded until requested. This is transferred code size, not network latency or homepage interaction timing.",
+  "baseline": {
+    "root": "/tmp/bioscape-systemwide-20261004-baseline-dist-ae697be",
+    "htmlBytes": 795,
+    "entries": [
+      "assets/index-CjyFkpyc.js",
+      "assets/react-T4PvWwgm.js"
+    ],
+    "files": [
+      {
+        "file": "assets/index-CjyFkpyc.js",
+        "bytes": 226221,
+        "gzipBytes": 85242,
+        "imports": [
+          "assets/react-T4PvWwgm.js"
+        ]
+      },
+      {
+        "file": "assets/react-T4PvWwgm.js",
+        "bytes": 222459,
+        "gzipBytes": 68991,
+        "imports": []
+      }
+    ],
+    "totalJavaScriptBytes": 448680,
+    "totalGzipJavaScriptBytes": 154233
+  },
+  "optimized": {
+    "root": "/Users/kun/Documents/vc/dist",
+    "htmlBytes": 795,
+    "entries": [
+      "assets/index-Dff7_oen.js",
+      "assets/react-T4PvWwgm.js"
+    ],
+    "files": [
+      {
+        "file": "assets/index-Dff7_oen.js",
+        "bytes": 220398,
+        "gzipBytes": 82808,
+        "imports": [
+          "assets/react-T4PvWwgm.js"
+        ]
+      },
+      {
+        "file": "assets/react-T4PvWwgm.js",
+        "bytes": 222459,
+        "gzipBytes": 68991,
+        "imports": []
+      }
+    ],
+    "totalJavaScriptBytes": 442857,
+    "totalGzipJavaScriptBytes": 151799
+  },
+  "change": {
+    "bytes": -5823,
+    "percent": -1.2978069002407056,
+    "gzipBytes": -2434,
+    "gzipPercent": -1.5781317876200296
+  }
+}

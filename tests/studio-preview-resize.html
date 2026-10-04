@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Studio effective preview resize checks</title>
+  </head>
+  <body>
+    <p id="result">Running Studio resize lifecycle checks…</p>
+    <div id="root"></div>
+    <script type="module">
+      import React from "react";
+      import { createRoot } from "react-dom/client";
+      import Studio from "../src/studio/Studio.jsx";
+      import { STORAGE_KEY } from "../src/studio/config.js";
+
+      const output = document.querySelector("#result");
+      const check = (condition, message) => {
+        if (!condition) throw new Error(message);
+      };
+      const flush = async () => {
+        for (let i = 0; i < 6; i++)
+          await new Promise((resolve) => setTimeout(resolve, 0));
+      };
+      const native = {
+        request: window.requestAnimationFrame,
+        cancel: window.cancelAnimationFrame,
+        observer: window.ResizeObserver,
+      };
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const jobs = new Map(),
+        observers = new Set();
+      let nextId = 0,
+        captureCount = 0,
+        releaseCount = 0;
+      window.requestAnimationFrame = (fn) => {
+        jobs.set(++nextId, fn);
+        return nextId;
+      };
+      window.cancelAnimationFrame = (id) => jobs.delete(id);
+      window.ResizeObserver = class {
+        constructor(callback) {
+          this.callback = callback;
+        }
+        observe() {
+          observers.add(this);
+          this.callback([{ contentRect: { width: 2000, height: 2000 } }]);
+        }
+        disconnect() {
+          observers.delete(this);
+        }
+      };
+      const resize = (width, height) => {
+        for (const observer of observers)
+          observer.callback([{ contentRect: { width, height } }]);
+      };
+      const tick = (now) => {
+        const callbacks = [...jobs.values()];
+        jobs.clear();
+        callbacks.forEach((fn) => fn(now));
+      };
+      const frame = document.createElement("canvas");
+      const source = {
+        title: "Preview resize fixture",
+        kind: "structure",
+        api: {
+          ready: true,
+          captureFrame({ width, height }) {
+            captureCount++;
+            frame.width = width;
+            frame.height = height;
+            const context = frame.getContext("2d");
+            context.fillStyle = "#6088ba";
+            context.fillRect(0, 0, width, height);
+            return frame;
+          },
+          releaseCapture() {
+            releaseCount++;
+          },
+        },
+      };
+      const root = createRoot(document.querySelector("#root"));
+      let unmounted = false;
+      const unmount = () => {
+        if (unmounted) return;
+        unmounted = true;
+        root.unmount();
+      };
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ composition: "landscape", resolution: 1920 }),
+        );
+        root.render(
+          React.createElement(Studio, { source, lang: "en", onClose() {} }),
+        );
+        await flush();
+        tick(0);
+        await flush();
+        check(captureCount === 1, "Initial preview must paint once");
+        check(jobs.size === 0, "Paused preview must have no idle frame");
+        resize(2400, 2300);
+        await flush();
+        check(
+          jobs.size === 0,
+          "An unchanged capped scale must not schedule a capture",
+        );
+        check(
+          captureCount === 1,
+          "Growing a capped preview must preserve its pixels",
+        );
+
+        document.querySelectorAll(".studio-mode button")[1].click();
+        await flush();
+        tick(100);
+        await flush();
+        document.querySelector('[aria-label="Play preview"]').click();
+        await flush();
+        tick(200);
+        await flush();
+        const pending = [...jobs.keys()];
+        resize(2600, 2500);
+        await flush();
+        check(
+          [...jobs.keys()].join() === pending.join(),
+          "Same-scale resize must not dispose or replace the running preview clock",
+        );
+        check(
+          document
+            .querySelector('[aria-label="Pause preview"]')
+            ?.getAttribute("aria-pressed") === "true",
+          "Same-scale resize must preserve playing state",
+        );
+        tick(300);
+        await flush();
+        check(
+          Number(
+            document.querySelector(".studio-preview-stage canvas").dataset
+              .fraction,
+          ) > 0,
+          "Playback must continue advancing after resize",
+        );
+        document.querySelector('[aria-label="Pause preview"]').click();
+        await flush();
+        const beforeResize = captureCount;
+        resize(500, 300);
+        await flush();
+        check(
+          jobs.size === 1,
+          "A changed effective scale must schedule a new capture",
+        );
+        tick(400);
+        await flush();
+        check(
+          captureCount === beforeResize + 1,
+          "Changed scale must paint exactly once",
+        );
+        check(
+          document.querySelector(".studio-preview-stage canvas").width < 960,
+          "Changed scale must update the actual preview resolution",
+        );
+        document.querySelector('[aria-label="Refresh preview"]').click();
+        await flush();
+        tick(500);
+        await flush();
+        check(
+          captureCount === beforeResize + 2,
+          "Explicit refresh must remain effective",
+        );
+        unmount();
+        await flush();
+        check(
+          jobs.size === 0 && observers.size === 0,
+          "Unmount must dispose clocks and resize observers",
+        );
+        check(
+          releaseCount === 1,
+          "Unmount must release capture resources once",
+        );
+        output.textContent =
+          "PASS: unchanged capped scale preserves paused pixels and the playing clock; changed scale and refresh repaint; unmount releases resources.";
+        document.body.dataset.result = "pass";
+      } catch (error) {
+        output.textContent = `FAIL: ${error.message}`;
+        document.body.dataset.result = "fail";
+        console.error(error);
+      } finally {
+        unmount();
+        window.requestAnimationFrame = native.request;
+        window.cancelAnimationFrame = native.cancel;
+        window.ResizeObserver = native.observer;
+        if (stored === null) localStorage.removeItem(STORAGE_KEY);
+        else localStorage.setItem(STORAGE_KEY, stored);
+        frame.width = frame.height = 0;
+      }
+    </script>
+  </body>
+</html>

@@ -1,4 +1,5 @@
 import { THREE } from "../../kit.js";
+import { shapeState } from "./shapeState.js";
 
 const cache = new WeakMap();
 function resources(k) {
@@ -162,26 +163,22 @@ export function corticalRows(
           latitudeRange[0] +
           (col / (columns - 1)) * (latitudeRange[1] - latitudeRange[0]),
         a = Math.PI - 0.12 + (row / (rows - 1)) * (Math.PI + 0.24);
-      params.push({ row, col, y, a });
+      const rad = Math.sqrt(1 - y * y),
+        c = Math.cos(a),
+        s = Math.sin(a);
+      params.push({ col, y, c, s, x: rad * c, z: rad * s });
     }
   const normal = new THREE.Vector3(),
     axis = new THREE.Vector3(0, 0, 1),
     previous = new THREE.Vector3();
+  const shapeChanged = shapeState();
   function update(pinch = 0, stretch = 1, division = 0, separation = 0) {
+    if (!shapeChanged(pinch, stretch, division, separation)) return;
     let segment = 0;
-    params.forEach(({ row, col, y, a }, i) => {
-      const rad = Math.sqrt(1 - y * y),
-        p = point(
-          rad * Math.cos(a),
-          y,
-          rad * Math.sin(a),
-          pinch,
-          stretch,
-          division,
-          separation,
-        );
+    params.forEach(({ col, y, c, s, x, z }, i) => {
+      const p = point(x, y, z, pinch, stretch, division, separation);
       temp.position.set(...p);
-      normal.set(Math.cos(a), y * 0.25, Math.sin(a)).normalize();
+      normal.set(c, y * 0.25, s).normalize();
       temp.quaternion.setFromUnitVectors(axis, normal);
       temp.scale.setScalar(1);
       temp.updateMatrix();

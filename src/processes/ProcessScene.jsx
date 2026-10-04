@@ -22,6 +22,7 @@ function disposeScene(scene) {
   const materials = new Set();
   const textures = new Set();
   scene?.traverse((object) => {
+    if (object.isInstancedMesh) object.dispose();
     if (object.geometry) geometries.add(object.geometry);
     for (const material of Array.isArray(object.material)
       ? object.material
@@ -119,6 +120,7 @@ export default function ProcessScene({
       live.current.onViewChange(next);
     };
     const labelItems = [];
+    const projected = new THREE.Vector3();
     setError(null);
     setBusy(true);
 
@@ -177,7 +179,6 @@ export default function ProcessScene({
     const projectLabels = () => {
       if (!live.current.annotations) return;
       const occupied = [];
-      const projected = new THREE.Vector3();
       prepareAnnotationLabels(
         labelItems,
         model.labels ?? [],
@@ -186,11 +187,13 @@ export default function ProcessScene({
       );
       for (const item of labelItems) {
         const { active, numbered } = item;
-        projected.fromArray(item.source.position).project(camera);
-        const anchor = {
-          x: ((projected.x + 1) * width) / 2,
-          y: ((1 - projected.y) * height) / 2,
-        };
+        if (active) projected.fromArray(item.source.position).project(camera);
+        const anchor = active
+          ? {
+              x: ((projected.x + 1) * width) / 2,
+              y: ((1 - projected.y) * height) / 2,
+            }
+          : null;
         const placement =
           active &&
           projected.z >= -1 &&
@@ -207,17 +210,36 @@ export default function ProcessScene({
                 numbered,
               )
             : null;
-        item.element.style.visibility = placement ? "visible" : "hidden";
-        item.line.style.visibility =
-          placement && numbered ? "visible" : "hidden";
+        const visibility = placement ? "visible" : "hidden";
+        const lineVisibility = placement && numbered ? "visible" : "hidden";
+        if (item.visibility !== visibility) {
+          item.element.style.visibility = visibility;
+          item.visibility = visibility;
+        }
+        if (item.lineVisibility !== lineVisibility) {
+          item.line.style.visibility = lineVisibility;
+          item.lineVisibility = lineVisibility;
+        }
         if (!placement) continue;
         occupied.push(placement.rect);
-        item.element.style.left = `${placement.x}px`;
-        item.element.style.top = `${placement.y}px`;
-        item.line.setAttribute("x1", anchor.x);
-        item.line.setAttribute("y1", anchor.y);
-        item.line.setAttribute("x2", placement.x);
-        item.line.setAttribute("y2", placement.y);
+        if (item.x !== placement.x) {
+          item.element.style.left = `${placement.x}px`;
+          item.line.setAttribute("x2", placement.x);
+          item.x = placement.x;
+        }
+        if (item.y !== placement.y) {
+          item.element.style.top = `${placement.y}px`;
+          item.line.setAttribute("y2", placement.y);
+          item.y = placement.y;
+        }
+        if (item.anchorX !== anchor.x) {
+          item.line.setAttribute("x1", anchor.x);
+          item.anchorX = anchor.x;
+        }
+        if (item.anchorY !== anchor.y) {
+          item.line.setAttribute("y1", anchor.y);
+          item.anchorY = anchor.y;
+        }
       }
     };
     const invalidateAnnotations = () => {

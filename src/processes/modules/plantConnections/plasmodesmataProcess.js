@@ -321,109 +321,122 @@ function create() {
     [labels[6], collars[0], 5 * 57 + 28],
     [labels[7], large.children[0]],
   ]);
+  let lastGate = NaN;
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       restricted = parameters.gate === "callose";
     const gate = restricted ? ease(p, 0.35, 0.6) : 0,
       neckRadius = 0.84 - 0.35 * gate,
       collarThickness = 0.17 + 0.35 * gate;
-    // Callose is outside the PM. The same elliptical collar cross-section
-    // determines the neck: two leaflets + a small clearance remain inside it.
-    // A fixed axial half-width keeps every collar behind both cell-facing lips.
-    const sleeveRadius = (x) => {
-      const u = clamp((0.8 - Math.abs(x)) / 0.16);
-      const collarInner = 1.092 - collarThickness * Math.sqrt(1 - u * u);
-      return Math.min(0.84, collarInner - 0.047 - 0.035);
-    };
-    const pos = shellGeometry.attributes.position;
-    for (let i = 0; i <= slices; i++) {
-      const x = -1.06 + (2.12 * i) / slices,
-        r = sleeveRadius(x);
-      for (let j = 0; j <= segments; j++) {
-        const a = 0.72 + (j * (Math.PI * 2 - 1.44)) / segments;
-        pos.setXYZ(i * (segments + 1) + j, x, r * Math.sin(a), r * Math.cos(a));
-      }
-    }
-    const outer = secondLeaflet.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i),
-        y = pos.getY(i),
-        z = pos.getZ(i),
-        r = Math.hypot(y, z);
-      outer.setXYZ(i, x, (y * (r + 0.047)) / r, (z * (r + 0.047)) / r);
-    }
-    outer.needsUpdate = true;
-    secondLeaflet.computeVertexNormals();
-    secondLeaflet.computeBoundingBox();
-    secondLeaflet.computeBoundingSphere();
-    let lipidIndex = 0;
-    for (let i = 0; i < lipidRows; i++)
-      for (let j = 0; j < lipidAngles; j++) {
-        const x = -1.02 + (i / (lipidRows - 1)) * 2.04,
-          a = 0.75 + (j / (lipidAngles - 1)) * (Math.PI * 2 - 1.5),
+    if (gate !== lastGate) {
+      // Callose is outside the PM. The same elliptical collar cross-section
+      // determines the neck: two leaflets + a small clearance remain inside it.
+      // A fixed axial half-width keeps every collar behind both cell-facing lips.
+      const sleeveRadius = (x) => {
+        const u = clamp((0.8 - Math.abs(x)) / 0.16);
+        const collarInner = 1.092 - collarThickness * Math.sqrt(1 - u * u);
+        return Math.min(0.84, collarInner - 0.047 - 0.035);
+      };
+      const pos = shellGeometry.attributes.position;
+      for (let i = 0; i <= slices; i++) {
+        const x = -1.06 + (2.12 * i) / slices,
           r = sleeveRadius(x);
-        radial.set(0, Math.sin(a), Math.cos(a));
-        for (let side = 0; side < 2; side++) {
-          const radius = r + side * 0.047;
-          lipidTemp.position.set(x, radius * Math.sin(a), radius * Math.cos(a));
-          lipidTemp.quaternion.identity();
-          lipidTemp.scale.setScalar(0.022);
-          lipidTemp.updateMatrix();
-          poreHeads.setMatrixAt(lipidIndex, lipidTemp.matrix);
-          lipidTemp.position.set(
-            x + (side ? -0.009 : 0.009),
-            (r + 0.0235) * Math.sin(a),
-            (r + 0.0235) * Math.cos(a),
+        for (let j = 0; j <= segments; j++) {
+          const a = 0.72 + (j * (Math.PI * 2 - 1.44)) / segments;
+          pos.setXYZ(
+            i * (segments + 1) + j,
+            x,
+            r * Math.sin(a),
+            r * Math.cos(a),
           );
-          lipidTemp.quaternion.setFromUnitVectors(up, radial);
-          lipidTemp.scale.set(0.008, 0.035, 0.008);
-          lipidTemp.updateMatrix();
-          poreTails.setMatrixAt(lipidIndex++, lipidTemp.matrix);
         }
       }
-    for (const item of [poreHeads, poreTails]) {
-      item.instanceMatrix.needsUpdate = true;
-      item.computeBoundingBox();
-      item.computeBoundingSphere();
-    }
-    pos.needsUpdate = true;
-    shellGeometry.computeVertexNormals();
-    shellGeometry.computeBoundingSphere();
-    shellGeometry.computeBoundingBox();
-    membraneLips.forEach((lip) => {
-      const positions = lip.geometry.attributes.position;
-      for (let j = 0; j <= 48; j++) {
-        const a = 0.72 + (j * (Math.PI * 2 - 1.44)) / 48;
-        positions.setXYZ(
-          j,
-          neckRadius * Math.cos(a),
-          neckRadius * Math.sin(a),
-          0,
-        );
+      const outer = secondLeaflet.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i),
+          y = pos.getY(i),
+          z = pos.getZ(i),
+          r = Math.hypot(y, z);
+        outer.setXYZ(i, x, (y * (r + 0.047)) / r, (z * (r + 0.047)) / r);
       }
-      positions.needsUpdate = true;
-      lip.geometry.computeBoundingSphere();
-      lip.geometry.computeBoundingBox();
-    });
-    collars.forEach((c) => {
-      const positions = c.geometry.attributes.position;
-      for (let j = 0; j <= 10; j++)
-        for (let i = 0; i <= 56; i++) {
-          const u = (i / 56) * Math.PI * 2,
-            v = (j / 10) * Math.PI * 2,
-            r = 1.092 + collarThickness * Math.cos(v);
+      outer.needsUpdate = true;
+      secondLeaflet.computeVertexNormals();
+      secondLeaflet.computeBoundingBox();
+      secondLeaflet.computeBoundingSphere();
+      let lipidIndex = 0;
+      for (let i = 0; i < lipidRows; i++)
+        for (let j = 0; j < lipidAngles; j++) {
+          const x = -1.02 + (i / (lipidRows - 1)) * 2.04,
+            a = 0.75 + (j / (lipidAngles - 1)) * (Math.PI * 2 - 1.5),
+            r = sleeveRadius(x);
+          radial.set(0, Math.sin(a), Math.cos(a));
+          for (let side = 0; side < 2; side++) {
+            const radius = r + side * 0.047;
+            lipidTemp.position.set(
+              x,
+              radius * Math.sin(a),
+              radius * Math.cos(a),
+            );
+            lipidTemp.quaternion.identity();
+            lipidTemp.scale.setScalar(0.022);
+            lipidTemp.updateMatrix();
+            poreHeads.setMatrixAt(lipidIndex, lipidTemp.matrix);
+            lipidTemp.position.set(
+              x + (side ? -0.009 : 0.009),
+              (r + 0.0235) * Math.sin(a),
+              (r + 0.0235) * Math.cos(a),
+            );
+            lipidTemp.quaternion.setFromUnitVectors(up, radial);
+            lipidTemp.scale.set(0.008, 0.035, 0.008);
+            lipidTemp.updateMatrix();
+            poreTails.setMatrixAt(lipidIndex++, lipidTemp.matrix);
+          }
+        }
+      for (const item of [poreHeads, poreTails]) {
+        item.instanceMatrix.needsUpdate = true;
+        item.computeBoundingBox();
+        item.computeBoundingSphere();
+      }
+      pos.needsUpdate = true;
+      shellGeometry.computeVertexNormals();
+      shellGeometry.computeBoundingSphere();
+      shellGeometry.computeBoundingBox();
+      membraneLips.forEach((lip) => {
+        const positions = lip.geometry.attributes.position;
+        for (let j = 0; j <= 48; j++) {
+          const a = 0.72 + (j * (Math.PI * 2 - 1.44)) / 48;
           positions.setXYZ(
-            j * 57 + i,
-            r * Math.cos(u),
-            r * Math.sin(u),
-            0.16 * Math.sin(v),
+            j,
+            neckRadius * Math.cos(a),
+            neckRadius * Math.sin(a),
+            0,
           );
         }
-      positions.needsUpdate = true;
-      c.geometry.computeVertexNormals();
-      c.geometry.computeBoundingSphere();
-      c.geometry.computeBoundingBox();
-    });
+        positions.needsUpdate = true;
+        lip.geometry.computeBoundingSphere();
+        lip.geometry.computeBoundingBox();
+      });
+      collars.forEach((c) => {
+        const positions = c.geometry.attributes.position;
+        for (let j = 0; j <= 10; j++)
+          for (let i = 0; i <= 56; i++) {
+            const u = (i / 56) * Math.PI * 2,
+              v = (j / 10) * Math.PI * 2,
+              r = 1.092 + collarThickness * Math.cos(v);
+            positions.setXYZ(
+              j * 57 + i,
+              r * Math.cos(u),
+              r * Math.sin(u),
+              0.16 * Math.sin(v),
+            );
+          }
+        positions.needsUpdate = true;
+        c.geometry.computeVertexNormals();
+        c.geometry.computeBoundingSphere();
+        c.geometry.computeBoundingBox();
+      });
+      lastGate = gate;
+    }
     // Small solutes move through sleeve, always outside compressed ER.
     for (let i = 0; i < small.length; i++) {
       const t =

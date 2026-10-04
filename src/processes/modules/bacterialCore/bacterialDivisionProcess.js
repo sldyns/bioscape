@@ -145,6 +145,15 @@ const process = {
           (longSteps + 1) * (roundSteps + 1) * 3,
         ),
         indices = [];
+      const circleCos = new Float64Array(roundSteps + 1),
+        circleSin = new Float64Array(roundSteps + 1),
+        cut = radius > 1 ? 0.97 : radius > 0.94 ? 0.9 : 0.84;
+      for (let j = 0; j <= roundSteps; j++) {
+        const theta =
+          Math.PI * cut + (j / roundSteps) * Math.PI * (3 - 2 * cut);
+        circleCos[j] = Math.cos(theta);
+        circleSin[j] = Math.sin(theta);
+      }
       for (let i = 0; i < longSteps; i++)
         for (let j = 0; j < roundSteps; j++) {
           const n = i * (roundSteps + 1) + j;
@@ -162,7 +171,7 @@ const process = {
       geo.setIndex(indices);
       const mesh = k.mesh(geo, material, [0, 0, 0], cells[side]);
       mesh.name = `envelope-${side}-${radius}`;
-      surfaces.push({ side, radius, geo, mesh });
+      surfaces.push({ side, radius, geo, mesh, circleCos, circleSin });
       return mesh;
     }
     for (let side = 0; side < 2; side++) {
@@ -363,6 +372,7 @@ const process = {
         8,
       ),
     ];
+    let envelopeElongation, envelopeConstriction, envelopeSeparation;
     function update(raw, parameters = {}) {
       const p = clamp(raw),
         blocked = parameters.septalSynthesis === "blocked";
@@ -372,133 +382,141 @@ const process = {
         separation = blocked ? 0 : ease(p, 0.9, 1);
       for (let side = 0; side < 2; side++)
         cells[side].position.x = (side ? 1 : -1) * separation * 0.4;
-      for (const { side, radius, geo } of surfaces) {
-        const attr = geo.attributes.position;
-        for (let i = 0; i <= longSteps; i++) {
-          const [x, r] = contour(
-            i / longSteps,
-            side,
-            radius,
-            constriction,
-            elongation,
-          );
-          for (let j = 0; j <= roundSteps; j++) {
-            const cut = radius > 1 ? 0.97 : radius > 0.94 ? 0.9 : 0.84;
-            const theta =
-              Math.PI * cut + (j / roundSteps) * Math.PI * (3 - 2 * cut);
-            attr.setXYZ(
-              i * (roundSteps + 1) + j,
-              x,
-              r * Math.cos(theta),
-              r * Math.sin(theta),
+      const shapeChanged =
+        elongation !== envelopeElongation ||
+        constriction !== envelopeConstriction;
+      if (shapeChanged)
+        for (const { side, radius, geo, circleCos, circleSin } of surfaces) {
+          const attr = geo.attributes.position;
+          for (let i = 0; i <= longSteps; i++) {
+            const [x, r] = contour(
+              i / longSteps,
+              side,
+              radius,
+              constriction,
+              elongation,
             );
+            for (let j = 0; j <= roundSteps; j++) {
+              attr.setXYZ(
+                i * (roundSteps + 1) + j,
+                x,
+                r * circleCos[j],
+                r * circleSin[j],
+              );
+            }
           }
+          attr.needsUpdate = true;
+          geo.computeVertexNormals();
+          geo.computeBoundingBox();
+          geo.computeBoundingSphere();
         }
-        attr.needsUpdate = true;
-        geo.computeVertexNormals();
-        geo.computeBoundingBox();
-        geo.computeBoundingSphere();
-      }
-      let headIndex = 0;
-      for (let side = 0; side < 2; side++)
-        for (const membraneRadius of [0.9, 1.04])
-          for (const edge of [
-            membraneRadius > 1 ? 0.97 : 0.84,
-            membraneRadius > 1 ? 2.03 : 2.16,
-          ])
-            for (const leaflet of [-1, 1])
-              for (let j = 0; j < 36; j++) {
-                const [x, r] = contour(
-                    (j + 0.5) / 36,
+      // These details are in world-relative coordinates, so separation matters
+      // even when the six local envelope surfaces have stopped changing.
+      if (shapeChanged || separation !== envelopeSeparation) {
+        let headIndex = 0;
+        for (let side = 0; side < 2; side++)
+          for (const membraneRadius of [0.9, 1.04])
+            for (const edge of [
+              membraneRadius > 1 ? 0.97 : 0.84,
+              membraneRadius > 1 ? 2.03 : 2.16,
+            ])
+              for (const leaflet of [-1, 1])
+                for (let j = 0; j < 36; j++) {
+                  const [x, r] = contour(
+                      (j + 0.5) / 36,
+                      side,
+                      membraneRadius,
+                      constriction,
+                      elongation,
+                    ),
+                    theta = edge * Math.PI,
+                    headRadius = r + leaflet * 0.022,
+                    offset = cells[side].position.x;
+                  membraneHeads.point(
+                    headIndex,
+                    [
+                      x + offset,
+                      headRadius * Math.cos(theta),
+                      headRadius * Math.sin(theta),
+                    ],
+                    0.027,
+                  );
+                  membraneTails.line(
+                    headIndex,
+                    [
+                      x + offset,
+                      headRadius * Math.cos(theta),
+                      headRadius * Math.sin(theta),
+                    ],
+                    [x + offset, r * Math.cos(theta), r * Math.sin(theta)],
+                    0.009,
+                  );
+                  headIndex++;
+                }
+        membraneHeads.flush();
+        membraneTails.flush();
+        let gi = 0,
+          bi = 0;
+        for (let side = 0; side < 2; side++)
+          for (let row = 0; row < 18; row++) {
+            const u = (row + 0.5) / 18,
+              [x, r] = contour(u, side, 0.977, constriction, elongation),
+              offset = cells[side].position.x;
+            for (let j = 0; j < 28; j++) {
+              const t = 0.9 * Math.PI + (j / 28) * 1.2 * Math.PI,
+                z = t + (1.2 * Math.PI) / 28;
+              wallGlycans.line(
+                gi++,
+                [x + offset, r * Math.cos(t), r * Math.sin(t)],
+                [x + offset, r * Math.cos(z), r * Math.sin(z)],
+                0.013,
+              );
+            }
+            if (row < 17)
+              for (let j = 0; j < 14; j++) {
+                const [x1, r1] = contour(
+                    (row + 1.5) / 18,
                     side,
-                    membraneRadius,
+                    0.977,
                     constriction,
                     elongation,
                   ),
-                  theta = edge * Math.PI,
-                  headRadius = r + leaflet * 0.022,
-                  offset = cells[side].position.x;
-                membraneHeads.point(
-                  headIndex,
-                  [
-                    x + offset,
-                    headRadius * Math.cos(theta),
-                    headRadius * Math.sin(theta),
-                  ],
-                  0.027,
-                );
-                membraneTails.line(
-                  headIndex,
-                  [
-                    x + offset,
-                    headRadius * Math.cos(theta),
-                    headRadius * Math.sin(theta),
-                  ],
-                  [x + offset, r * Math.cos(theta), r * Math.sin(theta)],
+                  t = 0.9 * Math.PI + ((j + 0.5) / 14) * 1.2 * Math.PI;
+                wallBridges.line(
+                  bi++,
+                  [x + offset, r * Math.cos(t), r * Math.sin(t)],
+                  [x1 + offset, r1 * Math.cos(t), r1 * Math.sin(t)],
                   0.009,
                 );
-                headIndex++;
               }
-      membraneHeads.flush();
-      membraneTails.flush();
-      let gi = 0,
-        bi = 0;
-      for (let side = 0; side < 2; side++)
-        for (let row = 0; row < 18; row++) {
-          const u = (row + 0.5) / 18,
-            [x, r] = contour(u, side, 0.977, constriction, elongation),
-            offset = cells[side].position.x;
-          for (let j = 0; j < 28; j++) {
-            const t = 0.9 * Math.PI + (j / 28) * 1.2 * Math.PI,
-              z = t + (1.2 * Math.PI) / 28;
-            wallGlycans.line(
-              gi++,
-              [x + offset, r * Math.cos(t), r * Math.sin(t)],
-              [x + offset, r * Math.cos(z), r * Math.sin(z)],
-              0.013,
-            );
           }
-          if (row < 17)
-            for (let j = 0; j < 14; j++) {
-              const [x1, r1] = contour(
-                  (row + 1.5) / 18,
-                  side,
-                  0.977,
-                  constriction,
-                  elongation,
-                ),
-                t = 0.9 * Math.PI + ((j + 0.5) / 14) * 1.2 * Math.PI;
-              wallBridges.line(
-                bi++,
-                [x + offset, r * Math.cos(t), r * Math.sin(t)],
-                [x1 + offset, r1 * Math.cos(t), r1 * Math.sin(t)],
-                0.009,
-              );
-            }
-        }
-      wallGlycans.flush();
-      wallBridges.flush();
-      for (const edge of edges) {
-        const c0 = contour(
-            edge.i / longSteps,
-            edge.side,
-            0.9,
-            constriction,
-            elongation,
-          ),
-          c1 = contour(
-            (edge.i + 1) / longSteps,
-            edge.side,
-            0.9,
-            constriction,
-            elongation,
+        wallGlycans.flush();
+        wallBridges.flush();
+        for (const edge of edges) {
+          const c0 = contour(
+              edge.i / longSteps,
+              edge.side,
+              0.9,
+              constriction,
+              elongation,
+            ),
+            c1 = contour(
+              (edge.i + 1) / longSteps,
+              edge.side,
+              0.9,
+              constriction,
+              elongation,
+            );
+          segment(
+            edge.mesh,
+            [c0[0], c0[1] * Math.cos(edge.theta), c0[1] * Math.sin(edge.theta)],
+            [c1[0], c1[1] * Math.cos(edge.theta), c1[1] * Math.sin(edge.theta)],
+            0.032,
           );
-        segment(
-          edge.mesh,
-          [c0[0], c0[1] * Math.cos(edge.theta), c0[1] * Math.sin(edge.theta)],
-          [c1[0], c1[1] * Math.cos(edge.theta), c1[1] * Math.sin(edge.theta)],
-          0.032,
-        );
+        }
+        envelopeElongation = elongation;
+        envelopeConstriction = constriction;
+        envelopeSeparation = separation;
       }
       // Three connected DNA arms share two exact fork coordinates until termination.
       const postReplication = ease(p, 0.41, 0.49),
