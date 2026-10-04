@@ -1,0 +1,72 @@
+{
+  "sourceCommit": "ae697be5f252c1df58b34b57a6e9a8e1c014acf4",
+  "sourceShortCommit": "ae697be",
+  "copyRule": "Exact git show bytes, original relative directory tree preserved; no import rewrites or implementation edits.",
+  "files": [
+    {
+      "path": "src/processes/kit.js",
+      "bytes": 2691,
+      "sha256": "2cee18075b3e5b66f8765472cc9a6f016df19619647bfdbf18dcc62b49bda399"
+    },
+    {
+      "path": "src/processes/modules/membrane/membraneGeometry.js",
+      "bytes": 6828,
+      "sha256": "2724277e4b2122870fb22d31a088ddf7eacde9b800b8fe92ae53a2026e4437b6"
+    },
+    {
+      "path": "src/processes/modules/membrane/osmoticBalanceProcess.js",
+      "bytes": 16414,
+      "sha256": "c58da8ec06732d14d4e1de3ce1a070277287f0c6059848c2656fdd158142f037"
+    },
+    {
+      "path": "src/processes/modules/neurons/axonemeKinematics.js",
+      "bytes": 2966,
+      "sha256": "dd6be15bc876545bc88510cb16fb34f193e6e551bce880d610fea8013a5d06fe"
+    },
+    {
+      "path": "src/processes/modules/neurons/ciliaryMotionProcess.js",
+      "bytes": 22404,
+      "sha256": "4e93baefba504f802834ca9b2a5ae0d826440c65f8cf580bb85259c3bff8b271"
+    },
+    {
+      "path": "src/processes/modules/neurons/labelAnchors.js",
+      "bytes": 896,
+      "sha256": "c6ac24b78391096ac94661de2a04adebb698f2dee760bb6e383a4ca8dcd003a3"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/anatomy.js",
+      "bytes": 9283,
+      "sha256": "26b66c0e3ccdf7dc2294007a8216a3a9fc6d568766b6dfa1a5650e8fdd50d563"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/cristaGeometry.js",
+      "bytes": 7980,
+      "sha256": "c52ce2f4c8bce4b6d43f38582799323edce216b531a9092eae95db913da37cc6"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/labelAnchors.js",
+      "bytes": 601,
+      "sha256": "ca7d640fe9490b124f007531b2fd4cde11cd3e46f998844451a3914d3ce518f9"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/plasmodesmataProcess.js",
+      "bytes": 19027,
+      "sha256": "bd6add0f9417f8144d6ec8580b0724795a9f05670984f624a3eca0bf6597198d"
+    },
+    {
+      "path": "src/processes/modules/plantWater/labelAnchors.js",
+      "bytes": 1432,
+      "sha256": "e9033b111a70ce222a649bd3b541b383ad402007ca5ec052206eee708af295e3"
+    },
+    {
+      "path": "src/processes/modules/plantWater/stomataProcess.js",
+      "bytes": 15681,
+      "sha256": "87571c22d38b7a2b9a6a1565734d07d437c4f1a99136a1a754bfe6babdd0c070"
+    },
+    {
+      "path": "src/processes/modules/plantWater/structuralDetail.js",
+      "bytes": 7568,
+      "sha256": "2fd5f2b4678358731333531ce7377711226001c007cf16e33163169d918afa70"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "baselineCommit": "ae697be5f252c1df58b34b57a6e9a8e1c014acf4",
+  "provenance": "Every fixture is a byte-for-byte git show copy of the recorded baseline commit. Original directory layout preserves all local imports inside this fixture; only the external three package resolves from the current runtime. No code or import rewrites. Historical cross-runtime hashes remain unmodified in geometry-reference.json.",
+  "importRewrites": [],
+  "historicalReferenceSha256": "4080764c2f81cd2252229f001ee801740792268e706e513f2366a1c3ad2ba2f9",
+  "files": [
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/fineStructure.js",
+      "fixturePath": "src/processes/modules/parameciumLife/fineStructure.js",
+      "sha256": "dba57ca3385891985aff2dd63c7d85425dafd55482a267e9fea48395363c7e2d"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/nuclearCell.js",
+      "fixturePath": "src/processes/modules/parameciumLife/nuclearCell.js",
+      "sha256": "253137913c46ec66afe82bf00f006d5f3b77a1a9512fb02c27ca384ce4e92a80"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/nuclearLineage.js",
+      "fixturePath": "src/processes/modules/parameciumLife/nuclearLineage.js",
+      "sha256": "991b26554d0dc35e90c78120b694f39f7eaef743e65d084dffa34def41afd499"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/scientificGeometry.js",
+      "fixturePath": "src/processes/modules/parameciumLife/scientificGeometry.js",
+      "sha256": "bd8b87301971a7028007958f463bf2af759566b142ce8e02f77c83444de4bb31"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/anatomy.js",
+      "fixturePath": "src/processes/modules/parameciumLife/anatomy.js",
+      "sha256": "5ff9e912c064458dbdf5a2e36d4733849e67b4e2a4cab08c5e3402e5ec54f435"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/labelAnchors.js",
+      "fixturePath": "src/processes/modules/parameciumLife/labelAnchors.js",
+      "sha256": "3d734303bf5a0944d9a9d3789427cd82d4b92d8ba6d7f8e0aec3b2bf3fb09493"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+      "fixturePath": "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+      "sha256": "822f003d5acd1248727a666aa86ad3a505ef88ccbe64ef840534e31acb485dc2"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+      "fixturePath": "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+      "sha256": "6ad15a3329fb280c9277995d54321f6eebe774392adbc6b9bf6d39b2e068aa84"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+      "fixturePath": "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+      "sha256": "28a292f72faa43adb523675f39a6e5a2b31be116e8aef8fa06ad360a480d6dbb"
+    },
+    {
+      "sourcePath": "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+      "fixturePath": "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+      "sha256": "55e015bb627d98c8b8bde37a0c28eae3670a7490373a239107f3aa645c5a1e1a"
+    },
+    {
+      "sourcePath": "src/processes/kit.js",
+      "fixturePath": "src/processes/kit.js",
+      "sha256": "2cee18075b3e5b66f8765472cc9a6f016df19619647bfdbf18dcc62b49bda399"
+    }
+  ]
+}

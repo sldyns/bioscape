@@ -135,7 +135,7 @@
 
 ### 精确基线回归
 
-新增 `tests/process-geometry-cache-exact.mjs` 与 `tests/helpers/process-cache-snapshot.mjs`，默认只读取仓库内 `tests/fixtures/process-geometry-cache-ae697be.json`，不依赖 `/tmp` 或外部文件。fixture 由冻结 ae697be 源通过 `evidence/generate-process-cache-reference.mjs` 生成。测试不自动重录 fixture。
+新增 `tests/process-geometry-cache-exact.mjs` 与 `tests/helpers/process-cache-snapshot.mjs`。原始历史快照 `tests/fixtures/process-geometry-cache-ae697be.json` 由冻结 ae697be 源通过 `evidence/generate-process-cache-reference.mjs` 生成，文件原样保留；下述 CI 可移植性修复后，测试沿用其全部 pose，并改为同一运行时内执行冻结原版与优化版后精确比较。不依赖 `/tmp`、Git 命令或外部文件，测试不自动重录 fixture。
 
 覆盖 4 个过程、8 个 root 实例、17 个 root/condition 组合：862 个基准 pose，每个重复更新两次，共 **1,724 次完整快照比较通过**。包括边界 p±1e-7、同一可变参数对象当场切条件、倒向与不规则 seek。对每一状态比较所有可见和隐藏对象：
 
@@ -154,3 +154,15 @@
 - `src/processes/modules/genome/science.test.mjs`：含初始科学、真实 entry/层次、标签、tail material ray 和 incision-label 任意 seek 回归；日志 `evidence/process-cache-genome-science.log`。
 
 四个修改源文件已单独 Prettier 格式化，`git diff --check` 通过。性能复测、整合 runner、构建及最终固定视图/交互/导出验收由主任务统一完成，当前未宣称通过。
+
+### CI 可移植性修复：同一运行时的独立原版对照
+
+云端 Linux Node 22.23.3 首个 bacterialDivision p=0 状态与 macOS Node 22.22.1 历史快照相比，仅 transforms SHA 不同，geometry、appearance、labels 相同。完整失败日志保留在 `evidence/cloud-verify-failed.log`。跨系统历史数值哈希本身不能区分运行时浮点实现差异与优化回归，因此精确对照改为在同一 Node 进程分别创建独立原版、优化版模型；没有改产品源码，也没有放宽数值比较。
+
+`tests/fixtures/process-cache-a-reference-ae697be/` 包含四个入口的全部本地依赖闭包，共 **11 份源文件、98,931 字节**。每份均直接来自 `git show ae697be5f252c1df58b34b57a6e9a8e1c014acf4:<path>`，按原 `src/processes/` 路径镜像保存，**无 import 改写、无源码修改**。唯一外部依赖 `three` 与优化版共享安装版本。闭包包含另一审查者改过的 `chromatin/geometry.js`、本组改过的 `genome/nuclearModels.js`，以及 kit、bacterialGeometry、labelAnchors、chromatin structure、genome molecularDetail；regulation geometry 不在这四个入口的依赖链中。
+
+manifest 记录完整 commit、每个原文件的 SHA-256、字节数、import 列表，以及旧 pose JSON 的 SHA-256。测试导入前逐一验证源文件、闭包完整性和旧 JSON 完整性，不能悄悄调用当前共享 helper 代替原版依赖。冻结源码不参与格式化。
+
+仍覆盖全部 **862 个 pose × 2 次更新 = 1,724 个状态**，原版和优化版各自复用可变参数对象，保留原来的参数切换、阈值两侧、倒向和不规则 seek。所有几何/实例原始字节、局部与世界 Float64 矩阵、bounds、材质、隐藏节点、userData 和 labels 继续调用同一个未改动的完整快照 helper，逐字段严格相等；没有容差、平台跳过或删字段。历史 macOS 输出哈希仍在旧 JSON 中作为原始证据保存，不再作为跨平台数字期望。
+
+定向 `node tests/process-geometry-cache-exact.mjs` 已通过全部 1,724 个状态，日志为 `evidence/process-cache-same-runtime-exact.log`；测试入口已单独 Prettier 格式化。未重跑科学全量、浏览器或性能测量，云端完整检查由主任务执行。

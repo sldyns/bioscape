@@ -1,0 +1,117 @@
+{
+  "sourceCommit": "ae697be5f252c1df58b34b57a6e9a8e1c014acf4",
+  "description": "Immutable complete source closure from git show. Every source file is copied byte for byte, with no import rewrites or behavioral edits. External three is resolved from the same installation as the optimized implementation.",
+  "entrypoints": [
+    "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+    "src/processes/modules/chromatin/chromatinAccessProcess.js",
+    "src/processes/modules/chromatin/tadProcess.js",
+    "src/processes/modules/genome/dnaRepairProcess.js"
+  ],
+  "externalImports": [
+    "three"
+  ],
+  "historicalPoseFixture": {
+    "path": "tests/fixtures/process-geometry-cache-ae697be.json",
+    "sha256": "d3c3f142246be5a3113c1f198bd9370ad0e7a26328c9d4be26fdf58f8fcf0776",
+    "poses": 862,
+    "repeats": 2
+  },
+  "files": [
+    {
+      "path": "src/processes/kit.js",
+      "sha256": "2cee18075b3e5b66f8765472cc9a6f016df19619647bfdbf18dcc62b49bda399",
+      "bytes": 2691,
+      "imports": [
+        "three"
+      ]
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+      "sha256": "e24b4e160b4da0f48dfec80840b0576d4b6387dc808d152e5ebab1427a75de7c",
+      "bytes": 23249,
+      "imports": [
+        "../../kit.js",
+        "./bacterialGeometry.js",
+        "./labelAnchors.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/bacterialGeometry.js",
+      "sha256": "2e8beb9aad884211f5ff227dd92dad7b3177a7b8c7dacb7b7f97cdc7a734545e",
+      "bytes": 5977,
+      "imports": [
+        "../../kit.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/labelAnchors.js",
+      "sha256": "7abc109cf50aff610a28f389d66689091c6b6c3da94ca62f5fe412f792b73bfd",
+      "bytes": 710,
+      "imports": [
+        "../../kit.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/chromatin/chromatinAccessProcess.js",
+      "sha256": "26fb72f1a46af98f0af37ee094103bcb3f81326f516fd603be3c3d9de910533f",
+      "bytes": 11920,
+      "imports": [
+        "../../kit.js",
+        "./geometry.js",
+        "./structure.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/chromatin/geometry.js",
+      "sha256": "9513cd8f7f2230125ac5e2c3406e8e726c2f6097f1c6e6ff0aa5cec1abcf9a3f",
+      "bytes": 4660,
+      "imports": [
+        "../../kit.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/chromatin/structure.js",
+      "sha256": "bc985c28614d49bf748ba3c3aebe782f3da7531ed43e437a31c3c2ad304a2c10",
+      "bytes": 9244,
+      "imports": [
+        "../../kit.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/chromatin/tadProcess.js",
+      "sha256": "e586d60b3155283cef41c203ff45d89924e70f91c6ad1e9f3d8cb5554a00acf6",
+      "bytes": 13924,
+      "imports": [
+        "../../kit.js",
+        "./geometry.js",
+        "./structure.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/genome/dnaRepairProcess.js",
+      "sha256": "2bc4b054e83e2b5025f28722de370c8cdfa75097f5adb7464219b80a4f4170a9",
+      "bytes": 4329,
+      "imports": [
+        "./nuclearModels.js",
+        "../../kit.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/genome/molecularDetail.js",
+      "sha256": "023ebd7ffd75fcdf13b6e6a8fde1ff2f883fffe2a5fd1ed1fc422c545747c68a",
+      "bytes": 4424,
+      "imports": [
+        "../../kit.js"
+      ]
+    },
+    {
+      "path": "src/processes/modules/genome/nuclearModels.js",
+      "sha256": "46d4615e46b53e57ccd2d121828d8ffed030c0ddcb55dfa38387ed7aa6d9621d",
+      "bytes": 17803,
+      "imports": [
+        "../../kit.js",
+        "./molecularDetail.js"
+      ]
+    }
+  ]
+}

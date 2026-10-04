@@ -6,56 +6,71 @@ import {
   setupSnapshot,
   resourceInventory,
   disposeSnapshot,
+  frozenDefinitions,
 } from "./geometrySnapshot.test-support.mjs";
 import { sceneKit } from "../../kit.js";
 import { hollowInlet } from "./scientificGeometry.js";
 
 export async function runGeometryEquivalence() {
-  const reference = JSON.parse(
-    await readFile(
+  const referenceBytes = await readFile(
       new URL("./geometry-reference.json", import.meta.url),
-      "utf8",
     ),
-  );
+    reference = JSON.parse(referenceBytes),
+    originals = await frozenDefinitions(reference, referenceBytes);
+  assert.equal(reference.cases.length, 10);
   let states = 0;
   for (const row of reference.cases) {
     const definition = (await import(`./${row.id}Process.js`)).default;
-    const { model, parent } = setupSnapshot(definition, row.transformed);
-    const resources = resourceInventory(model);
-    for (const { progress, ...expected } of row.states) {
-      model.update(progress, row.parameters);
+    const current = setupSnapshot(definition, row.transformed),
+      original = setupSnapshot(originals.get(row.id), row.transformed),
+      scenes = [original, current],
+      inventories = scenes.map(({ model }) => resourceInventory(model));
+    for (const { progress, sha256: historicalHash, ...counts } of row.states) {
+      // Historical hashes remain evidence, not cross-platform expected values.
+      // Compare every existing numeric/binary field against the original code
+      // executing now; no tolerances, rounding, field omissions or bypasses.
+      assert.match(historicalHash, /^[a-f\d]{64}$/);
+      for (const { model } of scenes) model.update(progress, row.parameters);
+      const expected = geometrySnapshot(original.model, original.parent);
+      const { sha256: originalHash, ...originalCounts } = expected;
+      assert.match(originalHash, /^[a-f\d]{64}$/);
+      assert.deepEqual(originalCounts, counts, "frozen topology inventory");
       assert.deepEqual(
-        geometrySnapshot(model, parent),
+        geometrySnapshot(current.model, current.parent),
         expected,
-        `${row.id} ${progress} full frozen output`,
+        `${row.id} ${progress} same-runtime full frozen output`,
       );
-      model.update(progress, row.parameters);
-      assert.deepEqual(
-        geometrySnapshot(model, parent),
-        expected,
-        "paused pose",
-      );
-      model.update(0.97831, row.parameters);
-      model.update(0.03197, row.parameters);
-      model.update(progress, row.parameters);
-      assert.deepEqual(
-        geometrySnapshot(model, parent),
-        expected,
-        "reverse seek",
-      );
-      const current = resourceInventory(model);
-      assert.equal(current.length, resources.length);
-      current.forEach((value, i) =>
-        assert.equal(
-          value,
-          resources[i],
-          "update must preserve resource identity",
-        ),
-      );
+      scenes.forEach(({ model, parent }, sceneIndex) => {
+        model.update(progress, row.parameters);
+        assert.deepEqual(
+          geometrySnapshot(model, parent),
+          expected,
+          "paused pose",
+        );
+        model.update(0.97831, row.parameters);
+        model.update(0.03197, row.parameters);
+        model.update(progress, row.parameters);
+        assert.deepEqual(
+          geometrySnapshot(model, parent),
+          expected,
+          "reverse seek",
+        );
+        const resources = inventories[sceneIndex],
+          currentResources = resourceInventory(model);
+        assert.equal(currentResources.length, resources.length);
+        currentResources.forEach((value, i) =>
+          assert.equal(
+            value,
+            resources[i],
+            "update must preserve resource identity",
+          ),
+        );
+      });
       states++;
     }
-    disposeSnapshot(model);
+    for (const { model } of scenes) disposeSnapshot(model);
   }
+  assert.equal(states, 196);
 
   const conjugation = (
     await import("./parameciumConjugationProcess.js")
@@ -114,7 +129,7 @@ export async function runGeometryEquivalence() {
   }
   disposeSnapshot({ group: kit.group });
   console.log(
-    `paramecium geometry equivalence PASS: ${states} frozen states, pause/reverse seeks, complete shape cache invalidation`,
+    `paramecium geometry equivalence PASS: ${states} strict same-runtime frozen states, pause/reverse seeks, complete shape cache invalidation`,
   );
 }
 

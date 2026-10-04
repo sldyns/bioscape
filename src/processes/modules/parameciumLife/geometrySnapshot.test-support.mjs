@@ -1,5 +1,65 @@
+import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import * as THREE from "three";
+
+// Run the unchanged original code with the same Node/V8/Three runtime as the
+// candidate. Persisted binary hashes can vary across libm/V8 implementations.
+// These copies retain their original paths, so no import rewriting is needed.
+export async function frozenDefinitions(reference, referenceBytes) {
+  const directory = new URL("./fixtures/ae697be/", import.meta.url),
+    provenance = JSON.parse(
+      await readFile(new URL("provenance.json", directory), "utf8"),
+    ),
+    sha256 = (data) => createHash("sha256").update(data).digest("hex");
+  assert.equal(
+    provenance.baselineCommit,
+    "ae697be5f252c1df58b34b57a6e9a8e1c014acf4",
+  );
+  assert.equal(provenance.baselineCommit, reference.baselineCommit);
+  assert.equal(sha256(referenceBytes), provenance.historicalReferenceSha256);
+  assert.deepEqual(provenance.importRewrites, []);
+  assert.deepEqual(
+    provenance.files.map((file) => file.sourcePath).sort(),
+    Object.keys(reference.sourceHashes).sort(),
+    "preserve the complete independently frozen dependency tree",
+  );
+  const urls = new Set(
+    provenance.files.map((file) => new URL(file.fixturePath, directory).href),
+  );
+  assert.equal(urls.size, provenance.files.length);
+  for (const file of provenance.files) {
+    assert.equal(file.fixturePath, file.sourcePath);
+    const url = new URL(file.fixturePath, directory),
+      bytes = await readFile(url);
+    assert.equal(
+      sha256(bytes),
+      file.sha256,
+      `${file.sourcePath} fixture bytes`,
+    );
+    assert.equal(file.sha256, reference.sourceHashes[file.sourcePath]);
+    for (const [, specifier] of bytes
+      .toString("utf8")
+      .matchAll(/\b(?:from\s*|import\s*)["']([^"']+)["']/g)) {
+      if (specifier.startsWith("."))
+        assert(
+          urls.has(new URL(specifier, url).href),
+          `${file.sourcePath} import must stay in the original fixture tree`,
+        );
+      else assert.equal(specifier, "three", "only Three is runtime-shared");
+    }
+  }
+  const definitions = new Map();
+  for (const id of new Set(reference.cases.map((row) => row.id))) {
+    const url = new URL(
+      `src/processes/modules/parameciumLife/${id}Process.js`,
+      directory,
+    );
+    assert(urls.has(url.href));
+    definitions.set(id, (await import(url)).default);
+  }
+  return definitions;
+}
 
 // Baseline fingerprints include every buffer, including hidden geometry, and
 // preserve resource sharing. UUIDs and GPU dirty counters are not scene output.

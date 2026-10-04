@@ -1,0 +1,9 @@
+# B-group immutable reference source
+
+These 13 files are the complete local JavaScript dependency closure of the four B-group process definitions, copied byte-for-byte from commit `ae697be5f252c1df58b34b57a6e9a8e1c014acf4` (`ae697be`) using `git show <commit>:<path>`. The original `src/processes/...` directory structure is preserved, so no import paths, mathematical expressions, or implementation behavior were changed. The baseline therefore includes the original `axonemeKinematics.js`, every direct helper, and all transitive local dependencies; it does not import current product source. The external `three` package is resolved in the same runtime and dependency installation as the optimized models.
+
+`manifest.json` records each original repository path, byte length, and SHA256. `tests/process-geometry-cache-b-exact.mjs` verifies every file before loading it. Do not regenerate these files or expected outputs from the optimized implementation. A baseline update requires an explicit reviewed source revision and new provenance.
+
+The existing `tests/fixtures/process-geometry-cache-b-ae697be.json` remains unchanged as historical macOS snapshot evidence and as the original 378-pose schedule. Its cross-platform golden hashes are not acceptance oracles: the test executes both this immutable original source and current source in the same runtime at all 378 poses, with two updates each (756 strict comparisons). Full geometry/index/normal/instance bytes, local/world transforms, bounds, materials, labels and userData remain checked. No tolerances, fields, conditions, repeats, hidden nodes, or seek cases were removed.
+
+This prevents OS/architecture-dependent transcendental results from being mistaken for an implementation regression while still requiring exact optimized-versus-original output on every tested runtime. Product files remain untouched by this portability repair.

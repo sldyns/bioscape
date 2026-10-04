@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-04T09:24:45.007Z",
+  "frozenFiles": 35,
+  "originalBytes": 316552,
+  "exactGitBlobMatch": true,
+  "baselineCommit": "ae697be5f252c1df58b34b57a6e9a8e1c014acf4",
+  "runtimeSourceUnchangedFrom": "e9d095b4dd5e4add7a15a9f9f959f06d168b9a87",
+  "modifiedSrcFiles": [
+    "src/processes/modules/parameciumLife/geometry-equivalence.test.mjs",
+    "src/processes/modules/parameciumLife/geometrySnapshot.test-support.mjs"
+  ]
+}
