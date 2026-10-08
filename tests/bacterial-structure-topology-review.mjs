@@ -1,11 +1,51 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "esbuild";
 import * as T from "three";
+
+const referenceDirectory = new URL(
+  "./fixtures/bacterial-appendage-reference-f484615/",
+  import.meta.url,
+);
+const referenceManifest = JSON.parse(
+  await readFile(new URL("manifest.json", referenceDirectory), "utf8"),
+);
+assert.equal(
+  referenceManifest.sourceCommit,
+  "f484615f06f1e416578023a4a52e291dd75f8972",
+);
+const frozenPaths = new Set(referenceManifest.files.map((file) => file.path));
+assert.equal(frozenPaths.size, 4);
+assert.deepEqual(referenceManifest.externalImports, ["three"]);
+for (const file of referenceManifest.files) {
+  const bytes = await readFile(new URL(file.path, referenceDirectory));
+  assert.equal(bytes.length, file.bytes);
+  assert.equal(
+    createHash("sha256").update(bytes).digest("hex"),
+    file.sha256,
+    `Frozen source: ${file.path}`,
+  );
+  const imports = [
+    ...bytes.toString("utf8").matchAll(/\bfrom\s+["']([^"']+)["']/g),
+  ].map((match) => match[1]);
+  assert.deepEqual(imports, file.imports);
+  for (const specifier of imports) {
+    if (specifier.startsWith(".")) {
+      const target = new URL(
+        specifier + ".js",
+        new URL(file.path, referenceDirectory),
+      );
+      assert.ok(target.href.startsWith(referenceDirectory.href));
+      assert.ok(
+        frozenPaths.has(target.href.slice(referenceDirectory.href.length)),
+      );
+    } else assert.ok(referenceManifest.externalImports.includes(specifier));
+  }
+}
 
 // Scene dependencies use Vite's extensionless imports. Resolve those in a
 // temporary bundle while sharing the test's Three runtime and exact geometry.
@@ -18,6 +58,7 @@ try {
       contents: `
         export { bacteriaDetail } from "./src/scene/bacteriaDetails.js";
         export { motorAssembly, flagellumAssembly } from "./src/scene/bacterialAppendageDetails.js";
+        export { motorAssembly as referenceMotorAssembly, flagellumAssembly as referenceFlagellumAssembly } from "./tests/fixtures/bacterial-appendage-reference-f484615/src/scene/bacterialAppendageDetails.js";
         export { detailModel } from "./src/scene/detailModels.js";
         export { packDetail, unpackDetail } from "./src/scene/detailTransfer.js";
         export { makePresentation } from "./src/scene/presentation.js";
@@ -49,6 +90,8 @@ const {
   bacteriaDetail,
   motorAssembly,
   flagellumAssembly,
+  referenceMotorAssembly,
+  referenceFlagellumAssembly,
   detailModel,
   packDetail,
   unpackDetail,
@@ -367,19 +410,18 @@ function fingerprint(group) {
 check(
   "Enlarged standalone motor and flagellum keep their reviewed geometry",
   () => {
-    for (const [make, expected] of [
-      [
-        motorAssembly,
-        "d196224b5d264f5c0a514596d0a0722bf4b2254f4e404c0fa2b2c790aa23c694",
-      ],
-      [
-        flagellumAssembly,
-        "6473731bebcb4f522037cd4dabdfe2ed2f6c577bab691cb19b122ae0d81c7cfe",
-      ],
+    for (const [make, makeReference] of [
+      [motorAssembly, referenceMotorAssembly],
+      [flagellumAssembly, referenceFlagellumAssembly],
     ]) {
-      const model = make();
-      assert.equal(fingerprint(model), expected);
-      dispose(model);
+      const model = make(),
+        reference = makeReference();
+      try {
+        assert.equal(fingerprint(model), fingerprint(reference));
+      } finally {
+        dispose(model);
+        dispose(reference);
+      }
     }
   },
 );

@@ -1,0 +1,50 @@
+{
+  "sourceCommit": "f484615f06f1e416578023a4a52e291dd75f8972",
+  "files": [
+    {
+      "path": "src/scene/bacterialAppendageDetails.js",
+      "bytes": 11482,
+      "sha256": "526bd04f32b53ca4f89781cb5d89b4a0c55e2215ec25756a8f233d9343ff3180",
+      "imports": [
+        "three",
+        "./specimenGeometry",
+        "./structuralGeometry",
+        "./plantWallDetails"
+      ]
+    },
+    {
+      "path": "src/scene/specimenGeometry.js",
+      "bytes": 8017,
+      "sha256": "9ed17e83dbc436a7ce5120f6fe3e9c0bf29a1cc219ee6a5a99c5a1529c483728",
+      "imports": [
+        "three"
+      ]
+    },
+    {
+      "path": "src/scene/structuralGeometry.js",
+      "bytes": 2527,
+      "sha256": "8b5a68cc49369b9b75565eed3cc70aaa333329ff17e33b7485530af525958cd3",
+      "imports": [
+        "three"
+      ]
+    },
+    {
+      "path": "src/scene/plantWallDetails.js",
+      "bytes": 11486,
+      "sha256": "0f77c5cb7b586e746861c24691028f5427a94b1f2034538153a6a864efaaea7f",
+      "imports": [
+        "three",
+        "./specimenGeometry",
+        "./structuralGeometry"
+      ]
+    }
+  ],
+  "externalImports": [
+    "three"
+  ],
+  "historicalMacHashes": {
+    "motorAssembly": "d196224b5d264f5c0a514596d0a0722bf4b2254f4e404c0fa2b2c790aa23c694",
+    "flagellumAssembly": "6473731bebcb4f522037cd4dabdfe2ed2f6c577bab691cb19b122ae0d81c7cfe"
+  },
+  "reason": "Preserve complete frozen source closure and exact geometry fingerprints, comparing old and current generators within one runtime; historical output hashes are evidence, not cross-architecture assertions."
+}
