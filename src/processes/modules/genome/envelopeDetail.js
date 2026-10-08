@@ -2,12 +2,28 @@ import { THREE } from "../../kit.js";
 import { molecularKit } from "./molecularDetail.js";
 import { sporeGeometry as dimensions } from "./sporeGeometry.js";
 
+// Schematic material coordinates on the donor chromosome. The imprecise
+// lambda cut is inside, rather than at the edge of, the integrated prophage.
+export const transductionLoci = {
+  count: 48,
+  lambdaProphageStart: 1,
+  lambdaExcisionStart: 4,
+  hostLocusStart: 16,
+  hostLocusEnd: 22,
+};
+
+export const eColiEnvelope = {
+  outer: [1, 0.965],
+  peptidoglycan: 0.89,
+  inner: [0.8, 0.765],
+};
+
 export function rodCutaway(
   parent,
   length,
   radius,
   color = "#86a49a",
-  { entryPort = false } = {},
+  { entryPort = false, gramNegative = false } = {},
 ) {
   const k = molecularKit(parent),
     wall = k.mat(color, { side: THREE.DoubleSide }),
@@ -71,6 +87,66 @@ export function rodCutaway(
   geo.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
   geo.computeVertexNormals();
   original.dispose();
+  if (gramNegative) {
+    function bilayer(name, scales, outside, inside) {
+      for (let side = 0; side < 2; side++) {
+        const mesh = new THREE.Mesh(geo, side ? inside : outside);
+        mesh.rotation.z = Math.PI / 2;
+        mesh.scale.setScalar(scales[side]);
+        mesh.name = `${name}-${side ? "inner" : "outer"}-leaflet`;
+        parent.add(mesh);
+      }
+      const heads = k.instances(
+          k.sphere,
+          lipid,
+          192,
+          `${name}-cut-edge-headgroups`,
+        ),
+        tails = k.instances(
+          k.cylinder,
+          outside,
+          192,
+          `${name}-cut-edge-hydrophobic-tails`,
+        ),
+        a = new THREE.Vector3(),
+        b = new THREE.Vector3(),
+        middle = (scales[0] + scales[1]) / 2;
+      for (let i = 0; i < 96; i++) {
+        const angle = (i * Math.PI * 2) / 96,
+          x =
+            (length / 2) * Math.sign(Math.cos(angle)) +
+            radius * Math.cos(angle),
+          y = radius * Math.sin(angle);
+        for (let side = 0; side < 2; side++) {
+          const scale = scales[side],
+            tail = middle + (scale - middle) * 0.12;
+          a.set(x * scale, y * scale, 0.035);
+          b.set(x * tail, y * tail, 0.027);
+          k.bead(heads, i * 2 + side, a, 0.017);
+          k.segment(tails, i * 2 + side, a, b, 0.011);
+        }
+      }
+      k.finish(heads, tails);
+    }
+    bilayer("outer-membrane", eColiEnvelope.outer, wall, inner);
+    bilayer(
+      "inner-membrane",
+      eColiEnvelope.inner,
+      k.mat("#739b98", { side: THREE.DoubleSide }),
+      k.mat("#c4d1bd", { side: THREE.DoubleSide }),
+    );
+    // A separate thin wall lies in the aqueous periplasm, never between the
+    // lipid leaflets. It shares the bounded entry aperture of both bilayers.
+    const wallMesh = new THREE.Mesh(
+      geo,
+      k.mat("#b9aa82", { side: THREE.DoubleSide }),
+    );
+    wallMesh.rotation.z = Math.PI / 2;
+    wallMesh.scale.setScalar(eColiEnvelope.peptidoglycan);
+    wallMesh.name = "periplasmic-peptidoglycan";
+    parent.add(wallMesh);
+    return { materials: k.materials };
+  }
   for (const [scale, mat] of [
     [1, wall],
     [0.925, inner],
@@ -213,23 +289,31 @@ export function nucleoidDuplex(parent, centerX) {
     return nucleoidPoint(centerX, t, strand, out);
   }
   function update(p, special, donor = true) {
+    const {
+      count,
+      lambdaProphageStart,
+      lambdaExcisionStart,
+      hostLocusStart,
+      hostLocusEnd,
+    } = transductionLoci;
     function present(t) {
-      const i = Math.floor(t * 48);
+      const i = Math.floor(t * count),
+        transferredStart = special ? lambdaExcisionStart : hostLocusStart;
       return (
         !donor ||
         (p < 0.54 &&
           !(
             // The transferred duplex renders this locus from the first
             // frame, then carries those same strands into the particle.
-            ((special && i >= 4 && i < 22) || (!special && i >= 16 && i < 22))
+            (i >= transferredStart && i < hostLocusEnd)
           ))
       );
     }
     function color(t) {
-      const i = Math.floor(t * 48);
-      return donor && i >= 16 && i < 22
+      const i = Math.floor(t * count);
+      return donor && i >= hostLocusStart && i < hostLocusEnd
         ? colors[1]
-        : donor && special && i >= 4 && i < 16
+        : donor && special && i >= lambdaProphageStart && i < hostLocusStart
           ? colors[2]
           : colors[0];
     }

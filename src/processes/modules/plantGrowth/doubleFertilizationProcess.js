@@ -85,8 +85,10 @@ function create() {
   const centralFusion = gameteFusionSurface(
     k,
     [sac, spermMembrane],
-    [0, 0.63, -0.06],
-    [1.15, 1.36, 0.27],
+    // The two female gametes adjoin without sharing bulk cytoplasmic volume.
+    // Keep the lower central-cell boundary above the egg and later embryo.
+    [0, 0.83, -0.06],
+    [1.15, 1.26, 0.27],
     [0.3, -0.83, 0.47],
     "Central-cell plasma membrane with continuous sperm fusion neck",
   );
@@ -223,7 +225,13 @@ function create() {
     [0.45, 0.7],
     [0, 1.4],
     [0, 0.1],
-  ].map(([x, y]) => k.ball([x, y, 0.2], 0.17, maternal));
+  ].map(([x, y], i) => {
+    // Free nuclei divide inside the common endosperm cytoplasm, not in a
+    // raised display layer beyond the central-cell plasma membrane.
+    const nucleus = k.ball([x, y, -0.06], 0.17, maternal);
+    nucleus.name = `Free endosperm nucleus ${i + 1} inside central-cell lineage`;
+    return nucleus;
+  });
   const labels = [
     k.label(
       [-1.9, 2.58, 0.2],
@@ -402,8 +410,8 @@ export default {
       at: 0,
       title: b("胚珠中的雌配子", "Female gametes in the ovule"),
       description: b(
-        "母体组织包围胚囊。卵细胞为 n，中央细胞含已融合的两个母方极核；退化的反足细胞未画出。",
-        "Maternal tissue surrounds the embryo sac. The egg is haploid; the central cell contains two already-fused maternal polar nuclei. Degenerated antipodal cells are omitted.",
+        "母体组织包围胚囊。卵细胞为 n，中央细胞含已融合的两个母方极核。为突出双受精，三枚反足细胞在此省略；它们可持续到受精后的早期胚乳阶段。",
+        "Maternal tissue surrounds the embryo sac. The egg is haploid; the central cell contains two already-fused maternal polar nuclei. The three antipodal cells are omitted for clarity; in Arabidopsis they can persist into early endosperm development.",
       ),
     },
     {
@@ -448,6 +456,11 @@ export default {
     },
   ],
   sources: [
+    {
+      title:
+        "Song et al. (2014), Antipodal cells persist through fertilization in the female gametophyte of Arabidopsis",
+      url: "https://pubmed.ncbi.nlm.nih.gov/25389024/",
+    },
     {
       title:
         "Kawashima et al. (2014), Dynamic F-actin movement is essential for fertilization in Arabidopsis thaliana",

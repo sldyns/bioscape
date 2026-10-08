@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import * as T from "three";
+import { MeshBVH } from "three-mesh-bvh";
 import budding from "../src/processes/modules/yeastLife/yeastBuddingProcess.js";
 import division from "../src/processes/modules/parameciumLife/parameciumDivisionProcess.js";
 const failures = [];
@@ -58,6 +59,90 @@ function allVertices(o, fn) {
   const a = o.geometry.attributes.position;
   for (let j = 0; j < a.count; j++)
     fn(new T.Vector3().fromBufferAttribute(a, j).applyMatrix4(o.matrixWorld));
+}
+function innerShellContainment(envelopes) {
+  const cache = new Map(),
+    direction = new T.Vector3(0.372, 0.615, 0.695).normalize(),
+    ray = new T.Ray(new T.Vector3(), direction),
+    local = new T.Vector3();
+  let shells = [];
+  function fullShell(source) {
+    let entry = cache.get(source);
+    if (!entry) {
+      const count = source.attributes.position.count,
+        geometry = new T.BufferGeometry(),
+        indices = [];
+      geometry.setAttribute(
+        "position",
+        new T.Float32BufferAttribute(new Float32Array(count * 6), 3),
+      );
+      // The displayed inner leaflet is a rear cutaway. Reflect its actual
+      // indexed triangles across local z=0 to recover the full physical shell.
+      // Reflection reverses handedness, so reverse the mirrored winding too.
+      for (let i = 0; i < source.index.count; i += 3) {
+        const a = source.index.getX(i),
+          b = source.index.getX(i + 1),
+          c = source.index.getX(i + 2);
+        indices.push(a, b, c, a + count, c + count, b + count);
+      }
+      geometry.setIndex(indices);
+      entry = {
+        geometry,
+        count,
+        version: -1,
+        indexVersion: source.index.version,
+      };
+      cache.set(source, entry);
+    }
+    assert.equal(source.index.version, entry.indexVersion);
+    const position = source.attributes.position;
+    if (entry.version !== position.version) {
+      const out = entry.geometry.attributes.position;
+      for (let i = 0; i < entry.count; i++) {
+        const x = position.getX(i),
+          y = position.getY(i),
+          z = position.getZ(i);
+        assert(z <= 1e-7, "inner leaflet must use the documented rear cutaway");
+        out.setXYZ(i, x, y, z);
+        out.setXYZ(i + entry.count, x, y, -z);
+      }
+      out.needsUpdate = true;
+      entry.geometry.computeBoundingBox();
+      if (entry.bvh) entry.bvh.refit();
+      else entry.bvh = new MeshBVH(entry.geometry);
+      entry.version = position.version;
+    }
+    return entry;
+  }
+  return {
+    prepare() {
+      shells = envelopes.filter(effectiveVisible).map((outer) => {
+        const inner = outer.children[0];
+        assert(inner?.isMesh, "visible nucleus must retain its inner leaflet");
+        return {
+          inner,
+          entry: fullShell(inner.geometry),
+          inverse: inner.matrixWorld.clone().invert(),
+        };
+      });
+      assert(shells.length > 0);
+      return shells;
+    },
+    contains(point) {
+      return shells.some(({ entry, inverse }) => {
+        local.copy(point).applyMatrix4(inverse);
+        // The box only rejects distant points. Acceptance requires the first
+        // actual triangle intersection to be an exit from the oriented shell.
+        if (!entry.geometry.boundingBox.containsPoint(local)) return false;
+        ray.origin.copy(local);
+        const hit = entry.bvh.raycastFirst(ray, T.DoubleSide);
+        return !!hit && hit.face.normal.dot(direction) > 0;
+      });
+    },
+    dispose() {
+      for (const { geometry } of cache.values()) geometry.dispose();
+    },
+  };
 }
 const bud = budding.create(),
   vesicles = directSpheres(bud, "57988e"),
@@ -131,7 +216,15 @@ check(
   },
 );
 const para = division.create(),
-  granules = directSpheres(para, "8a7197");
+  granules = directSpheres(para, "8a7197"),
+  macronuclearShells = innerShellContainment(
+    [
+      "division-mother-macronucleus",
+      "continuous-macronuclear-envelope",
+      "daughter-macronucleus-0",
+      "daughter-macronucleus-1",
+    ].map((name) => para.group.getObjectByName(name)),
+  );
 assert.equal(granules.length, 18);
 check("macronuclear granules remain continuous at bridge handoff", () => {
   update(para, 0.59 - 1e-6);
@@ -145,34 +238,65 @@ check("macronuclear granules remain continuous at bridge handoff", () => {
 check(
   "macronuclear granules remain inside current envelope and end on opposite sides",
   () => {
-    const spheres = [
-        "division-mother-macronucleus",
-        "daughter-macronucleus-0",
-        "daughter-macronucleus-1",
-      ].map((n) => para.group.getObjectByName(n)),
-      mother = spheres[0],
-      daughters = spheres.slice(1),
-      bridge = para.group.getObjectByName("continuous-macronuclear-envelope");
+    let poses = 0,
+      vertices = 0;
     for (let step = 0; step <= 1000; step += 3) {
       const p = step / 1000;
       update(para, p);
+      macronuclearShells.prepare();
+      poses++;
       for (const o of granules)
-        allVertices(o, (v) =>
+        allVertices(o, (v) => {
+          vertices++;
           assert(
-            p < 0.59
-              ? sphereContains(mother, v)
-              : p < 0.76
-                ? revolvedContains(bridge, v, 32)
-                : daughters.some((n) => sphereContains(n, v)),
+            macronuclearShells.contains(v),
             `granule vertex outside nucleus at ${p}`,
-          ),
-        );
+          );
+        });
     }
+    assert.equal(poses, 334);
+    assert.equal(vertices, 2555100);
     update(para, 1);
     assert(granules.slice(0, 9).every((o) => o.position.y < 0));
     assert(granules.slice(9).every((o) => o.position.y > 0));
   },
 );
+check("actual inner-shell oracle rejects injected granule escape", () => {
+  for (const p of [0, 0.591, 0.74, 0.8, 1]) {
+    update(para, p);
+    const [{ inner, entry }] = macronuclearShells.prepare(),
+      bounds = entry.geometry.boundingBox,
+      center = bounds.getCenter(new T.Vector3()),
+      extent = bounds.getSize(new T.Vector3()).multiplyScalar(0.5),
+      escaped = center.addScaledVector(extent, 0.85),
+      granule = granules[0],
+      original = granule.position.clone();
+    // At the narrow bridge, also reject a point on the equatorial plane
+    // well inside the full bounding box but outside the actual neck.
+    if (p === 0.74) escaped.set(extent.x * 0.7, 0, 0);
+    assert(bounds.containsPoint(escaped), "negative control must defeat a box");
+    escaped.applyMatrix4(inner.matrixWorld);
+    assert(!macronuclearShells.contains(escaped));
+    granule.position.copy(granule.parent.worldToLocal(escaped));
+    granule.updateMatrixWorld(true);
+    try {
+      assert.throws(
+        () =>
+          allVertices(granule, (v) =>
+            assert(
+              macronuclearShells.contains(v),
+              `injected granule vertex outside nucleus at ${p}`,
+            ),
+          ),
+        /injected granule vertex outside nucleus/,
+      );
+    } finally {
+      granule.position.copy(original);
+      granule.updateMatrixWorld(true);
+    }
+    allVertices(granule, (v) => assert(macronuclearShells.contains(v)));
+  }
+});
 check("seeks reproduce positions and preserve resource identities", () => {
   for (const model of [bud, para]) {
     const inventory = () => {
@@ -201,6 +325,7 @@ check("seeks reproduce positions and preserve resource identities", () => {
     assert.deepEqual(inventory(), base);
   }
 });
+macronuclearShells.dispose();
 for (const model of [bud, para]) {
   const geos = new Set(),
     mats = new Set();

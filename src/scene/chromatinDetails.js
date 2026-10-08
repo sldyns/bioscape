@@ -39,12 +39,14 @@ function bond(g, a, b, r, color, id) {
   m.quaternion.setFromUnitVectors(V(0, 1, 0), delta.normalize());
 }
 function core(g, hit = "histones", tails = true) {
+  const lobes = [];
   for (let i = 0; i < 8; i++) {
     const a = ((i % 4) * TAU) / 4 + (i < 4 ? 0 : 0.36),
       y = i < 4 ? -0.19 : 0.19;
     const p = V(Math.cos(a) * 0.32, y, Math.sin(a) * 0.32);
     const m = sphere(g, p, [0.29, 0.26, 0.31], histoneColors[i % 4], hit);
     m.rotation.y = -a;
+    lobes.push(m);
     if (tails) {
       const sign = i < 4 ? -1 : 1;
       const q = p.clone().multiplyScalar(1.15);
@@ -63,6 +65,22 @@ function core(g, hit = "histones", tails = true) {
       );
     }
   }
+  return lobes;
+}
+// Pick an actual surface vertex in the initial frontal view. Collection
+// centroids can fall in empty space or inside an occluding histone lobe.
+function frontSurfacePoint(group, meshes) {
+  group.updateMatrixWorld(true);
+  const point = V(),
+    front = V(0, 0, -Infinity);
+  for (const m of meshes) {
+    const positions = m.geometry.attributes.position;
+    for (let i = 0; i < positions.count; i++) {
+      point.fromBufferAttribute(positions, i).applyMatrix4(m.matrixWorld);
+      if (point.z > front.z) front.copy(point);
+    }
+  }
+  return group.worldToLocal(front).toArray();
 }
 // The superhelix is left-handed; the local DNA double helix is right-handed.
 function wrappedPaths() {
@@ -196,6 +214,17 @@ function chromatin(g) {
     );
   }
   g.rotation.x = 0.12;
+  g.userData.partAnchors = {
+    nucleosome: frontSurfacePoint(
+      g,
+      g.children[3].children.filter(
+        (m) => m.geometry.type === "SphereGeometry",
+      ),
+    ),
+    dna: frontSurfacePoint(g, [
+      g.children.find((m) => m.userData.hitId === "dna"),
+    ]),
+  };
 }
 function nucleosome(g) {
   const paths = wrappedUnit(g, { showPairs: true });
@@ -221,6 +250,16 @@ function nucleosome(g) {
       );
     }
   g.rotation.set(0.36, -0.3, 0.1);
+  g.userData.partAnchors = {
+    histones: frontSurfacePoint(
+      g,
+      g.children.filter((m) => m.geometry.type === "SphereGeometry"),
+    ),
+    dna: frontSurfacePoint(
+      g,
+      g.children.filter((m) => m.userData.hitId === "dna"),
+    ),
+  };
 }
 function dna(g) {
   const paths = [[], []],
@@ -260,16 +299,17 @@ export function chromatinDetail(id) {
   if (id === "chromatin") chromatin(g);
   if (id === "nucleosome") nucleosome(g);
   if (id === "histones") {
-    core(g);
+    const lobes = core(g);
     g.rotation.set(0.28, -0.3, 0.1);
     g.userData.landmarks = histoneColors.map((_, i) => ({
       zh: ["H2A × 2", "H2B × 2", "H3 × 2", "H4 × 2"][i],
       en: ["H2A × 2", "H2B × 2", "H3 × 2", "H4 × 2"][i],
-      position: [
-        Math.cos((i * TAU) / 4) * 0.42,
-        0.12,
-        Math.sin((i * TAU) / 4) * 0.42,
-      ],
+      // The upper lobe's top vertex remains visible for all four colors in
+      // the initial view, unlike the old internal equatorial landmarks.
+      position: lobes[i + 4].position
+        .clone()
+        .add(V(0, lobes[i + 4].scale.y, 0))
+        .toArray(),
     }));
   }
   if (id === "dna") dna(g);

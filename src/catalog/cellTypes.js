@@ -1,5 +1,5 @@
 import { specializedSpecimens } from "../compare/specimens.js";
-import { microbeDefinitions, microbeNotes } from "./microbes";
+import { microbeDefinitions, microbeNotes } from "./microbes.js";
 export const cellTypes = [
   { id: "cell", zh: "动物细胞", en: "Animal cell" },
   { id: "plant", zh: "植物细胞", en: "Plant cell" },
@@ -615,20 +615,20 @@ export const extraNotes = {
   },
 
   plant60S: {
-    zh: "PDB 8JIV，小麦60S。保留44条已建模链、9203个残基标记：RNA为C4′，蛋白为Cα。序列缺失或断裂不跨接；管径加粗，不是全原子模型。",
-    en: "PDB 8JIV, wheat 60S: 44 modeled chains and 9,203 residue markers (RNA C4′; protein Cα). Missing residues and breaks remain disconnected. Tubes are enlarged, not all-atom.",
+    zh: "PDB 8JIV，小麦60S。保留44条已建模链、9325个残基标记：RNA为C4′，蛋白为Cα。序列缺失或断裂不跨接；管径加粗，不是全原子模型。",
+    en: "PDB 8JIV, wheat 60S: 44 modeled chains and 9,325 residue markers (RNA C4′; protein Cα). Missing residues and breaks remain disconnected. Tubes are enlarged, not all-atom.",
   },
   plant40S: {
-    zh: "PDB 8JIW，小麦40S。保留33条已建模链、5937个残基标记，包括18S rRNA与蛋白主链。保留沉积坐标，省略配体、侧链和未建模片段。",
-    en: "PDB 8JIW, wheat 40S: 33 modeled chains and 5,937 residue markers, including 18S rRNA and protein backbones. Deposited coordinates are retained; ligands, side chains, and unmodeled segments are omitted.",
+    zh: "PDB 8JIW，小麦40S。保留33条已建模链、5983个残基标记，包括18S rRNA与蛋白主链。保留沉积坐标，省略配体、侧链和未建模片段。",
+    en: "PDB 8JIW, wheat 40S: 33 modeled chains and 5,983 residue markers, including 18S rRNA and protein backbones. Deposited coordinates are retained; ligands, side chains, and unmodeled segments are omitted.",
   },
   bacterial50S: {
-    zh: "PDB 7K00，大肠杆菌50S参考：31条链、6022个残基标记，含23S/5S rRNA与蛋白。仅取已建模主链，不包含伴随tRNA、药物和离子。",
-    en: "PDB 7K00, E. coli 50S: 31 chains and 6,022 residue markers, including 23S/5S rRNA and proteins. Only modeled backbones are shown; associated tRNA, drug, and ions are omitted.",
+    zh: "PDB 7K00，大肠杆菌50S参考：31条链、6049个残基标记，含23S/5S rRNA与蛋白。仅取已建模主链，不包含伴随tRNA、药物和离子。",
+    en: "PDB 7K00, E. coli 50S: 31 chains and 6,049 residue markers, including 23S/5S rRNA and proteins. Only modeled backbones are shown; associated tRNA, drug, and ions are omitted.",
   },
   bacterial30S: {
-    zh: "PDB 7K00，大肠杆菌30S参考：21条链、3916个残基标记，含16S rRNA与蛋白。缺失区保持断开；管径和颜色为教学调整。",
-    en: "PDB 7K00, E. coli 30S: 21 chains and 3,916 residue markers, including 16S rRNA and proteins. Gaps remain open; tube width and colors aid teaching.",
+    zh: "PDB 7K00，大肠杆菌30S参考：21条链、3929个残基标记，含16S rRNA与蛋白。缺失区保持断开；管径和颜色为教学调整。",
+    en: "PDB 7K00, E. coli 30S: 21 chains and 3,929 residue markers, including 16S rRNA and proteins. Gaps remain open; tube width and colors aid teaching.",
   },
   plantER: {
     zh: "选取植物周边内质网的膜囊—管网局部。多边形网眼是细胞质，不是内质网腔；腔在膜囊与细管交界相通。省略动态重排及与核膜的远端连接。",

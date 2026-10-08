@@ -5,6 +5,7 @@ import actionPotential from "./actionPotentialProcess.js";
 import synapse from "./synapseProcess.js";
 import muscle from "./muscleProcess.js";
 import ciliaryMotion from "./ciliaryMotionProcess.js";
+import "./synapseTransit.test.mjs";
 
 const objects = (s, predicate) => {
   const a = [];

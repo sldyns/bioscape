@@ -124,8 +124,20 @@ export function nuclearDetail(id) {
     }
   g.rotation.set(id === "innerNuclear" ? -0.7 : 0.43, -0.24, -0.055);
   g.userData.landmarks = [
-    { zh: "细胞质侧", en: "Cytoplasmic side", position: [-1.3, 0.42, 0] },
-    { zh: "核质侧", en: "Nucleoplasmic side", position: [1.3, -0.45, 0] },
+    id === "innerNuclear"
+      ? {
+          zh: "核周隙侧",
+          en: "Perinuclear-space side",
+          position: [-1.3, -0.1, 0],
+        }
+      : { zh: "细胞质侧", en: "Cytoplasmic side", position: [-1.3, 0.42, 0] },
+    id === "outerNuclear"
+      ? {
+          zh: "核周隙侧",
+          en: "Perinuclear-space side",
+          position: [1.3, 0.1, 0],
+        }
+      : { zh: "核质侧", en: "Nucleoplasmic side", position: [1.3, -0.45, 0] },
     ...(id === "envelope"
       ? [{ zh: "核周隙", en: "Perinuclear space", position: [1.5, 0, 0.72] }]
       : []),

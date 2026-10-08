@@ -5,6 +5,7 @@ import {
   processCacheSnapshot,
   disposeCacheModel,
 } from "./helpers/process-cache-snapshot.mjs";
+import { createStomataScientificCacheComparison } from "./helpers/stomata-scientific-cache-delta.mjs";
 
 const fixture = JSON.parse(
   await fs.readFile(
@@ -42,6 +43,11 @@ for (const row of fixture.rows) {
     .default;
   const model = definition.create({ rootId: row.rootId });
   const reference = referenceDefinition.create({ rootId: row.rootId });
+  const scientificComparison =
+    row.id === "stomata"
+      ? createStomataScientificCacheComparison(model, reference)
+      : null;
+  const scientificStates = new Map();
   const parameters = {},
     referenceParameters = {};
   try {
@@ -54,20 +60,34 @@ for (const row of fixture.rows) {
         // The historical golden hashes are retained as evidence. The oracle
         // executes immutable ae697be source in this same runtime, preserving
         // exact checks without importing another platform's transcendental bits.
-        assert.deepEqual(
-          processCacheSnapshot(model),
-          processCacheSnapshot(reference),
-          `${row.id} p=${pose.progress} ${JSON.stringify(parameters)} repeat=${repeat}`,
-        );
+        const context = `${row.id} p=${pose.progress} ${JSON.stringify(parameters)} repeat=${repeat}`;
+        if (scientificComparison) {
+          scientificComparison.assert(context);
+          const key = JSON.stringify([pose.progress, parameters]);
+          const snapshot = processCacheSnapshot(model);
+          if (scientificStates.has(key))
+            assert.deepEqual(
+              snapshot,
+              scientificStates.get(key),
+              `${context}: repaired pose is deterministic`,
+            );
+          else scientificStates.set(key, snapshot);
+        } else
+          assert.deepEqual(
+            processCacheSnapshot(model),
+            processCacheSnapshot(reference),
+            context,
+          );
         poses++;
       }
     }
   } finally {
+    scientificComparison?.dispose();
     disposeCacheModel(model);
     disposeCacheModel(reference);
   }
 }
 assert.equal(poses, 756, "retain every original B-group comparison");
 console.log(
-  `PASS: ${poses} B-group full process snapshots exactly match immutable ae697be source in the same runtime, including repeated poses, parameter changes and reverse seeks.`,
+  `PASS: ${poses} B-group comparisons retain immutable ae697be source and every pose. All fields remain exact except the documented two stomata nuclear translations and two vacuolar z/normal/bounds repairs; these receive full-mesh compartment assertions, repeated poses, parameter changes and reverse seeks.`,
 );

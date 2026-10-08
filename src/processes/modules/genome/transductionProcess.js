@@ -3,6 +3,8 @@ import {
   phageSurface,
   nucleoidDuplex,
   nucleoidPoint,
+  transductionLoci,
+  eColiEnvelope,
 } from "./envelopeDetail.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
@@ -38,8 +40,8 @@ export default {
       at: 0.16,
       title: b("供体 DNA 进入转移路径", "Donor DNA enters the transfer route"),
       description: b(
-        "P1 偶尔误包装细菌 DNA，来源不局限于整合位点附近。λ 则因罕见的不精确切出带走邻近基因，例如 gal，同时丢失部分噬菌体序列。",
-        "P1 occasionally packages bacterial DNA without restriction to a prophage-adjacent locus. Rare imprecise λ excision instead captures a neighboring locus such as gal while losing some phage sequence.",
+        "P1 偶尔误包装细菌 DNA，来源不局限于整合位点附近。λ 则因罕见的不精确切出，把部分前噬菌体与邻近 gal 基因一起带走；另一段 λ DNA 留在供体染色体上，因此转移分子缺少这部分噬菌体序列。",
+        "P1 occasionally packages bacterial DNA without restriction to a prophage-adjacent locus. Rare imprecise λ excision captures part of the prophage together with the neighboring gal locus. Another λ segment remains on the donor chromosome, so the transferred molecule lacks that phage sequence.",
       ),
     },
     {
@@ -62,8 +64,8 @@ export default {
       at: 0.71,
       title: b("DNA 注入受体", "DNA enters the recipient"),
       description: b(
-        "尾部与受体表面的入胞装置接合，DNA 沿连通的通路穿过包膜，衣壳留在外部。入胞装置是功能示意，并非已解析的完整分子结构；λ 的受体识别不等同于 DNA 穿过 LamB 的糖通道。",
-        "The tail engages the surface entry apparatus, providing a connected route for DNA across the envelope while the capsid stays outside. The entry apparatus is a functional schematic, not a resolved molecular assembly; λ receptor recognition does not mean DNA passes through the LamB sugar pore.",
+        "尾部与受体表面的入胞装置接合，DNA 沿连通通路跨过外膜、含薄肽聚糖的周质和内膜进入胞质，衣壳留在外部。入胞装置是功能示意，并非已解析的完整分子结构；λ 的受体识别不等同于 DNA 穿过 LamB 的糖通道。",
+        "The tail engages the surface entry apparatus. DNA follows a connected route across the outer membrane, the periplasm with its thin peptidoglycan wall, and the inner membrane into the cytoplasm; the capsid stays outside. The entry apparatus is a functional schematic, not a resolved molecular assembly; λ receptor recognition does not mean DNA passes through the LamB sugar pore.",
       ),
     },
     {
@@ -83,6 +85,11 @@ export default {
     {
       title: "Bacteriophage Lambda Site-Specific Recombination",
       url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC11096046/",
+    },
+    {
+      title:
+        "Landy and Ross (1977), Viral integration and excision: structure of the lambda att sites",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC1994661/",
     },
     {
       title: "Genome of Bacteriophage P1",
@@ -121,6 +128,13 @@ export default {
       // inner face must remain visible after the surrounding P1 sheath moves.
       tailCutawayMat = k.material("#9d91aa", { side: THREE.DoubleSide });
     const extraMaterials = [];
+    const {
+      count: locusCount,
+      lambdaProphageStart,
+      lambdaExcisionStart,
+      hostLocusStart,
+      hostLocusEnd,
+    } = transductionLoci;
     const cells = [];
     for (const x of [-2.65, 2.65]) {
       const g = new THREE.Group();
@@ -135,7 +149,10 @@ export default {
       m.rotation.z = Math.PI / 2;
       m.visible = false;
       extraMaterials.push(
-        ...rodCutaway(g, 1.35, 0.9, "#86a49a", { entryPort: x > 0 }).materials,
+        ...rodCutaway(g, 1.35, 0.9, "#86a49a", {
+          entryPort: x > 0,
+          gramNegative: true,
+        }).materials,
       );
       cells.push(g);
     }
@@ -145,12 +162,12 @@ export default {
     group.add(entry);
     // An open-front protein conduit exposes its lumen. It is separate from
     // the recognition markers, so lambda DNA is not routed through a drawn
-    // LamB maltose pore. The aperture is present in both envelope surfaces.
+    // LamB maltose pore. Real apertures cross both bilayers and the PG layer.
     const entryWall = k.mesh(
       new THREE.CylinderGeometry(
         0.085,
         0.085,
-        0.23,
+        0.32,
         24,
         1,
         true,
@@ -158,7 +175,7 @@ export default {
         Math.PI,
       ),
       tailCutawayMat,
-      [0, 0.835, 0],
+      [0, 0.79, 0],
       entry,
     );
     entryWall.name = "trans-envelope-entry-conduit";
@@ -177,17 +194,19 @@ export default {
     }
     // Closed receptor-associated gates seal the aperture before attachment;
     // lateral withdrawal exposes the same central path before cargo arrives.
-    const entryGates = [1, 0.925].map((scale) => {
-      const gate = k.mesh(
-        new THREE.PlaneGeometry(0.36 * scale, 0.18 * scale),
-        k.material("#b6c8bc", { side: THREE.DoubleSide }),
-        [0, 0.9 * scale, -0.09 * scale],
-        entry,
-      );
-      gate.rotation.x = -Math.PI / 2;
-      gate.name = `recipient-entry-gate-${scale}`;
-      return gate;
-    });
+    const entryGates = [...eColiEnvelope.outer, ...eColiEnvelope.inner].map(
+      (scale) => {
+        const gate = k.mesh(
+          new THREE.PlaneGeometry(0.36 * scale, 0.18 * scale),
+          k.material("#b6c8bc", { side: THREE.DoubleSide }),
+          [0, 0.9 * scale, -0.09 * scale],
+          entry,
+        );
+        gate.rotation.x = -Math.PI / 2;
+        gate.name = `recipient-entry-gate-${scale}`;
+        return gate;
+      },
+    );
     const dna = [];
     const recipient = [];
     for (let i = 0; i < 48; i++) {
@@ -317,6 +336,20 @@ export default {
         2,
       ),
       k.label([3.35, 1.15, 0], "接合后的入胞通路", "Engaged entry pathway", 2),
+      k.label([-1.5, 0.15, 0.2], "留在供体的 λ DNA", "Retained donor λ DNA", 2),
+      k.label([3.1, 0.9, 0], "外膜", "Outer membrane", 2),
+      k.label(
+        [3.1, 0.9 * eColiEnvelope.peptidoglycan, 0],
+        "周质 · 薄肽聚糖",
+        "Periplasm · thin peptidoglycan",
+        2,
+      ),
+      k.label(
+        [3.1, 0.9 * eColiEnvelope.inner[0], 0],
+        "内膜 · 胞质边界",
+        "Inner membrane · cytoplasm boundary",
+        2,
+      ),
     ];
     function update(progress, parameters = {}) {
       const p = clamp(progress),
@@ -329,26 +362,32 @@ export default {
       cells[0].visible = p < 0.54;
       dna.forEach((m, i) => {
         m.material = special
-          ? i >= 4 && i < 16
+          ? i >= lambdaProphageStart && i < hostLocusStart
             ? viral
-            : i >= 16 && i < 22
+            : i >= hostLocusStart && i < hostLocusEnd
               ? gold
               : host
-          : i >= 16 && i < 22
+          : i >= hostLocusStart && i < hostLocusEnd
             ? gold
             : host;
         m.visible =
           p < 0.54 &&
           !(
             p > 0.23 &&
-            ((special && i >= 4 && i < 22) || (!special && i >= 16 && i < 22))
+            i >= (special ? lambdaExcisionStart : hostLocusStart) &&
+            i < hostLocusEnd
           );
       });
       donorDetailed.update(p, special, true);
       recipientDetailed.update(p, false, false);
       dna.forEach((m) => (m.visible = false));
       cutMarks.forEach((m, i) => {
-        nucleoidPoint(-2.65, (i ? 22 : 4) / 48, 0, sourcePoint);
+        nucleoidPoint(
+          -2.65,
+          (i ? hostLocusEnd : lambdaExcisionStart) / locusCount,
+          0,
+          sourcePoint,
+        );
         m.position.copy(sourcePoint);
         m.visible = special && p > 0.17 && p < 0.31;
       });
@@ -383,10 +422,13 @@ export default {
         marker.material = special ? viral : gold;
       });
       const cargoCenter = (s) => {
-        const u = s - 1.35 * inject;
+        // The final material point must pass the cytoplasmic leaflet of the
+        // inner membrane, not stop in the newly resolved periplasm.
+        const u = s - 1.5 * inject;
         if (pack === 1 && u < -0.22) {
           const intoCell = -u - 0.22;
-          const bend = Math.max(0, intoCell - 0.16);
+          // Keep the duplex axial throughout the whole trans-envelope lumen.
+          const bend = Math.max(0, intoCell - 0.32);
           return [
             0.42 * Math.sin((5 * bend * bend) / (bend + 0.04)),
             -1.2 - intoCell,
@@ -411,7 +453,8 @@ export default {
         ];
       };
       const cargoPath = (s, strand = 0) => {
-        const locusT = (22 - (special ? 18 : 6) * s) / 48;
+        const start = special ? lambdaExcisionStart : hostLocusStart;
+        const locusT = (hostLocusEnd - (hostLocusEnd - start) * s) / locusCount;
         const twist = locusT * Math.PI * 24 + strand * Math.PI;
         const helixRadius = 0.035;
         destinationPoint.set(...cargoCenter(s)).applyMatrix4(phage.matrix);
@@ -454,7 +497,10 @@ export default {
           cargoPath((i + 1) / cargo.length),
           0.019 - 0.005 * pack,
         );
-        m.material = special && i >= 32 ? viral : gold;
+        const hostCargoCount =
+          (cargo.length * (hostLocusEnd - hostLocusStart)) /
+          (hostLocusEnd - lambdaExcisionStart);
+        m.material = special && i >= hostCargoCount ? viral : gold;
         m.visible = true;
         pose(
           cargoPartner[i],
@@ -490,11 +536,20 @@ export default {
       labels[4].active = p > 0.48 && p < 0.74;
       phage.position.toArray(labels[4].position);
       labels[5].position.splice(0, 3, ...cargoPath(0));
-      labels[5].active = inject > 0 && labels[5].position[1] < 0.8325;
+      labels[5].active =
+        inject > 0 && labels[5].position[1] < 0.9 * eColiEnvelope.inner[1];
       cargo[48].position.toArray(labels[6].position);
       labels[6].active = p > 0.92;
       labels[7].position.splice(0, 3, 2.65, 0.835, 0);
       labels[7].active = p >= 0.7 && p < 0.91;
+      nucleoidPoint(
+        -2.65,
+        (lambdaProphageStart + lambdaExcisionStart) / (2 * locusCount),
+        0,
+        sourcePoint,
+      ).toArray(labels[8].position);
+      labels[8].active = special && p >= 0.17 && p < 0.54;
+      for (let i = 9; i <= 11; i++) labels[i].active = p >= 0.64 && p < 0.91;
       group.userData = {
         rootId,
         organism: "Escherichia coli",
@@ -507,6 +562,8 @@ export default {
           ? "prophage-adjacent-gal-example"
           : "many-chromosomal-loci",
         delivered: inject === 1,
+        retainedLambdaSegment: special && p < 0.54,
+        recipientEnvelope: "outer-membrane / periplasm-PG / inner-membrane",
         stableInheritanceShown: false,
       };
     }

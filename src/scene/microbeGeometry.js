@@ -35,7 +35,12 @@ export function texturedShell(
 }
 export function nucleus(
   id,
-  { elongated = false, nucleoli = 1, parts = {} } = {},
+  {
+    elongated = false,
+    nucleoli = 1,
+    parts = {},
+    nucleolusShape = "condensate",
+  } = {},
 ) {
   const envelopeId = parts.envelope || id,
     poresId = parts.pores || id,
@@ -154,20 +159,50 @@ export function nucleus(
       conform(ringGeo, "#9f87b3", poresId);
     }
   }
-  const bodies =
-    nucleoli === 1
-      ? [{ center: V(-0.2, -0.22, 0.1), size: V(0.23, 0.2, 0.19) }]
-      : Array.from({ length: nucleoli }, (_, i) => {
-          const a = (i / nucleoli) * TAU;
-          return {
-            center: V(
-              Math.cos(a) * r[0] * 0.43,
-              Math.sin(a) * r[1] * 0.38,
-              0.09,
-            ),
-            size: V(0.085, 0.073, 0.068),
-          };
-        });
+  // S. cerevisiae has an envelope-associated nucleolar crescent (Oakes et al.,
+  // 1998, doi:10.1083/jcb.143.1.23). Bend a solid condensate, not a membrane
+  // shell. The inverse of this same map keeps chromatin out of its real volume.
+  const crescent =
+      nucleolusShape === "peripheral-crescent" && nucleoli > 0
+        ? { radius: 0.73, thickness: 0.255, angle: 1.2, depth: 0.34 }
+        : null,
+    innerRadii = V(...r).multiplyScalar(inner),
+    bodies = crescent
+      ? [{ center: V(crescent.radius * innerRadii.x, 0, 0) }]
+      : nucleoli === 1
+        ? [{ center: V(-0.2, -0.22, 0.1), size: V(0.23, 0.2, 0.19) }]
+        : Array.from({ length: nucleoli }, (_, i) => {
+            const a = (i / nucleoli) * TAU;
+            return {
+              center: V(
+                Math.cos(a) * r[0] * 0.43,
+                Math.sin(a) * r[1] * 0.38,
+                0.09,
+              ),
+              size: V(0.085, 0.073, 0.068),
+            };
+          });
+  const avoidCrescent = (point, clearance) => {
+    const p = point.clone().divide(innerRadii),
+      padding = clearance / Math.min(innerRadii.x, innerRadii.y, innerRadii.z),
+      angle = Math.atan2(p.y, p.x),
+      radius = Math.hypot(p.x, p.y),
+      halfThickness = crescent.thickness + padding,
+      v = angle / (crescent.angle + padding / crescent.radius),
+      w = p.z / (crescent.depth + padding);
+    if (v * v + w * w < 1) {
+      // Always move toward the concave, nucleoplasmic face. Pushing outward
+      // could otherwise trap a chromatin strand between nucleolus and envelope.
+      const inside =
+        crescent.radius -
+        halfThickness * Math.sqrt(Math.max(0, 1 - v * v - w * w));
+      if (radius > inside) {
+        point.x = inside * Math.cos(angle) * innerRadii.x;
+        point.y = inside * Math.sin(angle) * innerRadii.y;
+      }
+    }
+    return point;
+  };
   // Seven schematic chromatin paths express variable local packing, not seven
   // chromosomes. A seeded persistent walk avoids repeated sine-wave hoops.
   let seed = 0x73a5f19;
@@ -179,15 +214,17 @@ export function nucleus(
     V(sample() * 2 - 1, sample() * 2 - 1, sample() * 2 - 1).normalize();
   const confine = (point) => {
     // Keep centerlines away from nucleolar condensates and the inner membrane.
-    for (const body of bodies) {
-      const delta = point.clone().sub(body.center),
-        clearance = body.size.clone().addScalar(0.045),
-        distance = delta.clone().divide(clearance).length();
-      if (distance < 1)
-        point
-          .copy(body.center)
-          .add(delta.multiplyScalar(1 / Math.max(distance, 0.001)));
-    }
+    if (crescent) avoidCrescent(point, 0.045);
+    else
+      for (const body of bodies) {
+        const delta = point.clone().sub(body.center),
+          clearance = body.size.clone().addScalar(0.045),
+          distance = delta.clone().divide(clearance).length();
+        if (distance < 1)
+          point
+            .copy(body.center)
+            .add(delta.multiplyScalar(1 / Math.max(distance, 0.001)));
+      }
     const normalized = V(point.x / r[0], point.y / r[1], point.z / r[2]);
     if (normalized.length() > 0.83)
       point.multiplyScalar(0.83 / normalized.length());
@@ -224,6 +261,9 @@ export function nucleus(
             .sub(center)
             .multiplyScalar(width)
             .add(center);
+        // Check the tube surface as well as its centerline after spline
+        // interpolation; the clearance also protects the connecting triangles.
+        if (crescent) avoidCrescent(p, 0.018);
         positions.setXYZ(index, p.x, p.y, p.z);
       }
     }
@@ -239,13 +279,15 @@ export function nucleus(
     );
   }
   for (const [i, body] of bodies.entries()) {
-    const m = ball(
-        g,
-        body.center.toArray(),
-        body.size.toArray(),
-        "#9c7da9",
-        nucleoliId,
-      ),
+    const m = crescent
+        ? addMesh(g, new T.SphereGeometry(1, 64, 48), "#9c7da9", nucleoliId)
+        : ball(
+            g,
+            body.center.toArray(),
+            body.size.toArray(),
+            "#9c7da9",
+            nucleoliId,
+          ),
       positions = m.geometry.attributes.position;
     // Broad, smooth asymmetry suggests a condensate boundary without inventing
     // a membrane, shell, granular substructure, or molecular surface features.
@@ -254,16 +296,31 @@ export function nucleus(
         y = positions.getY(k),
         z = positions.getZ(k),
         scale = 1 + 0.07 * y + 0.065 * x * y + 0.04 * (z * z - 1 / 3);
-      positions.setXYZ(k, x * scale, y * scale, z * scale);
+      if (crescent) {
+        const angle = y * crescent.angle,
+          radius = crescent.radius + x * crescent.thickness;
+        positions.setXYZ(
+          k,
+          radius * Math.cos(angle) * innerRadii.x,
+          radius * Math.sin(angle) * innerRadii.y,
+          z * crescent.depth * innerRadii.z,
+        );
+      } else positions.setXYZ(k, x * scale, y * scale, z * scale);
     }
     m.geometry.computeVertexNormals();
-    m.rotation.set(0.12 + i * 0.27, -0.23 + i * 0.41, 0.16);
+    if (!crescent) m.rotation.set(0.12 + i * 0.27, -0.23 + i * 0.41, 0.16);
     m.material.roughness = 0.67;
     m.material.clearcoat = 0.08;
   }
+  // A distinct drilldown part already provides its clickable label. Keep a
+  // landmark only when it adds an identity not supplied by those actual parts.
   g.userData.landmarks = [
-    { zh: "核被膜", en: "Nuclear envelope", position: [r[0], 0, 0] },
-    { zh: "染色质", en: "Chromatin", position: [0.25, 0.24, 0.2] },
+    ...(!parts.envelope || parts.envelope === id
+      ? [{ zh: "核被膜", en: "Nuclear envelope", position: [r[0], 0, 0] }]
+      : []),
+    ...(!parts.chromatin || parts.chromatin === id
+      ? [{ zh: "染色质", en: "Chromatin", position: [0.25, 0.24, 0.2] }]
+      : []),
   ];
   if (Object.keys(parts).length)
     g.userData.partAnchors = {

@@ -45,7 +45,13 @@ function sectionContour(geometry, z) {
 }
 function head(id = "phageHead") {
   const g = new T.Group(),
-    geo = new T.IcosahedronGeometry(0.9, 1);
+    // Three's default y axis crosses opposite edge midpoints. Align an original
+    // fivefold vertex with the head-tail axis before elongating the capsid.
+    orientation = new T.Quaternion().setFromUnitVectors(
+      V(0, 1, (1 + Math.sqrt(5)) / 2).normalize(),
+      V(0, 1, 0),
+    ),
+    geo = new T.IcosahedronGeometry(0.9, 1).applyQuaternion(orientation);
   geo.scale(1, 1.38, 1);
   const inner = geo.clone().scale(0.95, 0.95, 0.95),
     outline = sectionContour(geo, 0.3),
@@ -77,7 +83,9 @@ function head(id = "phageHead") {
   }
   const collar = hollowTube(g, id, 0.155, 0.25, "#a7afa9", 0.105);
   collar.position.y = -1.185;
-  const lattice = new T.IcosahedronGeometry(0.92, 4),
+  const lattice = new T.IcosahedronGeometry(0.92, 4).applyQuaternion(
+      orientation,
+    ),
     pos = lattice.attributes.position,
     seen = new Set(),
     ray = new T.Ray(),
@@ -119,7 +127,9 @@ function head(id = "phageHead") {
     }
   }
   lattice.dispose();
-  const seamSurface = new T.IcosahedronGeometry(0.907, 1),
+  const seamSurface = new T.IcosahedronGeometry(0.907, 1).applyQuaternion(
+      orientation,
+    ),
     edges = new T.EdgesGeometry(seamSurface, 8),
     ep = edges.attributes.position;
   seamSurface.dispose();
@@ -456,7 +466,32 @@ export function phageDetail(id) {
       return phage();
     case "phageHead": {
       const g = head("phageCapsomers");
-      g.userData.partAnchors = { phageCapsomers: [0.5, 0.6, 0.2] };
+      // Anchor the lattice label on a retained outer protein at the cutaway rim,
+      // rather than in the empty capsid cavity. Use a real surface vertex so
+      // the leader remains on the protein after geometry merging and fitting.
+      const target = V(0.77, 0.56, 0.25),
+        protein = g.children
+          .filter(
+            (m) => m.geometry?.type === "SphereGeometry" && !m.userData.cap,
+          )
+          .reduce(
+            (best, m) =>
+              !best ||
+              m.position.distanceToSquared(target) <
+                best.position.distanceToSquared(target)
+                ? m
+                : best,
+            null,
+          ),
+        anchor = V(0, 0, -Infinity),
+        point = V();
+      protein.updateMatrix();
+      const positions = protein.geometry.attributes.position;
+      for (let i = 0; i < positions.count; i++) {
+        point.fromBufferAttribute(positions, i).applyMatrix4(protein.matrix);
+        if (point.z > anchor.z) anchor.copy(point);
+      }
+      g.userData.partAnchors = { phageCapsomers: anchor.toArray() };
       return g;
     }
     case "phageCapsomers":

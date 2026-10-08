@@ -120,13 +120,6 @@ function wallPatch() {
     wallMatrix: [1.48, 0.7, 0.3],
     plasmodesmata: [-0.78, 0.27, 0.42],
   };
-  g.userData.landmarks = [
-    {
-      zh: "壁内多糖基质",
-      en: "Polysaccharide matrix",
-      position: [1.35, -0.6, 0.2],
-    },
-  ];
   return g;
 }
 function cellulose() {

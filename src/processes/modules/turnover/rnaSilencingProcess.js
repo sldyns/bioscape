@@ -406,9 +406,10 @@ export default {
       });
       cut.position.x = (guideX(11) + guideX(12)) / 2;
       tail.forEach((m, i) => {
+        // A shortened tail cannot remain after its attached target 3′ end decays.
         m.visible = slicing
           ? turnover < (12 - i) / 13
-          : !match || i < 12 - Math.floor(shorten * 11);
+          : !match || (bases[27].visible && i < 12 - Math.floor(shorten * 11));
         m.position.y =
           (slicing ? -cleavage * 0.28 : 0) + 0.04 + Math.sin(i * 0.65) * 0.08;
         m.position.x = 3.05 + i * 0.13 + (slicing ? cleavage * 0.58 : 0);

@@ -66,7 +66,11 @@ export function energyDetails(k) {
   const helixPoints = Array.from({ length: 73 }, (_, i) => {
     const t = i / 72,
       a = t * Math.PI * 12;
-    return new THREE.Vector3(0.042 * Math.cos(a), t - 0.5, 0.042 * Math.sin(a));
+    return new THREE.Vector3(
+      0.042 * Math.cos(a),
+      t - 0.5,
+      -0.042 * Math.sin(a),
+    );
   });
   const helixGeometry = new THREE.TubeGeometry(
     new THREE.CatmullRomCurve3(helixPoints),

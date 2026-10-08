@@ -299,3 +299,4 @@ console.log(
 await import("./continuity.test.mjs");
 await import("./labelAnchors.test.mjs");
 await import("./renderedMechanics.test.mjs");
+await import("./gate.test.mjs");

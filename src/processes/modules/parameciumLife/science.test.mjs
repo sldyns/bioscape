@@ -233,11 +233,25 @@ for (const p of [0.59, 0.63, 0.67, 0.7, 0.74, 0.755]) {
       "no disconnected daughter shells during the bridge stage",
     );
   const a = envelope.geometry.attributes.position;
-  for (let row = 1; row < 64; row++)
+  const halfCount = a.count / 2,
+    lastRow = halfCount - 33,
+    seam = [];
+  for (let col = 0; col < 33; col++) {
+    const lower = new THREE.Vector3().fromBufferAttribute(a, col),
+      upper = new THREE.Vector3().fromBufferAttribute(
+        a,
+        halfCount + lastRow + col,
+      );
     assert(
-      Math.hypot(a.getY(row * 33), a.getZ(row * 33)) > 0,
-      "envelope cross-section must remain connected",
+      lower.distanceTo(upper) < 1e-6,
+      "both material lineages must share the actual constricting envelope seam",
     );
+    seam.push(lower.x);
+  }
+  assert(
+    Math.max(...seam) - Math.min(...seam) > 1e-6,
+    "nuclear neck must remain open before scission",
+  );
 }
 for (const p of [0.76, 0.8, 0.95, 1]) {
   division.update(p);
@@ -321,3 +335,4 @@ runReview20261004({
 });
 
 await runGeometryEquivalence();
+await import("./review20261005.test.mjs");

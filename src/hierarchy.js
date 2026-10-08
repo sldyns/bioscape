@@ -1,7 +1,7 @@
-import { extraDefinitions, extraNotes } from "./catalog/cellTypes";
+import { extraDefinitions, extraNotes } from "./catalog/cellTypes.js";
 import { specializedSpecimens } from "./compare/specimens.js";
-import { structures } from "./data";
-import { english } from "./data-en";
+import { structures } from "./data.js";
+import { english } from "./data-en.js";
 
 const definitions = [
   [
@@ -170,8 +170,8 @@ const definitions = [
     "mitoInner",
     "内膜",
     "Inner membrane",
-    "内膜包围基质，向内折叠形成嵴。电子传递链与 ATP 合酶位于内膜上，利用跨膜质子梯度进行能量转换。",
-    "The inner membrane encloses the matrix and folds into cristae. It hosts the electron transport chain and ATP synthase, which use a proton gradient for energy conversion.",
+    "内膜包围基质，向内折叠形成嵴。膜上的电子传递链建立跨膜质子电化学梯度，ATP 合酶利用质子回流驱动 ATP 合成。",
+    "The inner membrane encloses the matrix and folds into cristae. Its electron transport chain builds a proton electrochemical gradient, and ATP synthase uses proton flow back into the matrix to drive ATP synthesis.",
     "#c79462",
     ["cristae", "atpSynthase"],
   ],

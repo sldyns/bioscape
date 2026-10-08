@@ -17,11 +17,12 @@ import {
 import { bacterialEnvelopeDetail } from "./bacterialEnvelopeDetails";
 import {
   bacterialAppendageDetail,
-  flagellumAssembly,
+  overviewFlagellum,
 } from "./bacterialAppendageDetails";
 import { splitSection } from "./implicitMembrane";
 import { detailModel } from "./detailModels";
 const SECTION_Z = 0.28;
+const ENVELOPE_RADII = { inner: 0.79, wall: 0.86, outer: 0.92 };
 function capsule(g, r, length, c, id, opacity) {
   const [back, front] = splitSection(
     new T.CapsuleGeometry(r, length, 18, 72),
@@ -57,10 +58,15 @@ function capsule(g, r, length, c, id, opacity) {
 }
 function envelope() {
   const g = new T.Group();
-  capsule(g, 0.92, 2, "#a1bdb6", "bacterialOuter", 0.42);
+  capsule(g, ENVELOPE_RADII.outer, 2, "#a1bdb6", "bacterialOuter", 0.42);
+  // The thin sacculus continues around both poles, including the flagellar
+  // attachment. Surface bands remain an enlarged texture of its glycan mesh.
+  capsule(g, ENVELOPE_RADII.wall, 2, "#c2b391", "peptidoglycan", 0.1);
   for (let k = 0; k < 24; k++) {
     const y = -1.6 + (k / 23) * 3.2,
-      r = Math.sqrt(0.86 ** 2 - Math.max(0, Math.abs(y) - 1) ** 2),
+      r = Math.sqrt(
+        ENVELOPE_RADII.wall ** 2 - Math.max(0, Math.abs(y) - 1) ** 2,
+      ),
       cut = Math.asin(Math.min(1, SECTION_Z / r));
     for (const [start, end, cap] of [
       [-cut, Math.PI + cut, false],
@@ -73,7 +79,7 @@ function envelope() {
       tube(g, pts, 0.009, "#c2b391", "peptidoglycan").userData.cap = cap;
     }
   }
-  capsule(g, 0.79, 2, "#83aea9", "bacterialMembrane", 0.27);
+  capsule(g, ENVELOPE_RADII.inner, 2, "#83aea9", "bacterialMembrane", 0.27);
   for (let i = 0; i < 60; i++) {
     const a = i * 2.4,
       y = (i / 60 - 0.5) * 1.95,
@@ -160,12 +166,17 @@ function bacterialCell() {
   );
   const ribo = ribosome();
   for (let i = 0; i < 15; i++) {
-    const a = i * 2.3999;
+    const a = i * 2.3999,
+      y = (i / 14 - 0.5) * 2.7,
+      capOffset = Math.max(0, Math.abs(y) - 1),
+      // Taper the distribution inside the rounded cytoplasmic poles while
+      // preserving all fifteen ribosomes and their original geometry.
+      poleScale = Math.sqrt(1 - (capOffset / ENVELOPE_RADII.inner) ** 2);
     place(
       g,
       ribo.clone(true),
       "bacterialRibosome",
-      [Math.cos(a) * 0.59, (i / 14 - 0.5) * 2.7, Math.sin(a) * 0.44],
+      [Math.cos(a) * 0.59 * poleScale, y, Math.sin(a) * 0.44 * poleScale],
       0.14,
       [0, a, 0],
     );
@@ -204,14 +215,15 @@ function bacterialCell() {
     // over the opening. Classify in cell-local coordinates before root rotation.
     pilus.userData.cap = p.z > SECTION_Z;
   }
-  place(
-    g,
-    flagellumAssembly({ context: false }),
-    "flagellum",
-    [0, 1.62, 0],
-    0.54,
-    [0, 0, -0.25],
-  );
+  const flagellum = overviewFlagellum({
+      innerRadius: ENVELOPE_RADII.inner,
+      wallRadius: ENVELOPE_RADII.wall,
+      outerRadius: ENVELOPE_RADII.outer,
+    }),
+    flagellumAnchor = V(...flagellum.userData.partAnchors.flagellarFilament);
+  place(g, flagellum, "flagellum", [0, 1, 0], 1, [0, 0, -0.25]);
+  flagellum.updateMatrix();
+  flagellumAnchor.applyMatrix4(flagellum.matrix);
   g.rotation.set(0.16, -0.25, -0.4);
   g.userData.partAnchors = {
     bacterialEnvelope: [-0.85, 0.5, 0.1],
@@ -220,7 +232,7 @@ function bacterialCell() {
     bacterialRibosome: [-0.51, -0.9, 0.3],
     bacterialCytoplasm: [0.6, 0.8, -0.1],
     pili: [1.2, -0.5, 0.1],
-    flagellum: [0.42, 2.7, 0.1],
+    flagellum: flagellumAnchor.toArray(),
   };
   return g;
 }
@@ -231,10 +243,13 @@ export function bacteriaDetail(id) {
   const dnaDetail = bacterialDnaDetail(id);
   if (dnaDetail) return dnaDetail;
   if (id === "bacterialDNA") {
-    const g = setHit(detailModel("dna"), id);
+    const g = detailModel("dna"),
+      polarityLandmarks = g.userData.landmarks;
+    setHit(g, id);
     g.updateMatrixWorld(true);
     const b = new T.Box3().setFromObject(g);
     g.userData.landmarks = [
+      ...polarityLandmarks,
       {
         zh: "糖磷酸骨架",
         en: "Sugar–phosphate backbone",

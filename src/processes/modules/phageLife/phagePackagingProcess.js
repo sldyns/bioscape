@@ -72,8 +72,8 @@ export default {
       at: 0.92,
       title: b("颈部封口", "Neck sealing"),
       description: b(
-        "gp13／gp14 在门户处组装，封闭含 DNA 的头并为尾部连接准备位点。本模型到封口结束，不把包装马达保留为尾部。",
-        "gp13/gp14 assemble at the portal, sealing the DNA-filled head and preparing a tail docking site. The model ends with sealing; the packaging motor is not retained as the tail.",
+        "gp13／gp14 在门户处组装，gp14 向内伸入的环形成保留 DNA 的闸门，为接尾准备位点；Hfq 辅助闸在此省略。本模型到接尾前封口结束，包装马达不充当尾部。",
+        "gp13/gp14 assemble at the portal; inward gp14 loops form a DNA-retention gate before tail docking. The accessory Hfq gate is omitted. The scene ends with pre-tail sealing; the packaging motor does not become the tail.",
       ),
     },
   ],
@@ -95,6 +95,11 @@ export default {
     {
       title: "Bacteriophage T4 Head: Structure, Assembly, and Genome Packaging",
       url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC9958956/",
+    },
+    {
+      title:
+        "T4 portal-neck intermediates and the gp14 genome-retention gate (2026)",
+      url: "https://www.nature.com/articles/s41467-026-69107-7",
     },
   ],
   create({ rootId = "phage" } = {}) {
@@ -264,6 +269,7 @@ export default {
       head.setGenomeFraction(load);
       head.neck.visible = seal > 0;
       head.neck.scale.setScalar(Math.max(0.03, seal));
+      head.setGateOpening(0); // This scene ends before tail binding opens gp14.
       const portalY = 1.12 - 1.6 * scale;
       motor.position.set(detach * 2.3, portalY - 0.52 - (1 - dock) * 0.65, 0);
       motor.visible = detach < 1;

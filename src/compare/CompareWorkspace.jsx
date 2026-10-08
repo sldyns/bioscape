@@ -18,7 +18,11 @@ import {
   X,
 } from "lucide-react";
 import { getNode } from "../hierarchy.js";
-import { comparisonRows, getComparisonEntry } from "./catalog.js";
+import {
+  comparisonRows,
+  getComparisonChildPath,
+  getComparisonEntry,
+} from "./catalog.js";
 import {
   isComparisonId,
   normalizeComparisonState,
@@ -155,9 +159,20 @@ export default function CompareWorkspace({
     [replaceState],
   );
   const selectModel = useCallback(
-    (side, id) => {
-      if (!isComparisonId(id) || stateRef.current[side].id === id) return;
+    (side, id, path) => {
+      if (!isComparisonId(id)) return;
       const old = stateRef.current[side];
+      const selected = getComparisonEntry(id, path);
+      const nextPath = [...selected.trail, selected.id];
+      if (old.id === id) {
+        const previous = getComparisonEntry(old.id, old.path);
+        if ([...previous.trail, previous.id].join("/") === nextPath.join("/"))
+          return;
+        // The same shared geometry can acquire a different specimen context
+        // without replacing its canvas or interrupting scene readiness.
+        updatePane(side, { path: nextPath });
+        return;
+      }
       apis.current[side] = null;
       setReady(false);
       live.current.onSceneReady?.(null);
@@ -165,6 +180,7 @@ export default function CompareWorkspace({
       setFocused((previous) => ({ ...previous, [side]: null }));
       updatePane(side, {
         id,
+        path: nextPath,
         mode: "whole",
         view: old.view ? { ...old.view, target: [0, 0, 0] } : null,
       });
@@ -173,7 +189,10 @@ export default function CompareWorkspace({
   );
   const enterModel = useCallback(
     (side, id) => {
-      if (isComparisonId(id)) selectModel(side, id);
+      const current = stateRef.current[side];
+      if (id === current.id) return;
+      const path = getComparisonChildPath(current.id, current.path, id);
+      if (path) selectModel(side, id, path);
       else {
         try {
           const node = getNode(id, live.current.language);
@@ -260,9 +279,15 @@ export default function CompareWorkspace({
     setResets((previous) => ({ ...previous, [side]: previous[side] + 1 }));
   }
 
-  const left = getComparisonEntry(state.left.id);
-  const right = getComparisonEntry(state.right.id);
-  const rows = comparisonRows(state.left.id, state.right.id, language);
+  const left = getComparisonEntry(state.left.id, state.left.path);
+  const right = getComparisonEntry(state.right.id, state.right.path);
+  const rows = comparisonRows(
+    state.left.id,
+    state.right.id,
+    language,
+    state.left.path,
+    state.right.path,
+  );
   const sources = [
     ...new Map(
       [...(left.sources || []), ...(right.sources || [])].map((source) => [
@@ -352,7 +377,7 @@ export default function CompareWorkspace({
       <div className="compare-panes">
         {sides.map((side, index) => {
           const pane = state[side];
-          const entry = getComparisonEntry(pane.id);
+          const entry = getComparisonEntry(pane.id, pane.path);
           const capability =
             capabilities[side]?.nodeId === pane.id ? capabilities[side] : null;
           const labelsAvailable =
@@ -375,14 +400,15 @@ export default function CompareWorkspace({
                 </span>
                 <ModelPicker
                   value={pane.id}
+                  contextPath={pane.path}
                   language={language}
                   letter={index === 0 ? "A" : "B"}
-                  onChange={(id) => selectModel(side, id)}
+                  onChange={(id, path) => selectModel(side, id, path)}
                 />
                 {parent && (
                   <button
                     className="compare-up"
-                    onClick={() => selectModel(side, parent)}
+                    onClick={() => selectModel(side, parent, entry.trail)}
                     title={t("返回上层结构", "View parent structure")}
                     aria-label={t("返回上层结构", "View parent structure")}
                   >

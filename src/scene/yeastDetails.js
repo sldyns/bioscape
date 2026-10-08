@@ -296,7 +296,13 @@ function yeast() {
   shell(g, [1.47, 1.81, 1.12], 0.024, "#9bb9aa", "yeastMembrane", {
     opacity: 0.2,
   });
-  place(g, nucleus("yeastNucleus"), "yeastNucleus", [-0.61, 0.54, 0.26], 0.53);
+  place(
+    g,
+    nucleus("yeastNucleus", { nucleolusShape: "peripheral-crescent" }),
+    "yeastNucleus",
+    [-0.61, 0.54, 0.26],
+    0.53,
+  );
   place(
     g,
     vesicle("yeastVacuole", "#a0c0c0"),
@@ -382,6 +388,7 @@ export function yeastDetail(id) {
       return lipidPatch(id);
     case "yeastNucleus":
       return nucleus(id, {
+        nucleolusShape: "peripheral-crescent",
         parts: {
           envelope: "yeastNuclearEnvelope",
           pores: "yeastNuclearPores",

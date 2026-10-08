@@ -26,12 +26,10 @@
     "parameters": {
       "attachment": "normal"
     },
-    "path": "/home/processes/mitosis.webm",
     "width": 640,
     "height": 400,
-    "duration": 6.959976,
-    "bytes": 379237,
-    "sha256": "2936bfe6ffbdffd3cc12bd9a75fb937a518cf0a8a76c44106684a05e1a4d0f27",
+    "duration": 6.96775,
+    "bytes": 372161,
     "mimeType": "video/webm;codecs=vp9",
     "progress": [
       0,
@@ -40,6 +38,21 @@
     "framesRequested": 168,
     "fpsRequested": 24,
     "source": "src/processes/ProcessScene.jsx captureFrame",
+    "view": {
+      "direction": [
+        0,
+        0.20429416555366822,
+        0.978909543277994
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "zoom": 1.0000000000000002
+    },
+    "path": "/home/processes/mitosis.webm",
+    "sha256": "6a14c8dfa79e383b4bdb15c51708d86d6a01597a2cca9df5f5a3712b9c6c4c76",
     "background": "#f5f5f7",
     "labels": false
   },

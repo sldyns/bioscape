@@ -1,5 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { membraneSurface } from "./membranes.js";
+import { particleRadius, luminalSphereAllowance } from "./luminalCargo.js";
 import {
   smoothFusionProfile,
   fusionEnvelope,
@@ -45,6 +46,7 @@ function create() {
     particle.scale.setScalar(0.9);
     cargo.push(particle);
   }
+  const cargoRadius = particleRadius(cargo[0]);
   const pump = acidPump(k, group);
   const dynamin = new THREE.Group();
   group.add(dynamin);
@@ -248,7 +250,9 @@ function create() {
             Math.cos(angle),
           ).normalize(),
         );
-        const targetX = 0.8 + q * 0.8 + sort * (0.22 + i * 0.16),
+        // Retain the three particles' order and spacing as the common lumen
+        // opens; their complete envelopes must pass through the fusion neck.
+        const targetX = 1.1 + q * 0.4 + (i - 1) * 0.4 + sort * 0.45,
           targetY = -1.2 - 0.25 * Math.sin(i * 1.5),
           targetZ = -0.15 - 0.2 * Math.cos(i);
         cargo[i].position.set(
@@ -256,6 +260,21 @@ function create() {
           cargo[i].position.y * (1 - q) + targetY * q,
           cargo[i].position.z * (1 - q) + targetZ * q,
         );
+        const luminalRadius = luminalSphereAllowance(
+          endosome.mesh.children[0].geometry.attributes.position,
+          cargo[i].position.x,
+          // Leave space for the leaflet's angular facets and a visible gap.
+          cargoRadius + 0.008,
+        );
+        const radial = Math.hypot(
+          cargo[i].position.y + 1.25,
+          cargo[i].position.z,
+        );
+        if (radial > luminalRadius) {
+          const inward = Math.max(0, luminalRadius) / radial;
+          cargo[i].position.y = -1.25 + (cargo[i].position.y + 1.25) * inward;
+          cargo[i].position.z *= inward;
+        }
       }
     }
     const pumpRadius = fused ? profileAtX(activeProfile, 2.5, 129)[0] : 1.05;

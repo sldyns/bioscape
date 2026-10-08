@@ -40,7 +40,9 @@ def extract(source, pdb, forced_subunit):
     columns = {header.removeprefix("_atom_site."): i for i, header in enumerate(atom_headers)}
     chains = {}
     for line in lines:
-        if not line.startswith("ATOM "):
+        # Modified polymer residues may use HETATM while retaining a modeled
+        # C4'/C-alpha backbone. Record type alone must not create false gaps.
+        if not line.startswith(("ATOM ", "HETATM ")):
             continue
         row = line.split()
 
@@ -48,6 +50,8 @@ def extract(source, pdb, forced_subunit):
             return row[columns[name]]
 
         entity_id = value("label_entity_id")
+        if entities[entity_id]["_entity.type"] != "polymer":
+            continue
         name = entities[entity_id]["_entity.pdbx_description"]
         kind = "rna" if "rRNA" in name or "ribosomal RNA" in name else "protein"
         atom = value("label_atom_id").strip('"')

@@ -126,8 +126,23 @@ function create() {
       separateII = ease(p, 0.7, 0.86),
       pinchII = ease(p, 0.8, 0.93);
     const final = ease(p, 0.88, 0.96);
+    // Follow the expanding daughter cortex, then settle outside the full-size
+    // nucleus before its envelope reassembles. Bundle starts use the same pole.
+    const poleSettlement = ease(p, 0.87, 0.93),
+      poleIIY = 1.5 + pinchII * 0.5 + 0.27 * poleSettlement,
+      nuclearAssembly = ease(p, 0.93, 0.98);
+    // In I the two sister centromeres face the pole side by side, rather than
+    // one sitting behind the other on the incoming microtubule path. Rotating
+    // their separation into depth keeps its length and the reciprocal
+    // nonsister junctions intact. In II it turns into the up/down spindle axis.
+    const coorientation = ease(p, 0.23, 0.28),
+      sisterX =
+        coorientation === 1 ? 0 : Math.cos((Math.PI / 2) * coorientation),
+      sisterZ = Math.sin((Math.PI / 2) * coorientation),
+      secondY = Math.sin((Math.PI / 2) * rotate),
+      secondZ = rotate === 1 ? 0 : Math.cos((Math.PI / 2) * rotate);
     membrane.update(pinchI, pinchII);
-    nuclei.forEach((n) => n.reveal(final));
+    nuclei.forEach((n) => n.reveal(nuclearAssembly));
     parentalEnvelope.reveal(1 - ease(p, 0.23, 0.29));
     firstRing.visible = p >= 0.43 && p < 0.56;
     secondRings.forEach((r) => {
@@ -150,20 +165,23 @@ function create() {
     });
     polesII.forEach(({ mesh, side, up }) => {
       mesh.visible = p >= 0.58;
-      mesh.scale.setScalar(0.67 * ease(p, 0.58, 0.63) * (1 - 0.4 * final));
-      mesh.position.set(side * 2.05, up * (1.6 + separateII * 0.4), 0);
+      mesh.scale.setScalar(
+        0.67 * ease(p, 0.58, 0.63) * (1 - 0.4 * poleSettlement),
+      );
+      mesh.position.set(side * 2.05, up * poleIIY, 0);
     });
     chromosomes.forEach((c) => {
       const { homolog, sister } = c;
       const pairY = c.pair === 0 ? 0.64 : -0.78;
       const homologX = homolog * (1.02 - pair * 0.57 + separateI * 1.6);
-      const localOffset = sister * (0.13 + separateII * 1.12);
       // Homologs move left/right in I. Each stays on its side while sisters move up/down in II.
       const x =
-        (1 - rotate) * (homologX + sister * 0.13) +
+        (1 - rotate) * (homologX + sister * 0.13 * sisterX) +
         rotate * (homolog * 2.05 + (c.pair === 0 ? -0.48 : 0.48));
-      const y = (1 - rotate) * pairY + rotate * localOffset;
-      c.group.position.set(x, y, 0.24);
+      const y =
+          (1 - rotate) * pairY + sister * (0.13 * secondY + separateII * 1.12),
+        z = 0.24 + homolog * sister * 0.13 * sisterZ * secondZ;
+      c.group.position.set(x, y, z);
       c.group.rotation.z = (Math.PI / 2) * rotate;
       c.group.scale.setScalar(1 - final * 0.3);
       const recombinant =
@@ -201,7 +219,7 @@ function create() {
         k.setBundle(
           c.fibre,
           homolog * 2.05,
-          sister * (1.6 + separateII * 0.4),
+          sister * poleIIY,
           0,
           target.x,
           target.y,
@@ -215,10 +233,10 @@ function create() {
           c.cohesion,
           x,
           y,
-          0.3,
-          x + 0.26 * (1 - rotate),
-          y + 0.26 * rotate,
-          0.3,
+          z + 0.06,
+          x + 0.26 * sisterX * (1 - rotate),
+          y + 0.26 * secondY,
+          z + 0.06 + homolog * 0.26 * sisterZ * secondZ,
           0.038,
         );
       else k.setSegment(c.cohesion, x, y, 0.3, x, y + 0.26, 0.3, 0.038);
@@ -280,7 +298,7 @@ function create() {
       complete: p >= 0.94,
       chromosomeSurface: "schematic folded chromatin with layered kinetochores",
       spindleMicrotubulesPerBundle: 5,
-      nuclearEnvelopeAssembly: final,
+      nuclearEnvelopeAssembly: nuclearAssembly,
       membraneDivisionTransitions: [pinchI, pinchII],
     };
   }
@@ -389,6 +407,11 @@ export default {
       title:
         "Greenbaum et al. TEX14 is essential for intercellular bridges and fertility in male mice",
       url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC1458781/",
+    },
+    {
+      title:
+        "Hsieh et al. MIWI prevents aneuploidy during meiosis by cleaving excess satellite RNA — mouse sister-kinetochore geometry",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7429737/",
     },
   ],
   create,

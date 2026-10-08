@@ -360,3 +360,5 @@ console.log("Division irregular playback and replay regression PASS");
 await import("./cortical-ring.test.mjs");
 await import("./label-anchors.test.mjs");
 await import("./geometry-equivalence.test.mjs");
+await import("./kinetochorePaths.test.mjs");
+await import("./centrosomeCompartments.test.mjs");

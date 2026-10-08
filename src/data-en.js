@@ -12,7 +12,7 @@ export const english = [
       "Small nonpolar molecules cross relatively easily. Ions and many polar molecules rely on membrane proteins; larger cargo can also use vesicular pathways.",
     ],
     "The membrane is not a rigid shell. Animal cells have no cell wall; their membrane and cytoskeleton help maintain shape.",
-    "The model shows the overall boundary, not individual phospholipids, glycans, or membrane proteins. The two leaflets differ in composition.",
+    "The model includes phospholipids, membrane proteins, and outward-facing glycans as a schematic view of the membrane. The two leaflets differ in composition; molecular sizes and spacing are enlarged for clarity.",
   ],
   [
     "Cytoplasm",

@@ -1,7 +1,6 @@
-import { macronuclearBridge } from "./scientificGeometry.js";
+import { binaryNuclearFission } from "./nuclearLineage.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { nuclearCell } from "./nuclearCell.js";
-import { nuclearDetail } from "./fineStructure.js";
 import { labelAnchor } from "./labelAnchors.js";
 
 export default {
@@ -108,26 +107,31 @@ export default {
         opacity: 0.55,
         depthWrite: false,
       });
-    const macro = k.ball([0.25, 0.25, 0.3], [0.4, 0.73, 0.26], macroMat);
-    const macroDaughters = [
-      k.ball([0, 0, 0], [0.34, 0.54, 0.26], macroMat),
-      k.ball([0, 0, 0], [0.34, 0.54, 0.26], macroMat),
-    ];
-    macro.name = "division-mother-macronucleus";
-    const bridge = macronuclearBridge(
-      k,
-      group,
-      k.material("#aa96b3", { side: THREE.DoubleSide }),
-    );
+    const macroLineage = binaryNuclearFission(k, group, {
+      name: "macronuclear-fission-lineage",
+      motherName: "division-mother-macronucleus",
+      bridgeName: "continuous-macronuclear-envelope",
+      daughterName: "daughter-macronucleus",
+      material: macroMat,
+      macro: true,
+    });
+    const microLineage = binaryNuclearFission(k, group, {
+      name: "micronuclear-fission-lineage",
+      motherName: "dividing-micronucleus",
+      daughterName: "daughter-micronucleus",
+      material: microMat,
+    });
+    const macro = macroLineage.mother,
+      macroDaughters = macroLineage.daughters,
+      micro = microLineage.mother,
+      micros = microLineage.daughters;
     const granules = [];
-    for (let i = 0; i < 18; i++)
-      granules.push(k.ball([0, 0, 0], 0.045, k.material("#8a7197")));
-    const micro = k.ball([-0.58, 0.25, 0.56], [0.26, 0.27, 0.24], microMat);
-    const micros = [
-      k.ball([0, 0, 0], 0.2, microMat),
-      k.ball([0, 0, 0], 0.2, microMat),
-    ];
-    micro.name = "dividing-micronucleus";
+    for (let i = 0; i < 18; i++) {
+      const o = k.ball([0, 0, 0], 0.045, k.material("#8a7197"));
+      o.name = `inherited-macronuclear-granule-${i}`;
+      granules.push(o);
+    }
+    const granulePoint = new THREE.Vector3();
     const spindle = new THREE.Group();
     spindle.name = "micronuclear-spindle";
     group.add(spindle);
@@ -185,20 +189,9 @@ export default {
     const furrow = k.ring([0, 0, 0], 1.05, 0.028, k.material("#7f9e8c"));
     furrow.rotation.x = Math.PI / 2;
     furrow.scale.y = 0.4;
-    nuclearDetail(k, macro, true);
-    macroDaughters.forEach((o, i) => {
-      o.name = `daughter-macronucleus-${i}`;
-      nuclearDetail(k, o, true);
-    });
-    nuclearDetail(k, micro, false);
-    micros.forEach((o, i) => {
-      o.name = `daughter-micronucleus-${i}`;
-      nuclearDetail(k, o, false);
-    });
     oral[0].name = "anterior-oral-apparatus";
     oral[1].name = "posterior-oral-apparatus";
     furrow.name = "transverse-cleavage-furrow";
-    bridge.group.name = "dividing-macronuclear-envelope";
     const labels = [
       k.label(
         [-0.75, 0.65, 0.75],
@@ -218,7 +211,7 @@ export default {
       ),
       macroAnchors = [
         labelAnchor(group, labels[1], macro),
-        labelAnchor(group, labels[1], bridge.group, bridgeAnchor),
+        labelAnchor(group, labels[1], macroLineage.bridge, bridgeAnchor),
         labelAnchor(group, labels[1], macroDaughters[1]),
       ],
       oralAnchor = labelAnchor(group, labels[2], oral[0], [0.53, 0, 0.58]),
@@ -234,8 +227,7 @@ export default {
         mitosis = ease(p, 0.31, 0.53),
         partition = ease(p, 0.5, 0.75),
         pinch = ease(p, 0.71, 0.9),
-        separation = ease(p, 0.91, 1),
-        offset = 1.5 + 0.55 * separation;
+        separation = ease(p, 0.91, 1);
       bodyHalves.forEach((body) =>
         body.deform(
           pinch * 0.985,
@@ -244,59 +236,81 @@ export default {
           separation,
         ),
       );
-      micro.visible = p < 0.54;
-      micro.position.y = 0.25 * (1 - ease(p, 0.15, 0.31));
-      const elongation = ease(p, 0.25, 0.36);
-      micro.scale.set(
-        0.26 + 0.09 * elongation,
-        0.27 + 0.78 * elongation,
-        0.24 + 0.1 * elongation,
-      );
-      spindle.scale.y = 0.25 + 0.75 * ease(p, 0.3, 0.36);
-      spindle.visible = p >= 0.3 && p < 0.54;
-      micros.forEach((o, i) => {
-        o.visible = p >= 0.54;
-        o.position.set(
-          -0.5,
-          (i ? 1 : -1) * (0.7 + ease(p, 0.54, 0.88) * 0.8 + separation * 0.55),
-          0.56,
-        );
+      const elongation = ease(p, 0.25, 0.36),
+        microRecovery = ease(p, 0.54, 0.66),
+        microDistance = 0.525 + ease(p, 0.54, 0.88) * 0.975 + separation * 0.55,
+        microX = -0.58 + 0.08 * microRecovery,
+        microRadii = [
+          0.35 - 0.15 * microRecovery,
+          0.525 - 0.325 * microRecovery,
+          0.34 - 0.14 * microRecovery,
+        ];
+      microLineage.update({
+        center: [-0.58, 0.25 * (1 - ease(p, 0.15, 0.31)), 0.56],
+        radius: [
+          0.26 + 0.09 * elongation,
+          0.27 + 0.78 * elongation,
+          0.24 + 0.1 * elongation,
+        ],
+        daughterCenters: [
+          [microX, -microDistance, 0.56],
+          [microX, microDistance, 0.56],
+        ],
+        daughterRadius: microRadii,
+        split: ease(p, 0.48, 0.54),
       });
+      const spindleLoss = 1 - ease(p, 0.51, 0.54);
+      spindle.scale.set(
+        spindleLoss,
+        (0.25 + 0.75 * ease(p, 0.3, 0.36)) * spindleLoss,
+        spindleLoss,
+      );
+      spindle.visible = p >= 0.3 && p < 0.54;
       chromatids.forEach(({ o, side, i }) => {
-        o.visible = p >= 0.3 && p < 0.54;
-        o.position.y = side * (0.04 + mitosis * 0.55);
+        o.visible = p >= 0.3;
+        if (p < 0.54) {
+          o.position.set(
+            -0.58 + (i - 1.5) * 0.09,
+            side * (0.04 + mitosis * 0.55),
+            0.72,
+          );
+          o.scale.set(0.025, 0.16, 0.025);
+        } else {
+          o.position.set(
+            microX + ((i - 1.5) * 0.09 * microRadii[0]) / 0.35,
+            side * (microDistance + ((0.59 - 0.525) * microRadii[1]) / 0.525),
+            0.56 + (0.16 * microRadii[2]) / 0.34,
+          );
+          o.scale.set(
+            (0.025 * microRadii[0]) / 0.35,
+            (0.16 * microRadii[1]) / 0.525,
+            (0.025 * microRadii[2]) / 0.34,
+          );
+        }
+      });
+      const macroDistance =
+        0.54 + 0.96 * ease(p, 0.76, 0.9) + separation * 0.55;
+      macroLineage.update({
+        center: [0.25, 0.25 * (1 - ease(p, 0.48, 0.58)), 0.3],
+        radius: [
+          0.4 - 0.06 * partition,
+          0.73 + ease(p, 0.49, 0.59) * 0.36,
+          0.26,
+        ],
+        daughterCenters: [
+          [0.25, -macroDistance, 0.3],
+          [0.25, macroDistance, 0.3],
+        ],
+        daughterRadius: [0.34, 0.54, 0.26],
+        split: ease(p, 0.55, 0.76),
       });
       macro.visible = p < 0.59;
-      macro.position.y = 0.25 * (1 - ease(p, 0.48, 0.58));
-      macro.scale.set(
-        0.4 - 0.06 * partition,
-        0.73 + ease(p, 0.49, 0.59) * 0.36,
-        0.26,
-      );
-      macroDaughters.forEach((o, i) => {
-        o.visible = p >= 0.76;
-        o.position.set(
-          0.25,
-          (i ? 1 : -1) * (0.44 + partition * 1.06 + separation * 0.55),
-          0.3,
-        );
-      });
-      bridge.group.visible = p >= 0.59 && p < 0.76;
-      bridge.update(
-        0.44 + partition * 1.06 + separation * 0.55,
-        0.26 * (1 - ease(p, 0.61, 0.76)),
-      );
+      macroLineage.bridge.visible = p >= 0.59 && p < 0.76;
       granules.forEach((o, i) => {
         const side = i < 9 ? -1 : 1,
           a = i * 2.4;
-        o.position.set(
-          0.25 + Math.cos(a) * 0.16,
-          (0.25 + Math.sin(a) * 0.48) * (1 - partition) +
-            (side * (0.44 + partition * 1.06 + separation * 0.55) +
-              Math.sin(a) * 0.31) *
-              partition,
-          0.38,
-        );
+        granulePoint.set(Math.cos(a) * 0.47, Math.sin(a) * 0.52, 0.22);
+        macroLineage.mapPoint(granulePoint, side, 1, o.position);
       });
       oral[0].position.y = 0.4 + ease(p, 0.35, 0.89) * 1.1 + separation * 0.55;
       oral[1].position.y = 0.05 - 1.55 * ease(p, 0.22, 0.7) - separation * 0.55;
@@ -304,7 +318,7 @@ export default {
       furrow.visible = p >= 0.7 && p < 0.91;
       furrow.scale.set(1 - pinch * 0.94, 0.43 * (1 - pinch * 0.94), 1);
       furrow.position.x = 0.09 * ease(p, 0.74, 0.91);
-      bridgeAnchor[0] = 0.44 + partition * 1.06 + separation * 0.55;
+      bridgeAnchor[1] = macroDistance / macroLineage.bridge.scale.y;
       posteriorAnchor[1] = -1.62 - 0.43 * separation;
       microAnchors[p < 0.54 ? 0 : 1]();
       macroAnchors[p < 0.59 ? 0 : p < 0.76 ? 1 : 2]();

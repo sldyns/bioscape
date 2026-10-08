@@ -1,4 +1,4 @@
-import { THREE } from "../../kit.js";
+import { THREE, clamp } from "../../kit.js";
 import {
   capsomerSites,
   instances,
@@ -206,6 +206,73 @@ export function cutawayHead(k, parent) {
       j ? "gp14-seal-subunits" : "gp13-seal-subunits",
     );
   });
+  // gp14 stopper loops close the pre-tail neck. Tail binding opens this gate;
+  // the connector rings themselves must not be mistaken for a lumen seal.
+  const gate = new THREE.Group();
+  gate.name = "gp14-pre-tail-genome-gate";
+  neck.add(gate);
+  const loops = [];
+  for (let i = 0; i < 6; i++) {
+    const angle = (i * Math.PI) / 3,
+      points = Array.from({ length: 5 }, () => new THREE.Vector3()),
+      curve = new THREE.CatmullRomCurve3(points),
+      geometry = new THREE.TubeGeometry(
+        new THREE.LineCurve3(new THREE.Vector3(), new THREE.Vector3(1, 0, 0)),
+        40,
+        0.026,
+        8,
+        false,
+      ),
+      mesh = k.mesh(geometry, k.material("#a8bbb1"), [0, 0, 0], gate);
+    mesh.name = `gp14-stopper-loop-${i}`;
+    loops.push({ angle, points, curve, mesh });
+  }
+  const gatePoint = new THREE.Vector3(),
+    gateTangent = new THREE.Vector3();
+  let previousOpening = NaN;
+  function setGateOpening(value) {
+    const opening = clamp(value);
+    if (opening === previousOpening) return;
+    previousOpening = opening;
+    gate.userData.opening = opening;
+    for (const { angle, points, curve, mesh } of loops) {
+      const radii = [
+          0.2,
+          0.105 + 0.085 * opening,
+          0.015 + 0.15 * opening,
+          0.105 + 0.085 * opening,
+          0.2,
+        ],
+        angles = [-0.16, -0.2, 0, 0.2, 0.16];
+      points.forEach((point, i) =>
+        point.set(
+          radii[i] * Math.cos(angle + angles[i]),
+          -0.17,
+          radii[i] * Math.sin(angle + angles[i]),
+        ),
+      );
+      const attribute = mesh.geometry.attributes.position;
+      for (let row = 0; row <= 40; row++) {
+        curve.getPoint(row / 40, gatePoint);
+        curve.getTangent(row / 40, gateTangent);
+        for (let col = 0; col <= 8; col++) {
+          const phase = (col / 8) * Math.PI * 2,
+            inPlane = 0.026 * Math.sin(phase);
+          attribute.setXYZ(
+            row * 9 + col,
+            gatePoint.x - gateTangent.z * inPlane,
+            gatePoint.y + 0.026 * Math.cos(phase),
+            gatePoint.z + gateTangent.x * inPlane,
+          );
+        }
+      }
+      attribute.needsUpdate = true;
+      mesh.geometry.computeVertexNormals();
+      mesh.geometry.computeBoundingBox();
+      mesh.geometry.computeBoundingSphere();
+    }
+  }
+  setGateOpening(0);
   return {
     group,
     panels,
@@ -215,6 +282,7 @@ export function cutawayHead(k, parent) {
     genome,
     setGenomeFraction: packedDNA.fraction,
     neck,
+    setGateOpening,
   };
 }
 export function assemblyTail(k, parent) {

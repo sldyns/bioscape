@@ -196,7 +196,8 @@ export default {
     }
     // Back-side beta-subunit: one membrane helix with an extracellular folded head.
     // It sits behind the cutaway so it cannot conceal transported ions.
-    alphaHelix(k, [0.63, 0, -0.64], 1.88, aMat);
+    const betaHelix = alphaHelix(k, [0.63, 0, -0.64], 1.88, aMat);
+    betaHelix.name = "beta-subunit-transmembrane-helix";
     foldedDomain(
       k,
       [0.88, 1.39, -0.55],
@@ -204,6 +205,20 @@ export default {
       aMat,
       "beta-subunit-extracellular-domain",
     );
+    // Continue the beta chain from the helix tip into the lower head lobe.
+    const betaLinker = k.tube(
+      [
+        [0.714, 0.94, -0.64],
+        [0.74, 1.035, -0.64],
+        [0.8, 1.09, -0.64],
+        [0.88, 1.11, -0.64],
+      ],
+      0.033,
+      aMat,
+      k.group,
+      24,
+    );
+    betaLinker.name = "beta-subunit-extracellular-linker";
     for (const x of [0.64, 0.93])
       k.tube(
         [

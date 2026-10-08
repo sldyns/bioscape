@@ -242,6 +242,13 @@ export function erDetail(id) {
       })
     : smoothAssembly({ junctionOnly: id === "erTubules" });
   g.rotation.set(0.48, -0.18, -0.1);
+  if (id === "roughER")
+    // These surface points remain exposed in both Whole and Section. A box
+    // center would put both labels in the empty middle of the curved cisternae.
+    g.userData.partAnchors = {
+      erCisternae: [0.722905, 0.946028, 0.328878],
+      boundRibosomes: [-1.021751, 0.623785, 0.371523],
+    };
   if (id === "erCisternae")
     g.userData.landmarks = [
       { zh: "内质网腔", en: "ER lumen", position: [-1.48, 0.08, 0] },

@@ -4,6 +4,7 @@ import diffusion from "./diffusionProcess.js";
 import pump from "./activeTransportProcess.js";
 import osmosis from "./osmoticBalanceProcess.js";
 import wall from "./bacterialCellWallProcess.js";
+import "./beta-connectivity.test.mjs";
 
 const near = (a, b, eps = 1e-6) =>
   assert(Math.abs(a - b) <= eps, `${a} != ${b}`);

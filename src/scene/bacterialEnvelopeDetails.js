@@ -60,6 +60,9 @@ export function lpsMolecule(g = new T.Group(), p = [0, 0, 0], scale = 1) {
     [-0.023, 0.29, 0.01],
     [0.017, 0.36, 0.008],
   ];
+  // The first core sugar is covalently linked to a lipid-A sugar. This is a
+  // schematic connection between real sugar bodies, not an atomistic bond.
+  tube(unit, [[0.055, 0.09, 0], core[0]], 0.012, "#b5b394", "lps");
   tube(unit, core, 0.012, "#b5b394", "lps");
   core.forEach((p, i) =>
     ball(unit, p, [0.027, 0.024, 0.024], i % 2 ? "#bdb08d" : "#9db29b", "lps"),

@@ -14,6 +14,16 @@ function rounded(w, h, r) {
   s.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
   return s;
 }
+// The central vacuole leaves a cytoplasmic recess for the complete nucleus.
+// Keep the outer cell and nuclear dimensions; deform the tonoplast locally.
+function vacuoleSection(w, h, r) {
+  const points = rounded(w, h, r).getSpacedPoints(384);
+  for (const p of points) {
+    const left = Math.min(1, Math.max(0, -p.x));
+    p.x += 0.62 * left * Math.exp(-Math.pow((p.y + 0.86) / 0.72, 4));
+  }
+  return new THREE.Shape(points);
+}
 const process = {
   id: "plasmolysis",
   title: b("质壁分离与复原", "Plasmolysis and recovery"),
@@ -168,7 +178,7 @@ const process = {
       { gap: 0.065, head: 0.021 },
     );
     const vacuole = k.mesh(
-      new THREE.ExtrudeGeometry(rounded(3.95, 4.38, 0.9), {
+      new THREE.ExtrudeGeometry(vacuoleSection(3.95, 4.38, 0.9), {
         depth: 0.35,
         bevelEnabled: true,
         bevelSegments: 5,
@@ -179,14 +189,14 @@ const process = {
       [0.06, 0.08, -0.12],
       protoplast,
     );
-    const tonoplast = rounded(3.99, 4.42, 0.91)
+    const tonoplast = vacuoleSection(3.99, 4.42, 0.91)
       .getPoints(96)
       .map((p) => [p.x + 0.06, p.y + 0.08, 0.32]);
     tonoplast.push(tonoplast[0]);
     bilayerOutline(
       k,
       protoplast,
-      rounded(3.99, 4.42, 0.91)
+      vacuoleSection(3.99, 4.42, 0.91)
         .getSpacedPoints(144)
         .map((p) => [p.x + 0.06, p.y + 0.08, 0.37]),
       { gap: 0.044, head: 0.015, color: "#5f979f", tailColor: "#b7c7b7" },
@@ -194,12 +204,12 @@ const process = {
     // Slightly raised cut-edge lip makes the vacuolar lumen unambiguous.
     k.tube(tonoplast, 0.012, k.material("#d0e3dd"), protoplast);
     const nucleus = k.ball(
-      [-1.92, -0.78, 0.36],
+      [-1.92, -0.78, 0.1],
       [0.29, 0.45, 0.17],
       k.material("#a992aa"),
       protoplast,
     );
-    k.ball([-1.93, -0.79, 0.51], 0.1, k.material("#796a86"), protoplast);
+    k.ball([-1.93, -0.79, 0.16], 0.1, k.material("#796a86"), protoplast);
     const external = [];
     for (let i = 0; i < 40; i++) {
       const side = i % 4,

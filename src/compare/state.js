@@ -1,4 +1,4 @@
-import { comparisonIds } from "./ids.js";
+import { comparisonIds, normalizeComparisonPath } from "./ids.js";
 
 const ids = new Set(comparisonIds);
 export const isComparisonId = (id) => typeof id === "string" && ids.has(id);
@@ -24,8 +24,10 @@ export function normalizeComparisonView(view) {
 }
 
 function normalizePane(pane, fallbackId) {
+  const path = normalizeComparisonPath(pane?.id, pane?.path);
   return {
     id: isComparisonId(pane?.id) ? pane.id : fallbackId,
+    ...(path ? { path } : {}),
     mode: ["whole", "section", "explode"].includes(pane?.mode)
       ? pane.mode
       : "whole",

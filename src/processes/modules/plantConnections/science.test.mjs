@@ -309,3 +309,4 @@ console.log(
 await import("./topology.test.mjs");
 await import("./labelAnchors.test.mjs");
 await import("./camStorage.test.mjs");
+await import("./camTonoplast.test.mjs");

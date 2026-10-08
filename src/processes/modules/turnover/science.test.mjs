@@ -397,3 +397,5 @@ console.log(
 await import("./bubble.test.mjs");
 await import("./continuity.test.mjs");
 await import("./labels.test.mjs");
+await import("./chirality.test.mjs");
+await import("./rnaTurnover.test.mjs");

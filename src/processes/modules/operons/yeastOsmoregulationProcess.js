@@ -355,14 +355,14 @@ const model = {
       channel.position.set(3.86 * volume, 0, 0);
       jaws[0].position.y = 0.19 - 0.13 * shock;
       jaws[1].position.y = -0.19 + 0.13 * shock;
-      sensorP.visible =
-        ypdP.visible =
-        sskP.visible =
-          !stress || p < 0.32 || recovery > 0.85;
+      // The phosphate, activity colors and annotation share the same relay
+      // state, including an exact seek to the selectable p=0.32 stage.
+      const relayPhosphorylated = !stress || p < 0.32 || recovery > 0.85;
+      sensorP.visible = ypdP.visible = sskP.visible = relayPhosphorylated;
       pbsP.visible = stress && p >= 0.44 && (functional ? p < 0.86 : true);
       hogP.visible = functional && stress && p >= 0.51 && p < 0.86;
-      ssk.material = stress && p > 0.32 ? green : inactive;
-      ypd.material = stress && p > 0.32 ? inactive : blue;
+      ssk.material = relayPhosphorylated ? inactive : green;
+      ypd.material = relayPhosphorylated ? blue : inactive;
       const importProgress = stress && functional ? ease(p, 0.53, 0.65) : 0;
       const exportProgress = stress && functional ? ease(p, 0.87, 0.99) : 0;
       const nuclearMove = importProgress * (1 - exportProgress);
@@ -395,10 +395,9 @@ const model = {
         w.rotation.z = a - Math.PI / 2;
       });
       rnaDetail.update();
-      labels[2].text =
-        stress && p > 0.32 && recovery < 0.85
-          ? b("Ssk1 去磷酸化", "Ssk1 dephosphorylated")
-          : b("Ssk1-P：抑制支路", "Ssk1-P: branch restrained");
+      labels[2].text = relayPhosphorylated
+        ? b("Ssk1-P：抑制支路", "Ssk1-P: branch restrained")
+        : b("Ssk1 去磷酸化", "Ssk1 dephosphorylated");
       labels[5].text = functional
         ? b("Hog1", "Hog1")
         : b("Hog1 不可磷酸化", "Hog1 nonphosphorylatable");

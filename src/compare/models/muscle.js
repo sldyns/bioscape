@@ -1,5 +1,8 @@
 import * as T from "three";
-import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import {
+  mergeGeometries,
+  mergeVertices,
+} from "three/addons/utils/BufferGeometryUtils.js";
 import { mitochondriaDetail } from "../../scene/mitochondriaDetails.js";
 
 const TAU = Math.PI * 2,
@@ -45,6 +48,13 @@ export const sarcomereAnatomy = Object.freeze({
   thinFilaments: 18,
   thickFilaments: 7,
 });
+// The reference specimen is static. These phases describe its displayed bands,
+// not a rule that triads move with the A/I boundary throughout contraction.
+const referenceAIPhases = [0.18, 0.82];
+const junctionFibril = [
+  0.755 * Math.cos(Math.PI / 3),
+  0.755 * Math.sin(Math.PI / 3),
+];
 function add(g, geo, color, id, flags = {}, appearance = {}) {
   const m = new T.Mesh(
     geo,
@@ -112,6 +122,181 @@ function ring(x, r, t = 0.01, start = 0, length = TAU) {
     .rotateY(Math.PI / 2)
     .translate(x, 0, 0);
 }
+
+// Remove selected membrane patches, then move the shared boundary vertices to
+// their analytic aperture. Returned edges are also used by the connecting wall,
+// so there is no intact membrane hidden behind a pore or a tubular junction.
+function perforateSurface(source, apertures) {
+  source.deleteAttribute("uv");
+  const geometry = mergeVertices(source, 1e-6);
+  source.dispose();
+  const p = geometry.attributes.position;
+  const index = geometry.index.array;
+  const kept = [];
+  for (let i = 0; i < index.length; i += 3) {
+    const mid = V(0, 0, 0);
+    for (let j = 0; j < 3; j++)
+      mid.add(new T.Vector3().fromBufferAttribute(p, index[i + j]));
+    mid.divideScalar(3);
+    if (
+      !apertures.some((a) =>
+        a.coverVertices
+          ? [0, 1, 2].some(
+              (j) =>
+                new T.Vector3()
+                  .fromBufferAttribute(p, index[i + j])
+                  .distanceToSquared(a.center) <
+                a.radius ** 2,
+            )
+          : mid.distanceToSquared(a.center) < a.radius ** 2,
+      )
+    )
+      kept.push(index[i], index[i + 1], index[i + 2]);
+  }
+  const edgeCounts = new Map();
+  for (let i = 0; i < kept.length; i += 3)
+    for (let j = 0; j < 3; j++) {
+      const a = kept[i + j],
+        b = kept[i + ((j + 1) % 3)];
+      const key = a < b ? `${a}:${b}` : `${b}:${a}`;
+      const edge = edgeCounts.get(key);
+      if (edge) edge.count++;
+      else edgeCounts.set(key, { a, b, count: 1 });
+    }
+  const boundaries = apertures.map(() => []);
+  const vertexApertures = new Map();
+  for (const { a, b, count } of edgeCounts.values()) {
+    if (count !== 1) continue;
+    const mid = new T.Vector3()
+      .fromBufferAttribute(p, a)
+      .add(new T.Vector3().fromBufferAttribute(p, b))
+      .multiplyScalar(0.5);
+    let nearest = 0;
+    for (let i = 1; i < apertures.length; i++)
+      if (
+        mid.distanceToSquared(apertures[i].center) <
+        mid.distanceToSquared(apertures[nearest].center)
+      )
+        nearest = i;
+    boundaries[nearest].push([a, b]);
+    vertexApertures.set(a, nearest);
+    vertexApertures.set(b, nearest);
+  }
+  for (const [i, aperture] of vertexApertures) {
+    if (apertures[aperture].rim) continue;
+    const point = apertures[aperture].snap(
+      new T.Vector3().fromBufferAttribute(p, i),
+    );
+    p.setXYZ(i, point.x, point.y, point.z);
+  }
+  const positions = Array.from(p.array);
+  // Keep the uncut spherical grid intact. An annular triangulation fills from
+  // its irregular cut edge to the smooth analytic pore rim; moving the old grid
+  // vertices themselves would fold some adjacent triangles on this ellipsoid.
+  boundaries.forEach((edges, aperture) => {
+    const a = apertures[aperture];
+    if (!a.rim) return;
+    const neighbours = new Map();
+    for (const [u, v] of edges) {
+      if (!neighbours.has(u)) neighbours.set(u, []);
+      if (!neighbours.has(v)) neighbours.set(v, []);
+      neighbours.get(u).push(v);
+      neighbours.get(v).push(u);
+    }
+    if (!edges.length || [...neighbours.values()].some((n) => n.length !== 2))
+      throw new Error(`Membrane aperture ${aperture} must have one simple rim`);
+    const ordered = [edges[0][0]];
+    let previous = ordered[0],
+      current = edges[0][1];
+    while (current !== ordered[0] && ordered.length <= neighbours.size) {
+      ordered.push(current);
+      const next = neighbours.get(current).find((v) => v !== previous);
+      previous = current;
+      current = next;
+    }
+    if (ordered.length !== neighbours.size)
+      throw new Error("Membrane aperture has disconnected rims");
+    const outerPoints = ordered.map((i) =>
+      new T.Vector3().fromBufferAttribute(p, i),
+    );
+    const innerPoints = Array.from({ length: 32 }, (_, i) =>
+      a.rim.pointAtAngle((i * TAU) / 32),
+    );
+    const innerIndices = innerPoints.map((point) => {
+      const index = positions.length / 3;
+      positions.push(...point.toArray());
+      return index;
+    });
+    const allPoints = [...outerPoints, ...innerPoints];
+    const allIndices = [...ordered, ...innerIndices];
+    const triangles = T.ShapeUtils.triangulateShape(
+      outerPoints.map(a.rim.project),
+      [innerPoints.map(a.rim.project)],
+    );
+    for (const triangle of triangles) {
+      const [i, j, k] = triangle;
+      const outward = allPoints[j]
+        .clone()
+        .sub(allPoints[i])
+        .cross(allPoints[k].clone().sub(allPoints[i]))
+        .dot(allPoints[i]);
+      const indices = triangle.map((i) => allIndices[i]);
+      if (outward < 0) [indices[1], indices[2]] = [indices[2], indices[1]];
+      kept.push(...indices);
+    }
+    boundaries[aperture] = innerIndices.map((v, i) => [
+      innerIndices[(i + 1) % innerIndices.length],
+      v,
+    ]);
+  });
+  geometry.setAttribute("position", new T.Float32BufferAttribute(positions, 3));
+  geometry.setIndex(kept);
+  geometry.deleteAttribute("normal");
+  geometry.computeVertexNormals();
+  return { geometry, boundaries };
+}
+
+function membraneHalf(geometry, front) {
+  const half = geometry.clone(),
+    p = half.attributes.position,
+    keep = [];
+  const index = half.index.array;
+  for (let i = 0; i < index.length; i += 3) {
+    const z = p.getZ(index[i]) + p.getZ(index[i + 1]) + p.getZ(index[i + 2]);
+    if (z > 0 === front) keep.push(index[i], index[i + 1], index[i + 2]);
+  }
+  half.setIndex(keep);
+  return half;
+}
+
+function joinBoundary(geometry, boundaries, positionAt, steps) {
+  const p = geometry.attributes.position,
+    positions = [],
+    indices = [];
+  boundaries.forEach((edges, aperture) => {
+    for (const [a, b] of edges) {
+      const base = positions.length / 3;
+      for (let i = 0; i <= steps; i++)
+        for (const vertex of [a, b])
+          positions.push(
+            ...positionAt(
+              new T.Vector3().fromBufferAttribute(p, vertex),
+              i / steps,
+              aperture,
+            ).toArray(),
+          );
+      for (let i = 0; i < steps; i++) {
+        const k = base + i * 2;
+        indices.push(k, k + 2, k + 1, k + 1, k + 2, k + 3);
+      }
+    }
+  });
+  const wall = new T.BufferGeometry();
+  wall.setAttribute("position", new T.Float32BufferAttribute(positions, 3));
+  wall.setIndex(indices);
+  wall.computeVertexNormals();
+  return wall;
+}
 function shell(length, r, start, arc, steps = 96) {
   return new T.CylinderGeometry(
     r,
@@ -157,22 +342,26 @@ export function muscleMyofibrilCentres() {
   for (let q = -5; q <= 5; q++)
     for (let r = -5; r <= 5; r++)
       if (Math.abs(q + r) <= 5)
-        a.push([
-          muscleDimensions.pitch * (q + r / 2),
-          ((muscleDimensions.pitch * Math.sqrt(3)) / 2) * r,
-        ]);
+        a.push(
+          q === 0 && r === 5
+            ? [...junctionFibril]
+            : [
+                muscleDimensions.pitch * (q + r / 2),
+                ((muscleDimensions.pitch * Math.sqrt(3)) / 2) * r,
+              ],
+        );
   return a;
 }
 function stripedRod(length, repeats, r, y = 0, z = 0, radial = 6) {
   const bands = [
       [0, 0.025, C.z],
-      [0.025, 0.18, "#e6c5b4"],
-      [0.18, 0.42, "#bd8b98"],
+      [0.025, referenceAIPhases[0], "#e6c5b4"],
+      [referenceAIPhases[0], 0.42, "#bd8b98"],
       [0.42, 0.485, "#d9b9ad"],
       [0.485, 0.515, C.m],
       [0.515, 0.58, "#d9b9ad"],
-      [0.58, 0.82, "#bd8b98"],
-      [0.82, 0.975, "#e6c5b4"],
+      [0.58, referenceAIPhases[1], "#bd8b98"],
+      [referenceAIPhases[1], 0.975, "#e6c5b4"],
       [0.975, 1, C.z],
     ],
     geos = [];
@@ -346,24 +535,119 @@ function sarcomere(id = ids.sarcomere) {
 
 function nuclearDetail() {
   const g = new T.Group(),
-    id = ids.nucleus;
+    id = ids.nucleus,
+    outerAxes = V(2.15, 0.61, 0.66),
+    innerAxes = V(2.1, 0.56, 0.61);
+  const poreDirections = Array.from({ length: 44 }, (_, i) => {
+    const u = -0.9 + (1.8 * (i + 0.5)) / 44,
+      a = i * 2.399;
+    return V(
+      u,
+      Math.sqrt(1 - u * u) * Math.cos(a),
+      Math.sqrt(1 - u * u) * Math.sin(a),
+    );
+  });
+  const apertures = poreDirections.map((direction) => {
+    const center = direction.clone().multiply(outerAxes);
+    const normal = direction.clone().divide(outerAxes).normalize();
+    const radius = 0.062;
+    const u = normal
+        .clone()
+        .cross(V(0, 0, 1))
+        .normalize(),
+      v = normal.clone().cross(u).normalize();
+    const pointAtAngle = (angle) => {
+      const tangent = u
+        .clone()
+        .multiplyScalar(Math.cos(angle))
+        .addScaledVector(v, Math.sin(angle));
+      const q = center.clone().addScaledVector(tangent, radius);
+      const scaledQ = q.clone().divide(outerAxes),
+        scaledN = normal.clone().divide(outerAxes);
+      const a = scaledN.lengthSq(),
+        b = 2 * scaledQ.dot(scaledN),
+        c = scaledQ.lengthSq() - 1;
+      const depth = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+      return q.addScaledVector(normal, depth);
+    };
+    const angle = (point) => {
+      const delta = point.clone().sub(center);
+      return Math.atan2(delta.dot(v), delta.dot(u));
+    };
+    return {
+      center,
+      normal,
+      radius: 0.076,
+      coverVertices: true,
+      rim: {
+        normal,
+        pointAtAngle,
+        project(point) {
+          // Central projection preserves radial orientation of straight
+          // triangle edges on the convex ellipsoid, including narrow ears.
+          const delta = point
+            .clone()
+            .multiplyScalar(center.dot(normal) / point.dot(normal))
+            .sub(center);
+          return new T.Vector2(delta.dot(u), delta.dot(v));
+        },
+      },
+      snap: (point) => pointAtAngle(angle(point)),
+    };
+  });
+  const { geometry: outerEnvelope, boundaries } = perforateSurface(
+    new T.SphereGeometry(1, 192, 128).scale(...outerAxes.toArray()),
+    apertures,
+  );
+  const innerEnvelope = outerEnvelope
+    .clone()
+    .scale(
+      innerAxes.x / outerAxes.x,
+      innerAxes.y / outerAxes.y,
+      innerAxes.z / outerAxes.z,
+    );
+  const innerIndex = innerEnvelope.index.array;
+  for (let i = 0; i < innerIndex.length; i += 3)
+    [innerIndex[i + 1], innerIndex[i + 2]] = [
+      innerIndex[i + 2],
+      innerIndex[i + 1],
+    ];
+  innerEnvelope.computeVertexNormals();
+  const collars = joinBoundary(
+    outerEnvelope,
+    boundaries,
+    (point, u, aperture) => {
+      const inner = point.clone().divide(outerAxes).multiply(innerAxes);
+      const towardAxis = apertures[aperture].center.clone().sub(point);
+      towardAxis
+        .addScaledVector(
+          apertures[aperture].normal,
+          -towardAxis.dot(apertures[aperture].normal),
+        )
+        .normalize();
+      return point
+        .lerp(inner, u)
+        .addScaledVector(towardAxis, 0.009 * Math.sin(Math.PI * u));
+    },
+    6,
+  );
   for (const cap of [false, true]) {
-    const start = cap ? 0 : Math.PI;
-    add(
-      g,
-      new T.SphereGeometry(1, 48, 28, start, Math.PI).scale(2.15, 0.61, 0.66),
-      C.nuclear,
-      id,
-      { cap },
-    );
-    add(
-      g,
-      new T.SphereGeometry(1, 48, 28, start, Math.PI).scale(2.1, 0.56, 0.61),
-      "#c4b3d2",
-      id,
-      { cap },
-    );
+    add(g, membraneHalf(outerEnvelope, cap), C.nuclear, id, {
+      cap,
+      anatomyRole: "nuclearOuterMembrane",
+    });
+    add(g, membraneHalf(innerEnvelope, cap), "#c4b3d2", id, {
+      cap,
+      anatomyRole: "nuclearInnerMembrane",
+    });
+    add(g, membraneHalf(collars, cap), "#b8a2c6", id, {
+      cap,
+      anatomyRole: "nuclearPoreCollar",
+    });
   }
+  outerEnvelope.dispose();
+  innerEnvelope.dispose();
+  collars.dispose();
   const chrom = [],
     pores = [],
     frontPores = [];
@@ -381,23 +665,14 @@ function nuclearDetail() {
     });
     chrom.push(tube(pts, 0.021, 96, true));
   }
-  for (let i = 0; i < 44; i++) {
-    const u = -0.9 + (1.8 * (i + 0.5)) / 44,
-      a = i * 2.399;
-    const n = V(
-      u,
-      Math.sqrt(1 - u * u) * Math.cos(a),
-      Math.sqrt(1 - u * u) * Math.sin(a),
-    );
+  for (const [i, n] of poreDirections.entries()) {
+    const { center, normal } = apertures[i];
     const geo = new T.TorusGeometry(0.065, 0.014, 8, 12);
     geo
       .applyQuaternion(
-        new T.Quaternion().setFromUnitVectors(
-          V(0, 0, 1),
-          V(n.x / 2.15, n.y / 0.61, n.z / 0.66).normalize(),
-        ),
+        new T.Quaternion().setFromUnitVectors(V(0, 0, 1), normal),
       )
-      .translate(n.x * 2.16, n.y * 0.615, n.z * 0.665);
+      .translate(...center.clone().addScaledVector(normal, 0.008).toArray());
     (n.z > 0 ? frontPores : pores).push(geo);
   }
   batch(g, chrom, C.chromatin, id);
@@ -677,6 +952,99 @@ function myofibrilDetail() {
   return g;
 }
 
+function wholeJunctions(g) {
+  const [y, z] = junctionFibril,
+    majorRadius = 0.09,
+    cisternaRadius = 0.012,
+    longitudinalRadius = 0.0042,
+    junctionOffset = 0.026;
+  const junctions = referenceAIPhases.map(
+    (phase) => phase * muscleDimensions.sarcomereLength,
+  );
+  const innerLeft = junctions[0] + junctionOffset,
+    innerRight = junctions[1] - junctionOffset;
+  // These holes lie on the inner-facing side of one terminal cisterna. The
+  // opposite cisterna is its mirror, retaining exactly matching tube rims.
+  const apertures = Array.from({ length: 12 }, (_, j) => {
+    const angle = (j * TAU) / 12,
+      cy = y + majorRadius * Math.cos(angle),
+      cz = z + majorRadius * Math.sin(angle);
+    return {
+      center: V(innerLeft + cisternaRadius, cy, cz),
+      radius: longitudinalRadius,
+      snap(point) {
+        const a = Math.atan2(point.z - cz, point.y - cy);
+        const py = cy + longitudinalRadius * Math.cos(a),
+          pz = cz + longitudinalRadius * Math.sin(a),
+          dr = Math.hypot(py - y, pz - z) - majorRadius;
+        return V(innerLeft + Math.sqrt(cisternaRadius ** 2 - dr ** 2), py, pz);
+      },
+    };
+  });
+  const leftSource = new T.TorusGeometry(majorRadius, cisternaRadius, 24, 128)
+    .rotateY(Math.PI / 2)
+    .translate(innerLeft, y, z);
+  const { geometry: left, boundaries } = perforateSurface(
+    leftSource,
+    apertures,
+  );
+  const right = left
+    .clone()
+    .scale(-1, 1, 1)
+    .translate(innerLeft + innerRight, 0, 0);
+  const index = right.index.array;
+  for (let i = 0; i < index.length; i += 3)
+    [index[i + 1], index[i + 2]] = [index[i + 2], index[i + 1]];
+  right.computeVertexNormals();
+  const longitudinal = joinBoundary(
+    left,
+    boundaries,
+    (p, u) =>
+      V(T.MathUtils.lerp(p.x, innerLeft + innerRight - p.x, u), p.y, p.z),
+    32,
+  );
+  add(g, left, C.sr, ids.triad, { anatomyRole: "connectedSRCisterna" });
+  add(g, right, C.sr, ids.triad, { anatomyRole: "connectedSRCisterna" });
+  add(g, longitudinal, C.sr, ids.sr, {
+    anatomyRole: "connectedLongitudinalSR",
+  });
+  // Retain the local reticular crosslinks; all endpoints meet longitudinal SR.
+  const crosslinks = [];
+  for (const fraction of [0.2, 0.4, 0.6, 0.8]) {
+    const x = T.MathUtils.lerp(
+      innerLeft + cisternaRadius,
+      innerRight - cisternaRadius,
+      fraction,
+    );
+    for (let j = 0; j < 6; j++) {
+      const a = (j * TAU) / 6;
+      crosslinks.push(
+        tube(
+          Array.from({ length: 10 }, (_, k) => [
+            x,
+            y + majorRadius * Math.cos(a + (k * TAU) / 54),
+            z + majorRadius * Math.sin(a + (k * TAU) / 54),
+          ]),
+          0.0036,
+          14,
+        ),
+      );
+    }
+  }
+  batch(g, crosslinks, C.sr, ids.sr);
+  for (const [i, x] of junctions.entries()) {
+    add(g, ring(x, majorRadius, 0.009).translate(0, y, z), C.t, ids.triad);
+    const outer = x + (i ? junctionOffset : -junctionOffset);
+    add(
+      g,
+      ring(outer, majorRadius, cisternaRadius).translate(0, y, z),
+      C.sr,
+      ids.triad,
+    );
+  }
+  return { junctions, centre: [muscleDimensions.sarcomereLength / 2, y, z] };
+}
+
 function whole() {
   const g = new T.Group(),
     { length, radius } = muscleDimensions;
@@ -734,25 +1102,9 @@ function whole() {
   }
   batch(g, nuclei, C.nuclear, ids.nucleus);
   batch(g, nucleoli, "#ad809b", ids.nucleus);
-  // One exposed myofibril has localized SR sleeves and paired transverse junctions.
-  const sr = srDetail();
-  sr.traverse((o) => {
-    if (o.isMesh) o.userData.hitId = ids.sr;
-  });
-  sr.scale.set(0.052, 0.15, 0.15);
-  sr.position.set(0.08, 0.47, 0.48);
-  g.add(sr);
-  const triads = [];
-  for (const x of [-0.005, 0.164])
-    for (const [dx, r, c] of [
-      [0, 0.009, C.t],
-      [-0.013, 0.012, C.sr],
-      [0.013, 0.012, C.sr],
-    ]) {
-      const geo = ring(x + dx, 0.09, r).translate(0, 0.47, 0.48);
-      triads.push([geo, c]);
-    }
-  for (const [geo, c] of triads) add(g, geo, c, ids.triad);
+  // One peripheral fibril is displaced slightly to leave real space around
+  // its SR network. The other 90 fibrils retain their original positions.
+  const junctionSample = wholeJunctions(g);
   // Magnified leaf is separate; full view marks the same Z-to-Z region at specimen scale.
   add(
     g,
@@ -764,21 +1116,29 @@ function whole() {
   );
   const mitoGeos = [],
     mitoFolds = [];
-  for (const [x, y, z] of [
-    [-1.7, 0.42, 0.62],
-    [-0.6, -0.48, 0.59],
-    [0.9, 0.61, 0.33],
-    [1.9, -0.35, 0.66],
+  for (const [x, angle] of [
+    [-1.7, Math.PI / 6],
+    [-0.6, Math.PI / 2],
+    [0.9, (Math.PI * 5) / 6],
+    [1.9, (Math.PI * 7) / 6],
   ]) {
-    mitoGeos.push(ball([x, y, z], [0.16, 0.036, 0.057], 20));
+    const y = 0.72 * Math.cos(angle),
+      z = 0.72 * Math.sin(angle);
+    mitoGeos.push(
+      ball([0, 0, 0], [0.16, 0.036, 0.057], 20)
+        .rotateX(angle)
+        .translate(x, y, z),
+    );
     for (let j = 0; j < 5; j++)
       mitoFolds.push(
         rod(
-          [x - 0.1 + j * 0.05, y - 0.025, z + 0.042],
-          [x - 0.1 + j * 0.05, y + 0.025, z + 0.042],
+          [-0.1 + j * 0.05, -0.025, 0.042],
+          [-0.1 + j * 0.05, 0.025, 0.042],
           0.007,
           6,
-        ),
+        )
+          .rotateX(angle)
+          .translate(x, y, z),
       );
   }
   batch(g, mitoGeos, "#b49372", ids.mito);
@@ -789,9 +1149,21 @@ function whole() {
     [ids.nucleus]: [-0.58, Math.cos(7.7) * 0.824, Math.sin(7.7) * 0.824],
     [ids.fibril]: [1.7, 0.38, 0.53],
     [ids.sarcomere]: [0.088, 0.071, 0.68],
-    [ids.sr]: [0.08, 0.47, 0.57],
-    [ids.triad]: [0.164, 0.47, 0.57],
-    [ids.mito]: [-1.7, 0.42, 0.68],
+    [ids.sr]: [
+      junctionSample.centre[0],
+      junctionFibril[0],
+      junctionFibril[1] + 0.09,
+    ],
+    [ids.triad]: [
+      junctionSample.junctions[1],
+      junctionFibril[0],
+      junctionFibril[1] + 0.09,
+    ],
+    [ids.mito]: [
+      -1.7,
+      0.72 * Math.cos(Math.PI / 6) - 0.057 * Math.sin(Math.PI / 6),
+      0.72 * Math.sin(Math.PI / 6) + 0.057 * Math.cos(Math.PI / 6),
+    ],
   };
   g.userData.partLabelModes = Object.fromEntries(
     [ids.nucleus, ids.sarcomere, ids.sr, ids.triad, ids.mito].map((partId) => [

@@ -434,3 +434,4 @@ await import("./review20261004.test.mjs");
 await import("./labelAnchors.test.mjs");
 await import("./tailVisibility.test.mjs");
 await import("./incisionLabel.test.mjs");
+await import("./review20261005.test.mjs");

@@ -340,6 +340,62 @@ export function flagellumAssembly({ context = true } = {}) {
   g.rotation.set(0.15, -0.2, -0.24);
   return g;
 }
+// The cell overview has much closer envelope layers than the enlarged detail.
+// Fit its basal body to concentric surfaces of the capsule's spherical cap;
+// keep the standalone motor and its enlarged membrane context unchanged.
+export function overviewFlagellum({
+  innerRadius,
+  wallRadius,
+  outerRadius,
+  radialScale = 0.54,
+}) {
+  const g = flagellumAssembly({ context: false }),
+    innerToWall = (wallRadius - innerRadius) / (0.18 + 0.23),
+    wallToOuter = (outerRadius - wallRadius) / (0.51 - 0.18),
+    rodEndRadius = outerRadius + (0.665 - 0.51) * wallToOuter;
+  function capPoint(p) {
+    const radius =
+      p.y <= 0.18
+        ? innerRadius + (p.y + 0.23) * innerToWall
+        : p.y <= 0.665
+          ? wallRadius + (p.y - 0.18) * wallToOuter
+          : rodEndRadius + (p.y - 0.665) * radialScale;
+    p.x *= radialScale;
+    p.z *= radialScale;
+    p.y = Math.sqrt(radius * radius - p.x * p.x - p.z * p.z);
+    return p;
+  }
+  g.rotation.set(0, 0, 0);
+  g.updateMatrixWorld(true);
+  const point = V();
+  g.traverse((mesh) => {
+    if (!mesh.isMesh) return;
+    // This freshly constructed overview owns these geometries. Bake every
+    // child transform before bending; the hollow axial channel stays open.
+    mesh.geometry.applyMatrix4(mesh.matrixWorld);
+    const positions = mesh.geometry.attributes.position;
+    for (let i = 0; i < positions.count; i++) {
+      capPoint(point.fromBufferAttribute(positions, i));
+      positions.setXYZ(i, point.x, point.y, point.z);
+    }
+    positions.needsUpdate = true;
+    mesh.geometry.computeVertexNormals();
+    mesh.geometry.computeBoundingBox();
+    mesh.geometry.computeBoundingSphere();
+  });
+  g.traverse((object) => {
+    object.position.set(0, 0, 0);
+    object.rotation.set(0, 0, 0);
+    object.scale.set(1, 1, 1);
+  });
+  g.userData.partAnchors = Object.fromEntries(
+    Object.entries(g.userData.partAnchors).map(([id, p]) => [
+      id,
+      capPoint(V(...p)).toArray(),
+    ]),
+  );
+  return g;
+}
 export function bacterialAppendageDetail(id) {
   if (id === "pili") return typeOnePilus();
   if (id === "pilusRod") return pilusRod(58);

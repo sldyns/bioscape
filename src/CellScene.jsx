@@ -1,3 +1,4 @@
+import { createFacingCull } from "./scene/facingCull";
 import { createDetailLoader } from "./scene/detailLoader";
 import { createPickingIndex } from "./scene/picking";
 import { createPickingCandidates } from "./scene/pickingCandidates.js";
@@ -98,6 +99,7 @@ export default function CellScene({
       setError("webgl");
       return;
     }
+    const facingCull = createFacingCull(renderer);
     const loseContext = (event) => {
       event.preventDefault();
       contextLost = true;
@@ -442,6 +444,7 @@ export default function CellScene({
         cache.delete(oldest);
       }
       scene.add(current.root);
+      facingCull.setRoot(current.root, id);
       matricesDirty = true;
       updateAppearance = createPresentationAppearance(current.root);
       transition = reduceMotion ? 1 : 0.86;
@@ -1021,6 +1024,7 @@ export default function CellScene({
       );
       highlightMoving = appearance.moving;
       if (appearance.shadowChanged) renderer.shadowMap.needsUpdate = true;
+      facingCull.step(camera);
       renderer.render(scene, camera);
       el.dataset.pose = isContracted ? "contracted" : "rest";
       renderCount++;
@@ -1198,6 +1202,7 @@ export default function CellScene({
         l.pin.remove();
         l.remove();
       });
+      facingCull.dispose();
       for (const view of cache.values()) disposeView(view);
       disposeCell(model);
       key.shadow.dispose();

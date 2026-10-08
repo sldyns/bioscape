@@ -9,6 +9,7 @@ import immune from "./immuneResponseProcess.js";
 import "./labelEvents.test.mjs";
 import "./apoptosomeCytosol.test.mjs";
 import "./continuousMembrane.test.mjs";
+import "./granuleCompartment.test.mjs";
 
 const world = (o) => o.getWorldPosition(new THREE.Vector3());
 function visibleMeshTriangles(mesh) {

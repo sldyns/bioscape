@@ -372,7 +372,7 @@ qs.group.traverse((node) => {
   if (node.name.startsWith("LuxR-DNA-binding-helix-")) recognition.push(node);
 });
 assert.equal(recognition.length, 4);
-for (const p of [0.68, 0.72, 0.8, 1]) {
+for (const p of [0.68, 0.7, 0.72, 0.75, 0.77, 0.8, 0.85, 0.94, 1]) {
   qs.update(p, { exchange: "retained" });
   qs.group.updateMatrixWorld(true);
   assert(qs.group.userData.luxBoxOccupied);
@@ -446,3 +446,5 @@ console.log(
 await import("./smoke.test.mjs");
 
 await import("./labels.test.mjs");
+
+await import("./transcriptionBubble.science.test.mjs");

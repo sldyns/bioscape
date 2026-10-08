@@ -392,6 +392,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     const next = normalizeComparisonState({
       left: {
         id: isComparisonId(id) ? id : path[0],
+        path,
         mode,
         explode,
         labels,

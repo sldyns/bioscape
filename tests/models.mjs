@@ -28,14 +28,26 @@ import wheatLarge from "../src/scene/data/ribosome-8jiv-largeSubunit.json";
 import wheatSmall from "../src/scene/data/ribosome-8jiw-smallSubunit.json";
 import ecoliLarge from "../src/scene/data/ribosome-7k00-largeSubunit.json";
 import ecoliSmall from "../src/scene/data/ribosome-7k00-smallSubunit.json";
-// Nine outer doublets plus two central microtubules, all with actual lumina.
+// Nine outer A/B doublets and two central microtubules. B is an incomplete
+// shared-wall arc, so its isolated shape must not create a second full annulus.
 const axoneme = parameciumDetail("paraAxoneme");
-const microtubules = axoneme.children.filter(
-  (m) => m.geometry?.type === "ExtrudeGeometry",
-);
+const microtubules = axoneme.children.filter((m) => m.userData.axonemeMember);
 assert.equal(microtubules.length, 20);
+for (const [member, count] of [
+  ["A", 9],
+  ["B", 9],
+  ["central", 2],
+])
+  assert.equal(
+    microtubules.filter((m) => m.userData.axonemeMember === member).length,
+    count,
+  );
 assert.ok(
-  microtubules.every((m) => m.geometry.parameters.shapes.holes.length === 1),
+  microtubules.every(
+    (m) =>
+      m.geometry.parameters.shapes.holes.length ===
+      (m.userData.axonemeMember === "B" ? 0 : 1),
+  ),
 );
 axoneme.traverse((m) => {
   m.geometry?.dispose();
@@ -46,10 +58,10 @@ for (const id of ["cytosol", "stroma", "matrix", "oxidativeEnzymes"])
 assert.equal(supportsExplosion("bacterialEnvelope", 4), true);
 assert.equal(supportsExplosion("dna", 1), false);
 for (const [data, pdb, chainCount, residueCount, subunit] of [
-  [wheatLarge, "8JIV", 44, 9203, "largeSubunit"],
-  [wheatSmall, "8JIW", 33, 5937, "smallSubunit"],
-  [ecoliLarge, "7K00", 31, 6022, "largeSubunit"],
-  [ecoliSmall, "7K00", 21, 3916, "smallSubunit"],
+  [wheatLarge, "8JIV", 44, 9325, "largeSubunit"],
+  [wheatSmall, "8JIW", 33, 5983, "smallSubunit"],
+  [ecoliLarge, "7K00", 31, 6049, "largeSubunit"],
+  [ecoliSmall, "7K00", 21, 3929, "smallSubunit"],
 ]) {
   assert.equal(data.pdb, pdb);
   assert.equal(data.chains.length, chainCount);

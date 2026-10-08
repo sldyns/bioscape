@@ -1,6 +1,7 @@
-import { cellTypes } from "../catalog/cellTypes.js";
+import { cellTypes, contextNotes } from "../catalog/cellTypes.js";
 import { getNode, modelNotes } from "../hierarchy.js";
 import { specializedSpecimens, specializedSpecimenIds } from "./specimens.js";
+import { normalizeComparisonPath } from "./ids.js";
 
 const text = (zh, en) => ({ zh, en });
 const biology = (section, title) => ({
@@ -144,6 +145,7 @@ for (const root of regularCellTypes) {
       trail,
       summary: text(zh.desc, en.desc),
       scope:
+        contextNotes[root.id]?.[id] ||
         modelNotes[id] ||
         (id === "cell"
           ? text(
@@ -186,24 +188,59 @@ for (const specimen of specializedSpecimens) {
 export const comparisonEntries = entries;
 export { comparisonIds } from "./ids.js";
 const entryById = new Map(entries.map((entry) => [entry.id, entry]));
-export const getComparisonEntry = (id) =>
-  entryById.get(id) || entryById.get("cell");
+export function getComparisonEntry(id, path) {
+  const entry = entryById.get(id) || entryById.get("cell");
+  const context = normalizeComparisonPath(id, path);
+  if (!context) return entry;
+  const root = context[0];
+  return {
+    ...entry,
+    rootId: specializedSpecimenIds.has(root) ? "specialized" : root,
+    trail: context.slice(0, -1),
+    scope: contextNotes[root]?.[id] || entry.scope,
+  };
+}
+
+export function getComparisonChildPath(id, path, childId) {
+  const entry = getComparisonEntry(id, path);
+  return normalizeComparisonPath(childId, [...entry.trail, entry.id, childId]);
+}
+
+// The legacy ID list stays canonical. The picker also needs the shared parts in
+// each specimen, so a plant search does not silently choose an animal ancestor.
+const scopedEntries = [];
+for (const root of cellTypes) {
+  const visited = new Set();
+  function visit(id, path) {
+    if (visited.has(id)) return;
+    visited.add(id);
+    scopedEntries.push(getComparisonEntry(id, path));
+    for (const child of getNode(id).children) visit(child, [...path, child]);
+  }
+  visit(root.id, [root.id]);
+}
 export const comparisonGroups = [
   ...regularCellTypes.map((type) => ({
     ...type,
-    entries: entries.filter((entry) => entry.rootId === type.id),
+    entries: scopedEntries.filter((entry) => entry.rootId === type.id),
   })),
   {
     id: "specialized",
     zh: "人体特化细胞",
     en: "Specialized human cells",
-    entries: entries.filter((entry) => entry.rootId === "specialized"),
+    entries: scopedEntries.filter((entry) => entry.rootId === "specialized"),
   },
 ];
 
-export function comparisonRows(leftId, rightId, lang = "zh") {
-  const left = getComparisonEntry(leftId);
-  const right = getComparisonEntry(rightId);
+export function comparisonRows(
+  leftId,
+  rightId,
+  lang = "zh",
+  leftPath,
+  rightPath,
+) {
+  const left = getComparisonEntry(leftId, leftPath);
+  const right = getComparisonEntry(rightId, rightPath);
   const language = lang === "en" ? "en" : "zh";
   const rows = [
     {
@@ -238,10 +275,10 @@ export function comparisonRows(leftId, rightId, lang = "zh") {
 }
 
 // Empty search starts with the nine whole models. A category reveals its parts;
-// search matches bilingual names and complete ancestry without duplicating IDs.
+// search matches bilingual names and ancestry once per ID within each specimen.
 export function searchComparisonEntries(query = "", group = "") {
   const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  const results = entries.filter((entry) => {
+  const results = scopedEntries.filter((entry) => {
     if (group && entry.rootId !== group) return false;
     if (!terms.length) return group || !entry.trail.length;
     const names = [entry, ...entry.trail.map((id) => entryById.get(id))]

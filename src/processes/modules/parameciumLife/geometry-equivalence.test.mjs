@@ -11,6 +11,39 @@ import {
 import { sceneKit } from "../../kit.js";
 import { hollowInlet } from "./scientificGeometry.js";
 
+// RPP-01 intentionally changes only nuclear lineages, their inherited contents,
+// spindle disassembly and the two nuclear label anchors. Keep every other
+// division subtree and all other processes strictly on the original baseline.
+const unchangedDivisionRoots = [
+  "fission-body-half--1",
+  "fission-body-half-1",
+  "anterior-oral-apparatus",
+  "posterior-oral-apparatus",
+  "transverse-cleavage-furrow",
+];
+const changedDivisionRoots = [
+  "macronuclear-fission-lineage",
+  "micronuclear-fission-lineage",
+  "micronuclear-spindle",
+  ...Array.from(
+    { length: 18 },
+    (_, i) => `inherited-macronuclear-granule-${i}`,
+  ),
+  ...[-1, 1].flatMap((side) =>
+    Array.from({ length: 4 }, (_, i) => `segregating-chromatid-${side}-${i}`),
+  ),
+];
+function unchangedDivisionSnapshot({ model, parent }) {
+  return unchangedDivisionRoots.map((name) => {
+    const group = model.group.getObjectByName(name);
+    assert(group, `original nonnuclear division subtree ${name}`);
+    return geometrySnapshot(
+      { group, labels: [], camera: model.camera },
+      parent,
+    );
+  });
+}
+
 export async function runGeometryEquivalence() {
   const referenceBytes = await readFile(
       new URL("./geometry-reference.json", import.meta.url),
@@ -27,24 +60,48 @@ export async function runGeometryEquivalence() {
       inventories = scenes.map(({ model }) => resourceInventory(model));
     for (const { progress, sha256: historicalHash, ...counts } of row.states) {
       // Historical hashes remain evidence, not cross-platform expected values.
-      // Compare every existing numeric/binary field against the original code
-      // executing now; no tolerances, rounding, field omissions or bypasses.
+      // The three unchanged processes retain the full original output. For the
+      // separately tested RPP-01 nuclear repair, retain the exact nonnuclear
+      // baseline rather than replacing a whole-scene golden with new output.
       assert.match(historicalHash, /^[a-f\d]{64}$/);
       for (const { model } of scenes) model.update(progress, row.parameters);
       const expected = geometrySnapshot(original.model, original.parent);
       const { sha256: originalHash, ...originalCounts } = expected;
       assert.match(originalHash, /^[a-f\d]{64}$/);
       assert.deepEqual(originalCounts, counts, "frozen topology inventory");
-      assert.deepEqual(
-        geometrySnapshot(current.model, current.parent),
-        expected,
-        `${row.id} ${progress} same-runtime full frozen output`,
-      );
+      const currentExpected = geometrySnapshot(current.model, current.parent);
+      if (row.id === "parameciumDivision") {
+        assert.deepEqual(
+          current.model.group.children.map((o) => o.name).sort(),
+          [...unchangedDivisionRoots, ...changedDivisionRoots].sort(),
+          "no unreviewed division subtree may bypass the original baseline",
+        );
+        assert.deepEqual(
+          unchangedDivisionSnapshot(current),
+          unchangedDivisionSnapshot(original),
+        );
+        assert.deepEqual(
+          current.model.labels.slice(2),
+          original.model.labels.slice(2),
+        );
+        assert.deepEqual(
+          current.model.group.userData,
+          original.model.group.userData,
+        );
+        assert.deepEqual(current.model.camera, original.model.camera);
+      } else {
+        assert.deepEqual(
+          currentExpected,
+          expected,
+          `${row.id} ${progress} same-runtime full frozen output`,
+        );
+      }
       scenes.forEach(({ model, parent }, sceneIndex) => {
+        const expectedScene = sceneIndex === 0 ? expected : currentExpected;
         model.update(progress, row.parameters);
         assert.deepEqual(
           geometrySnapshot(model, parent),
-          expected,
+          expectedScene,
           "paused pose",
         );
         model.update(0.97831, row.parameters);
@@ -52,7 +109,7 @@ export async function runGeometryEquivalence() {
         model.update(progress, row.parameters);
         assert.deepEqual(
           geometrySnapshot(model, parent),
-          expected,
+          expectedScene,
           "reverse seek",
         );
         const resources = inventories[sceneIndex],
@@ -129,7 +186,7 @@ export async function runGeometryEquivalence() {
   }
   disposeSnapshot({ group: kit.group });
   console.log(
-    `paramecium geometry equivalence PASS: ${states} strict same-runtime frozen states, pause/reverse seeks, complete shape cache invalidation`,
+    `paramecium geometry equivalence PASS: ${states} same-runtime states; three processes fully frozen, division nonnuclear baseline exact, whole-scene pause/reverse/resource identity and complete shape cache invalidation`,
   );
 }
 

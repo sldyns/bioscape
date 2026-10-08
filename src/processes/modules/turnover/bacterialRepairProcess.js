@@ -461,7 +461,7 @@ export default {
       for (let i = 1; i <= 60; i++) {
         const left = opening(-3.75 + (i - 1) * 0.125),
           right = opening(-3.75 + i * 0.125);
-        phases[i] = phases[i - 1] - 0.47 * (1 - (left + right) / 2);
+        phases[i] = phases[i - 1] + 0.47 * (1 - (left + right) / 2);
       }
       const phaseAt = (x) => {
         const index = Math.max(0, Math.min(60, (x + 3.75) / 0.125));
@@ -469,7 +469,9 @@ export default {
           fraction = index - left;
         return phases[left] * (1 - fraction) + phases[left + 1] * fraction;
       };
-      const rotation = bubble * (-4 * Math.PI - phaseAt(polX));
+      // Register the open template with RNAP using the nearby right-handed
+      // phase, avoiding extra full rotations while the bubble first opens.
+      const rotation = bubble * (4 * Math.PI - phaseAt(polX));
       const dnaAt = (strand, x, out) => {
         const amount = opening(x),
           angle = phaseAt(x) + rotation;

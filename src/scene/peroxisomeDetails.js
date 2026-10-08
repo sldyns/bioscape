@@ -176,7 +176,9 @@ export function peroxisomeAssembly() {
     V(-0.84, 0.5, -0.3).normalize(),
     V(0.72, -0.64, -0.28).normalize(),
   ]) {
-    const t = transporter(g, deform(n.clone()), id, false, 0.4);
+    // The transmembrane domain straddles the bilayer, not its outer face.
+    const midplane = deform(n.clone().multiplyScalar((1 + 0.94) / 2));
+    const t = transporter(g, midplane, id, false, 0.4);
     t.quaternion.setFromUnitVectors(V(0, 1, 0), n);
   }
   const templates = {

@@ -1,5 +1,6 @@
 // Compact, versioned scene links. No executable or arbitrary object properties
 // cross the URL boundary; model-specific option validity is checked by players.
+import { normalizeComparisonPath } from "../compare/ids.js";
 const record = (v) =>
   v && typeof v === "object" && !Array.isArray(v) ? v : {};
 const finite = (v, fallback, low, high) =>
@@ -40,8 +41,10 @@ function panel(input) {
   const v = record(input);
   if (typeof v.id !== "string" || !/^[a-zA-Z][a-zA-Z0-9]{0,59}$/.test(v.id))
     return undefined;
+  const path = normalizeComparisonPath(v.id, v.path);
   return {
     id: v.id,
+    ...(path ? { path } : {}),
     mode: mode(v.mode),
     explode: finite(v.explode, 60, 0, 100),
     labels: v.labels === true,

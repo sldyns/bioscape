@@ -327,6 +327,10 @@ function create() {
   const granules = [];
   for (let i = 0; i < 5; i++)
     granules.push(k.ball([0, 0, 0.13], 0.1, k.material("#af9a7c"), tcell));
+  // Secretory lysosomes remain outside the nucleus, including while they
+  // polarize. Follow its cytoplasmic perimeter rather than a chord through it;
+  // retain distinct endpoints instead of collapsing five granules into one.
+  const granuleAngles = [1.05, 1.7, 2.5, 3.8, 4.65];
   const labels = [
     k.label([-2.35, 2.84, 0], "有核靶细胞", "Nucleated target cell", 2),
     k.label([3.5, 2.15, 0], "效应 CD8 T 细胞", "Effector CD8 T cell", 2),
@@ -401,10 +405,11 @@ function create() {
       0,
     );
     granules.forEach((g, i) => {
-      const a = i * 1.35;
+      const a =
+        granuleAngles[i] + (2.48 + i * 0.2 - granuleAngles[i]) * response;
       g.position.set(
-        0.4 * Math.cos(a) * (1 - response) - 0.76 * response,
-        0.55 * Math.sin(a) * (1 - response) + 0.13 * response,
+        0.32 + (1.02 + 0.18 * response) * Math.cos(a),
+        -0.17 + 1.12 * Math.sin(a),
         0.13,
       );
     });

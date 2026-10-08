@@ -45,11 +45,20 @@ function fillKidney(g, side, opening, layer) {
       r = (0.012 + (0.465 + 0.045 * opening) * width) * layer;
     for (let j = 0; j <= 24; j++) {
       const { sine, cosine } = kidneyCircle[j];
+      const y = cy + ny * r * cosine;
+      // A local indentation in the front tonoplast leaves cytoplasm around
+      // the full nucleus. The guard-cell surface itself is unchanged.
+      const nuclearRecess =
+        layer < 1
+          ? 0.29 *
+            Math.exp(-Math.pow((y + 0.82) / 0.65, 4)) *
+            Math.pow(Math.max(0, sine), 2)
+          : 0;
       a.setXYZ(
         i * 25 + j,
         side * (cx + nx * r * cosine),
-        cy + ny * r * cosine,
-        r * 0.73 * sine,
+        y,
+        r * 0.73 * sine - nuclearRecess,
       );
     }
   }
@@ -360,7 +369,13 @@ const process = {
               0.29,
             );
           });
-          c.nucleus.position.set(c.side * (0.6 + 0.64 * o), -0.82, 0.27);
+          c.nucleus.position.set(
+            c.side *
+              (0.075 +
+                (0.49 + 0.68 * o) * Math.sqrt(1 - Math.pow(0.82 / 2.5, 2))),
+            -0.82,
+            0.17,
+          );
         }
         lastOpening = o;
       }

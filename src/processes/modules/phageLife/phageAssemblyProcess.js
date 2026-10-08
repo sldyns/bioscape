@@ -71,8 +71,8 @@ export default {
         "Head–tail joining and fiber attachment",
       ),
       description: b(
-        "完成包装的头与尾结合，随后安装长尾纤维。所得尾鞘仍处于延伸态；收缩属于感染步骤，不属于装配。gp21 无活性时不会形成完整子代。",
-        "The DNA-filled head joins the tail, followed by long tail fiber attachment. The sheath remains extended: contraction is an infection event, not an assembly step. Inactive gp21 prevents formation of a complete progeny particle.",
+        "完成包装的头与尾结合，gp14 的保留闸随接尾开放，随后安装长尾纤维。尾鞘仍处于延伸态；收缩属于感染步骤。gp21 无活性时不会形成完整子代。",
+        "The DNA-filled head joins the tail, opening the gp14 retention gate, followed by long tail fiber attachment. The sheath remains extended; contraction belongs to infection. Inactive gp21 prevents complete progeny formation.",
       ),
     },
   ],
@@ -93,6 +93,15 @@ export default {
     {
       title: "Morphogenesis of the T4 tail and tail fibers",
       url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3004832/",
+    },
+    {
+      title:
+        "T4 portal-neck intermediates and the gp14 genome-retention gate (2026)",
+      url: "https://www.nature.com/articles/s41467-026-69107-7",
+    },
+    {
+      title: "In situ T4 portal-neck-tail structures and gate opening (2026)",
+      url: "https://www.nature.com/articles/s41467-026-69106-8",
     },
   ],
   create({ rootId = "phage" } = {}) {
@@ -188,6 +197,7 @@ export default {
       head.setGenomeFraction(load);
       head.neck.visible = seal > 0;
       head.neck.scale.setScalar(Math.max(0.03, seal));
+      head.setGateOpening(active ? ease(p, 0.94, 0.955) : 0);
       tail.group.position.set(2 - 2 * join, -0.51 * join, 0);
       tail.tube.scale.y = Math.max(0.02, tailGrow * 2.12);
       tail.tube.position.y = -2.12 + tailGrow * 1.06;

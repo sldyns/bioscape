@@ -111,7 +111,8 @@ function whole() {
   }
   g.rotation.set(-0.28, -0.34, -0.2);
   g.userData.partAnchors = {
-    [MEMBRANE]: [-1.38, -0.65, 0.41],
+    // Retained front-surface vertex: the lower-left wedge disappears on section.
+    [MEMBRANE]: [-1.169797, 0.712347, 0.621947],
     [CYTOSOL]: [-0.68, 0, 0.2],
   };
   g.userData.partLabelModes = { [CYTOSOL]: ["section", "explode"] };

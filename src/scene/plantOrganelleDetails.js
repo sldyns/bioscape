@@ -187,7 +187,7 @@ function plantMatrix() {
     {
       zh: "DNA片段 · 非完整基因组",
       en: "DNA segment · Not a full genome",
-      position: [0.15, 0.1, 0.42],
+      position: [0.152, -0.138, 0.339],
     },
     {
       zh: "水和小分子标记",

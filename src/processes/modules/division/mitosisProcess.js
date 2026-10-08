@@ -107,30 +107,35 @@ function create() {
     const separate = ease(p, 0.48, 0.73),
       furrow = ease(p, 0.68, 0.93),
       exit = ease(p, 0.76, 0.94);
-    const poleX = 2.45 + 0.35 * separate;
+    // Settle the centrosomes in the daughter cytoplasm before the new nuclear
+    // envelope appears. The nucleus keeps its full chromosome-enclosing size.
+    const poleSettlement = ease(p, 0.8, 0.87),
+      poleX = 2.45 + 0.25 * separate + 0.52 * poleSettlement,
+      nuclearAssembly = ease(p, 0.87, 0.94);
     const abscission = ease(p, 0.91, 0.97);
     cell.opacity(1 - abscission);
     cell.shape(furrow * 0.985, 1 + furrow * 0.16);
     daughters.forEach((c) => c.opacity(abscission));
     initialNucleus.reveal(1 - ease(p, 0.04, 0.19));
-    nuclei.forEach((n) => n.reveal(exit));
+    nuclei.forEach((n) => n.reveal(nuclearAssembly));
     ring.visible = p >= 0.68 && p < 0.94;
     ring.scale.set(1.38 * (1 - furrow * 0.97), 2.25 * (1 - furrow * 0.97), 1);
     poles.forEach((pole, i) => {
       pole.position.x = (i ? 1 : -1) * poleX;
       pole.visible = true;
-      pole.scale.setScalar(1 - 0.45 * exit);
+      pole.scale.setScalar(1 - 0.45 * poleSettlement);
     });
     astrals.forEach(({ side, angle, mesh }) => {
       mesh.visible = p < 0.83;
+      const reach = 1 - 0.8 * poleSettlement;
       k.setSegment(
         mesh,
         side * poleX,
         0,
         0,
-        side * (poleX + 0.34),
-        Math.cos(angle) * 0.42,
-        Math.sin(angle) * 0.42,
+        side * (poleX + 0.34 * reach),
+        Math.cos(angle) * 0.42 * reach,
+        Math.sin(angle) * 0.42 * reach,
         0.018,
       );
     });
@@ -211,7 +216,7 @@ function create() {
       centrosomeArchitecture: "orthogonal centrioles with nine triplet sets",
       membraneRepresentation:
         "paired open-front shells with a visible cut edge",
-      daughterEnvelopeAssembly: exit,
+      daughterEnvelopeAssembly: nuclearAssembly,
       abscissionTransition: abscission,
     };
   }

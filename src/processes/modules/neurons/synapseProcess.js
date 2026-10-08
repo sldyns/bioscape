@@ -399,7 +399,10 @@ export default {
       calciumIons.forEach((m, i) => {
         const f = phase(p, 0.22 + i * 0.015, 0.32 + i * 0.015);
         m.visible = allowed && p >= 0.22 + i * 0.015 && p < 0.4;
-        m.position.set(-1.6 + 0.65 * phase(p, 0.32, 0.4), 0.04 + 1.05 * f, 0.3);
+        // Every ion first clears the complete cytosolic mouth on the pore
+        // axis. Staggered ions must not share an early lateral diffusion time.
+        const diffuse = phase(p, 0.32 + i * 0.015, 0.4);
+        m.position.set(-1.6 + 0.65 * diffuse, 0.04 + 1.05 * f, 0.25);
       });
       vesicle.visible = !fusion;
       omega.visible = fusion;
@@ -421,8 +424,13 @@ export default {
         const clear = allowed
           ? phase(p, 0.78 + i * 0.003, 0.91 + i * 0.003)
           : 0;
-        let x = sx * (1 - release),
-          y = sy + (0.2 - sy) * release;
+        // Converge within the broad lumen before entering the narrow neck.
+        // A direct oblique chord from the original cargo to the cleft cuts
+        // through the hourglass membrane; the entire marker needs clearance.
+        const gather = phase(release, 0, 0.35),
+          throughPore = phase(release, 0.35, 1);
+        let x = sx * (1 - gather),
+          y = sy + (1.05 - sy) * gather - 0.85 * throughPore;
         x += (targetX - x) * diffuse;
         y += (targetY - y) * diffuse;
         // All molecules remain extracellular until crossing the lateral EAAT opening.
@@ -431,8 +439,9 @@ export default {
         y += (-0.19 - y) * toward;
         x += (3.37 - x) * phase(clear, 0.77, 1);
         const targetZ = i < 4 ? contactTargets[i].z : 0.25;
-        const z =
-          (0.12 + (targetZ - 0.12) * diffuse) * (1 - clear) + 0.25 * clear;
+        const neckZ = 0.12 * (1 - gather),
+          z =
+            (neckZ + (targetZ - neckZ) * diffuse) * (1 - clear) + 0.25 * clear;
         m.position.set(x, y, z);
         if (i < 4)
           ligandDistances[i] = m.position.distanceTo(contactTargets[i]);

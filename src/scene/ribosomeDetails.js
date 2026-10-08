@@ -163,6 +163,33 @@ export function ribosomeBody({ detail = true, only = null } = {}) {
   }
   return g;
 }
+function addTeachingCutaway(g) {
+  // Partition original triangles; Whole restores the complete schematic.
+  // No molecular coordinates move and no experimental backbone is changed.
+  for (const m of [...g.children]) {
+    if (m.userData.hitId !== "smallSubunit") continue;
+    const geometry = m.geometry,
+      positions = geometry.attributes.position,
+      indices = geometry.index.array,
+      body = [],
+      cap = [];
+    for (let i = 0; i < indices.length; i += 3) {
+      const a = indices[i],
+        b = indices[i + 1],
+        c = indices[i + 2],
+        y = (positions.getY(a) + positions.getY(b) + positions.getY(c)) / 3,
+        z = (positions.getZ(a) + positions.getZ(b) + positions.getZ(c)) / 3;
+      (z > 0 && y < 0.5 ? cap : body).push(a, b, c);
+    }
+    if (!cap.length) continue;
+    const removed = m.clone();
+    removed.geometry = geometry.clone();
+    removed.geometry.setIndex(cap);
+    removed.userData.cap = true;
+    geometry.setIndex(body);
+    g.add(removed);
+  }
+}
 function messenger(g, leaf = false) {
   const points = [];
   for (let i = 0; i <= 100; i++) {
@@ -268,6 +295,7 @@ export function ribosomeAssembly({ bound = false, only = null } = {}) {
     only: only === "largeSubunit" || only === "smallSubunit" ? only : null,
   });
   if (only) return g;
+  addTeachingCutaway(g);
   messenger(g);
   // One illustrative elongation state: P and E occupied, A available.
   for (const [x, tip] of [
@@ -341,11 +369,18 @@ export function ribosomeAssembly({ bound = false, only = null } = {}) {
         { zh: "新生多肽", en: "Nascent chain", position: [0.03, -1.52, 0.05] },
       ]
     : [{ zh: "新生多肽", en: "Nascent chain", position: [0.015, -1.3, 0.1] }];
+  g.userData.landmarks.push({
+    zh: "教学示意剖口",
+    en: "Illustrative cutaway",
+    position: [0.191083426277, 0.51663873593, 0.366827309132],
+    visibleModes: ["section"],
+  });
   g.userData.partAnchors = {
-    largeSubunit: [-0.6, -0.5, 0.28],
-    smallSubunit: [0.55, 0.4, 0.25],
-    mrna: [1.22, 0.25, 0.5],
-    trna: [-0.19, 0.15, 0.4],
+    // Existing surface-triangle centroids stay on visible retained geometry.
+    largeSubunit: [-0.676621635755, -0.399674375852, 0.324006766081],
+    smallSubunit: [0.587339619795, 0.521089891593, 0.249016885956],
+    mrna: [1.205252170563, 0.257803370555, 0.510798354944],
+    trna: [-0.213358605286, 0.180065216664, 0.357583579536],
   };
   return g;
 }

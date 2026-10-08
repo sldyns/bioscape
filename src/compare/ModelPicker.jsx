@@ -6,7 +6,13 @@ import {
   searchComparisonEntries,
 } from "./catalog.js";
 
-export default function ModelPicker({ value, language, letter, onChange }) {
+export default function ModelPicker({
+  value,
+  contextPath,
+  language,
+  letter,
+  onChange,
+}) {
   const t = (zh, en) => (language === "en" ? en : zh);
   const dialog = useRef(null);
   const input = useRef(null);
@@ -16,7 +22,7 @@ export default function ModelPicker({ value, language, letter, onChange }) {
   const [query, setQuery] = useState("");
   const [group, setGroup] = useState("");
   const [active, setActive] = useState(0);
-  const selected = getComparisonEntry(value);
+  const selected = getComparisonEntry(value, contextPath);
   const results = useMemo(
     () => searchComparisonEntries(query, group),
     [query, group],
@@ -25,6 +31,8 @@ export default function ModelPicker({ value, language, letter, onChange }) {
     entry.trail
       .map((ancestor) => getComparisonEntry(ancestor)[language])
       .join(" / ");
+  const isSelected = (entry) =>
+    entry.id === selected.id && entry.rootId === selected.rootId;
   useEffect(() => {
     if (open) {
       dialog.current.showModal();
@@ -42,7 +50,8 @@ export default function ModelPicker({ value, language, letter, onChange }) {
     trigger.current?.focus();
   }
   function choose(entry) {
-    onChange(entry.id);
+    const chosen = isSelected(entry) ? selected : entry;
+    onChange(chosen.id, [...chosen.trail, chosen.id]);
     close();
   }
   return (
@@ -185,8 +194,8 @@ export default function ModelPicker({ value, language, letter, onChange }) {
                   <button
                     role="option"
                     id={`${id}-option-${index}`}
-                    key={entry.id}
-                    aria-selected={entry.id === value}
+                    key={[...entry.trail, entry.id].join("/")}
+                    aria-selected={isSelected(entry)}
                     tabIndex={-1}
                     className={index === active ? "is-active" : ""}
                     onPointerMove={() => setActive(index)}
@@ -198,7 +207,7 @@ export default function ModelPicker({ value, language, letter, onChange }) {
                         {path(entry) || t("完整模型", "Whole model")}
                       </small>
                     </span>
-                    {entry.id === value && <Check size={16} />}
+                    {isSelected(entry) && <Check size={16} />}
                   </button>
                 ))}
                 {!results.length && (

@@ -223,6 +223,56 @@ function envelope() {
   g.rotation.set(0.18, -0.3, 0.13);
   return g;
 }
+function stromaMarkerPositions(scale, markerRadii) {
+  const samples = thylakoidSamples(),
+    innerFace = [1.3, 0.57, 0.61].map((r) => (r - 0.027) / scale),
+    radius = Math.max(...markerRadii),
+    reach = radius + 0.016,
+    positions = [];
+  const clear = (p) =>
+    // The expanded box encloses the whole marker plus a clearance margin.
+    // Its furthest corner must stay inside the actual inner-envelope face.
+    p.reduce((q, x, k) => q + ((Math.abs(x) + reach) / innerFace[k]) ** 2, 0) <
+      1 &&
+    positions.every(
+      (other) => Math.hypot(...p.map((x, k) => x - other[k])) > 0.14,
+    ) &&
+    // Minimize each sample's ellipsoid equation over that expanded box.
+    // A value above one separates the full marker from the entire union,
+    // including the thin granum-margin and stroma-lamella connections.
+    samples.every(
+      ({ p: center, r }) =>
+        p.reduce(
+          (q, x, k) =>
+            q + (Math.max(0, Math.abs(x - center[k]) - reach) / r[k]) ** 2,
+          0,
+        ) > 1,
+    );
+  const fraction = (x) => x - Math.floor(x);
+  for (let i = 0; i < 24; i++) {
+    const a = i * 2.3999;
+    let p = [
+      Math.cos(a) * 1.13,
+      Math.sin(a) * 0.46,
+      -0.12 + 0.17 * Math.sin(i),
+    ];
+    let attempt = 0;
+    while (!clear(p)) {
+      if (++attempt > 2048)
+        throw new Error("No stromal marker position with membrane clearance");
+      const n = i * 97 + attempt;
+      // A deterministic low-discrepancy search stays behind the envelope's
+      // front cut while distributing markers through the stromal space.
+      p = [
+        (2 * fraction(n * 0.61803398875) - 1) * 1.32,
+        (2 * fraction(n * 0.75487766625) - 1) * 0.54,
+        -0.48 + fraction(n * 0.56984029099) * 0.65,
+      ];
+    }
+    positions.push(p);
+  }
+  return positions;
+}
 export function chloroplastAssembly() {
   const g = new T.Group();
   const e = envelope();
@@ -244,16 +294,9 @@ export function chloroplastAssembly() {
   interior.scale.setScalar(0.87);
   interior.add(th);
   g.add(interior);
-  for (let i = 0; i < 24; i++) {
-    const a = i * 2.3999;
-    ball(
-      interior,
-      [Math.cos(a) * 1.13, Math.sin(a) * 0.46, -0.12 + 0.17 * Math.sin(i)],
-      [0.037, 0.035, 0.038],
-      "#c3cda9",
-      "stroma",
-    );
-  }
+  const markerRadii = [0.037, 0.035, 0.038];
+  for (const p of stromaMarkerPositions(interior.scale.x, markerRadii))
+    ball(interior, p, markerRadii, "#c3cda9", "stroma");
   g.userData.partAnchors = {
     chloroplastEnvelope: [-1.22, 0.31, 0.24],
     thylakoids: [0.64, 0.2, 0.052],

@@ -10,8 +10,9 @@ export function molecularDetail(k) {
   for (let i = 0; i <= 80; i++) {
     const t = i / 80,
       a = t * Math.PI * 10;
+    // A right-handed protein helix around the positive y axis.
     coilPoints.push(
-      new THREE.Vector3(0.11 * Math.cos(a), t - 0.5, 0.11 * Math.sin(a)),
+      new THREE.Vector3(0.11 * Math.cos(a), t - 0.5, -0.11 * Math.sin(a)),
     );
   }
   const helix = new THREE.TubeGeometry(

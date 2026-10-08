@@ -110,7 +110,7 @@ function glycan(g, origin, axis, id, scale = 1, cap = false) {
       ball(unit, V(side * x, y, 0), 0.02, "#c3c7a5", id, cap);
   }
 }
-export function protonPump(g, id = "lysosomalPump") {
+export function protonPump(g, id = "lysosomalPump", membraneScale = 1) {
   const unit = new THREE.Group();
   g.add(unit);
   const ring = mesh(
@@ -124,8 +124,8 @@ export function protonPump(g, id = "lysosomalPump") {
     const a = (k / 8) * TAU;
     rod(
       unit,
-      V(Math.cos(a) * 0.18, -0.1, Math.sin(a) * 0.18),
-      V(Math.cos(a) * 0.18, 0.11, Math.sin(a) * 0.18),
+      V(Math.cos(a) * 0.18, -0.1 * membraneScale, Math.sin(a) * 0.18),
+      V(Math.cos(a) * 0.18, 0.11 * membraneScale, Math.sin(a) * 0.18),
       0.037,
       "#8faab0",
       id,
@@ -329,8 +329,10 @@ export function lysosomeAssembly() {
     V(0.8, 0.48, -0.35).normalize(),
     V(0.14, -0.91, -0.39).normalize(),
   ]) {
-    const p = protonPump(g, "lysosomalMembrane");
-    p.position.copy(n).multiplyScalar(shellRadius(n));
+    // Center V0 within the bilayer and extend only its membrane-spanning
+    // domain across both faces; keep the V1 head on the cytosolic side.
+    const p = protonPump(g, "lysosomalMembrane", 1.65);
+    p.position.copy(n).multiplyScalar(shellRadius(n) * ((1 + 0.935) / 2));
     p.quaternion.setFromUnitVectors(V(0, 1, 0), n);
     p.scale.setScalar(0.23);
   }

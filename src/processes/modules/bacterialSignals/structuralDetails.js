@@ -113,7 +113,9 @@ export function bacterialPolymerase(k, parent) {
         0.016,
         k.material("#c0cfce"),
       );
-  k.ball([0, 0, 0.07], 0.048, k.material("#d0ad66"), g);
+  // The nascent RNA starts at this exposed catalytic site in the cleft.
+  const activeSite = k.ball([0, 0.08, 0.08], 0.048, k.material("#d0ad66"), g);
+  activeSite.name = "regulatory-RNAP-active-3prime";
   return g;
 }
 export function transcriptionDetail(k, parent, { x0, x1, y, radius = 0.18 }) {
@@ -168,13 +170,16 @@ export function transcriptionDetail(k, parent, { x0, x1, y, radius = 0.18 }) {
     mesh.setMatrixAt(i, temp.matrix);
   }
   function point(x, strand, center, opening, out) {
-    const sign = strand ? 1 : -1,
-      angle = (x - x0) * 10 + strand * Math.PI,
-      w = opening * Math.max(0, 1 - Math.abs(x - center) / 0.5);
+    const w = opening * Math.max(0, 1 - Math.abs(x - center) / 0.5),
+      // Unwind in one shared Y/Z frame, keeping the strands opposite and
+      // their radius positive. Blending Cartesian coordinates toward fixed
+      // +/-Y targets would cancel opposing phases and cross the backbones.
+      angle = (x - x0) * 10 - (x - center) * 10 * w + strand * Math.PI,
+      openedRadius = radius + (0.24 - radius) * w;
     out.set(
       x,
-      y + (1 - w) * Math.sin(angle) * radius + w * sign * 0.24,
-      -(1 - w) * Math.cos(angle) * radius + w * 0.1,
+      y + Math.sin(angle) * openedRadius,
+      -Math.cos(angle) * openedRadius + w * 0.1,
     );
     return out;
   }

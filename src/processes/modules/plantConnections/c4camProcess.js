@@ -215,15 +215,55 @@ function create() {
   const c4ATP = ball([-3.12, -1.35, 0.45], 0.12, gold, c4);
   // CAM: a single succulent mesophyll cell, with vacuolar storage and NAD-ME mitochondrion.
   cell(0, -0.05, 7.75, 4.45, cam);
+  const camPortY = -0.1,
+    camPortZ = -0.065;
+  // Open the two lateral ports in the original high-resolution leaflets.
+  // The circular cut is measured in the plane normal to the transport axis;
+  // neither the back leaflet nor the translucent lumen tint caps the channel.
+  const withTonoplastPorts = (source, center, scale) => {
+    const geometry = source.clone();
+    const positions = geometry.attributes.position,
+      original = geometry.index,
+      indices = [],
+      origin = new THREE.Vector3(),
+      nearest = new THREE.Vector3(),
+      triangle = new THREE.Triangle();
+    for (let i = 0; i < original.count; i += 3) {
+      const ids = [0, 1, 2].map((offset) => original.getX(i + offset));
+      const points = ids.map(
+        (id) =>
+          new THREE.Vector3(
+            positions.getY(id) * scale[1] + center[1] - camPortY,
+            positions.getZ(id) * scale[2] + center[2] - camPortZ,
+            0,
+          ),
+      );
+      triangle.set(...points);
+      const radial =
+        triangle.getArea() > 1e-12
+          ? triangle.closestPointToPoint(origin, nearest).length()
+          : Math.min(
+              ...points.map((point, j) =>
+                new THREE.Line3(point, points[(j + 1) % 3])
+                  .closestPointToPoint(origin, true, nearest)
+                  .length(),
+              ),
+            );
+      if (radial >= 0.19) indices.push(...ids);
+    }
+    geometry.setIndex(indices);
+    return geometry;
+  };
   const vac = mesh(
-    backSphere,
+    withTonoplastPorts(backSphere, [-0.52, -0.1, -0.08], [1.63, 1.45, 0.7]),
     material("#adbec8", { side: THREE.DoubleSide }),
     [-0.52, -0.1, -0.08],
     cam,
   );
   vac.scale.set(1.63, 1.45, 0.7);
+  vac.name = "tonoplast-cytosol-facing-leaflet";
   const innerTonoplast = mesh(
-    backSphere,
+    withTonoplastPorts(backSphere, [-0.52, -0.1, -0.065], [1.6, 1.42, 0.675]),
     material("#c8d9de", { side: THREE.DoubleSide }),
     [-0.52, -0.1, -0.065],
     cam,
@@ -234,6 +274,7 @@ function create() {
   for (let i = 0; i < 120; i++)
     for (const side of [-1, 1]) {
       const a = (i / 120) * Math.PI * 2;
+      if (Math.abs(1.45 * Math.sin(a)) < 0.21) continue;
       vacHeads.push({
         p: [
           -0.52 + (1.63 + side * 0.014) * Math.cos(a),
@@ -252,37 +293,55 @@ function create() {
   );
   for (const side of [-1, 1]) {
     const transport = new THREE.Group();
-    transport.position.set(-0.52 + side * 1.58, 0.02, -0.03);
-    transport.rotation.z = Math.PI / 2;
+    transport.position.set(-0.52 + side * 1.615, camPortY, camPortZ);
+    // Both tracked passages run left-to-right: cytosol → lumen at the left
+    // site and lumen → cytosol at the right site. Local +Y is the channel axis.
+    transport.rotation.z = -Math.PI / 2;
     transport.name = "tonoplast-malate-transport-site-schematic";
     cam.add(transport);
-    for (let i = 0; i < 4; i++) {
-      const a = (i / 4) * Math.PI * 2;
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
       detail.helix(
         transport,
-        [Math.cos(a) * 0.062, 0, Math.sin(a) * 0.062],
-        0.24,
-        0.025,
+        [Math.cos(a) * 0.18, 0, Math.sin(a) * 0.18],
+        0.32,
+        0.026,
         material("#819faa"),
       );
     }
+    for (const end of [-1, 1]) {
+      const rim = mesh(
+        new THREE.TorusGeometry(0.15, 0.016, 10, 40),
+        material("#91aaba"),
+        [0, end * 0.16, 0],
+        transport,
+      );
+      rim.rotation.x = Math.PI / 2;
+      rim.name = "CAM-tonoplast-channel-rim";
+    }
   }
-  ball(
-    [-0.52, -0.1, -0.08],
-    [1.63, 1.45, 0.7],
+  const lumenTint = mesh(
+    withTonoplastPorts(k.sphere, [-0.52, -0.1, -0.08], [1.63, 1.45, 0.7]),
     material("#aec7d5", { transparent: true, opacity: 0.1, depthWrite: false }),
+    [-0.52, -0.1, -0.08],
     cam,
   );
-  const tonoplastPoints = [];
-  for (let i = 0; i <= 64; i++) {
-    const a = (i / 64) * Math.PI * 2;
-    tonoplastPoints.push([
-      -0.52 + 1.63 * Math.cos(a),
-      -0.1 + 1.45 * Math.sin(a),
-      -0.08,
-    ]);
+  lumenTint.scale.set(1.63, 1.45, 0.7);
+  lumenTint.name = "CAM-vacuolar-lumen-tint";
+  const portArc = Math.asin(0.22 / 1.45);
+  for (const start of [0, Math.PI]) {
+    const tonoplastPoints = [];
+    for (let i = 0; i <= 32; i++) {
+      const a = start + portArc + (i / 32) * (Math.PI - 2 * portArc);
+      tonoplastPoints.push([
+        -0.52 + 1.63 * Math.cos(a),
+        -0.1 + 1.45 * Math.sin(a),
+        -0.08,
+      ]);
+    }
+    const rim = tube(tonoplastPoints, 0.035, material("#91aaba"), cam);
+    rim.name = "CAM-tonoplast-cut-rim";
   }
-  tube(tonoplastPoints, 0.035, material("#91aaba"), cam);
   chloroplast(2.43, -1.1, 0.91, cam, true);
   detail.mitochondrion(cam, [2.35, 0.86, -0.08], [1.1, 0.59, 0.52]);
   const camPEPC = enzyme(-2.85, 0.77, captureMat, cam),
@@ -293,8 +352,11 @@ function create() {
   camRubisco.name = "CAM-Rubisco";
   const camAtoms = particles(cam);
   const camBonds = [];
-  for (let i = 0; i < 3; i++)
-    camBonds.push(mesh(k.cylinder, material("#bfa98e"), [0, 0, 0], cam));
+  for (let i = 0; i < 3; i++) {
+    const bond = mesh(k.cylinder, material("#bfa98e"), [0, 0, 0], cam);
+    bond.name = `CAM-carbon-bond-${i}`;
+    camBonds.push(bond);
+  }
   const reserves = [];
   for (let i = 0; i < 12; i++) {
     const reserve = ball(
@@ -468,6 +530,20 @@ function create() {
       [-2.47, 0.76, 0.43],
     ],
     [
+      0.205,
+      [-3.0, camPortY, camPortZ],
+      [-2.83, camPortY, camPortZ],
+      [-2.66, camPortY, camPortZ],
+      [-2.49, camPortY, camPortZ],
+    ],
+    [
+      0.27,
+      [-1.73, camPortY, camPortZ],
+      [-1.56, camPortY, camPortZ],
+      [-1.39, camPortY, camPortZ],
+      [-1.22, camPortY, camPortZ],
+    ],
+    [
       0.32,
       [-0.92, 0.1, 0.4],
       [-0.75, 0.1, 0.4],
@@ -480,6 +556,20 @@ function create() {
       [-0.75, 0.1, 0.4],
       [-0.58, 0.1, 0.4],
       [-0.41, 0.1, 0.4],
+    ],
+    [
+      0.535,
+      [0.23, camPortY, camPortZ],
+      [0.4, camPortY, camPortZ],
+      [0.57, camPortY, camPortZ],
+      [0.74, camPortY, camPortZ],
+    ],
+    [
+      0.595,
+      [1.48, camPortY, camPortZ],
+      [1.65, camPortY, camPortZ],
+      [1.82, camPortY, camPortZ],
+      [1.99, camPortY, camPortZ],
     ],
     [
       0.64,
@@ -569,7 +659,6 @@ function create() {
     ),
     label([3.25, 2.72, 0], "夜间", "Night", 2),
   ];
-  camBonds[0].name = "CAM-carbon-bond-0";
   const updateLabelAnchors = labelAnchors([
     [c4Labels[2], c4PEPC.children[0]],
     [c4Labels[3], c4Bonds[1]],
@@ -661,8 +750,8 @@ export default {
   title: b("C₄ 与 CAM 的二氧化碳浓缩", "CO₂ concentration in C₄ and CAM"),
   duration: 36,
   intro: b(
-    "选择两种特化植物：玉米的主要 NADP-ME 型 C₄ 支路以叶肉和维管束鞘细胞分隔反应；伽蓝菜属 Kalanchoë fedtschenkoi 成熟叶的 CAM 以夜间摄碳、液泡储酸和白天脱羧分隔时间。两者仍由 Rubisco 与 Calvin 循环完成同化。碳骨架与胞间连丝均为放大的教学比例，保留完整分子通过细胞质套管的空间；不代表所有 C₄ 亚型或完整 CAM 四阶段。",
-    "Choose two specialized plants: the major NADP-ME C₄ branch in maize separates reactions between mesophyll and bundle-sheath cells; CAM in mature Kalanchoë fedtschenkoi leaves separates night uptake and vacuolar acid storage from daytime decarboxylation. Both still assimilate carbon via Rubisco and the Calvin cycle. Carbon skeletons and plasmodesmata use enlarged teaching scales with room for the whole molecule in the cytoplasmic sleeve; alternative C₄ branches and the full four CAM phases are omitted.",
+    "选择两种特化植物：玉米的主要 NADP-ME 型 C₄ 支路以叶肉和维管束鞘细胞分隔反应；伽蓝菜属 Kalanchoë fedtschenkoi 成熟叶的 CAM 以夜间摄碳、液泡储酸和白天脱羧分隔时间。两者仍由 Rubisco 与 Calvin 循环完成同化。碳骨架、胞间连丝与液泡膜转运位点均为放大的教学比例，保留完整分子通过通道的空间；不代表所有 C₄ 亚型或完整 CAM 四阶段。",
+    "Choose two specialized plants: the major NADP-ME C₄ branch in maize separates reactions between mesophyll and bundle-sheath cells; CAM in mature Kalanchoë fedtschenkoi leaves separates night uptake and vacuolar acid storage from daytime decarboxylation. Both still assimilate carbon via Rubisco and the Calvin cycle. Carbon skeletons, plasmodesmata and tonoplast transport sites use enlarged teaching scales with room for the whole molecule in each channel; alternative C₄ branches and the full four CAM phases are omitted.",
   ),
   controls: [
     {
