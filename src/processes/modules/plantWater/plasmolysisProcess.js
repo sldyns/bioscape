@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
-import { bilayerOutline } from "./structuralDetail.js";
+import { bilayerOutline, dynamicSegments } from "./structuralDetail.js";
 function rounded(w, h, r) {
   const s = new THREE.Shape();
   s.moveTo(-w / 2 + r, -h / 2);
@@ -110,7 +110,7 @@ const process = {
       vacMat = k.material("#82b7c0", { transparent: true, opacity: 0.72 }),
       cytoMat = k.material("#ead9b3", {
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.53,
         depthWrite: false,
       });
     const wallShape = rounded(5.3, 5.8, 0.65),
@@ -130,6 +130,9 @@ const process = {
     );
     wall.name = "fixed porous cell wall";
     // Lamellar cellulose bundles are restricted to the cut face of the fixed wall.
+    const cellulose = dynamicSegments(k, 132, "#c0cba1");
+    cellulose.mesh.name = "crossed cellulose wall lamellae";
+    let bundleIndex = 0;
     for (let layer = 0; layer < 3; layer++) {
       const contour = rounded(5.02 + layer * 0.075, 5.52 + layer * 0.075, 0.56)
         .getSpacedPoints(120)
@@ -139,18 +142,19 @@ const process = {
       for (const side of [-1, 1])
         for (let j = 0; j < 22; j++) {
           const y = -2.15 + j * 0.205;
-          k.segment(
-            [side * 2.45, y, 0.35 + layer * 0.025],
-            [
-              side * 2.66,
-              y + 0.12 * (layer % 2 ? 1 : -1),
-              0.35 + layer * 0.025,
-            ],
+          cellulose.put(
+            bundleIndex++,
+            side * 2.45,
+            y,
+            0.35 + layer * 0.025,
+            side * 2.66,
+            y + 0.12 * (layer % 2 ? 1 : -1),
+            0.35 + layer * 0.025,
             0.012,
-            k.material("#c0cba1"),
           );
         }
     }
+    cellulose.finish();
     const protoplast = new THREE.Group();
     group.add(protoplast);
     k.mesh(

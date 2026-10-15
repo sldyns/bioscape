@@ -72,8 +72,28 @@ export function divisionKit() {
     m.userData.strands = strands;
     return m;
   }
-  function setBundle(m, ax, ay, az, bx, by, bz, radius = 0.012) {
-    const count = m.userData.strands;
+  function setBundle(m, ax, ay, az, bx, by, bz, radius = 0.012, bowY = 0) {
+    const state = m.userData;
+    if (
+      state.ax === ax &&
+      state.ay === ay &&
+      state.az === az &&
+      state.bx === bx &&
+      state.by === by &&
+      state.bz === bz &&
+      state.radius === radius &&
+      state.bowY === bowY
+    )
+      return;
+    state.ax = ax;
+    state.ay = ay;
+    state.az = az;
+    state.bx = bx;
+    state.by = by;
+    state.bz = bz;
+    state.radius = radius;
+    state.bowY = bowY;
+    const count = state.strands;
     for (let s = 0; s < count; s++)
       for (let j = 0; j < 12; j++) {
         const t = j / 12,
@@ -86,10 +106,10 @@ export function divisionKit() {
           m,
           s * 12 + j,
           ax + (bx - ax) * t,
-          ay + (by - ay) * t + Math.cos(a) * offset * wave,
+          ay + (by - ay) * t + (Math.cos(a) * offset + bowY) * wave,
           az + (bz - az) * t + (0.14 + Math.sin(a) * offset) * wave,
           ax + (bx - ax) * u,
-          ay + (by - ay) * u + Math.cos(a) * offset * next,
+          ay + (by - ay) * u + (Math.cos(a) * offset + bowY) * next,
           az + (bz - az) * u + (0.14 + Math.sin(a) * offset) * next,
           radius,
         );
@@ -107,17 +127,25 @@ export function divisionKit() {
     const deformableSurfaces = [],
       deformableInstances = [];
     let deflection = 0,
-      lastDeflection = NaN;
+      flexion = 0,
+      lastDeflection = NaN,
+      lastFlexion = NaN;
     function displacement(y) {
       return (
+        flexion * (y / length) ** 2 +
         deflection *
-        Math.max(
-          0,
-          y <= exchangeY
-            ? y / exchangeY
-            : 1 + (y - exchangeY) / (length - exchangeY),
-        )
+          Math.max(
+            0,
+            y <= exchangeY
+              ? y / exchangeY
+              : 1 + (y - exchangeY) / (length - exchangeY),
+          )
       );
+    }
+    function terminalTaper(y) {
+      const low = -length * (options.telocentric ? 0.025 : 0.76);
+      const distance = Math.min(y - low, length - y);
+      return Math.sqrt(Math.max(0, 1 - Math.max(0, 1 - distance / 0.13) ** 2));
     }
     function axis(y) {
       const t = Math.abs(y) / length;
@@ -135,10 +163,12 @@ export function divisionKit() {
           y = from + (to - from) * t;
         const centromere =
           0.47 + 0.53 * Math.min(1, Math.abs(y) / (length * 0.3));
-        const cap = 0.52 + 0.48 * Math.pow(Math.sin(Math.PI * t), 0.45);
+        // Only true telomeres taper: the exchanged distal section is part of
+        // one continuous arm, so its join must keep the same cross-section.
+        const cap = terminalTaper(y);
         for (let a = 0; a <= radial; a++) {
           const angle = (a * TAU) / radial;
-          const ridge = 1 + 0.055 * Math.sin(angle * 3 + j * 0.53);
+          const ridge = 1 + 0.018 * Math.sin(angle * 3 + y * 7);
           positions.push(
             axis(y) + Math.cos(angle) * 0.124 * centromere * cap * ridge,
             y,
@@ -170,6 +200,13 @@ export function divisionKit() {
         "position",
         new THREE.Float32BufferAttribute(positions, 3),
       );
+      // Circumferential then longitudinal order points inward for this axis.
+      // Reverse every triangle so FrontSide renders the condensed exterior.
+      for (let i = 0; i < indices.length; i += 3) {
+        const b = indices[i + 1];
+        indices[i + 1] = indices[i + 2];
+        indices[i + 2] = b;
+      }
       g.setIndex(indices);
       g.computeVertexNormals();
       const solid = mesh(g, mat, target);
@@ -178,7 +215,7 @@ export function divisionKit() {
         geometry: g,
         original: g.attributes.position.array.slice(),
       });
-      const loops = 12,
+      const loops = 7,
         segments = loops * 14;
       const fibre = instances(
         narrowCylinder,
@@ -202,19 +239,23 @@ export function divisionKit() {
         const y = from + (to - from) * t,
           yn = from + (to - from) * u;
         const r =
-          0.096 * (0.55 + 0.45 * Math.min(1, Math.abs(y) / (length * 0.26)));
+          terminalTaper(y) *
+          0.109 *
+          (0.47 + 0.53 * Math.min(1, Math.abs(y) / (length * 0.3)));
         const rn =
-          0.096 * (0.55 + 0.45 * Math.min(1, Math.abs(yn) / (length * 0.26)));
+          terminalTaper(yn) *
+          0.109 *
+          (0.47 + 0.53 * Math.min(1, Math.abs(yn) / (length * 0.3)));
         setInstance(
           fibre,
           i,
           axis(y) + Math.cos(angle) * r,
           y + 0.021 * Math.sin(angle * 2),
-          Math.sin(angle) * r + 0.025,
+          Math.sin(angle) * r + 0.004,
           axis(yn) + Math.cos(next) * rn,
           yn + 0.021 * Math.sin(next * 2),
-          Math.sin(next) * rn + 0.025,
-          0.019,
+          Math.sin(next) * rn + 0.004,
+          0.009,
         );
       }
       for (let i = 0; i < loops * 5; i++) {
@@ -222,14 +263,16 @@ export function divisionKit() {
           y = from + (to - from) * t,
           a = t * TAU * loops,
           r =
-            0.102 * (0.55 + 0.45 * Math.min(1, Math.abs(y) / (length * 0.26)));
+            terminalTaper(y) *
+            0.109 *
+            (0.47 + 0.53 * Math.min(1, Math.abs(y) / (length * 0.3)));
         temp.position.set(
           axis(y) + Math.cos(a) * r,
           y + 0.021 * Math.sin(a * 2),
-          Math.sin(a) * r + 0.025,
+          Math.sin(a) * r + 0.004,
         );
         temp.rotation.set(0, a, 0.2 * Math.sin(i));
-        temp.scale.set(0.032, 0.018, 0.024);
+        temp.scale.set(0.022, 0.014, 0.012);
         temp.updateMatrix();
         nucleosomes.setMatrixAt(i, temp.matrix);
       }
@@ -239,6 +282,26 @@ export function divisionKit() {
         deformableInstances.push({
           object,
           original: object.instanceMatrix.array.slice(),
+          boxBasis: [
+            (object.geometry.boundingBox.min.x +
+              object.geometry.boundingBox.max.x) /
+              2,
+            (object.geometry.boundingBox.min.y +
+              object.geometry.boundingBox.max.y) /
+              2,
+            (object.geometry.boundingBox.min.z +
+              object.geometry.boundingBox.max.z) /
+              2,
+            (object.geometry.boundingBox.max.x -
+              object.geometry.boundingBox.min.x) /
+              2,
+            (object.geometry.boundingBox.max.y -
+              object.geometry.boundingBox.min.y) /
+              2,
+            (object.geometry.boundingBox.max.z -
+              object.geometry.boundingBox.min.z) /
+              2,
+          ],
           isPath: object === fibre,
         });
       }
@@ -319,10 +382,12 @@ export function divisionKit() {
     const matrix = new THREE.Matrix4(),
       a = new THREE.Vector3(),
       z = new THREE.Vector3();
-    function setDeflection(value) {
-      if (value === lastDeflection) return;
+    function setDeflection(value, lag = 0) {
+      if (value === lastDeflection && lag === lastFlexion) return;
       lastDeflection = value;
+      lastFlexion = lag;
       deflection = value;
+      flexion = lag;
       for (const { geometry, original } of deformableSurfaces) {
         const positions = geometry.attributes.position.array;
         for (let i = 0; i < positions.length; i += 3) {
@@ -333,7 +398,12 @@ export function divisionKit() {
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
       }
-      for (const { object, original, isPath } of deformableInstances) {
+      for (const {
+        object,
+        original,
+        isPath,
+        boxBasis,
+      } of deformableInstances) {
         for (let i = 0; i < object.count; i++) {
           matrix.fromArray(original, i * 16);
           if (isPath) {
@@ -360,7 +430,59 @@ export function divisionKit() {
             object.setMatrixAt(i, matrix);
           }
         }
-        finish(object);
+        object.instanceMatrix.needsUpdate = true;
+        // Bound the actual Float32 matrices with a conservative affine AABB.
+        // Geometry and camera fit remain unchanged; fit uses instance geometry boxes.
+        const [cx, cy, cz, hx, hy, hz] = boxBasis;
+        const elements = object.instanceMatrix.array;
+        let lx = Infinity,
+          ly = Infinity,
+          lz = Infinity;
+        let ux = -Infinity,
+          uy = -Infinity,
+          uz = -Infinity;
+        for (let j = 0; j < elements.length; j += 16) {
+          const x =
+            elements[j] * cx +
+            elements[j + 4] * cy +
+            elements[j + 8] * cz +
+            elements[j + 12];
+          const y =
+            elements[j + 1] * cx +
+            elements[j + 5] * cy +
+            elements[j + 9] * cz +
+            elements[j + 13];
+          const z =
+            elements[j + 2] * cx +
+            elements[j + 6] * cy +
+            elements[j + 10] * cz +
+            elements[j + 14];
+          const rx =
+            Math.abs(elements[j]) * hx +
+            Math.abs(elements[j + 4]) * hy +
+            Math.abs(elements[j + 8]) * hz;
+          const ry =
+            Math.abs(elements[j + 1]) * hx +
+            Math.abs(elements[j + 5]) * hy +
+            Math.abs(elements[j + 9]) * hz;
+          const rz =
+            Math.abs(elements[j + 2]) * hx +
+            Math.abs(elements[j + 6]) * hy +
+            Math.abs(elements[j + 10]) * hz;
+          lx = Math.min(lx, x - rx);
+          ux = Math.max(ux, x + rx);
+          ly = Math.min(ly, y - ry);
+          uy = Math.max(uy, y + ry);
+          lz = Math.min(lz, z - rz);
+          uz = Math.max(uz, z + rz);
+        }
+        // Round outward to cover floating-point reassociation; keep the original sphere for render sorting.
+        const sx = 1e-12 * Math.max(1, Math.abs(lx), Math.abs(ux));
+        const sy = 1e-12 * Math.max(1, Math.abs(ly), Math.abs(uy));
+        const sz = 1e-12 * Math.max(1, Math.abs(lz), Math.abs(uz));
+        object.boundingBox.min.set(lx - sx, ly - sy, lz - sz);
+        object.boundingBox.max.set(ux + sx, uy + sy, uz + sz);
+        object.computeBoundingSphere();
       }
     }
     function axisPoint(y) {

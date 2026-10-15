@@ -37,3 +37,7 @@ Local counts: replication 93 nodes / 15 instanced meshes; repair 117 / 10; trans
 ## Acceptance boundary
 
 Browser screenshots and real-device inspection have not been performed by this agent. Passing programmatic checks does not establish visual acceptance. Root must still judge normal-distance cleft readability, capsid-window visibility, layer separation, label collisions and progression framing. Protein surface ridges, capsomere spacing, membrane proportions and cortical mesh are schematic; no measured atomic structure or exact capsid stoichiometry is claimed.
+
+## 2026-10-15 continuation
+
+Native baseline inspection retained the already detailed DNA, transduction and sporulation topology. Primase, recognition, TFIIH and ligase now have distinct schematic domain assemblies instead of sharing the generic polymerase silhouette. Sphere geometry/material resources are shared; unique geometry counts and geometry buffer bytes remain unchanged. Replication removes one avoidable per-update vector allocation. See `docs/qa/process-refinement-2026-10-15/agents/refine_genome.md` for the individual audit, tests and pending root render review.

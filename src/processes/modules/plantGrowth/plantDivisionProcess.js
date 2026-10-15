@@ -22,7 +22,10 @@ function create() {
   const micro = k.material("#90b4ad"),
     vesMat = k.material("#d0a578"),
     plateMat = k.material("#c4b98e");
+  // The camera looks into the open front and sees the shell's interior.
+  // Sphere winding remains outward; only this bounded cutaway is two-sided.
   const nucMat = k.material("#b9acc8", {
+    side: THREE.DoubleSide,
     transparent: true,
     opacity: 0.28,
     depthWrite: false,
@@ -47,10 +50,55 @@ function create() {
       const m = chromatid(k, chrom);
       sisters.push({ m, side, x: (i - 1.5) * 0.56 });
     }
-  const nuclei = [-1, 1].map((side) => ({
-    side,
-    m: k.ball([0, side * 1.6, 0], [1.16, 0.68, 0.54], nucMat),
-  }));
+  // Open-front envelopes expose the chromatin inside each daughter nucleus.
+  // Their cut edges are paired membranes, not extra enclosing compartments.
+  const nuclearShell = new THREE.SphereGeometry(1, 24, 16, Math.PI, Math.PI);
+  const nuclearRim = new THREE.TorusGeometry(1, 0.018, 8, 48);
+  const envelopeEdge = k.material("#9e91b0");
+  const chromatinPoints = [];
+  for (let i = 0; i <= 96; i++) {
+    const t = i / 96,
+      a = t * Math.PI * 6.4 + 0.6 * Math.sin(t * Math.PI * 5),
+      envelope = Math.sin(t * Math.PI),
+      radius = 0.09 + 0.045 * Math.sin(t * Math.PI * 3 + 0.4);
+    chromatinPoints.push(
+      new THREE.Vector3(
+        radius * Math.sin(a) * (0.55 + 0.45 * envelope),
+        (t - 0.5) * 1.05 + 0.045 * envelope * Math.sin(a * 0.7),
+        -0.16 + 0.09 * Math.cos(a + 0.35 * Math.sin(t * Math.PI * 7)),
+      ),
+    );
+  }
+  const chromatinGeometry = new THREE.TubeGeometry(
+    new THREE.CatmullRomCurve3(chromatinPoints),
+    112,
+    0.024,
+    8,
+  );
+  const nuclei = [-1, 1].map((side) => {
+    const m = k.mesh(nuclearShell, nucMat, [0, side * 1.6, 0]);
+    m.name = "Daughter nuclear envelope cutaway";
+    for (const scale of [1, 0.94]) {
+      const edge = k.mesh(nuclearRim, envelopeEdge, [0, 0, 0], m);
+      edge.scale.setScalar(scale);
+      edge.name = "Paired daughter nuclear envelope cut rim";
+    }
+    const chromatin = new THREE.Group();
+    m.add(chromatin);
+    chromatin.name = "Decondensing daughter chromatin domains";
+    for (let i = 0; i < 4; i++) {
+      const domain = k.mesh(
+        chromatinGeometry,
+        chrom,
+        [(i - 1.5) * 0.48, 0, 0],
+        chromatin,
+      );
+      domain.rotation.y = i * 0.3;
+      domain.rotation.z = (i % 2 ? -1 : 1) * 0.08;
+      domain.scale.y = 0.9 + (i % 3) * 0.05;
+    }
+    return { side, m, chromatin };
+  });
   const spindles = sisters.map(({ side }) => {
     const m = k.segment([0, side * 2.1, -0.18], [0, 0, 0.15], 0.018, micro);
     m.name = "Kinetochore microtubule";
@@ -130,6 +178,7 @@ function create() {
       growth = ease(p, 0.39, 0.88),
       radius = 0.12 + 2.24 * growth + 0.08 * ease(p, 0.86, 0.9),
       depth = 0.09 + 0.81 * growth;
+    const decondensation = ease(p, 0.65, 0.84);
     sisters.forEach(({ m, side, x }) => {
       m.position.set(
         x + side * 0.12 * (1 - separation),
@@ -138,9 +187,13 @@ function create() {
       );
       m.rotation.z = side * (0.45 * (1 - separation));
       m.visible = p < 0.84;
-      m.scale.set(1, 1 - 0.2 * ease(p, 0.65, 0.84), 1);
+      m.scale.set(
+        1 - 0.96 * decondensation,
+        1 - 0.2 * decondensation,
+        1 - 0.96 * decondensation,
+      );
     });
-    nuclei.forEach(({ m, side }) => {
+    nuclei.forEach(({ m, side, chromatin }) => {
       m.visible = p >= 0.31;
       m.scale.set(
         1.16 * ease(p, 0.31, 0.48),
@@ -148,6 +201,12 @@ function create() {
         0.54 * ease(p, 0.31, 0.48),
       );
       m.position.y = side * 1.6;
+      chromatin.visible = p > 0.65;
+      chromatin.scale.set(
+        Math.max(0.001, decondensation),
+        0.8 + 0.2 * decondensation,
+        Math.max(0.001, decondensation),
+      );
     });
     sisters.forEach(({ m }, i) => {
       m.updateMatrix();

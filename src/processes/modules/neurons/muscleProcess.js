@@ -269,13 +269,59 @@ export default {
         }
       }
     }
-    const sr = k.segment(
-      [-2.6, 1.7, -0.1],
-      [2.6, 1.7, -0.1],
-      0.12,
-      k.material("#b1b8c2"),
-    );
+    // A bounded cutaway through a connected SR cisterna exposes the lumen.
+    // Its spacing and membrane thickness are illustrative, not ultrastructure.
+    const sr = new THREE.Group();
+    sr.position.set(0, 1.7, -0.1);
     sr.name = "sarcoplasmic reticulum calcium store";
+    group.add(sr);
+    const srOuter = k.material("#a7b5bc"),
+      srInner = k.material("#c9d2cf");
+    srOuter.side = srInner.side = THREE.DoubleSide;
+    const cutStart = 0.9,
+      cutArc = Math.PI * 2 - 1.8;
+    function reservoirWall(radius, length, material, name) {
+      const wall = k.mesh(
+        new THREE.CylinderGeometry(
+          radius,
+          radius,
+          length,
+          24,
+          1,
+          true,
+          cutStart,
+          cutArc,
+        ),
+        material,
+        [0, 0, 0],
+        sr,
+      );
+      wall.rotation.z = Math.PI / 2;
+      wall.name = name;
+      return wall;
+    }
+    reservoirWall(0.19, 5.2, srOuter, "SR cutaway outer membrane");
+    reservoirWall(0.15, 5.2, srInner, "SR exposed luminal membrane");
+    // Rim strips join the inner and outer surfaces along both open cut edges.
+    for (const angle of [cutStart, cutStart + cutArc]) {
+      const y = 0.17 * Math.sin(angle),
+        z = 0.17 * Math.cos(angle);
+      const rim = k.segment([-2.6, y, z], [2.6, y, z], 0.02, srInner, sr);
+      rim.name = "SR longitudinal cut edge";
+    }
+    const endGeometry = new THREE.RingGeometry(
+      0.15,
+      0.19,
+      24,
+      1,
+      Math.PI - cutStart - cutArc,
+      cutArc,
+    );
+    for (const x of [-2.6, 2.6]) {
+      const rim = k.mesh(endGeometry, srInner, [x, 0, 0], sr);
+      rim.rotation.y = Math.PI / 2;
+      rim.name = "SR open lumen rim";
+    }
     const labels = [
       k.label(
         [0, 2.33, 0],
@@ -390,7 +436,7 @@ export default {
             ? labelledHead.ADP
             : labelledHead.head.children[2],
       );
-      group.userData = {
+      Object.assign(group.userData, {
         process: "muscle",
         specimen: "mammalian skeletal muscle sarcomere",
         calcium: allowed ? "transient release" : "low",
@@ -413,7 +459,7 @@ export default {
                   : "inactive",
         ATPAvailable: true,
         nucleotideState,
-      };
+      });
     }
     update(0);
     return {

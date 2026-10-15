@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "date": "2026-10-15",
+  "sourceRevisionManifest": "docs/qa/process-refinement-2026-10-15/candidate-source-before-bounds.json",
+  "clips": [
+    {
+      "id": "mitosis",
+      "bytes": 378848,
+      "sha256": "5246450c33fa100d7757c1d3561799fc8435b021ab1701cdbe54644ce2da667f",
+      "decoder": {
+        "totalVideoFrames": 167,
+        "droppedVideoFrames": 0,
+        "corruptedVideoFrames": 0
+      }
+    },
+    {
+      "id": "photosynthesis",
+      "bytes": 290897,
+      "sha256": "b6b2f13b50ef79798621a7e14b71cd4797e2d6a679f52bbda9631dbe49707e21",
+      "decoder": {
+        "totalVideoFrames": 167,
+        "droppedVideoFrames": 0,
+        "corruptedVideoFrames": 0
+      }
+    }
+  ],
+  "finalDivisionSourceEquivalence": {
+    "helperSHA256": "9d73cdd10e768ea6b9c174019b8e5f3ca744cd3efce8866a1794f58f7b0538f0",
+    "nativePairs": 42,
+    "zeroDifferencePairs": 42,
+    "differentPixels": 0,
+    "views": [
+      "default",
+      "yaw -25 degrees",
+      "yaw +25 degrees"
+    ],
+    "scope": "Mitosis/meiosis visible buffers and original bounding spheres preserved; final helper only changes conservative AABB calculation."
+  },
+  "rawEvidence": "Original full-resolution captures, decoded-frame records and comparison records retained locally under docs/qa/process-refinement-2026-10-15."
+}

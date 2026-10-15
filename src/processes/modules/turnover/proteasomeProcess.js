@@ -425,6 +425,11 @@ export default {
       g.name = `product peptide ${j}`;
       peptides.push(g);
     }
+    // Keep covalent release and product emergence continuous without moving
+    // endpoints or changing the mechanism-specific visibility thresholds.
+    const revealPeptides = peptides.map((fragment) => detail.fade(fragment)),
+      revealUbLinks = ubLinks.map((link) => detail.fade(link)),
+      revealAttachment = detail.fade(attachment);
     const labels = [
       k.label(
         [0, 0, 0],
@@ -510,10 +515,12 @@ export default {
       });
       ubLinks.forEach((m, i) => {
         connect(m, ubiquitin[i].position, ubiquitin[i + 1].position);
-        m.visible = tagged && recycle < 0.15;
+        revealUbLinks[i](tagged ? 1 - ease(recycle, 0, 0.15) : 0);
       });
       vb.copy(residues[12].position);
       connect(attachment, vb, ubiquitin[0].position);
+      revealAttachment(tagged ? 1 - ease(p, 0.46, 0.48) : 0);
+      // Preserve the exact chemical cut boundary for labels and science probes.
       attachment.visible = tagged && p <= 0.48;
       gate.forEach((m, i) => {
         const a = (i * Math.PI * 2) / 7,
@@ -531,7 +538,7 @@ export default {
         // Six-residue teaching fragments emerge in the same order as
         // their source chain crosses the catalytic chamber.
         const q = clamp((travel - (1.53 + j * 0.6)) / 1.35);
-        m.visible = tagged && q > 0;
+        revealPeptides[j](tagged ? ease(q, 0, 0.14) : 0);
         const axial = Math.min(q / 0.65, 1),
           outside = Math.max(0, (q - 0.65) / 0.35);
         m.position.set(

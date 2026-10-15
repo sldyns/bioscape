@@ -624,7 +624,7 @@ export default {
       anchorObject(labels[4], crossArms[0].arm);
       labels[5].active = enabled && gain > 0;
       anchorObject(labels[5], armRows[27].arm);
-      group.userData = {
+      Object.assign(group.userData, {
         process: "ciliaryMotion",
         specimen: "Paramecium motile cilium",
         axoneme: "9 outer doublets + 2 central singlets",
@@ -639,7 +639,7 @@ export default {
         bacterialRotation: false,
         tipX: sampleX[N],
         tipY: sampleY[N],
-      };
+      });
     }
     update(0);
     return {

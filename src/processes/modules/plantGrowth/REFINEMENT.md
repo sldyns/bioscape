@@ -10,3 +10,7 @@ Inspected the accepted transcription process and `src/scene/membraneDetails.js` 
 Validation: own Node smoke checks all four models, bilingual stages, finite geometry attributes and instance matrices, finite 2–20 unit bounds, distinct stages, stable node/geometry/material identities, repeated seeks, and all condition controls. Bundled the four modules with esbuild. No update creates geometry, materials, or scene nodes; repeating structures share buffers or use instancing.
 
 Visual acceptance remains for root screenshot review. No model is certified against the accepted visual baseline from Node tests alone. Multiscale features and vesicle/protein dimensions are deliberately exaggerated for visibility; membrane recycling and full wall chemistry remain outside scope.
+
+## 2026-10-15 continuation
+
+Daughter envelopes now expose paired cut rims and telophase chromatin domains; chromatid tubes share geometry. Cellulose wall bundles use shallow parallel chains, and new fixed-pitch fibers reveal by drawRange instead of stretching. Septa gain continuous open pore linings and outer thickness surfaces. Fertilization anatomy retained after native baseline review. See `docs/qa/process-refinement-2026-10-15/agents/refine_plant_growth.md` for resource cost and the frozen label-anchor assertion conflict. New rendered review remains outstanding.

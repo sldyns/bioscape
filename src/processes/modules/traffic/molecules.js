@@ -39,22 +39,28 @@ export function clathrinLattice(k, material) {
     for (let j = i + 1; j < points.length; j++)
       if (Math.abs(points[i].distanceTo(points[j]) - edgeLength) < 1e-4)
         edges.push([i, j]);
-  const rods = new THREE.InstancedMesh(k.cylinder, material, edges.length),
-    hubs = new THREE.InstancedMesh(k.sphere, material, points.length);
-  k.group.add(rods, hubs);
+  const rods = new THREE.InstancedMesh(k.cylinder, material, edges.length * 3),
+    hubs = new THREE.InstancedMesh(k.sphere, material, points.length),
+    contacts = new THREE.InstancedMesh(k.cylinder, material, points.length);
+  k.group.add(rods, hubs, contacts);
+  contacts.name = "clathrin terminal-domain contacts toward membrane adaptors";
   rods.name = "clathrin pentagon–hexagon struts";
   hubs.name = "three-legged clathrin hubs";
   const mapped = points.map(() => new THREE.Vector3()),
     dummy = new THREE.Object3D(),
     up = new THREE.Vector3(0, 1, 0),
     delta = new THREE.Vector3(),
-    mid = new THREE.Vector3();
+    mid = new THREE.Vector3(),
+    outward = new THREE.Vector3(),
+    start = new THREE.Vector3(),
+    end = new THREE.Vector3();
   return {
     edges: edges.length,
     vertices: points.length,
     update({ bend, detached, cx, cy, uncoat, visible }) {
       rods.visible = visible;
       hubs.visible = visible;
+      contacts.visible = visible;
       for (let i = 0; i < points.length; i++) {
         const n = points[i],
           theta = Math.acos(-n.y),
@@ -74,6 +80,22 @@ export function clathrinLattice(k, material) {
         dummy.scale.setScalar(show ? 0.039 : 0.00001);
         dummy.updateMatrix();
         hubs.setMatrixAt(i, dummy.matrix);
+        outward
+          .set(
+            mapped[i].x - (detached ? cx : -1.5),
+            bend * n.y - (1 - bend),
+            mapped[i].z,
+          )
+          .normalize();
+        dummy.position.copy(mapped[i]).addScaledVector(outward, -0.055);
+        dummy.quaternion.setFromUnitVectors(up, outward);
+        dummy.scale.set(
+          show ? 0.012 : 0.00001,
+          0.11 * (1 - uncoat),
+          show ? 0.012 : 0.00001,
+        );
+        dummy.updateMatrix();
+        contacts.setMatrixAt(i, dummy.matrix);
       }
       for (let i = 0; i < edges.length; i++) {
         const [a, b] = edges[i],
@@ -81,20 +103,39 @@ export function clathrinLattice(k, material) {
             points[a].z < 0.38 &&
             points[b].z < 0.38 &&
             (detached || (points[a].y < 0.96 && points[b].y < 0.96));
-        mid.copy(mapped[a]).add(mapped[b]).multiplyScalar(0.5);
-        delta.subVectors(mapped[b], mapped[a]);
-        const len = delta.length();
-        dummy.position.copy(mid);
-        dummy.quaternion.setFromUnitVectors(up, delta.normalize());
-        dummy.scale.set(
-          show ? 0.022 : 0.00001,
-          Math.max(0.00001, len * (1 - uncoat * 0.75)),
-          show ? 0.022 : 0.00001,
-        );
-        dummy.updateMatrix();
-        rods.setMatrixAt(i, dummy.matrix);
+        // Bent proximal/distal legs replace straight cage struts. Each edge
+        // retains its endpoints and three-valent topology; elbows sit outside.
+        outward.copy(mapped[a]).add(mapped[b]).multiplyScalar(0.5);
+        outward.x -= detached ? cx : -1.5;
+        outward.y -= detached ? cy : 1.4 - bend * 1.7;
+        if (outward.lengthSq() < 1e-8) outward.set(0, -1, 0);
+        outward.normalize();
+        for (let leg = 0; leg < 3; leg++) {
+          const t0 = leg / 3,
+            t1 = (leg + 1) / 3;
+          start
+            .copy(mapped[a])
+            .lerp(mapped[b], t0)
+            .addScaledVector(outward, leg === 0 ? 0 : 0.035);
+          end
+            .copy(mapped[a])
+            .lerp(mapped[b], t1)
+            .addScaledVector(outward, leg === 2 ? 0 : 0.035);
+          mid.copy(start).add(end).multiplyScalar(0.5);
+          delta.subVectors(end, start);
+          const len = delta.length();
+          dummy.position.copy(mid);
+          dummy.quaternion.setFromUnitVectors(up, delta.normalize());
+          dummy.scale.set(
+            show ? 0.022 : 0.00001,
+            Math.max(0.00001, len * (1 - uncoat * 0.75)),
+            show ? 0.022 : 0.00001,
+          );
+          dummy.updateMatrix();
+          rods.setMatrixAt(i * 3 + leg, dummy.matrix);
+        }
       }
-      for (const m of [rods, hubs]) {
+      for (const m of [rods, hubs, contacts]) {
         m.instanceMatrix.needsUpdate = true;
         m.computeBoundingBox();
         m.computeBoundingSphere();

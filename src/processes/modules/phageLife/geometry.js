@@ -9,39 +9,41 @@ export function hostCutaway(k, parent, scale = 1) {
   const pieces = [],
     rims = [],
     colors = ["#b9c9c2", "#c7ba99", "#8bab9e"];
+  // Each angular sector has the same unit surface for every envelope layer;
+  // only the anatomical scale differs. Reuse it for both bilayer leaflets.
+  const sectorGeometry = Array.from(
+    { length: 6 },
+    (_, i) =>
+      new THREE.SphereGeometry(
+        1,
+        24,
+        24,
+        Math.PI + (i * Math.PI) / 6,
+        Math.PI / 6,
+        0,
+        Math.PI,
+      ),
+  );
   [1, 0.966, 0.925].forEach((s, layer) => {
+    const surfaceMaterial = k.material(colors[layer], {
+        side: THREE.DoubleSide,
+        roughness: 0.72,
+      }),
+      leafletMaterial =
+        layer === 1
+          ? null
+          : k.material(layer === 0 ? "#bdc9ba" : "#adc3b1", {
+              side: THREE.DoubleSide,
+            });
     for (let i = 0; i < 6; i++) {
       const piece = new THREE.Group();
       g.add(piece);
-      const mesh = k.mesh(
-        new THREE.SphereGeometry(
-          1,
-          24,
-          24,
-          Math.PI + (i * Math.PI) / 6,
-          Math.PI / 6,
-          0,
-          Math.PI,
-        ),
-        k.material(colors[layer], { side: THREE.DoubleSide, roughness: 0.72 }),
-        [0, 0, 0],
-        piece,
-      );
+      const mesh = k.mesh(sectorGeometry[i], surfaceMaterial, [0, 0, 0], piece);
       mesh.scale.set(3.2 * s, 1.48 * s, 1.12 * s);
       if (layer !== 1) {
         const inner = k.mesh(
-          new THREE.SphereGeometry(
-            1,
-            24,
-            24,
-            Math.PI + (i * Math.PI) / 6,
-            Math.PI / 6,
-            0,
-            Math.PI,
-          ),
-          k.material(layer === 0 ? "#bdc9ba" : "#adc3b1", {
-            side: THREE.DoubleSide,
-          }),
+          sectorGeometry[i],
+          leafletMaterial,
           [0, 0, 0],
           piece,
         );

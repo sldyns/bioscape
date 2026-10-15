@@ -221,7 +221,9 @@ export default {
       x1: 0.91,
       y: 0,
       z0: -0.42,
-      z1: 0.45,
+      // Remove the camera-facing half of this enlarged cutaway so the
+      // gate, central lumen and local ion transit remain visible.
+      z1: 0,
       holes: [
         { x: -0.43, z: 0, r: 0.235 },
         { x: 0.43, z: 0, r: 0.235 },
@@ -364,7 +366,7 @@ export default {
       anchorObject(labels[5], axoplasm);
       anchorObject(labels[6], zones[selectedIndex].patch);
       anchorObject(labels[7], locator);
-      group.userData = {
+      Object.assign(group.userData, {
         process: "actionPotential",
         specimen: "mammalian unmyelinated neuronal axon",
         stimulus: enabled ? "on" : "off",
@@ -379,7 +381,7 @@ export default {
         detailSodiumOpen: enabled && localT >= 0 && localT < 0.25,
         detailPotassiumOpen: enabled && localT >= 0.22 && localT < 0.69,
         detailTracksFixedMembraneRegion: true,
-      };
+      });
     }
     update(0);
     return {

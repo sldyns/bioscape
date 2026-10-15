@@ -119,36 +119,85 @@ export default {
         0.012,
         k.material("#b1b8b0"),
       );
+    // Two broad, low microcolonies with packed basal cells and staggered upper
+    // neighbors. Intercellular Psl links form a porous network rather than a
+    // vertical ladder of isolated cells.
     const positions = [
-      [-2, -1.5, 0.6],
-      [-1.2, -1.5, -0.2],
-      [1.2, -1.5, 0.5],
-      [-2.4, -1.15, -0.45],
-      [-1.5, -1.07, 0.5],
-      [-0.8, -1.15, -0.75],
-      [1, -1.1, -0.4],
-      [1.9, -1.05, 0.55],
-      [-2, -0.65, -0.1],
-      [-1.15, -0.62, 0.2],
-      [0.8, -0.6, 0.3],
-      [1.55, -0.58, -0.2],
-      [-1.7, -0.2, 0.45],
-      [-0.95, -0.14, -0.45],
-      [1.15, -0.12, 0.1],
-      [-1.55, 0.25, 0.05],
-      [0.85, 0.32, -0.2],
-      [1.8, 0.2, 0.35],
-      [-1.1, 0.68, 0.15],
-      [1.25, 0.71, 0.05],
-      [-1.8, 0.63, -0.55],
-      [0.8, -0.9, 1],
-      [-0.75, -1.47, 1],
-      [1.8, -1.48, -0.7],
+      [-2.25, -1.57, 0.58],
+      [-1.45, -1.57, -0.12],
+      [1.15, -1.57, 0.48],
+      [-2.55, -1.55, -0.42],
+      [-1.55, -1.22, 0.52],
+      [-0.75, -1.54, -0.64],
+      [0.65, -1.55, -0.43],
+      [1.85, -1.55, 0.55],
+      [-2.1, -1.2, -0.15],
+      [-1.15, -1.18, 0.04],
+      [0.95, -1.19, 0.28],
+      [1.65, -1.18, -0.26],
+      [-1.85, -0.84, 0.37],
+      [-1.18, -0.85, -0.35],
+      [1.25, -0.84, 0.07],
+      [-1.6, -0.5, 0.02],
+      [0.87, -0.86, -0.42],
+      [1.9, -1.16, 0.36],
+      [-1.16, -0.52, 0.2],
+      [1.3, -0.5, 0.02],
+      [-2.2, -0.85, -0.47],
+      [0.65, -1.53, 0.98],
+      [-0.78, -1.55, 0.88],
+      [1.85, -1.55, -0.73],
     ];
+    // Birth proceeds from the surface upward. Each upper representative cell
+    // expands beside an attached lower or lateral neighbor before moving into the
+    // mature EPS-supported position; never scale a tiny cell in open space.
+    const birthOrder = positions
+      .map((_, i) => i)
+      .sort(
+        (a, b) =>
+          Number(positions[a][1] >= -1.5) - Number(positions[b][1] >= -1.5) ||
+          a - b,
+      );
+    const birthParents = positions.map((pos, i) => {
+      if (i < 3 || pos[1] < -1.5) return -1;
+      let parent = 0,
+        nearest = Infinity;
+      for (let j = 0; j < i; j++) {
+        const other = positions[j];
+        const distance =
+          (other[0] - pos[0]) ** 2 +
+          (other[1] - pos[1]) ** 2 +
+          (other[2] - pos[2]) ** 2;
+        if (distance < nearest) {
+          nearest = distance;
+          parent = j;
+        }
+      }
+      return parent;
+    });
+    const birthStarts = positions.map((pos, i) =>
+      i < 3
+        ? 0
+        : pos[1] < -1.5
+          ? 0.26
+          : pos[1] < -1
+            ? 0.34
+            : pos[1] < -0.7
+              ? 0.42
+              : 0.5,
+    );
+    for (let i = 3; i < positions.length; i++)
+      if (birthParents[i] >= 0)
+        birthStarts[i] = Math.max(
+          birthStarts[i],
+          birthStarts[birthParents[i]] + 0.06,
+        );
     const cells = [],
       flagella = [],
       tethers = [],
       fibers = [],
+      fiberEndpoints = [],
+      fiberCurves = [],
       degradable = [];
     const poreGeometry = new THREE.TorusGeometry(0.026, 0.009, 6, 14);
     const surfaceMaterial = k.material("#adc0a7");
@@ -281,14 +330,59 @@ export default {
             psl,
             f,
           );
+        // Grow each bridge around its own center after both endpoint cells
+        // exist; a stage seek must never reveal an unsupported upper scaffold.
+        const center = new THREE.Vector3(
+          (from[0] + to[0]) / 2,
+          (from[1] + to[1]) / 2,
+          (from[2] + to[2]) / 2,
+        );
+        f.position.copy(center);
+        for (const child of f.children) child.position.sub(center);
         fibers.push(f);
+        fiberEndpoints.push([i, near]);
+        fiberCurves.push(curve);
         degradable.push(i === 12 || i === 15 || i === 18 || i === 20);
       }
     });
+    const basalMatrix = new THREE.Group();
+    basalMatrix.name = "surface-attached-Psl-footprint";
+    group.add(basalMatrix);
+    for (const center of [-1.65, 1.25]) {
+      for (let row = 0; row < 4; row++) {
+        const depth = -0.78 + row * 0.52;
+        k.tube(
+          [
+            [center - 0.98, -1.72, depth],
+            [center - 0.35, -1.7, depth + 0.12],
+            [center + 0.32, -1.72, depth - 0.1],
+            [center + 0.95, -1.71, depth + 0.06],
+          ],
+          0.018,
+          psl,
+          basalMatrix,
+          24,
+        );
+      }
+      for (let column = 0; column < 3; column++) {
+        const x = center - 0.65 + column * 0.65;
+        k.tube(
+          [
+            [x, -1.71, -0.8],
+            [x + 0.12, -1.69, 0],
+            [x - 0.08, -1.71, 0.85],
+          ],
+          0.014,
+          psl,
+          basalMatrix,
+          20,
+        );
+      }
+    }
     const dnaFibers = [];
     for (let i = 0; i < 6; i++) {
       const x = i < 3 ? -1.8 : 1.1,
-        y = -1.25 + (i % 3) * 0.66;
+        y = -1.47 + (i % 3) * 0.35;
       const dna = new THREE.Group();
       group.add(dna);
       dna.name = "extracellular-DNA-double-helix";
@@ -313,7 +407,7 @@ export default {
     for (let i = 0; i < 8; i++)
       adhesive.push(
         k.ball(
-          [-2.4 + (i % 4) * 1.3, -0.95 + Math.floor(i / 4) * 0.85, 0.55],
+          [-2.2 + (i % 4) * 1.25, -1.45 + Math.floor(i / 4) * 0.43, 0.55],
           [0.065, 0.12, 0.065],
           protein,
         ),
@@ -358,17 +452,18 @@ export default {
       dnaStrand = dnaFibers[0].children.find(
         (m) => m.geometry?.type === "TubeGeometry",
       );
+    const birthPoint = new THREE.Vector3();
     function update(value, parameters = {}) {
       const p = clamp(value),
         cue = parameters.cue !== "none",
         attach = ease(p, 0.05, 0.25),
         mature = ease(p, 0.32, 0.64),
         release = cue ? ease(p, 0.79, 1) : 0;
-      for (let i = 0; i < cells.length; i++) {
+      basalMatrix.visible = attach > 0.65;
+      for (const i of birthOrder) {
         const pos = positions[i],
-          growth =
-            i < 3 ? 1 : ease(p, 0.28 + (i % 6) * 0.027, 0.49 + (i % 6) * 0.027),
-          leaver = [12, 15, 18, 20].includes(i),
+          growth = i < 3 ? 1 : ease(p, birthStarts[i], birthStarts[i] + 0.14),
+          leaver = i === 12 || i === 15 || i === 18 || i === 20,
           r = leaver ? release : 0;
         cells[i].visible = growth > 0;
         cells[i].scale.setScalar(Math.max(0.001, growth));
@@ -381,17 +476,48 @@ export default {
             r * (2.0 + (i % 3) * 0.12),
           pos[2],
         );
+        if (i >= 3 && growth > 0 && growth < 1) {
+          const parent = birthParents[i];
+          if (parent < 0) {
+            // The bottom surface of a growing basal cell remains in contact
+            // with the deposited Psl footprint (top y = -1.72).
+            cells[i].position.y =
+              -1.75 + 0.15 * growth + (pos[1] + 1.6) * growth ** 6;
+          } else {
+            const support = cells[parent].position,
+              outward = growth ** 12;
+            fiberCurves[i - 3].getPoint(1 - outward, birthPoint);
+            cells[i].position.set(
+              birthPoint.x + (support.x - positions[parent][0]) * (1 - outward),
+              birthPoint.y + (support.y - positions[parent][1]) * (1 - outward),
+              birthPoint.z + (support.z - positions[parent][2]) * (1 - outward),
+            );
+          }
+        }
         cells[i].rotation.z =
-          ((i % 3) - 1) * 0.35 + (i < 3 ? (1 - attach) * 0.5 : 0) + r * 0.7;
+          ((i % 3) - 1) * (pos[1] < -1.5 ? 0.08 : 0.35) +
+          (i < 3 ? (1 - attach) * 0.5 : 0) +
+          r * 0.7;
         flagella[i].visible = (i < 3 && attach < 0.8) || r > 0.15;
         tethers[i].visible =
-          i < 3 && cells[i].visible && p > 0.17 && !(leaver && release > 0.05);
+          pos[1] < -1.5 &&
+          cells[i].visible &&
+          p > 0.17 &&
+          !(leaver && release > 0.05);
         tethers[i].scale.x = 0.018 * Math.max(0.001, attach);
         tethers[i].scale.z = 0.018 * Math.max(0.001, attach);
       }
       fibers.forEach((f, i) => {
-        f.visible =
-          mature > (i % 5) * 0.12 && !(degradable[i] && release > 0.03);
+        const endpoints = fiberEndpoints[i],
+          endpointGrowth = Math.min(
+            cells[endpoints[0]].scale.x,
+            cells[endpoints[1]].scale.x,
+          ),
+          birth =
+            clamp((endpointGrowth - 0.75) / 0.2) *
+            clamp((mature - (i % 5) * 0.06) / 0.15);
+        f.visible = birth > 0 && !(degradable[i] && release > 0.03);
+        f.scale.setScalar(Math.max(0.001, birth));
       });
       dnaFibers.forEach(
         (f, i) =>
@@ -419,7 +545,8 @@ export default {
       anchors[5].surface(inset.children[0]);
       anchors[6].surface(cues[0].children[0]);
       anchors[7].surface(cells[12].children[0]);
-      labels[7].active = labels[7].active && release > 0.25;
+      labels[7].active =
+        labels[7].active && release > 0.25 && cells[12].position.y > 0.3;
       group.userData = {
         species: "Pseudomonas aeruginosa PAO1",
         phenotype: "nonmucoid",

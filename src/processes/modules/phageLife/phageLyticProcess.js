@@ -257,8 +257,9 @@ export default {
         const [x, y] = sites[i],
           angle = (i * Math.PI * 2) / sites.length;
         v.group.visible = p > 0.51 + i * 0.008;
-        v.head.scale.setScalar(Math.max(0.05, assembly));
+        v.head.scale.setScalar(Math.max(1e-8, ease(p, 0.51 + i * 0.008, 0.67)));
         v.tail.visible = p > 0.56;
+        v.tail.scale.setScalar(Math.max(1e-8, ease(p, 0.56, 0.61)));
         v.tail.position.x = (1 - join) * 0.62;
         v.tail.position.y = -(1 - join) * 0.13;
         v.genome.visible = p > 0.67;

@@ -190,19 +190,33 @@ const process = {
       waterMat,
     ).name = "liquid delivery through lateral pit to wet mesophyll wall";
     // Root tissue: multiple living cortical cells and a narrow hair contacting soil water.
-    const rootCells = [];
+    const rootCells = [],
+      rootGeometry = new THREE.BoxGeometry(0.67, 0.89, 0.56),
+      rootEdges = new THREE.EdgesGeometry(rootGeometry),
+      rootEdgeMaterial = new THREE.LineBasicMaterial({ color: "#a2af8b" }),
+      rootWallGeometry = new THREE.BoxGeometry(0.67, 0.89, 0.045),
+      tissueWall = k.material("#a2b18a"),
+      corticalFace = k.material("#ddd7b3");
     for (let i = 0; i < 4; i++) {
-      const rootCell = k.mesh(
-        new THREE.BoxGeometry(0.67, 0.89, 0.56),
-        cellMat,
-        [-3.65 + i * 0.73, -2.66, 0],
-      );
+      const rootCell = k.mesh(rootGeometry, cellMat, [
+        -3.65 + i * 0.73,
+        -2.66,
+        0,
+      ]);
       rootCell.name = "root cortical cell";
       rootCells.push(rootCell);
-      const edges = new THREE.LineSegments(
-        new THREE.EdgesGeometry(new THREE.BoxGeometry(0.67, 0.89, 0.56)),
-        new THREE.LineBasicMaterial({ color: "#a2af8b" }),
+      k.mesh(rootWallGeometry, tissueWall, [
+        -3.65 + i * 0.73,
+        -2.66,
+        -0.303,
+      ]).name = "root cortical rear wall cutaway";
+      const cytoplasm = k.ball(
+        [-3.65 + i * 0.73, -2.66, -0.23],
+        [0.285, 0.39, 0.035],
+        corticalFace,
       );
+      cytoplasm.name = "root cortical cytoplasm cut surface";
+      const edges = new THREE.LineSegments(rootEdges, rootEdgeMaterial);
       edges.position.set(-3.65 + i * 0.73, -2.66, 0);
       group.add(edges);
     }
@@ -228,12 +242,28 @@ const process = {
         [0.14, 0.08, 0.12],
         k.material("#b4a78f"),
       );
+    // Rear hemishells retain the exact wet outer wall and leave the anterior
+    // air space and its vapor route unobstructed.
+    const mesophyllWallGeometry = new THREE.SphereGeometry(
+      1,
+      24,
+      16,
+      Math.PI,
+      Math.PI,
+    );
     // Leaf section: chloroplast-bearing mesophyll cells border an actual air space.
     for (let i = 0; i < 4; i++) {
       const x = 0.5 + (i % 2) * 1.2,
         y = 1.4 + Math.floor(i / 2) * 2;
       k.ball([x, y, 0], [0.54, 0.5, 0.34], cellMat).name =
         "mesophyll cell surface";
+      const mesophyllWall = k.mesh(mesophyllWallGeometry, tissueWall, [
+        x,
+        y,
+        0,
+      ]);
+      mesophyllWall.scale.set(0.54, 0.5, 0.34);
+      mesophyllWall.name = "mesophyll rear wall cutaway";
       for (let j = 0; j < 4; j++) {
         const t = (j * Math.PI) / 2;
         const plastid = makeChloroplast(group, 0.29);

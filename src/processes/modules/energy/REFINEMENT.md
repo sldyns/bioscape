@@ -36,3 +36,7 @@ Inspected the accepted `transcriptionProcess.js`, `scene/membraneDetails.js`, an
 Run `node src/processes/modules/energy/refinement-smoke.mjs`. It checks all registered roots and conditions, finite geometry attributes and scene bounds, repeated .7 → .2 → .7 seeks, control reset to defaults, object/geometry/material identity stability, stage differences, scientific invariants, and per-module esbuild compilation. The four models pass.
 
 The additions are substantive mechanism-specific geometry changes, but Node checks do not establish the accepted visual baseline. Normal-camera screenshot review is pending root review for all four models, particularly label spacing, the readability of F1 clefts and mobile carriers, and visibility of lipid tails at the final viewport size. No model is claimed visually accepted yet.
+
+## 2026-10-15 incremental refinement
+
+Continuous compact envelopes support existing transmembrane helix detail; stationary F1 beta domains change conformation with the shaft. Glycolysis now closes the substrate cleft at both ATP-yielding windows. Cyanobacterial thylakoid uses a continuous curved rim rather than parallel rope tubes. Original chloroplast architecture retained with bounded beta-domain motion. Focused conformation, science, continuity, chirality and inventory checks pass; root's new rendered acceptance remains required. Details: `docs/qa/process-refinement-2026-10-15/agents/refine_energy.md`.

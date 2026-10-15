@@ -325,8 +325,23 @@ function create() {
     );
   }
   const granules = [];
-  for (let i = 0; i < 5; i++)
-    granules.push(k.ball([0, 0, 0.13], 0.1, k.material("#af9a7c"), tcell));
+  const granuleSectionGeometry = new THREE.SphereGeometry(
+    0.92,
+    20,
+    12,
+    Math.PI,
+    Math.PI,
+  );
+  const granuleMembrane = k.material("#c1b299", { side: THREE.DoubleSide });
+  const granuleCore = k.material("#8e765f");
+  for (let i = 0; i < 5; i++) {
+    const granule = k.ball([0, 0, 0.13], 0.1, k.material("#af9a7c"), tcell);
+    granule.geometry = granuleSectionGeometry;
+    granule.name = "cytotoxic-granule-membrane-section";
+    k.ring([0, 0, 0], 0.92, 0.075, granuleMembrane, granule);
+    k.ball([0, 0, -0.24], [0.56, 0.56, 0.38], granuleCore, granule);
+    granules.push(granule);
+  }
   // Secretory lysosomes remain outside the nucleus, including while they
   // polarize. Follow its cytoplasmic perimeter rather than a chord through it;
   // retain distinct endpoints instead of collapsing five granules into one.

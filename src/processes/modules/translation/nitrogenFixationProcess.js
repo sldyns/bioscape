@@ -78,6 +78,58 @@ function create({ rootId = "bacterium" } = {}) {
         );
     }
   }
+  // Front-lateral cut rims connect alpha/beta lobes without crossing the
+  // exposed P-cluster or FeMo pockets. This is schematic protein support.
+  for (const side of [-1, 1]) {
+    const positions = [],
+      indices = [],
+      steps = 28;
+    for (let i = 0; i <= steps; i++) {
+      const angle = -1.35 + (i / steps) * 2.7;
+      for (const depth of [-0.16, 0.14])
+        for (const edge of [0, 1]) {
+          const radius = edge ? 0.76 : 0.98;
+          positions.push(
+            side * (0.8 + radius * Math.cos(angle)),
+            -0.04 + (edge ? 1.1 : 1.37) * Math.sin(angle),
+            depth,
+          );
+        }
+      if (i < steps) {
+        const q = i * 4;
+        for (const [a, b] of [
+          [0, 1],
+          [2, 3],
+          [0, 2],
+          [1, 3],
+        ])
+          indices.push(q + a, q + b, q + a + 4, q + b, q + b + 4, q + a + 4);
+      }
+    }
+    indices.push(0, 2, 1, 1, 2, 3);
+    const end = steps * 4;
+    indices.push(end, end + 1, end + 2, end + 1, end + 3, end + 2);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3),
+    );
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    k.mesh(geometry, betaMat, [0, 0, 0], moFe).name =
+      `MoFe-interface-support-${side}`;
+  }
+  k.tube(
+    [
+      [-0.36, 0.05, -0.02],
+      [0, -0.04, 0.04],
+      [0.36, 0.05, -0.02],
+    ],
+    0.13,
+    moMat,
+    moFe,
+    20,
+  ).name = "MoFe-dimer-interface";
   // Distinct cluster topology: [4Fe–4S], fused [8Fe–7S], and [7Fe–9S–Mo–C].
   const leftP = new THREE.Group();
   leftP.name = "P-cluster-left";

@@ -36,3 +36,7 @@ PASS on all four models: all condition combinations; finite vertex/normal/instan
 Resource counts after construction: diffusion 203 nodes / 32 geometries; activeTransport 109 / 55; osmoticBalance 62 / 6; bacterialCellWall 655 / 22. Repeated membrane components use instancing; sugars/stems share sphere and cylinder buffers.
 
 Visual acceptance remains with root screenshot review. No browser or thumbnail work was performed in this refinement. No known local invariant failures; these tests do not establish that every model meets the accepted visual baseline.
+
+## 2026-10-15 continuation
+
+Reviewed all four native baseline images; retain aquaporin, pump and cell-wall assemblies because their mechanism-specific secondary structures, readable active paths and attachments already satisfy the local modeling target. Red-cell cutaway now has a continuous deforming cut face joining outer and inner leaflets along its 58 perimeter edges, exposing actual membrane thickness. Existing closed-shell area/volume and cortex remain unchanged. Added `cutaway-thickness.test.mjs`; all membrane science, refinement and process-review checks pass. Adds one mesh/geometry/material, 116 triangles and 8,352 position/normal buffer bytes; rendered acceptance awaits root capture. Full audit: `docs/qa/process-refinement-2026-10-15/agents/refine_membrane.md`.

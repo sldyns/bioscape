@@ -1,6 +1,11 @@
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 import { dynamicTube, moveSegment, rightHandedDuplex } from "./geometry.js";
-import { duplexDetails, alphaHelix, cleftComplex } from "./structure.js";
+import {
+  duplexDetails,
+  alphaHelix,
+  cleftComplex,
+  foldDomain,
+} from "./structure.js";
 
 const title = B("染色质可及性", "Chromatin accessibility");
 const intro = B(
@@ -101,12 +106,35 @@ function create({ rootId = "cell" } = {}) {
   }
   const remodeler = new THREE.Group();
   group.add(remodeler);
-  k.ball([-0.23, 0, 0], [0.43, 0.38, 0.32], remodelMat, remodeler);
-  k.ball([0.28, -0.13, 0.02], [0.37, 0.31, 0.29], remodelMat, remodeler);
-  k.segment([0.3, -0.1, 0], [0.63, -0.42, 0.03], 0.11, remodelMat, remodeler);
-  k.ball([0.7, -0.44, 0.03], [0.23, 0.17, 0.18], remodelMat, remodeler);
-  const motor = cleftComplex(k, remodeler, 0.67, ["#73998a", "#a6b9a5"]);
-  motor.position.set(0.02, -0.1, 0.23);
+  remodeler.name = "ISWI-bilobal-motor-and-linker-sensing-arm";
+  const motor = cleftComplex(k, remodeler, 0.72, ["#73998a", "#a6b9a5"]);
+  motor.position.set(0.02, -0.1, 0.13);
+  const sensor = foldDomain(
+    k,
+    remodeler,
+    [
+      [0.31, -0.18],
+      [0.5, -0.16],
+      [0.7, -0.36],
+      [0.8, -0.6],
+      [0.61, -0.66],
+      [0.48, -0.42],
+    ],
+    remodelMat,
+    0.22,
+  );
+  sensor.name = "ISWI-linker-DNA-sensing-extension";
+  k.tube(
+    [
+      [0.3, -0.22, 0.12],
+      [0.44, -0.3, 0.17],
+      [0.59, -0.48, 0.19],
+    ],
+    0.043,
+    remodelMat,
+    remodeler,
+    24,
+  ).name = "motor-sensor-continuous-connector";
   const atpPocket = k.ring([0.05, -0.04, 0.35], 0.12, 0.025, gold, remodeler);
   atpPocket.name = "ATPase-interlobe-pocket";
   for (let j = 0; j < 3; j++)

@@ -94,6 +94,22 @@ function create() {
     );
     cutRails.push(m);
   }
+  const septalPoreLiner = new THREE.CylinderGeometry(
+    0.19,
+    0.19,
+    0.07,
+    40,
+    1,
+    true,
+  );
+  const septalOuterEdge = new THREE.CylinderGeometry(
+    0.7,
+    0.7,
+    0.07,
+    40,
+    1,
+    true,
+  );
   const septa = [];
   for (const x of [-2.8, -1.4]) {
     const s = k.mesh(new THREE.RingGeometry(0.18, 0.72, 40), septum, [x, 0, 0]);
@@ -111,6 +127,14 @@ function create() {
         0,
       ]);
       face.rotation.y = Math.PI / 2;
+    }
+    for (const [geometry, name] of [
+      [septalPoreLiner, "Continuous septal pore lumen"],
+      [septalOuterEdge, "Septal outer wall thickness"],
+    ]) {
+      const liner = k.mesh(geometry, septum, [x, 0, 0]);
+      liner.rotation.z = Math.PI / 2;
+      liner.name = name;
     }
     for (let n = 0; n < 16; n++) {
       const a = (n * Math.PI) / 8;

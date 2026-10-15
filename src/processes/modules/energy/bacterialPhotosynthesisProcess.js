@@ -34,20 +34,43 @@ function create() {
     ],
   });
   details.bilayer({ length: 8.5, depth: 1.6, y: -1.15 });
-  // Curved rim layers preserve a closed sac silhouette around the exposed lumen.
-  for (const side of [-1, 1])
-    for (const delta of [-0.12, 0.12])
-      for (const z of [-0.78, -0.52, -0.26, 0, 0.26, 0.52, 0.78]) {
-        const points = Array.from({ length: 25 }, (_, i) => {
-          const a = -Math.PI / 2 + (i * Math.PI) / 24;
-          return [
-            side * (4.25 + (0.775 + delta) * Math.cos(a)),
-            -0.375 + (0.775 + delta) * Math.sin(a),
+  // Two continuous curved leaflets join the upper and lower membrane. The
+  // exposed front cut edge reveals their spacing and the enclosed lumen.
+  for (const side of [-1, 1]) {
+    const vertices = [],
+      indices = [];
+    for (let i = 0; i <= 32; i++) {
+      const a = -Math.PI / 2 + (i * Math.PI) / 32;
+      for (const radius of [0.57, 0.98])
+        for (const z of [-0.8, 0.8])
+          vertices.push(
+            side * (4.25 + radius * Math.cos(a)),
+            -0.375 + radius * Math.sin(a),
             z,
-          ];
-        });
-        k.tube(points, 0.055, lipid, group, 32);
+          );
+      if (i < 32) {
+        const n = i * 4;
+        for (const [u, v] of [
+          [0, 1],
+          [2, 3],
+          [0, 2],
+          [1, 3],
+        ])
+          indices.push(n + u, n + v, n + v + 4, n + u, n + v + 4, n + u + 4);
       }
+    }
+    for (const n of [0, 128]) indices.push(n, n + 2, n + 3, n, n + 3, n + 1);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(vertices, 3),
+    );
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    const rim = k.mesh(geometry, lipid);
+    rim.name = "continuous-thylakoid-rim-bilayer";
+    rim.material.side = THREE.DoubleSide;
+  }
   // Cyanobacterial PSII antenna is a cytoplasmic phycobilisome, not plant LHCII.
   const psii = new THREE.Group();
   group.add(psii);

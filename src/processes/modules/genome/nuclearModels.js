@@ -221,7 +221,7 @@ export function createReplication({ rootId = "cell" } = {}) {
       material.depthWrite = occupancy < 1 ? false : rest.depthWrite;
     }
     point(fork - 0.45, 1, a);
-    primase.position.copy(a).add(new THREE.Vector3(0, -0.18, -0.1));
+    primase.position.set(a.x, a.y - 0.18, a.z - 0.1);
     primase.visible = progress > 0.13 && progress < 0.75;
     const lx = -2.4 + 4.8 * ease(progress, 0.9, 0.99);
     point(lx, 3, a);

@@ -1,0 +1,2455 @@
+{
+  "note": "All model owners frozen after native v2 review corrections.",
+  "files": [
+    {
+      "path": "src/App.jsx",
+      "bytes": 44700,
+      "sha256": "598886b6f1681d6a73118e673fa197b889c3978c64ad3a9948e44216bd336f13"
+    },
+    {
+      "path": "src/CellScene.jsx",
+      "bytes": 44294,
+      "sha256": "aedbb2a37de338ef5539ff3b3497f20f26f96fe7203a434f9593bbe312b28726"
+    },
+    {
+      "path": "src/assetUrl.js",
+      "bytes": 223,
+      "sha256": "108d93a653db735520f324bd2d5255262102e18fd0d836a55bff6c7e435c0c8f"
+    },
+    {
+      "path": "src/catalog/cellTypes.js",
+      "bytes": 41733,
+      "sha256": "b09ff3fd62767b7a07f2545dd1dd13be399ba58bfea5f4bf702964023d75158f"
+    },
+    {
+      "path": "src/catalog/microbes.js",
+      "bytes": 24493,
+      "sha256": "f14e038269fbbf5a3bdf23a8e9b1a708712e9bb0cd9a04855dd55bd02a9a773c"
+    },
+    {
+      "path": "src/compare/CompareWorkspace.jsx",
+      "bytes": 21418,
+      "sha256": "cd9a120394770353af55c00bb4d18e75ede0ac3f06eb91a308ad8010b718fafe"
+    },
+    {
+      "path": "src/compare/ModelPicker.jsx",
+      "bytes": 7725,
+      "sha256": "5742bd9da69526e652e11354c4f365783612b1edda15c5fefaf1c88929c1e03b"
+    },
+    {
+      "path": "src/compare/capture.js",
+      "bytes": 4781,
+      "sha256": "d1eade7a6b81c2a64eb146b06e43f907e78c5fd105b35170b1b56de2de8f96a8"
+    },
+    {
+      "path": "src/compare/catalog.js",
+      "bytes": 10679,
+      "sha256": "ed45579afd49bedc4851bbba22a6cb20355877ff105625ac176aa96253f00725"
+    },
+    {
+      "path": "src/compare/comparison.css",
+      "bytes": 16614,
+      "sha256": "d126dbfda19ef4bd174593c4dec1900b65e59ec74005b7f252d57b24616d4c44"
+    },
+    {
+      "path": "src/compare/ids.js",
+      "bytes": 1557,
+      "sha256": "db6965c6cf7b289a0de244a394ab6829a8d402022615ab284fcdd38d7f1fd236"
+    },
+    {
+      "path": "src/compare/models/erythrocyte.js",
+      "bytes": 38933,
+      "sha256": "6dcb1a9776e97c7412f40f5262d928da782a6382da1c958964efc86d1fd9bb4d"
+    },
+    {
+      "path": "src/compare/models/erythrocyteMetadata.js",
+      "bytes": 2540,
+      "sha256": "1cc6fbd9f250a8c8d0654bc0ed8b276cad3100c65dfdb0835dd06fbf7047dc4b"
+    },
+    {
+      "path": "src/compare/models/muscle.js",
+      "bytes": 35694,
+      "sha256": "39a3dcb816bb9e24eabb80606f0ba4838670ac6690cdbfa17518b3bd1dd9b868"
+    },
+    {
+      "path": "src/compare/models/muscleMetadata.js",
+      "bytes": 5524,
+      "sha256": "a22fb9be1ea64450ddeb6c670c6f6352736573a98320d23b28dee73465b3c336"
+    },
+    {
+      "path": "src/compare/models/neuron.js",
+      "bytes": 25499,
+      "sha256": "5017167d2f8d6396f0ec3baf31649f71f5df577c01dce795d64ae09749d03e0d"
+    },
+    {
+      "path": "src/compare/models/neuronMetadata.js",
+      "bytes": 4674,
+      "sha256": "4d9cec150e12b9e643955d59e8bb5906628b75dcdaacd615e3cd3b038e30f10a"
+    },
+    {
+      "path": "src/compare/specimenModels.js",
+      "bytes": 1134,
+      "sha256": "849870fad37da34065c40b1807e87aac5cf96a69662d0bb97f1a190eee080482"
+    },
+    {
+      "path": "src/compare/specimens.js",
+      "bytes": 11198,
+      "sha256": "7667b183d7f5fb40c8a3a765b601b0682c2c9d393b44a984a3a44f2c70bfcdf0"
+    },
+    {
+      "path": "src/compare/state.js",
+      "bytes": 2664,
+      "sha256": "865d898093fdc15d025d93f16c50f04f10835e7cdbf02ddfb9be7d686b458e76"
+    },
+    {
+      "path": "src/components/AboutModel.jsx",
+      "bytes": 15669,
+      "sha256": "e9eb902e25598a95c1eef3034860cc4428b040cb34567258be24ddda790b7a99"
+    },
+    {
+      "path": "src/components/ProjectDialog.jsx",
+      "bytes": 12213,
+      "sha256": "8abb5ef1f240612eb4fb98d4349aed5da1cd735af46d3f955e6cd42b513ac13e"
+    },
+    {
+      "path": "src/components/projectDialog.css",
+      "bytes": 5227,
+      "sha256": "511fbffe1ae7156d8dfef3fc667fb469eb5ac6516b6a97fca4d6d36b3036b60e"
+    },
+    {
+      "path": "src/data-en.js",
+      "bytes": 9250,
+      "sha256": "b9a18d3bd62b2c3a1d0390ed8e010b279aedbb149b7b10ac54bfa1f262db65b5"
+    },
+    {
+      "path": "src/data.js",
+      "bytes": 9963,
+      "sha256": "67637571a5ecfa22871525893707dbd00471c356457ca05425d047ef68526389"
+    },
+    {
+      "path": "src/exploration/RELATIONSHIPS.md",
+      "bytes": 7998,
+      "sha256": "f219a3b765af18406fbdb7a9f6f8b4234e0cdb56ffc84129faff0ed722cf0ac2"
+    },
+    {
+      "path": "src/exploration/SceneActions.jsx",
+      "bytes": 780,
+      "sha256": "1ec00ddf12fef32a74e304e8a6637b8d099f604e78e1f395040b185358481dae"
+    },
+    {
+      "path": "src/exploration/ShareDialog.jsx",
+      "bytes": 3510,
+      "sha256": "c41bc380b0f62aaaa515e0a96febe09604dc5286742a6f056b39137df92c6893"
+    },
+    {
+      "path": "src/exploration/ViewerHeading.jsx",
+      "bytes": 922,
+      "sha256": "0b6ab57d03fefb96d6f5ce3fd2b908a0488de0dfc77f2cd121fa8214d402e149"
+    },
+    {
+      "path": "src/exploration/conditionNotes.js",
+      "bytes": 51078,
+      "sha256": "966bac049567ba417429216bfe815599be3edfac541427e14509cbaadf156a92"
+    },
+    {
+      "path": "src/exploration/exploration.css",
+      "bytes": 6478,
+      "sha256": "17f9aa80d48d905ac4c94bf78d2e1b88cc55267a79bdcf63d7ec82be3e4d6aae"
+    },
+    {
+      "path": "src/exploration/historySession.js",
+      "bytes": 1389,
+      "sha256": "0b6051843c4a0b9c4c6c2c18c410b8ca9270255a066f9c8a3c0d4b293ccc2fc3"
+    },
+    {
+      "path": "src/exploration/processContinuity.css",
+      "bytes": 2756,
+      "sha256": "8b65c787120724a8ba6e1151b768ace785b53309adc2c7b6d4a0c549482fe3ab"
+    },
+    {
+      "path": "src/exploration/processSession.js",
+      "bytes": 720,
+      "sha256": "13ed360bf6ae1524ec333a6d98434c86eeb1fc8bd9415eb33d7dc624f2e98398"
+    },
+    {
+      "path": "src/exploration/relatedProcessEntry.js",
+      "bytes": 623,
+      "sha256": "ee736f7132df83b5ea1e4df36c6819b7ec1ba4fb0f6778168fc4b962ceeaf8cc"
+    },
+    {
+      "path": "src/exploration/relationships.js",
+      "bytes": 30350,
+      "sha256": "e5f757b0dad7ba7f598f22ef07046f463235ac20017ada1b0721369c916cfc70"
+    },
+    {
+      "path": "src/exploration/state.js",
+      "bytes": 3972,
+      "sha256": "0d85ac91719c737e404a1848273bc203977d2115ed80555561f9932f9400315d"
+    },
+    {
+      "path": "src/hierarchy.js",
+      "bytes": 55853,
+      "sha256": "49491512dc9feed4abac77d79fdfb581b56545cd33d9cd48db6e0347fba9433c"
+    },
+    {
+      "path": "src/home/HeroScene.jsx",
+      "bytes": 6638,
+      "sha256": "ae6da371bf28a531d8b6321f48e8158f8c6e02850d2fc9dea92d07ff16d57f3f"
+    },
+    {
+      "path": "src/home/HomePage.jsx",
+      "bytes": 20330,
+      "sha256": "2eee023c8c0bbbd7ed47e2e3fd3ed7d880576b3c569acd0287708cbd7bd84466"
+    },
+    {
+      "path": "src/home/HomeRouter.jsx",
+      "bytes": 4117,
+      "sha256": "edd80239a502058e8471e2664391ea0cdd2ae563c4ebc61818cf625c9451b820"
+    },
+    {
+      "path": "src/home/ProcessCard.jsx",
+      "bytes": 4114,
+      "sha256": "b236d2d53946f5a34ce118d358d0bf8da5d8f5fd04fab1c5ba447d6a67ea30ce"
+    },
+    {
+      "path": "src/home/catalog.js",
+      "bytes": 4586,
+      "sha256": "1a5572b400a6440fa0709a4097a0c0b5583a013943298bcdd2b99fd2ef430c32"
+    },
+    {
+      "path": "src/home/home.css",
+      "bytes": 22131,
+      "sha256": "93d6d8ea630717eba17e5050018a911552a2e0c39659c27e65fa09ce0bb723dc"
+    },
+    {
+      "path": "src/home/routes.js",
+      "bytes": 949,
+      "sha256": "bfff26cf03eef885a20e0e21eef6796178a3307640d4320bfc58a9a88b48955a"
+    },
+    {
+      "path": "src/home/search.js",
+      "bytes": 280,
+      "sha256": "0d70383a4dc81279b1c36cdbba6c00cd0424963587a57769d52c5a2e4391893a"
+    },
+    {
+      "path": "src/main.jsx",
+      "bytes": 213,
+      "sha256": "7a0e19f543a2e28f72d9d802216466a7eca6417ebe64ed0e5a338c56feb6e271"
+    },
+    {
+      "path": "src/navigation.js",
+      "bytes": 1333,
+      "sha256": "1a51e797e1a6736209d0f0d6b8ae6af95e00088d56816fe4290dd43d5d21a182"
+    },
+    {
+      "path": "src/processes/ProcessDirectory.jsx",
+      "bytes": 7421,
+      "sha256": "1f8efd74b8ce769ae0ae1e6895f6b4c590d0de22b53a7a7076fccd913d1c9b20"
+    },
+    {
+      "path": "src/processes/ProcessExperience.jsx",
+      "bytes": 22229,
+      "sha256": "940c458045efbc20aaf9a69ff0b5c868e30b4bdfb329919b249db586243b7c5d"
+    },
+    {
+      "path": "src/processes/ProcessScene.jsx",
+      "bytes": 21476,
+      "sha256": "0bef73099053d2261ae3cce1c7617a085e19b9db77cc5499dbbbe66f028d9d67"
+    },
+    {
+      "path": "src/processes/ThumbnailStudio.jsx",
+      "bytes": 4418,
+      "sha256": "f961a2fcfee00e88d9418a32dee1bbb4c383fa693dcb555f16616c5d70ed4ab6"
+    },
+    {
+      "path": "src/processes/annotationDom.js",
+      "bytes": 3086,
+      "sha256": "614401ff99f58c6da519e3bf18e5ec9122f9d9faf6494e7a1236280cbac80b38"
+    },
+    {
+      "path": "src/processes/catalog.js",
+      "bytes": 3782,
+      "sha256": "744fa2bf5740d70fb706eec7d2802ec48baa325ac0be75bfd69d0db560328035"
+    },
+    {
+      "path": "src/processes/disposeScene.js",
+      "bytes": 900,
+      "sha256": "4362c8e0502964e11066ec124c27d8f2e1ad1fa1353d44d1d23b38d1c7bd310b"
+    },
+    {
+      "path": "src/processes/extensions.js",
+      "bytes": 2051,
+      "sha256": "111e8c0eb4c0af5d3bb3a8d1e6177c85da21726b1a30bac1c5404cf5caff6677"
+    },
+    {
+      "path": "src/processes/kit.js",
+      "bytes": 2691,
+      "sha256": "2cee18075b3e5b66f8765472cc9a6f016df19619647bfdbf18dcc62b49bda399"
+    },
+    {
+      "path": "src/processes/labelLayout.js",
+      "bytes": 1864,
+      "sha256": "f2e70c7be6443944669a5103e90454ae89d3bb7acca240ee80ec51d90885ad1c"
+    },
+    {
+      "path": "src/processes/loaders.js",
+      "bytes": 674,
+      "sha256": "22b9d895daf21cefd37bfb475372c857620db7ecfd15abac0fb6b11d04e9c037"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/REFINEMENT.md",
+      "bytes": 3105,
+      "sha256": "b1d8fb3db1433dbd3f391de7ff691fd9b2812bb10b478f91513492e8e12594d9"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/bacterialDivisionProcess.js",
+      "bytes": 24331,
+      "sha256": "c45144932d67a95302af80846b7b6d6dd5ae4d688f6d772b3902cfb095a90dbd"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/bacterialExpressionProcess.js",
+      "bytes": 20329,
+      "sha256": "2406102c82551f5b430b3eece0421de8296749e56b6731d041862ceab8aefebe"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/bacterialGeometry.js",
+      "bytes": 5977,
+      "sha256": "2e8beb9aad884211f5ff227dd92dad7b3177a7b8c7dacb7b7f97cdc7a734545e"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/bubble.science.test.mjs",
+      "bytes": 9569,
+      "sha256": "2556101f3b51dc403cfa2f84c4f5cb188b5da64ca94bfb3e57ff018cf0c5eb0e"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/conjugationProcess.js",
+      "bytes": 15891,
+      "sha256": "266e52d1dc106f5215cbdd07de41bfc083113b13c6ca2f586172c311a193f069"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/entries.js",
+      "bytes": 2172,
+      "sha256": "8811916403d59bd6a49608737c35df406e3446048f43ddfae5b5ce1ed9b90f6b"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/label-anchors.science.test.mjs",
+      "bytes": 8638,
+      "sha256": "aef84207ffa45587496fda5c2a81cc1a8ae88480c216068fe2c70e3532849422"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/labelAnchors.js",
+      "bytes": 710,
+      "sha256": "7abc109cf50aff610a28f389d66689091c6b6c3da94ca62f5fe412f792b73bfd"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/science.test.mjs",
+      "bytes": 15986,
+      "sha256": "157632006e1f3e401424ec292896203881f04787ab371ab9b7d2a070f96f7769"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/transformation-uptake.science.test.mjs",
+      "bytes": 7277,
+      "sha256": "21054c01b1edcb4102734dacb92884aaa2106f025c12cb86bef1b953f08afb1c"
+    },
+    {
+      "path": "src/processes/modules/bacterialCore/transformationProcess.js",
+      "bytes": 20275,
+      "sha256": "1f66a2c3876a3a05a61ec1d275aa7979e29c83cb795a3420ac3900f5ad0228a0"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/REFINEMENT.md",
+      "bytes": 4449,
+      "sha256": "1421966ff30f1ca51b18fae5ebb2977b87571ba9efb8625a79b1cd73bd1e6904"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/biofilmProcess.js",
+      "bytes": 20812,
+      "sha256": "4b106ec20ee04185dc12adab8782854c63da7eb6a7efc0eb63f3e41ff33860e4"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/chemotaxisProcess.js",
+      "bytes": 16288,
+      "sha256": "d1d63ff0ba045596eb59a516d4ba7b78be3a949b664461179996a2b816b63e00"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/entries.js",
+      "bytes": 2201,
+      "sha256": "53cd1c376e93c41b4fcee52963aef36a49410c3fab4163e314381cd693000407"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/fixtures/structuralDetails-before-bact-20261005-01.txt",
+      "bytes": 7479,
+      "sha256": "7353eefc5a871fdfbde42b6242f040bcf0b625505522c1227efbcccb22bb4538"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/labelAnchors.js",
+      "bytes": 1062,
+      "sha256": "bd34cd1629c94c4fc108cb9920fa689ccb876b217244695ba9243f73a9536474"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/labels.test.mjs",
+      "bytes": 7125,
+      "sha256": "f9deb0d90eb5171f9387cd08e9f56a097698c9c446fc1774213c9ed1a0dbab9f"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/quorumSensingProcess.js",
+      "bytes": 13202,
+      "sha256": "928fb14b3fb2ca16032334782728fb2f3951e1918e53f9b0943251989362b430"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/refinement-20261015.test.mjs",
+      "bytes": 5874,
+      "sha256": "38200b0e3d04705d529a708a2ad78d3b0cceafac3d849fb6bd142e90b32bb1af"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/science.test.mjs",
+      "bytes": 15802,
+      "sha256": "be291891e4cd991e1fa7ecf057a7ce17df537000a9655c5a6e07ce21682ddf80"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/smoke.test.mjs",
+      "bytes": 4509,
+      "sha256": "070efa913f234ed939244962b45509f445bcaa5c50e4a9fb27ee10b46490a806"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/structuralDetails.js",
+      "bytes": 7872,
+      "sha256": "9c7cda1e465d24e0ff1822218154d68ff45772652928dcaadfe3de93027e7397"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/transcriptionBubble.science.test.mjs",
+      "bytes": 12610,
+      "sha256": "279273695033627bb43b4d52ce7824645552e53296b0f63cdf61dde7dedba48b"
+    },
+    {
+      "path": "src/processes/modules/bacterialSignals/twoComponentProcess.js",
+      "bytes": 14471,
+      "sha256": "db6311960562b9b314410c92398d6ce580f8da685ba5e3978f0688906aac1ef2"
+    },
+    {
+      "path": "src/processes/modules/chromatin/REFINEMENT.md",
+      "bytes": 4662,
+      "sha256": "c57f04248641d10e46986bbb89165c25f3b43d2ae623056b94621b95c45bce23"
+    },
+    {
+      "path": "src/processes/modules/chromatin/assemblyRefinement.test.mjs",
+      "bytes": 3207,
+      "sha256": "afbe8552e9184decc81e5c057641a77059b4652406703c55ba5503482db2a094"
+    },
+    {
+      "path": "src/processes/modules/chromatin/chromatinAccessProcess.js",
+      "bytes": 12379,
+      "sha256": "28e5d724569463778ccb4a2835d6373d2ca221011fb9b18fb7988fc3655756fd"
+    },
+    {
+      "path": "src/processes/modules/chromatin/entries.js",
+      "bytes": 1871,
+      "sha256": "a11e18dc323b8c555d406967a88271d395b8987f54e07cf01a6137bff61f2c7a"
+    },
+    {
+      "path": "src/processes/modules/chromatin/geometry.js",
+      "bytes": 4834,
+      "sha256": "14001d6200fe207d1d5b74fe29daf4c29b91da9cb3698b8923ca4ff8e32708bd"
+    },
+    {
+      "path": "src/processes/modules/chromatin/labelAnchors.test.mjs",
+      "bytes": 8201,
+      "sha256": "f9a4bc2d1c944dc683c783dacb9a67d2e80b13c5de15a447b9c42d123d991146"
+    },
+    {
+      "path": "src/processes/modules/chromatin/plantGenomeProcess.js",
+      "bytes": 22261,
+      "sha256": "0b3203d613e1bfa8b7661642640c4f85e6d9ec212443e3345c7a42799049cee8"
+    },
+    {
+      "path": "src/processes/modules/chromatin/plantRdDMProcess.js",
+      "bytes": 24360,
+      "sha256": "9c5cbd0e25e1736d292ee23f08790fcd0ce828c41c8153968d5197e4bc46e139"
+    },
+    {
+      "path": "src/processes/modules/chromatin/plantSmoke.test.mjs",
+      "bytes": 4089,
+      "sha256": "6656c76d1cd63762b0792a450e65fddf39f66a4ae15dd5b52b4892a45d372247"
+    },
+    {
+      "path": "src/processes/modules/chromatin/refinementSmoke.test.mjs",
+      "bytes": 2678,
+      "sha256": "df195d0523f859097ef3295fa2bdc9daa9eb75230c349cfc0695ee8e29ffd7ee"
+    },
+    {
+      "path": "src/processes/modules/chromatin/science.test.mjs",
+      "bytes": 15554,
+      "sha256": "3c2eda8b49bcc21658f232476662dfe2a912715e5672436a782e68203d945977"
+    },
+    {
+      "path": "src/processes/modules/chromatin/smoke.test.mjs",
+      "bytes": 3811,
+      "sha256": "709deb5d2d9060b3f65128521accaaa4c900b84cab2f65b764171b37b23854ba"
+    },
+    {
+      "path": "src/processes/modules/chromatin/structure.js",
+      "bytes": 14038,
+      "sha256": "744527444c3fec88aeea1c3eaf900b84a560a8e6ffa5af47fe9ee1c797589268"
+    },
+    {
+      "path": "src/processes/modules/chromatin/tadProcess.js",
+      "bytes": 14728,
+      "sha256": "5d8f7d0c797a4f328a943fc68ccb3f100a82091959361b124ed99a33caf25d51"
+    },
+    {
+      "path": "src/processes/modules/chromatin/upstream.test.mjs",
+      "bytes": 6519,
+      "sha256": "63faa14c276f292e3e62d728626ae1f5e45cf86956060d5044790f02285365d4"
+    },
+    {
+      "path": "src/processes/modules/division/REFINEMENT.md",
+      "bytes": 4991,
+      "sha256": "aca2ee8dec2f5abb8395951f097da143fc39c0bb179c1175175598b322608117"
+    },
+    {
+      "path": "src/processes/modules/division/centrosomeCompartments.test.mjs",
+      "bytes": 6423,
+      "sha256": "247759d36088cd3352d263544a4473f8515590fe1b30ad638b40c4f3f4740d56"
+    },
+    {
+      "path": "src/processes/modules/division/cortical-ring.test.mjs",
+      "bytes": 3356,
+      "sha256": "20e9425cf6894e09257c189adbb9cbedd88891213bc0cf42634b9a4099b4e6d4"
+    },
+    {
+      "path": "src/processes/modules/division/division.smoke.mjs",
+      "bytes": 5434,
+      "sha256": "3e15bc58820625d19d853829438b82f3551081749dfb2a79da23ce9f99e043bf"
+    },
+    {
+      "path": "src/processes/modules/division/divisionShapes.js",
+      "bytes": 26547,
+      "sha256": "f36e50bd7d330fb0f760a4ceb5bffe0d4f78e1909733778c96d73fa405d8b66b"
+    },
+    {
+      "path": "src/processes/modules/division/entries.js",
+      "bytes": 868,
+      "sha256": "48f89541337cc03f66293297a9bc4fc4b8e76fcf2ab02228a8ecdbbeb187dc00"
+    },
+    {
+      "path": "src/processes/modules/division/geometry-equivalence-baseline.json",
+      "bytes": 3766,
+      "sha256": "29c2114fcc7e911cb4f507d1afc68fda25f4d3def79e02458fae817b257167e7"
+    },
+    {
+      "path": "src/processes/modules/division/geometry-equivalence.test.mjs",
+      "bytes": 5171,
+      "sha256": "78123ef1346e1bece0a7a5d17cde97141093bb26e15243b6955ec24feb0967bf"
+    },
+    {
+      "path": "src/processes/modules/division/germCellMembrane.js",
+      "bytes": 12673,
+      "sha256": "ab3c520603a6ed05ce1371c450156d582b9b657b0c1ffb2931dbf34a8fa30f41"
+    },
+    {
+      "path": "src/processes/modules/division/kinetochorePaths.test.mjs",
+      "bytes": 2833,
+      "sha256": "377514b45f561be9871642c7cb0039e1f8061f62c69977757a7046e817d16002"
+    },
+    {
+      "path": "src/processes/modules/division/label-anchors.test.mjs",
+      "bytes": 4456,
+      "sha256": "c885516c114392f4c2f62d3e0d5342c89a55a619bc95c69e5e03785448c281be"
+    },
+    {
+      "path": "src/processes/modules/division/labelAnchors.js",
+      "bytes": 1213,
+      "sha256": "514a27184fffd144c3c6658b3a157430b6c2fa57b3ac90ab7e10135153cc5d2d"
+    },
+    {
+      "path": "src/processes/modules/division/meiosisProcess.js",
+      "bytes": 16296,
+      "sha256": "4919d3bae5c59ea76dffe831d6e7e9aa18f14344d45ab9381ef92c9e3e62aaaf"
+    },
+    {
+      "path": "src/processes/modules/division/mitosisProcess.js",
+      "bytes": 11953,
+      "sha256": "29c312a820c1256f447b759fa2213ec8f8cd746b6daddf2149e95ea0d36c1e7c"
+    },
+    {
+      "path": "src/processes/modules/division/refinement-motion.test.mjs",
+      "bytes": 2221,
+      "sha256": "ff7e421862a959ae6bc0096ba01e30d0c0615b61039c9c7fecb97fe2e1515dc3"
+    },
+    {
+      "path": "src/processes/modules/division/science.test.mjs",
+      "bytes": 11540,
+      "sha256": "adc450f0eba6be8ae7a5e51b2e27d605e127ee1f8abe762176beb708b6426de8"
+    },
+    {
+      "path": "src/processes/modules/energy/REFINEMENT.md",
+      "bytes": 4847,
+      "sha256": "4a13cf9a6681478e55dc194538e816003579de1651031e8e657379cb466a6b8d"
+    },
+    {
+      "path": "src/processes/modules/energy/bacterialEnergeticsProcess.js",
+      "bytes": 16511,
+      "sha256": "5d253b9722d970a17296c8b7a6c7b850a31a37bf5381dd6b541eebccdba28d60"
+    },
+    {
+      "path": "src/processes/modules/energy/bacterialPhotosynthesisProcess.js",
+      "bytes": 18401,
+      "sha256": "a3764256576dfd64eb2e6f67d690121bb6bf4278ba2c74786c6e0965b6f5f109"
+    },
+    {
+      "path": "src/processes/modules/energy/chirality.test.mjs",
+      "bytes": 3454,
+      "sha256": "b921549987cda0f3ec36724020aeea02307124567f35d8bfae8556af2cfba8a4"
+    },
+    {
+      "path": "src/processes/modules/energy/conformation.test.mjs",
+      "bytes": 1889,
+      "sha256": "d77b9dd0129670accb51e78678c6384b5df09b15d244db74d87776aa19701431"
+    },
+    {
+      "path": "src/processes/modules/energy/continuity.test.mjs",
+      "bytes": 10906,
+      "sha256": "24a2c1564fa33f9e9d213b40dbf9dcb2d41b39844a8357ed046abf4787fb82ac"
+    },
+    {
+      "path": "src/processes/modules/energy/detailKit.js",
+      "bytes": 13709,
+      "sha256": "66b8bc51a4c2e68294603d2e04d0d3d99c1c962ae507be3f64da2fb1a77ea8e4"
+    },
+    {
+      "path": "src/processes/modules/energy/entries.js",
+      "bytes": 2057,
+      "sha256": "80ef9328faed2274f32778356ab41bfeb14fc5c8af17d8b65099a23f735e2f14"
+    },
+    {
+      "path": "src/processes/modules/energy/glycolysisProcess.js",
+      "bytes": 17569,
+      "sha256": "938227e38b7b719d0c9e39595df3f2dc3b4c62aa780277424261fe347201f9ce"
+    },
+    {
+      "path": "src/processes/modules/energy/labels.test.mjs",
+      "bytes": 5188,
+      "sha256": "386ceca57b5fabbb03ef656b68643e0f2eb85d75a5cd85f5100e208392e80782"
+    },
+    {
+      "path": "src/processes/modules/energy/refinement-smoke.mjs",
+      "bytes": 4097,
+      "sha256": "499c08ee4644e0935464cff32156f975b7b45b58d52331a7147d6cd7c3ec863e"
+    },
+    {
+      "path": "src/processes/modules/energy/respirationProcess.js",
+      "bytes": 18913,
+      "sha256": "5304c81e9f812fde031f02ca64931335306da55c8a2ca732466776943b12f2d4"
+    },
+    {
+      "path": "src/processes/modules/energy/science.test.mjs",
+      "bytes": 10323,
+      "sha256": "d19e5370566368f2e3a403beffd042fb1a9c65c0bee57931e85e2f3ea14a0e7d"
+    },
+    {
+      "path": "src/processes/modules/genome/REFINEMENT.md",
+      "bytes": 5006,
+      "sha256": "4426f1842ccb39f0dc1207cb67a2227663b95581fcff56fdb9e891b7c61eb92c"
+    },
+    {
+      "path": "src/processes/modules/genome/bacterialSporulationProcess.js",
+      "bytes": 13521,
+      "sha256": "f54a756490f7104c234cc8a02bb5b326a7a058c6dcf0b9abddbe525f2dbf365c"
+    },
+    {
+      "path": "src/processes/modules/genome/dnaRepairProcess.js",
+      "bytes": 4329,
+      "sha256": "2bc4b054e83e2b5025f28722de370c8cdfa75097f5adb7464219b80a4f4170a9"
+    },
+    {
+      "path": "src/processes/modules/genome/entries.js",
+      "bytes": 2197,
+      "sha256": "3c1198c62997b529d4b586abcbc1cd9b26288b10dcf2d971f3932d207c25a942"
+    },
+    {
+      "path": "src/processes/modules/genome/envelopeDetail.js",
+      "bytes": 15155,
+      "sha256": "91337d2d443db0c2644e754b9f7573f3b0d7edabb9264bbeffaa5eb620244433"
+    },
+    {
+      "path": "src/processes/modules/genome/incisionLabel.test.mjs",
+      "bytes": 3509,
+      "sha256": "c8368415ed79ab0ed05be0f88e02d8a7e139e3130cda29747bdd5b67739f32dc"
+    },
+    {
+      "path": "src/processes/modules/genome/labelAnchors.test.mjs",
+      "bytes": 4638,
+      "sha256": "63e89fb523ab1d51bea53276158fa9bf9a6a7d37587ab1d1f4930ce18dd8ffe7"
+    },
+    {
+      "path": "src/processes/modules/genome/molecularDetail.js",
+      "bytes": 5758,
+      "sha256": "94b85270694a98e98089d25f890cfb366a14968d98971324d4aa13762aba770a"
+    },
+    {
+      "path": "src/processes/modules/genome/nuclearModels.js",
+      "bytes": 18039,
+      "sha256": "ab3bd9473e86d413c2c86b0443d485fcaa5d22b09c87c8a26456e2ed035a717a"
+    },
+    {
+      "path": "src/processes/modules/genome/refinement20261015.test.mjs",
+      "bytes": 1389,
+      "sha256": "0b5743d352aaf12c6c426603a39937ad209377dbbc4914019125e733c8135aad"
+    },
+    {
+      "path": "src/processes/modules/genome/replicationProcess.js",
+      "bytes": 4372,
+      "sha256": "ff36ed8842af6635f5bab923a5973a8bdbc1619f85993b256bce8ca847cf6c30"
+    },
+    {
+      "path": "src/processes/modules/genome/review20261004.test.mjs",
+      "bytes": 13168,
+      "sha256": "2ca2b04465ef3047eeef466b6a159b9885e9e18257ea9135144bfadcecc6e457"
+    },
+    {
+      "path": "src/processes/modules/genome/review20261005.test.mjs",
+      "bytes": 12590,
+      "sha256": "77b0799c69ae1b6d680195d36b3eeafaf77894a0b0d1c3de5790f57b9d33d116"
+    },
+    {
+      "path": "src/processes/modules/genome/science.test.mjs",
+      "bytes": 15600,
+      "sha256": "666231336a82a49d4b2f36fa1cb78b8bed3d7ea34401e323e6f511472065f973"
+    },
+    {
+      "path": "src/processes/modules/genome/smoke.mjs",
+      "bytes": 3227,
+      "sha256": "3f0c691feb8e7a0edcbac77167123df786191cdef1c58069a5351e0e63e91a8f"
+    },
+    {
+      "path": "src/processes/modules/genome/sporeGeometry.js",
+      "bytes": 500,
+      "sha256": "2ab7e24d8e70adf5f19b9a68de3f86dae19f1234074eb96223b63b52cc8ae688"
+    },
+    {
+      "path": "src/processes/modules/genome/sporulationTopology.js",
+      "bytes": 7831,
+      "sha256": "c339ed7d71afc8c1e43623af399f07560bb9a59357a668026bc68ad87c740976"
+    },
+    {
+      "path": "src/processes/modules/genome/tailVisibility.test.mjs",
+      "bytes": 4384,
+      "sha256": "b1a569fc8af6a518b6bde72a17a3ef1e05162e0f758362d09794285528b7c12d"
+    },
+    {
+      "path": "src/processes/modules/genome/transductionProcess.js",
+      "bytes": 22667,
+      "sha256": "d470ce9c225690b3e4026cfd176ebfd328ad331a3a6595ded75f940c56912831"
+    },
+    {
+      "path": "src/processes/modules/membrane/REFINEMENT.md",
+      "bytes": 5126,
+      "sha256": "9a9d8518a477bd9a5c78f450de940788a1c167b05c220eb6c534fc674d821ced"
+    },
+    {
+      "path": "src/processes/modules/membrane/activeTransportProcess.js",
+      "bytes": 15366,
+      "sha256": "48a230596f6071e3df248e23e840a5b41249aed973b41d69b8bd1a559a1404ca"
+    },
+    {
+      "path": "src/processes/modules/membrane/bacterialCellWallProcess.js",
+      "bytes": 21141,
+      "sha256": "a22f9fdb859b9b775e91e96951decb1d248bb07ceb3687f6487e07798b224676"
+    },
+    {
+      "path": "src/processes/modules/membrane/beta-connectivity.test.mjs",
+      "bytes": 4560,
+      "sha256": "96c85ae428ff83ad921edf596e616675a238abef23b4c839bbdea6d608bec241"
+    },
+    {
+      "path": "src/processes/modules/membrane/cutaway-thickness.test.mjs",
+      "bytes": 1859,
+      "sha256": "3d092ba82b147a5ebd6a066cc25e54e5caf8d2bcb60a2eb0770cbdfc7b6bf6b9"
+    },
+    {
+      "path": "src/processes/modules/membrane/diffusionProcess.js",
+      "bytes": 11204,
+      "sha256": "029c7b65425149891592eb1eac3cc6d572c4a0d8e166f9455bdf1dc82ffdf046"
+    },
+    {
+      "path": "src/processes/modules/membrane/entries.js",
+      "bytes": 2302,
+      "sha256": "afd502962b64bbc85cd7626f66c602b286ace970ea95dbcc881ead806330b4f9"
+    },
+    {
+      "path": "src/processes/modules/membrane/membraneGeometry.js",
+      "bytes": 6828,
+      "sha256": "2724277e4b2122870fb22d31a088ddf7eacde9b800b8fe92ae53a2026e4437b6"
+    },
+    {
+      "path": "src/processes/modules/membrane/osmoticBalanceProcess.js",
+      "bytes": 19235,
+      "sha256": "7ad29e049f19cdf7c712bb2904e27ff5d7230c56ebd000b645aa53bd47a31ab2"
+    },
+    {
+      "path": "src/processes/modules/membrane/process-review.test.mjs",
+      "bytes": 19217,
+      "sha256": "78c1c20ad19abb44c602376e8db8a1adfef1fbca5293c9c92746e1ffe8404422"
+    },
+    {
+      "path": "src/processes/modules/membrane/refinement.test.mjs",
+      "bytes": 5438,
+      "sha256": "9d6af7dd5caf8646987e2e5c81a7b975d4cf4eea39967ebacc44cbf3c04001b5"
+    },
+    {
+      "path": "src/processes/modules/membrane/science.test.mjs",
+      "bytes": 12935,
+      "sha256": "e9178e651160ae4b43f695a6ebd3cd64bade2856a234154ced3cf50c5d53b0bb"
+    },
+    {
+      "path": "src/processes/modules/neurons/REFINEMENT.md",
+      "bytes": 5965,
+      "sha256": "ce1b0e962f8981dc6a320f78c187d0825cf957a7a673db06f343b15afee89eff"
+    },
+    {
+      "path": "src/processes/modules/neurons/actionPotentialProcess.js",
+      "bytes": 13975,
+      "sha256": "be6be0ae7495059d7b1fc93d6e173de21acc982ca611e5835d7be597c12eae2c"
+    },
+    {
+      "path": "src/processes/modules/neurons/axonemeKinematics.js",
+      "bytes": 3378,
+      "sha256": "cc1e78471f656c36a9673f5b37a5e51c6f93e2e21ce49ec370dec009bc853dc1"
+    },
+    {
+      "path": "src/processes/modules/neurons/ciliaryMotionProcess.js",
+      "bytes": 23491,
+      "sha256": "a7a6d53c326f093e9607670e94935d3aaab2eb672f15cf6a5b5f264d66a8b11b"
+    },
+    {
+      "path": "src/processes/modules/neurons/entries.js",
+      "bytes": 2033,
+      "sha256": "46ee52383fe37c26d9b3a641e3cc66f0f650859c7ff6c3fc06732c962d841585"
+    },
+    {
+      "path": "src/processes/modules/neurons/labelAnchors.js",
+      "bytes": 896,
+      "sha256": "c6ac24b78391096ac94661de2a04adebb698f2dee760bb6e383a4ca8dcd003a3"
+    },
+    {
+      "path": "src/processes/modules/neurons/muscleProcess.js",
+      "bytes": 17640,
+      "sha256": "3cda0a20a3e071f4a6f2a8f92859955c5515a70b6a90553ca6d5eca2d58fa1a7"
+    },
+    {
+      "path": "src/processes/modules/neurons/refinementGeometry.test.mjs",
+      "bytes": 2042,
+      "sha256": "7f61996b679763acc93cea47ea3b3cb456c2041f2d11bdcc46ef3e367f14445d"
+    },
+    {
+      "path": "src/processes/modules/neurons/science.test.mjs",
+      "bytes": 25129,
+      "sha256": "58a8e314aefbb95f7e524af1f31e9d8bcc9ca97a3cb9b66210e0f55877201c9b"
+    },
+    {
+      "path": "src/processes/modules/neurons/structural.js",
+      "bytes": 8978,
+      "sha256": "a1305badc4bbfbe97be477a2d23c49f95d9dd596e16b8c9dd59b2a02eb12907b"
+    },
+    {
+      "path": "src/processes/modules/neurons/synapseProcess.js",
+      "bytes": 17267,
+      "sha256": "b4ba2e5de0299863a8433fadeb24691a6f27655cce584ee2aa8311abc2d0e531"
+    },
+    {
+      "path": "src/processes/modules/neurons/synapseTransit.test.mjs",
+      "bytes": 9205,
+      "sha256": "0ec67feb58045de86717f6c625189a4e2d8a76436bd175ef32f2b90e6b8a7222"
+    },
+    {
+      "path": "src/processes/modules/operons/REFINEMENT.md",
+      "bytes": 4246,
+      "sha256": "466b14162c52edbb8f865117d2208f118aaa743987d9512b6f81b8b2f16698e4"
+    },
+    {
+      "path": "src/processes/modules/operons/duplexGeometry.test.mjs",
+      "bytes": 4492,
+      "sha256": "3ad55907fa9dd7d0cbd9c8b26eff3333c3f23f73fdb933a6e2085ad6019cf027"
+    },
+    {
+      "path": "src/processes/modules/operons/entries.js",
+      "bytes": 2176,
+      "sha256": "1609ed0dd2e24f62e0c181e04ad7f39de8a835abd8c4ddd613d67bdf50a5a67c"
+    },
+    {
+      "path": "src/processes/modules/operons/labelAnchors.js",
+      "bytes": 2911,
+      "sha256": "7c7ce0920b7a4fa119332c79a3930f246d8f27e6d05f26b919dd26bdd8620dd6"
+    },
+    {
+      "path": "src/processes/modules/operons/labelAnchors.test.mjs",
+      "bytes": 10599,
+      "sha256": "96fea2e9ea00cb1f5adfc1931a4118aac55c86c3eb68064c56e04372e14dba74"
+    },
+    {
+      "path": "src/processes/modules/operons/lacOperonProcess.js",
+      "bytes": 13954,
+      "sha256": "b3446191cf77da89951c01b2a06ca80bf15d559dc38f3d6111752ada7f253b0b"
+    },
+    {
+      "path": "src/processes/modules/operons/playback.test.mjs",
+      "bytes": 9967,
+      "sha256": "afbb2642041bdcccfd89f96c1006e7b04fd40185f259069b373fa4dd20c4da17"
+    },
+    {
+      "path": "src/processes/modules/operons/refinementSmoke.mjs",
+      "bytes": 2730,
+      "sha256": "2d941ad3da4ac37f2190dba38c298e4337070d3726d0443dde6d52e48db025b5"
+    },
+    {
+      "path": "src/processes/modules/operons/science.mutations.test.mjs",
+      "bytes": 4581,
+      "sha256": "7ace49b47f7db9b145b4cf8464c841e3b7292b78a466c55837a24089ebd7df91"
+    },
+    {
+      "path": "src/processes/modules/operons/science.test.mjs",
+      "bytes": 10118,
+      "sha256": "b569961c85d0403278a37983e791f5827aec9d1f6e002e3b11b21abf5fbaebcc"
+    },
+    {
+      "path": "src/processes/modules/operons/smoke.mjs",
+      "bytes": 3724,
+      "sha256": "4a67a6982195ee3fe6fc72a008ad9db8b852b9eafc42a4536207275b04d680dc"
+    },
+    {
+      "path": "src/processes/modules/operons/stageBoundary.test.mjs",
+      "bytes": 3369,
+      "sha256": "e9227b7addc26a6a1fa47420910caf80cfb94cf53a6ce9bf05b28cd09d1873a9"
+    },
+    {
+      "path": "src/processes/modules/operons/structuralDetails.js",
+      "bytes": 20014,
+      "sha256": "3120b6b8c27bed89fbfb24e6165a4ced08af3acfb53f1ebd73ff6c0d4d2bf395"
+    },
+    {
+      "path": "src/processes/modules/operons/trpOperonProcess.js",
+      "bytes": 18229,
+      "sha256": "7fc40e9e11b1233a44fb0022bc8e4da8c4d9537dd4af8aff2c22e37fd54d4ded"
+    },
+    {
+      "path": "src/processes/modules/operons/yeastGalProcess.js",
+      "bytes": 14642,
+      "sha256": "748dc06f55d24e3721b7bc5e4d1d33a805838f88ce33c93501a6c587957a100b"
+    },
+    {
+      "path": "src/processes/modules/operons/yeastOsmoregulationProcess.js",
+      "bytes": 19140,
+      "sha256": "ad2a8423b850faac9a78a482591172765feee3afad1a113c4cd2dc1adf149ee5"
+    },
+    {
+      "path": "src/processes/modules/operons/yeastSmoke.mjs",
+      "bytes": 4231,
+      "sha256": "425e908557d8ba8ebc5a68f5250e9b543278c34f82a62bebff529e9cdcad053e"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/REFINEMENT.md",
+      "bytes": 4640,
+      "sha256": "05b615c1fb3c827349ee49d7744a25362f41b5db084c6cdd83ca09fc85fc6853"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/anatomy.js",
+      "bytes": 2166,
+      "sha256": "5ff9e912c064458dbdf5a2e36d4733849e67b4e2a4cab08c5e3402e5ec54f435"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+      "bytes": 15602,
+      "sha256": "6ad15a3329fb280c9277995d54321f6eebe774392adbc6b9bf6d39b2e068aa84"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/entries.js",
+      "bytes": 2018,
+      "sha256": "e0e40e5d44765adce3b892304e656cbb1f7e04b982ab73cb14d565cd2cfca32a"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fineStructure.js",
+      "bytes": 7999,
+      "sha256": "8b5e0ed6a2d95d5d6d10da7491cf21707a63f1ec1017da042493c9a053025a36"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/provenance.json",
+      "bytes": 3358,
+      "sha256": "787c10768d49444758eb6526a7569e5a760cfb29ef248cd65a2e6037136d869a"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/kit.js",
+      "bytes": 2691,
+      "sha256": "2cee18075b3e5b66f8765472cc9a6f016df19619647bfdbf18dcc62b49bda399"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/anatomy.js",
+      "bytes": 2166,
+      "sha256": "5ff9e912c064458dbdf5a2e36d4733849e67b4e2a4cab08c5e3402e5ec54f435"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/contractileVacuoleProcess.js",
+      "bytes": 15602,
+      "sha256": "6ad15a3329fb280c9277995d54321f6eebe774392adbc6b9bf6d39b2e068aa84"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/fineStructure.js",
+      "bytes": 7900,
+      "sha256": "dba57ca3385891985aff2dd63c7d85425dafd55482a267e9fea48395363c7e2d"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/labelAnchors.js",
+      "bytes": 536,
+      "sha256": "3d734303bf5a0944d9a9d3789427cd82d4b92d8ba6d7f8e0aec3b2bf3fb09493"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/nuclearCell.js",
+      "bytes": 4825,
+      "sha256": "253137913c46ec66afe82bf00f006d5f3b77a1a9512fb02c27ca384ce4e92a80"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/nuclearLineage.js",
+      "bytes": 6963,
+      "sha256": "991b26554d0dc35e90c78120b694f39f7eaef743e65d084dffa34def41afd499"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+      "bytes": 19181,
+      "sha256": "55e015bb627d98c8b8bde37a0c28eae3670a7490373a239107f3aa645c5a1e1a"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+      "bytes": 12440,
+      "sha256": "28a292f72faa43adb523675f39a6e5a2b31be116e8aef8fa06ad360a480d6dbb"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+      "bytes": 16814,
+      "sha256": "822f003d5acd1248727a666aa86ad3a505ef88ccbe64ef840534e31acb485dc2"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/fixtures/ae697be/src/processes/modules/parameciumLife/scientificGeometry.js",
+      "bytes": 14732,
+      "sha256": "bd8b87301971a7028007958f463bf2af759566b142ce8e02f77c83444de4bb31"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/geometry-equivalence.test.mjs",
+      "bytes": 15130,
+      "sha256": "e1f0671b91254465fc7e0d9b4d59bc5fe4174883714722f225cf260631b2c6f5"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/geometry-reference.json",
+      "bytes": 66021,
+      "sha256": "4080764c2f81cd2252229f001ee801740792268e706e513f2366a1c3ad2ba2f9"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/geometrySnapshot.test-support.mjs",
+      "bytes": 7644,
+      "sha256": "8fe6fc1fdda92c4bc29a298f3e3265bb76f6bb5dcfe3b2e9a5c3e717ab8efcbd"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/labelAnchors.js",
+      "bytes": 536,
+      "sha256": "3d734303bf5a0944d9a9d3789427cd82d4b92d8ba6d7f8e0aec3b2bf3fb09493"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/nuclearCell.js",
+      "bytes": 4965,
+      "sha256": "317c0a115ff62721e25bfa889ee68946b5c1045fdf70059d6b72e28887d5717b"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/nuclearLineage.js",
+      "bytes": 20893,
+      "sha256": "030a9c4c1eb540e242ef9dbd88bc3a6ce9527126f2e3322beb3b140381c74452"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/oral-refinement20261015.test.mjs",
+      "bytes": 3150,
+      "sha256": "0627482135abd357434f93df9615067df4387fda2d38a7029799e422ac0a4be2"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/oralApparatus.js",
+      "bytes": 4408,
+      "sha256": "8edafd7e2d092be7596c380050545de528a6e02b9b7a405953b5c3a7e59e8e92"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/parameciumConjugationProcess.js",
+      "bytes": 19291,
+      "sha256": "1e3ca76aaa3310ae9bb21a658684fa5d7432f419d419c5bd0ae06351e0830e96"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/parameciumDivisionProcess.js",
+      "bytes": 12654,
+      "sha256": "ae33f2b24e791e8ad4ad04f428ca9c0c0c4241044723a38a0d1c221fd466e813"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/parameciumFeedingProcess.js",
+      "bytes": 16814,
+      "sha256": "822f003d5acd1248727a666aa86ad3a505ef88ccbe64ef840534e31acb485dc2"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/refinementSmoke.mjs",
+      "bytes": 3013,
+      "sha256": "34bfe15d53e04728ee0024e97ac09591b64af87281402cd6dd679517eba1a456"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/review20261004.test.mjs",
+      "bytes": 19293,
+      "sha256": "9a893e9c6a3bf90b37d16ce580bd65bba088f05b15e82d6a4ff0e081b0f9aa2e"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/review20261005.test.mjs",
+      "bytes": 13306,
+      "sha256": "87d37662bea0ad757246553208b0d31edc0f59f3175f0ba26d116489ded1b711"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/science.test.mjs",
+      "bytes": 11566,
+      "sha256": "351abb1b2e7d83d0f2bcca5e15479cb4d81d49bb1ceff7e235b87d22ae9fa41c"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/scientificGeometry.js",
+      "bytes": 15981,
+      "sha256": "d0d7a7b10c34aab4783424e584159aabd6552a0a0e6c7cc050cfa2bbfc6e63cf"
+    },
+    {
+      "path": "src/processes/modules/parameciumLife/shapeState.js",
+      "bytes": 451,
+      "sha256": "c8e2d58ec48b5d4b7837600fc4fa8c4ed756cd083fb86a6afb776f1e407e5ea6"
+    },
+    {
+      "path": "src/processes/modules/phageLife/REFINEMENT.md",
+      "bytes": 8471,
+      "sha256": "7068b5578961fb5314e6c04a664349e53203ba8428c400ea93b99562f1dc9303"
+    },
+    {
+      "path": "src/processes/modules/phageLife/assemblyContinuity.test.mjs",
+      "bytes": 2568,
+      "sha256": "ba094b5fbc30767d3d911d2e4bf63a8dd6d70afe6fb8c8d03287ceba923a35ed"
+    },
+    {
+      "path": "src/processes/modules/phageLife/assemblyGeometry.js",
+      "bytes": 11186,
+      "sha256": "f128fa0a3fe24468f9e5af8fde0294349b5780854eedcaeca7e7c2540a0e23ad"
+    },
+    {
+      "path": "src/processes/modules/phageLife/continuity.test.mjs",
+      "bytes": 12409,
+      "sha256": "7759b0ed72d8acba946c468dfb37430d45bd18d8935bb06da4be284a0c957e05"
+    },
+    {
+      "path": "src/processes/modules/phageLife/entries.js",
+      "bytes": 1995,
+      "sha256": "4233352a81689bbf2370c8a1311fd3fd3bd86e1e563988e0e3575a5f7c36ae1e"
+    },
+    {
+      "path": "src/processes/modules/phageLife/entryGeometry.js",
+      "bytes": 3958,
+      "sha256": "9e5f3319ae77c77da1a945bb4b1205dba447c2a2fa06a8322b82fe643c8708da"
+    },
+    {
+      "path": "src/processes/modules/phageLife/gate.test.mjs",
+      "bytes": 4792,
+      "sha256": "9f731a13fb627d26dca1cf14644458ff5cb558d0126e2782a89f7ad85a7748e0"
+    },
+    {
+      "path": "src/processes/modules/phageLife/geometry.js",
+      "bytes": 15789,
+      "sha256": "e5f7c676a91dcd852df6049da46dfd9aad24707c06826f2e35c16cc4311b42ad"
+    },
+    {
+      "path": "src/processes/modules/phageLife/labelAnchors.js",
+      "bytes": 1584,
+      "sha256": "d7389abc0fd08b0fe973ebb47b2346951ef106a5de401877f01bf9044f4276b9"
+    },
+    {
+      "path": "src/processes/modules/phageLife/labelAnchors.test.mjs",
+      "bytes": 11567,
+      "sha256": "ee0a025a3143ff5596f74b4d98c3f0db58bf2bf94f451e0b7a5d90409f97c9e8"
+    },
+    {
+      "path": "src/processes/modules/phageLife/lambdaTopology.js",
+      "bytes": 12768,
+      "sha256": "3967f040418107cfc7b68db976dcdcc058a3b6a84958966aba3fab658e2b46ee"
+    },
+    {
+      "path": "src/processes/modules/phageLife/phageAssemblyProcess.js",
+      "bytes": 13087,
+      "sha256": "4af8f4fb5c5208388427716599630f235d61769894757cd628175a305e1ac865"
+    },
+    {
+      "path": "src/processes/modules/phageLife/phageLysogenicProcess.js",
+      "bytes": 16238,
+      "sha256": "cac39977c80b27c58f0f260701bbc4fd86e7903ccaed39c3a62ff6496cd32d9c"
+    },
+    {
+      "path": "src/processes/modules/phageLife/phageLyticProcess.js",
+      "bytes": 12249,
+      "sha256": "be1ed9b9963e68a923d540cebf5ef72146e30d0f9e55d2400126f1835929ec34"
+    },
+    {
+      "path": "src/processes/modules/phageLife/phagePackagingProcess.js",
+      "bytes": 14126,
+      "sha256": "05932efdc22d480a65059de60228b0f220f7ed06db6e9b1a2591b9a5533cb7ee"
+    },
+    {
+      "path": "src/processes/modules/phageLife/refinedGeometry.js",
+      "bytes": 7407,
+      "sha256": "20c8c45a79d319755e50c04a60fb00a39197e325dc543e530aa289ea84bf6d66"
+    },
+    {
+      "path": "src/processes/modules/phageLife/refinement-smoke.mjs",
+      "bytes": 5841,
+      "sha256": "87a0cef55e3ecab86ee420f5b51d94d9fa704fc2a0c51e454400d0cfec5530a8"
+    },
+    {
+      "path": "src/processes/modules/phageLife/renderedMechanics.test.mjs",
+      "bytes": 6599,
+      "sha256": "95f8c8d805a005d9d225d2f7a7213f5f340ccb22af2deed5a1fa9d6b59331578"
+    },
+    {
+      "path": "src/processes/modules/phageLife/science.test.mjs",
+      "bytes": 9451,
+      "sha256": "f1db10e8816dbac16c9880233bc764b31578c1b465838fc2c432da0d9506d1bc"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/REFINEMENT.md",
+      "bytes": 5551,
+      "sha256": "e3fc4be0ccb4bb2f67c6f3e1e2dfe1923767530f9bff39149e8584fb88a552e4"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/anatomy.js",
+      "bytes": 9283,
+      "sha256": "26b66c0e3ccdf7dc2294007a8216a3a9fc6d568766b6dfa1a5650e8fdd50d563"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/c4camProcess.js",
+      "bytes": 27471,
+      "sha256": "32ff368587b32c6160dd76687b8e8d65b39f650167cc736a2f2bb32cff1734de"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/camStorage.test.mjs",
+      "bytes": 6170,
+      "sha256": "c4fe01b0a1c4279ef15ac98d1d7cd99685598a9867ff8ccf81384d271ffacd88"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/camTonoplast.test.mjs",
+      "bytes": 9088,
+      "sha256": "9a3e96536a61f2fd60517fd6ca31c2ff6854d0f712c45e211543db74aa49c61d"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/cargoRefinement.test.mjs",
+      "bytes": 1740,
+      "sha256": "e4f134ac67c18c906b1ae36e6f7e54d39d5b05aa2461b33f0fc428c45e5fc5f9"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/cristaGeometry.js",
+      "bytes": 7980,
+      "sha256": "c52ce2f4c8bce4b6d43f38582799323edce216b531a9092eae95db913da37cc6"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/entries.js",
+      "bytes": 2162,
+      "sha256": "eb12b93ef86eb689e86504a321b3a3650c9d61807ce732e7ab4edcfbeaf123e1"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/labelAnchors.js",
+      "bytes": 601,
+      "sha256": "ca7d640fe9490b124f007531b2fd4cde11cd3e46f998844451a3914d3ce518f9"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/labelAnchors.test.mjs",
+      "bytes": 7788,
+      "sha256": "908712bb106ea866fe3d015a1b4f6f49c6382a1eaffe5b6b77846e6c6875ec20"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/photorespirationProcess.js",
+      "bytes": 13771,
+      "sha256": "2adb134690cb2a31be7db9dba0be164ae8336ed2a0b9bd8a0156c6105bf48f9f"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/plantTransportProcess.js",
+      "bytes": 16671,
+      "sha256": "ef9737b8565d0502f4be2a0c05ec54f24e33f59ecec665ef14bdc1eeae5c6d14"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/plasmodesmataProcess.js",
+      "bytes": 19419,
+      "sha256": "fa016873f6b814f20fd9a2e41c93199ce47ca112f895ca50315499d67243b5ac"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/science.test.mjs",
+      "bytes": 10654,
+      "sha256": "664847040053c5afa1b7bf47134102f21c237aa2c9c0abb7473f31400b3b16db"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/smoke.mjs",
+      "bytes": 4300,
+      "sha256": "10758fba38ffc4f3a581357a97a75f49d0254616de1b99ec70a4774af005ceea"
+    },
+    {
+      "path": "src/processes/modules/plantConnections/topology.test.mjs",
+      "bytes": 9988,
+      "sha256": "5c908f9905defc7c399629eb9a0dff8ab535f0a3d09d5095d7029a9399cff681"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/REFINEMENT.md",
+      "bytes": 3699,
+      "sha256": "97a1eec50badbc54772e447ab079f6f21c45f9a0268d742b7f0bd525bde644ee"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/cellPlateMembrane.js",
+      "bytes": 7738,
+      "sha256": "857b687e99dd860e59e05bde6bc2f6e47ea53036b0f29a0fd2b0c6fe3a00b061"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/cellWallGrowthProcess.js",
+      "bytes": 12451,
+      "sha256": "1e785ac478e6e970ee8940b0c457120fdd0dba790326f58d5866ec7493583f60"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/doubleFertilizationCompartments.test.mjs",
+      "bytes": 6687,
+      "sha256": "242ccd0f0b768c1e9394fd1e0f13925da91ba3708cfb71c0574ea6d08b79e514"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/doubleFertilizationProcess.js",
+      "bytes": 18071,
+      "sha256": "7cbdea04ba6493f955b8a9a53777bfa86d54298944b0235abafecb4266ec0037"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/entries.js",
+      "bytes": 2162,
+      "sha256": "200684b03254872f1492d03234c751a4e4b7f9feaedd0dc0aa97ebb42e2519bf"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/fungalHyphaeProcess.js",
+      "bytes": 19388,
+      "sha256": "a12e339f661ebcb67afafa007194b16d24bdc0d7b8760bf49f4357c4c0e78ac2"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/fusion.test.mjs",
+      "bytes": 12823,
+      "sha256": "c4bbdbbe36ce670e1fb3df56b06cd57d4821d3548c4e443b7cdb88fb61caca02"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/fusionSurface.js",
+      "bytes": 3842,
+      "sha256": "8c9b685200d3699208dbc0f8d04a4f50fd403424f558b51cd8baf2756cd2a9e8"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/nuclearCutaway20261015.test.mjs",
+      "bytes": 1924,
+      "sha256": "b57dd3fe80e48efda23afc1d5ee83580e93b633a9eedb073af40adbab95c44a1"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/plantDivisionProcess.js",
+      "bytes": 15939,
+      "sha256": "ecf7246ff27ad279d3e429f3f278c062d6f680cb44036162c443f6bbb6098037"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/refinement20261015.test.mjs",
+      "bytes": 2122,
+      "sha256": "ac072643185092d3ee2894ede6e0816630dafe7ad8ed34e9ca46bb867e3f78b3"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/science.test.mjs",
+      "bytes": 11057,
+      "sha256": "a2f902df0dc9ae6616ee91a9ecdb82a869a9dbb0119c6b130bc9202dadf028e1"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/seek.test.mjs",
+      "bytes": 4713,
+      "sha256": "6fc2523723862c8bcde4fde3d5e4aba314034f36c0271bc09844ef602dad6d5a"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/smoke.mjs",
+      "bytes": 4102,
+      "sha256": "72131555ed74e8846013ff18497987ddd5ee22bd55c2e020fa7f071e99e1823e"
+    },
+    {
+      "path": "src/processes/modules/plantGrowth/structuralDetail.js",
+      "bytes": 4667,
+      "sha256": "4f4bc864ee73b2f96c92182693eb3eadeb4e379ebc51bc0f8c73f4e9b37296b8"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/2p1q-pocket.json",
+      "bytes": 32903,
+      "sha256": "6efcb678e4d3bc74d9087fb669fc98fb6597f1461a2067bb9a44158e9b3b5dd6"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/REFINEMENT.md",
+      "bytes": 3939,
+      "sha256": "ad178d97c811ab9d849f87e65758290a8cbfc2ca801c6f89376c501e1ba451a2"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/auxinProcess.js",
+      "bytes": 24685,
+      "sha256": "5e9a6e4d67d8d16e767984c4d0edd21caef10072dc115c7b3ac716cf5aa1afd2"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/entries.js",
+      "bytes": 997,
+      "sha256": "eebcd770e5c8653daeed98d7b828a598e8876412ab8abf7767893dbfb4d21d7a"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/plantDefenseProcess.js",
+      "bytes": 20068,
+      "sha256": "089b2bcce208aa0e7f83423f22759e44e88080ddb3232d2448f0397deb4633e5"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/refinementSmoke.mjs",
+      "bytes": 3324,
+      "sha256": "a716a89b56d9b290d527dae6551b02f937166a8c8983dea3723a31d187d00883"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/science.test.mjs",
+      "bytes": 24533,
+      "sha256": "1e55d4190a7e720351a3a0e7d5e7b2b4018cc9fb95ac1ee2c47e519da4c88aaf"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/structures.js",
+      "bytes": 7832,
+      "sha256": "793ead96e172904ecc651805c95e2288fe2acdc8b7043aa659fa2c2a6da659a6"
+    },
+    {
+      "path": "src/processes/modules/plantSignals/tir1Pocket.js",
+      "bytes": 1552,
+      "sha256": "28d7d653e038593d9ec66b03ea51704202bed3cd89fbf8cc36d1ddbde870fd19"
+    },
+    {
+      "path": "src/processes/modules/plantWater/REFINEMENT.md",
+      "bytes": 3777,
+      "sha256": "f38745c05edd857ce4882a940f92947c56fc6f2f661667f8a0be0dbbe7ccf6af"
+    },
+    {
+      "path": "src/processes/modules/plantWater/chloroplastMovementProcess.js",
+      "bytes": 11613,
+      "sha256": "050d9796ea0cb02cbfff614e382363b014652accfd8d8710f25201cf7ac00be0"
+    },
+    {
+      "path": "src/processes/modules/plantWater/entries.js",
+      "bytes": 2231,
+      "sha256": "5e47281ecbced5f77ea7aa4df0faa20ba517627d0231e3355d9ebcd2a72331ce"
+    },
+    {
+      "path": "src/processes/modules/plantWater/labelAnchors.js",
+      "bytes": 1432,
+      "sha256": "e9033b111a70ce222a649bd3b541b383ad402007ca5ec052206eee708af295e3"
+    },
+    {
+      "path": "src/processes/modules/plantWater/labelAnchors.test.mjs",
+      "bytes": 7830,
+      "sha256": "d568e24f1a8243b70ab4c66eec101dca7251c52fd6c2c99432980dcebb0b3ecb"
+    },
+    {
+      "path": "src/processes/modules/plantWater/nuclearCompartments.test.mjs",
+      "bytes": 4265,
+      "sha256": "6e5a0c141aeea37559abafd01418cf0797a0280c6b8ee12b1b2d8063250c591a"
+    },
+    {
+      "path": "src/processes/modules/plantWater/plantLongDistanceTransportProcess.js",
+      "bytes": 16557,
+      "sha256": "e0dca73f6b77411c610a9da965cc644c4c18d7e5186112d06252c04a05a87421"
+    },
+    {
+      "path": "src/processes/modules/plantWater/plasmolysisProcess.js",
+      "bytes": 11856,
+      "sha256": "22de4abc076965011acca0a6768f77efe4052eb99c4d414afb23eb205882870b"
+    },
+    {
+      "path": "src/processes/modules/plantWater/refinement.test.mjs",
+      "bytes": 2306,
+      "sha256": "2902c62c4564cde24696c380c4f32b891dd31592e37eb04f7226e8b54da3d3cc"
+    },
+    {
+      "path": "src/processes/modules/plantWater/science.test.mjs",
+      "bytes": 8788,
+      "sha256": "6544370280fa4494f2d7a0ddfbe13f1726fc2ef1fe2819cd4ae0a279fc208b25"
+    },
+    {
+      "path": "src/processes/modules/plantWater/smoke.mjs",
+      "bytes": 3982,
+      "sha256": "d69888340b90d12d2ba5fdea0f9578580d84701a5fecb38141e6a9aae4ec6296"
+    },
+    {
+      "path": "src/processes/modules/plantWater/stomataProcess.js",
+      "bytes": 16750,
+      "sha256": "edafecbaca3050e6935cad3a0db2fb935f987e305526bceb4068c57a67a04ab9"
+    },
+    {
+      "path": "src/processes/modules/plantWater/structuralDetail.js",
+      "bytes": 7568,
+      "sha256": "2fd5f2b4678358731333531ce7377711226001c007cf16e33163169d918afa70"
+    },
+    {
+      "path": "src/processes/modules/plantWater/waterFlux.test.mjs",
+      "bytes": 11166,
+      "sha256": "6a1c00f0badb59870acafea968ef8330e91f244757865a6873bf068951d40435"
+    },
+    {
+      "path": "src/processes/modules/regulation/REFINEMENT.md",
+      "bytes": 5525,
+      "sha256": "c0ee7d59c2fe52707b0c9893f46c7846700d56b4c5250e6dd6ea4a39c223203a"
+    },
+    {
+      "path": "src/processes/modules/regulation/chromatinGeometry.js",
+      "bytes": 10389,
+      "sha256": "4a4011e2904042012d528ca76b794be8520391ca56b7caf4b12d58e3a554e3e8"
+    },
+    {
+      "path": "src/processes/modules/regulation/duplexGeometry.test.mjs",
+      "bytes": 5679,
+      "sha256": "1ffc698df257325c3a08295ce2e57a689e82522f31bf14782c672e0ced7957b0"
+    },
+    {
+      "path": "src/processes/modules/regulation/enhancerRegulationProcess.js",
+      "bytes": 16624,
+      "sha256": "2c9dc58088030a7915f7fe7cfc0abf77c910784cd67759409cc65860b4b9db4b"
+    },
+    {
+      "path": "src/processes/modules/regulation/entries.js",
+      "bytes": 1143,
+      "sha256": "64adf8a97e09022d6cca470bc837b12834d93e7dbee367688e6a98367b9bdbff"
+    },
+    {
+      "path": "src/processes/modules/regulation/geometry.js",
+      "bytes": 15952,
+      "sha256": "71d2ae5736c26ad1f350e9f989508b4b389e6e1f6929bddf18276518d3bcc297"
+    },
+    {
+      "path": "src/processes/modules/regulation/promoterRegulationProcess.js",
+      "bytes": 15212,
+      "sha256": "26b4327511e461d39f10fa05498fcdae9a9265aa382b4bd2024e340f3b440dd1"
+    },
+    {
+      "path": "src/processes/modules/regulation/science.test.mjs",
+      "bytes": 9121,
+      "sha256": "386008161ec1dd7ff32ba43af72a6ef987aba50ca9ecb8901e5477f908fcef17"
+    },
+    {
+      "path": "src/processes/modules/regulation/smoke.mjs",
+      "bytes": 5539,
+      "sha256": "0253515c655b60dea5411753157d44be9eb6bfb0cf1d268d3500c11228894ca1"
+    },
+    {
+      "path": "src/processes/modules/rna/REFINEMENT.md",
+      "bytes": 3698,
+      "sha256": "7a1255a4d22a6a8739a6ee348ad636820b490df862947588f6ae0a4ab1b17040"
+    },
+    {
+      "path": "src/processes/modules/rna/continuityRefinement.test.mjs",
+      "bytes": 1936,
+      "sha256": "58c3449371add815b5dd1bc836b43662be95a56d04045a337992d37d168c5689"
+    },
+    {
+      "path": "src/processes/modules/rna/entries.js",
+      "bytes": 2140,
+      "sha256": "01b887b81f0773294c14982cbba3c45171c115ce27e76c2a9b3d866dfc440760"
+    },
+    {
+      "path": "src/processes/modules/rna/motorTransportProcess.js",
+      "bytes": 17798,
+      "sha256": "6a4ea8e3c9115bfbd138cad07aa95c428a85ea843f0b5d2b69fc39c240e61c32"
+    },
+    {
+      "path": "src/processes/modules/rna/nuclearTransportProcess.js",
+      "bytes": 15856,
+      "sha256": "5b4a64936a1e7cf6725cb7db6c4772e6901c3a0b50642b98a5dd1cb64c04307d"
+    },
+    {
+      "path": "src/processes/modules/rna/organelleImportProcess.js",
+      "bytes": 14722,
+      "sha256": "f60b7bb614352410311003f97c5f800a35b159486f417ed079107d4cdbdc0f55"
+    },
+    {
+      "path": "src/processes/modules/rna/refinement.test.mjs",
+      "bytes": 3782,
+      "sha256": "b4de0a1e7d622230571852024108bd9e2e9c5fe860511abaf2961b1134b3391f"
+    },
+    {
+      "path": "src/processes/modules/rna/refinementGeometry.js",
+      "bytes": 5614,
+      "sha256": "4e0893c87350334bba93baf91db0479fdea24e97194a6365cb49fe1d0fcce9cd"
+    },
+    {
+      "path": "src/processes/modules/rna/rnaProcessingProcess.js",
+      "bytes": 15175,
+      "sha256": "7bcd4e66fb93f1f10b8ef21f86840bd8458cdecaae76d9b2ce6128eb589adbb9"
+    },
+    {
+      "path": "src/processes/modules/rna/science.test.mjs",
+      "bytes": 26307,
+      "sha256": "7ec0e679f647b2c14a6e7ca130f607573b07e5b346bc86c2adbcbc2ce989573f"
+    },
+    {
+      "path": "src/processes/modules/signals/REFINEMENT.md",
+      "bytes": 4076,
+      "sha256": "3e675c5ee0ff9ab16a0f74693ca29ee12bdb4da49a33a401fcedb31bb59fd300"
+    },
+    {
+      "path": "src/processes/modules/signals/apoptosisProcess.js",
+      "bytes": 18909,
+      "sha256": "b84003d288d7ead04e837169d2773c70f15a569f4c7b8e49d62854919f4f15cc"
+    },
+    {
+      "path": "src/processes/modules/signals/apoptosomeCytosol.test.mjs",
+      "bytes": 9847,
+      "sha256": "e497e9060506cffc3b11fe2a896ca176b91c5e64dc3c9f8346bc6fca40658926"
+    },
+    {
+      "path": "src/processes/modules/signals/continuousMembrane.js",
+      "bytes": 9685,
+      "sha256": "8c57480c6fd8ef150907da79af8b32612d8f946f372d700ee4652ebbe98f1a11"
+    },
+    {
+      "path": "src/processes/modules/signals/continuousMembrane.reference.mjs",
+      "bytes": 7000,
+      "sha256": "4045ced11addc83671f324092eb7e7ea7baf39465d63dd199d94d4a90347a086"
+    },
+    {
+      "path": "src/processes/modules/signals/continuousMembrane.test.mjs",
+      "bytes": 6707,
+      "sha256": "ecc9ee839c63d74f216fa27f0524fe5db5c84e01679eb0a6d58d9e8530b6f6bf"
+    },
+    {
+      "path": "src/processes/modules/signals/deformation.test.mjs",
+      "bytes": 1889,
+      "sha256": "0da0213f4cbfc3fd893c4d5690211484392228a7d7b302f78155a96a0a900862"
+    },
+    {
+      "path": "src/processes/modules/signals/differentiationProcess.js",
+      "bytes": 17964,
+      "sha256": "df521a926c2eddc66127a19545c798cd7f31d375693302f6f66ed385cc9f7a47"
+    },
+    {
+      "path": "src/processes/modules/signals/entries.js",
+      "bytes": 2204,
+      "sha256": "0a3e8011281ccd917ade370b489f4bd201dfea9aada8263bb4e0c98232b6f893"
+    },
+    {
+      "path": "src/processes/modules/signals/granuleCompartment.test.mjs",
+      "bytes": 4530,
+      "sha256": "989dbe6309b0ea2cf1555f064f890a42bc5f405f773b7ab98c054fbc9cd66f9f"
+    },
+    {
+      "path": "src/processes/modules/signals/immuneResponseProcess.js",
+      "bytes": 18901,
+      "sha256": "bbc4de83bd5d2e11d1d8b701ba3714dd1a2b3747aff4be44b069547a6597e534"
+    },
+    {
+      "path": "src/processes/modules/signals/labelAnchors.js",
+      "bytes": 529,
+      "sha256": "9edf43b5bb44b0c648873637a7bb2d6fa8d88520c3de156bc9c51285e9bd5af2"
+    },
+    {
+      "path": "src/processes/modules/signals/labelAnchors.test.mjs",
+      "bytes": 3166,
+      "sha256": "6297dfb462a34c62c8fd5e56316e6d61c4041308e593c5c3de9f8def2d1312aa"
+    },
+    {
+      "path": "src/processes/modules/signals/labelEvents.test.mjs",
+      "bytes": 3899,
+      "sha256": "45955dccc035be19da217b5033d4b709da65766e48c96d17d345e90564502583"
+    },
+    {
+      "path": "src/processes/modules/signals/refinement20261015.test.mjs",
+      "bytes": 3984,
+      "sha256": "4a85e335244c5b0b980525795519a4cfbc865f2717951f63de94f1f5e39c1d5b"
+    },
+    {
+      "path": "src/processes/modules/signals/science.test.mjs",
+      "bytes": 20694,
+      "sha256": "561607ec14fb7bb97dfcce05bb4e931431c5157fad00223e0738ee846302de3d"
+    },
+    {
+      "path": "src/processes/modules/signals/secretoryMembrane.js",
+      "bytes": 8834,
+      "sha256": "b7f9efdf8fcbc7eefc00d0afab487d9efcad2510e38625ca8f6982048985ea37"
+    },
+    {
+      "path": "src/processes/modules/signals/signalTransductionProcess.js",
+      "bytes": 16423,
+      "sha256": "52faf3dc427eaa2b3970b7a613f3f033fe2a0792a3a166e45caa2eaf358fc61f"
+    },
+    {
+      "path": "src/processes/modules/signals/smoke.mjs",
+      "bytes": 5355,
+      "sha256": "c13f4b848779e79c520ac36eee9eaece2502601ff376679ffa28f71c741cbbcf"
+    },
+    {
+      "path": "src/processes/modules/signals/structuralKit.js",
+      "bytes": 8081,
+      "sha256": "7e8266523acdabcbed37f4a71937079257450ca79014a4bce98a848d7e148e0b"
+    },
+    {
+      "path": "src/processes/modules/signals/surfaceSection.js",
+      "bytes": 2609,
+      "sha256": "ef7ebc307391a6e2fb0d9d8ddb478ffeca798c153a6c3e8d43e17cc32ac68c51"
+    },
+    {
+      "path": "src/processes/modules/traffic/REFINEMENT.md",
+      "bytes": 4582,
+      "sha256": "4e00d37d2a5331e0578f6375f6af3170911c6c6cec93c8d2a054a580e90b13f0"
+    },
+    {
+      "path": "src/processes/modules/traffic/autophagyProcess.js",
+      "bytes": 14872,
+      "sha256": "7ff64529e2fcb3b46476d14e9710c0e7bbffdfa61c57cf3edbd5531e82224611"
+    },
+    {
+      "path": "src/processes/modules/traffic/cargoTopology.test.mjs",
+      "bytes": 5665,
+      "sha256": "5931c03966b1e353fae2e71a8bef7f1746bb8f36707b6f29fc07b6271da00440"
+    },
+    {
+      "path": "src/processes/modules/traffic/endocytosisProcess.js",
+      "bytes": 15907,
+      "sha256": "8a8f5acb01328a00d6e8c3fc4fed3585c3085bbd77a2c286ce6d9a1a2e08129f"
+    },
+    {
+      "path": "src/processes/modules/traffic/entries.js",
+      "bytes": 907,
+      "sha256": "f4f22ce94ca74f31027aca5a9ef73359e191447f684d6fe965338a7c8e29e7e6"
+    },
+    {
+      "path": "src/processes/modules/traffic/fixtures/membranes-baseline-20261004.mjs",
+      "bytes": 6290,
+      "sha256": "83b6c805c67ba71779a06719f0a6a20c4c3ab7e959742be072534d0e94f24282"
+    },
+    {
+      "path": "src/processes/modules/traffic/fusionProfiles.js",
+      "bytes": 3933,
+      "sha256": "2b3f610287de00c5abf6381d14764bb3abc889d42c1a69caf99976c61f1a38aa"
+    },
+    {
+      "path": "src/processes/modules/traffic/fusionProfiles.test.mjs",
+      "bytes": 2753,
+      "sha256": "bb1a49be591fc5cb9d48975293a8d68a9849512b57a06ef927db8ec1d2859b11"
+    },
+    {
+      "path": "src/processes/modules/traffic/luminalCargo.js",
+      "bytes": 2278,
+      "sha256": "87718b8f9ff927d75a536df8d1e00dc67bac42678263fb59940192014b00b4c1"
+    },
+    {
+      "path": "src/processes/modules/traffic/membraneEquivalenceTestUtils.mjs",
+      "bytes": 4398,
+      "sha256": "51264df21d6177253faca3e1bce65b6eb9162c66991a0e1a1d5445e7371cbacd"
+    },
+    {
+      "path": "src/processes/modules/traffic/membranes.js",
+      "bytes": 7259,
+      "sha256": "bfa0112ac6f905bdbc5704363d5ee6ac36c8fe16f2c3b7da2092d5ddf0bba9eb"
+    },
+    {
+      "path": "src/processes/modules/traffic/membranes.perf.test.mjs",
+      "bytes": 4162,
+      "sha256": "724c99cb0b3c775dc2e4ab87f4e47c2d2fd7fb7a1c29d5da002664d5e29e5402"
+    },
+    {
+      "path": "src/processes/modules/traffic/molecules.js",
+      "bytes": 10106,
+      "sha256": "02434d23658298a020c28228fb3f09296f3bbf63402f2eb9fc81ce399f0fd24b"
+    },
+    {
+      "path": "src/processes/modules/traffic/proteinCoordinates.js",
+      "bytes": 24433,
+      "sha256": "19b6631ccfa7f459d9ff5f01f5dbde4106e783f457922c97a269bb565ff8e3a6"
+    },
+    {
+      "path": "src/processes/modules/traffic/proteins.js",
+      "bytes": 3534,
+      "sha256": "4d46fbf1decef6a0b9032856fa4f3c29b1d4d9c20bb5770e7124c83dd6fe9f11"
+    },
+    {
+      "path": "src/processes/modules/traffic/refinement20261015.test.mjs",
+      "bytes": 3928,
+      "sha256": "47787fda07b16aa8c622644ce3fafb627d3b71638430a7263d440043810ee3d1"
+    },
+    {
+      "path": "src/processes/modules/traffic/review20261004.test.mjs",
+      "bytes": 8385,
+      "sha256": "955f0fc112e20e5c1eeea478348f8c699c9bd835cf73aafd6d92a7fde3fed991"
+    },
+    {
+      "path": "src/processes/modules/traffic/science.test.mjs",
+      "bytes": 13203,
+      "sha256": "e4dc2641102a19a2085fa96724f89ee8bf55c95f082412d8d48e22329b515317"
+    },
+    {
+      "path": "src/processes/modules/traffic/smoke.mjs",
+      "bytes": 4014,
+      "sha256": "1213d583f6708e47438b2bc812f8c80e8067c1872de11672b4aa894a4d584567"
+    },
+    {
+      "path": "src/processes/modules/translation/REFINEMENT.md",
+      "bytes": 5132,
+      "sha256": "a44ac61a0f2710f96daa2f3297d514c2eff927c70022f72ee69c3fe461953510"
+    },
+    {
+      "path": "src/processes/modules/translation/alternativeSplicingProcess.js",
+      "bytes": 18475,
+      "sha256": "1ced97b392f3ae6eb175a39422cef65427189ab948bc8637519391b8eaeb2d5d"
+    },
+    {
+      "path": "src/processes/modules/translation/entries.js",
+      "bytes": 2155,
+      "sha256": "9409c25b625419d9d26d9099857eb111a7bfce743f9d1fc46483133b7d3d6efe"
+    },
+    {
+      "path": "src/processes/modules/translation/labelAnchors.js",
+      "bytes": 691,
+      "sha256": "a8b04eef867e34fbfdb288d0c3b1d3d304c15f0de4eef52ce40d48e75a6a2cfa"
+    },
+    {
+      "path": "src/processes/modules/translation/labelAnchors20261004.test.mjs",
+      "bytes": 6940,
+      "sha256": "fd3e11ec2f2f9eae858a673382fd9b2b5eaf4131dc4f3f83381addadab01069a"
+    },
+    {
+      "path": "src/processes/modules/translation/mechanics.js",
+      "bytes": 1108,
+      "sha256": "99afb93de23852698c2d9e8c8da5a3944f9c062d23c5246c1640f940902e1fd0"
+    },
+    {
+      "path": "src/processes/modules/translation/molecularDetails.js",
+      "bytes": 11394,
+      "sha256": "56ade48cbdcf223940494f3fb4addeeecaa0e857e4e4778b8a9192aef8cf36c7"
+    },
+    {
+      "path": "src/processes/modules/translation/nitrogenFixationProcess.js",
+      "bytes": 20587,
+      "sha256": "37b67b6928fb0e954d3778809578786e16a7628345532a6c4aa5d9f815eb0e66"
+    },
+    {
+      "path": "src/processes/modules/translation/nitrogenRefinement20261015.test.mjs",
+      "bytes": 1848,
+      "sha256": "7173ba6ae93b8e2cd53559c75f35f186eba3b42a4cd5c6c5a679eec153db121e"
+    },
+    {
+      "path": "src/processes/modules/translation/proteinFoldingProcess.js",
+      "bytes": 18664,
+      "sha256": "158cba136220f5e1cd0257ae5485444476d91c7423068eade60949801bbc5687"
+    },
+    {
+      "path": "src/processes/modules/translation/refinement20261015.test.mjs",
+      "bytes": 1613,
+      "sha256": "ab86f1b2b49b0917cae0a91217336febb40ea95c897acffda80b6a0d50e2ebf1"
+    },
+    {
+      "path": "src/processes/modules/translation/refinementSmoke.mjs",
+      "bytes": 3476,
+      "sha256": "02d10943987b0dcefbdf408bc6dad44133ce39dee10905fc5242e27936eb58f3"
+    },
+    {
+      "path": "src/processes/modules/translation/review20261004.test.mjs",
+      "bytes": 12094,
+      "sha256": "08fac1f74e94876eadd93b43d73f114b32ba2ec3bfcd5c65da0d1923be2155a2"
+    },
+    {
+      "path": "src/processes/modules/translation/ribosomeAssembly.js",
+      "bytes": 3723,
+      "sha256": "3cb85de9b70a796e53f088c587dd21754a729b3fcc0314c0863bf62e51eb34ef"
+    },
+    {
+      "path": "src/processes/modules/translation/science.test.mjs",
+      "bytes": 12609,
+      "sha256": "c533994e33330c58a94fd24c3ae31ca066bef3fcbc11e50c7028c19af5e5fb40"
+    },
+    {
+      "path": "src/processes/modules/translation/translationProcess.js",
+      "bytes": 4994,
+      "sha256": "62cf7d76fb4c4c98862f51424b7c3bb92eb68d267e7e70e62d1f60f30b9661e2"
+    },
+    {
+      "path": "src/processes/modules/translation/translationReaction.js",
+      "bytes": 11790,
+      "sha256": "b44ae1a49871df7cfa8dc289d35bdc8ac7f9ca4ac01652da92bf9ec05d2d2b69"
+    },
+    {
+      "path": "src/processes/modules/turnover/REFINEMENT.md",
+      "bytes": 4415,
+      "sha256": "d363322cd640db2cc56f2be6e44de57c2938a127ed12cefc8aa9967e4fe20c33"
+    },
+    {
+      "path": "src/processes/modules/turnover/bacterialRepairProcess.js",
+      "bytes": 20370,
+      "sha256": "645f89c0267a2265120663c30f2a5ce81974c6ce02548090de18e8039d26c7da"
+    },
+    {
+      "path": "src/processes/modules/turnover/bubble.test.mjs",
+      "bytes": 6631,
+      "sha256": "322aa72d66b6ff2fb67729917ae89e7e3fe3f743daf09c6ca041640bbb50a623"
+    },
+    {
+      "path": "src/processes/modules/turnover/chirality.test.mjs",
+      "bytes": 6100,
+      "sha256": "2d61f0d83e8b50b636e90b4d7eae9cdf835777629f13a977053697af3a42cb3d"
+    },
+    {
+      "path": "src/processes/modules/turnover/continuity.test.mjs",
+      "bytes": 6365,
+      "sha256": "fa1589374aca9d1110ac2d91eace3bc64f4f68655fec22f533aad877cb4998d8"
+    },
+    {
+      "path": "src/processes/modules/turnover/crisprProcess.js",
+      "bytes": 18746,
+      "sha256": "510a128e7ef5fd422c388a81055326647ad064ce66ece1b8b1db14a8ba556ed4"
+    },
+    {
+      "path": "src/processes/modules/turnover/entries.js",
+      "bytes": 2204,
+      "sha256": "d4439a6a4f110de3566638974d23a6d24c513416f468d2a48352cd777e2ccc8f"
+    },
+    {
+      "path": "src/processes/modules/turnover/labelAnchors.js",
+      "bytes": 520,
+      "sha256": "945b72cf6cd7efa6f3e3f7364ae154e5211bb8dfef291973c145474b47dacd52"
+    },
+    {
+      "path": "src/processes/modules/turnover/labels.test.mjs",
+      "bytes": 15453,
+      "sha256": "024b35d03ec61865c39d5cf3959d6176b05c1a7975c6bcb7c0adebdf6d34c0de"
+    },
+    {
+      "path": "src/processes/modules/turnover/molecularDetail.js",
+      "bytes": 5295,
+      "sha256": "5f019bfaf9033f3e20d078f67dee5e387c52060c0b35d09bc05f77b68b89b318"
+    },
+    {
+      "path": "src/processes/modules/turnover/proteasomeProcess.js",
+      "bytes": 22453,
+      "sha256": "0a814a1727a511c820308383e5d2d18e6216dc6507bc17bd635b596409f06eff"
+    },
+    {
+      "path": "src/processes/modules/turnover/refinement20261015.test.mjs",
+      "bytes": 3163,
+      "sha256": "19ae0db200f41ee5c9ef82f4b9e021694dd676156dbb16fb93645dd6c05e3e0d"
+    },
+    {
+      "path": "src/processes/modules/turnover/rnaSilencingProcess.js",
+      "bytes": 17211,
+      "sha256": "11b410fa31d7fb2094475afce1c136d341ac66cf3f5d87b1787ef45776822a0b"
+    },
+    {
+      "path": "src/processes/modules/turnover/rnaTurnover.test.mjs",
+      "bytes": 4844,
+      "sha256": "8b19e9eddfc177984133d9d54cdf8b4ebf9922599df23789dff117a89535f85e"
+    },
+    {
+      "path": "src/processes/modules/turnover/science.test.mjs",
+      "bytes": 14634,
+      "sha256": "972dafbc536c0584c4e0ea7b0ae4f9a4e999306c6189591d4ff76d4ed2944818"
+    },
+    {
+      "path": "src/processes/modules/turnover/smoke.mjs",
+      "bytes": 7546,
+      "sha256": "735f362cc6b6633d760a7d482b2803286cb4c0ffbce72bfc20a7e50610c623bc"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/REFINEMENT.md",
+      "bytes": 4633,
+      "sha256": "a2a95eb62f102529739da880f407d4ef9a6cc36822a8ed119ce33b1f39b47819"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/anatomy.js",
+      "bytes": 15172,
+      "sha256": "d9a2d82f552818ef5b50200f46582112b6dae1486404f994068147422d11d226"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/entries.js",
+      "bytes": 1921,
+      "sha256": "958aeba447da0743bb516074cb774dfd9edce4b2bc72b7a90f8f24819e0395c3"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/labelAnchors.js",
+      "bytes": 608,
+      "sha256": "d9cc46736b33e9613d96c2e4e91630a8f106f71c467b0cc53deb87523028f4b3"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/meioticEnvelope.js",
+      "bytes": 11748,
+      "sha256": "6cc934e1a115ad5e70bdd2d4ddf5d32ecaa891dcce9644414611398d9efb06ac"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/refinement20261015.test.mjs",
+      "bytes": 2798,
+      "sha256": "cd0d5c7488f171634fb5a02d1660d2889dfe338f39f4588b25e96fe793d7f7ab"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/science.test.mjs",
+      "bytes": 28659,
+      "sha256": "f45363ef78917fd801fbb26c7bdb7ff9c8659de95e63385dcd29fe20b7448c03"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/smoke.mjs",
+      "bytes": 3461,
+      "sha256": "d76168e05e124dfddc3e4ee72eba06fe3288c856e3876d86b84897e4c4cc539b"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/topology.js",
+      "bytes": 5080,
+      "sha256": "3faeeca1243ff110fd8df8f642af27760c66c39efc9ab24821e33e4ebbd7711c"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/yeastBuddingProcess.js",
+      "bytes": 20573,
+      "sha256": "8f5c66eeb1a324759b417e1976f48f5c085e157015aca99d640e943a999e5cd5"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/yeastFermentationProcess.js",
+      "bytes": 17862,
+      "sha256": "cf9fcdeb331236d007891003f2296e364f1981bd714e63503853a701e432477c"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/yeastMatingProcess.js",
+      "bytes": 18066,
+      "sha256": "e8bd1d794ed76cb7747e48e16d28f3a6de5b3799affae152f5c2e3fd72b5aaf5"
+    },
+    {
+      "path": "src/processes/modules/yeastLife/yeastSporulationProcess.js",
+      "bytes": 23106,
+      "sha256": "96b0dc2a26c4ebb895b7c9bb4789a10c1062f99875ec1ae2a33a058a65b13504"
+    },
+    {
+      "path": "src/processes/phageProcess.js",
+      "bytes": 23464,
+      "sha256": "fc12b061b46cb8a02c1353edac39a1b35b27625b5e445286fc44ffc59d898663"
+    },
+    {
+      "path": "src/processes/photosynthesisProcess.js",
+      "bytes": 34247,
+      "sha256": "60fc36a612c7eccce2c27c48197d10e251ee1eed5a9d9f5c776332342e78394f"
+    },
+    {
+      "path": "src/processes/playbackClock.js",
+      "bytes": 1967,
+      "sha256": "cb81f2adaf0ef89f75fb2036722ea2f4b629432fa7d20b1b09e9562992f6cf06"
+    },
+    {
+      "path": "src/processes/processes.css",
+      "bytes": 16231,
+      "sha256": "1fb26f505cb5f18d8accaf29396c2c9c941fbc010bef520491dfac88159c10d1"
+    },
+    {
+      "path": "src/processes/sceneBounds.js",
+      "bytes": 1724,
+      "sha256": "c8d45312b3f7d8ce7ac9f4f087f6839b975684c0c76759fc0fc8c49acb3a35cf"
+    },
+    {
+      "path": "src/processes/secretionProcess.js",
+      "bytes": 35467,
+      "sha256": "ce7e32e57b0f9c3610012517b2fa17b556a8dde043626181a3aa799a464cb3c4"
+    },
+    {
+      "path": "src/processes/secretoryDetails.js",
+      "bytes": 5203,
+      "sha256": "7229d640920a7d9108e3f7e1132c495c6dd6c1dd9fe47ae44bce96cbca5348e4"
+    },
+    {
+      "path": "src/processes/transcriptionProcess.js",
+      "bytes": 17889,
+      "sha256": "0e7afb474f968c11d65d790b309329200dbd660bcf6e21c133d8d847a5d2fd70"
+    },
+    {
+      "path": "src/project.js",
+      "bytes": 284,
+      "sha256": "44b8dd3aa1f2876955ecd062e6826a3dcf402d5a1db675eb68019728bfa0cc75"
+    },
+    {
+      "path": "src/scene/bacteriaDetails.js",
+      "bytes": 8437,
+      "sha256": "9aecf9fced29d4a6acd6d0d7b1e7ab861e881f1ed0228d2931ebace885d28047"
+    },
+    {
+      "path": "src/scene/bacterialAppendageDetails.js",
+      "bytes": 13462,
+      "sha256": "9bd5c9d129d3a1645c3a06cb9ba4766924896439915e2d00f82ff14ebdc63f5b"
+    },
+    {
+      "path": "src/scene/bacterialDnaDetails.js",
+      "bytes": 3604,
+      "sha256": "b8bd3758b6c8338d51d547f47c955af65efc9c22de563d30959f9a48e21e531a"
+    },
+    {
+      "path": "src/scene/bacterialEnvelopeDetails.js",
+      "bytes": 13835,
+      "sha256": "437b54d5ce1a15786ea65367bfa263549191f0a7c4d6022f82193cc5c7858481"
+    },
+    {
+      "path": "src/scene/buildCell.js",
+      "bytes": 18426,
+      "sha256": "b44edb6a9841ef6d3d86fdc97490ddedb3912f5b385a507506de41fdb9080166"
+    },
+    {
+      "path": "src/scene/cell.worker.js",
+      "bytes": 317,
+      "sha256": "78edce4c581313abcbc3aad6b5ef084768747f464ad674549c2bfba77e662c9b"
+    },
+    {
+      "path": "src/scene/cellLoader.js",
+      "bytes": 1602,
+      "sha256": "1baa717f55657ebec8231c15e5df2b0aca02488ab7883eb3168410976169bc80"
+    },
+    {
+      "path": "src/scene/cellTransfer.js",
+      "bytes": 8199,
+      "sha256": "af9c149d65063a1efed55f35992213a2729e08a86d81caa4d7fc8b58ed34732f"
+    },
+    {
+      "path": "src/scene/centrosomeDetails.js",
+      "bytes": 6700,
+      "sha256": "9da1fb6e38f0000fafe6a8c9e2a94cff8fd47f590aa451f6c3899bc6dc3d23b4"
+    },
+    {
+      "path": "src/scene/chloroplastDetails.js",
+      "bytes": 10388,
+      "sha256": "f56c79697ce96dac26c1904bd8939f8052685d999d24c8c5589388a8aa52ce01"
+    },
+    {
+      "path": "src/scene/chromatinDetails.js",
+      "bytes": 9474,
+      "sha256": "d4a782dc890384ec934a9f843f434b66a8112044add6f8b407f4e14d8c4d4d39"
+    },
+    {
+      "path": "src/scene/cytoskeletonDetails.js",
+      "bytes": 7143,
+      "sha256": "f175c516c3d59c30c28b42330879e53da9cd98b99f2132c9443d0064afc1b697"
+    },
+    {
+      "path": "src/scene/cytosolDetails.js",
+      "bytes": 4513,
+      "sha256": "81c12ce3fdceb2875019a73611e1249c777f19cd9659a3192cc601f91a8f7545"
+    },
+    {
+      "path": "src/scene/data/cathepsin-1lya.json",
+      "bytes": 10118,
+      "sha256": "e7e5c8835944dbb1d8625db1a37ce5fe6cf315b7da95256e701258a2164c85ef"
+    },
+    {
+      "path": "src/scene/data/cytosolic-enzyme-1hti.json",
+      "bytes": 14976,
+      "sha256": "fb03e0d4605777b8c0c520f7d49246f979424db3bf4ccb609e0b6a21111f3490"
+    },
+    {
+      "path": "src/scene/data/enzyme-1dgf.json",
+      "bytes": 67158,
+      "sha256": "22be0b7b43533056d5eef4bf79dfdcde880a0d0a50e8ee70596f180472746b7c"
+    },
+    {
+      "path": "src/scene/data/enzyme-7q86.json",
+      "bytes": 42477,
+      "sha256": "de772d5de706beb9a195612c44fa71ffa5e8d0598806009819874911bd53d55b"
+    },
+    {
+      "path": "src/scene/data/peroxisome-contours.json",
+      "bytes": 25674,
+      "sha256": "850fac4c245bc52a299a3da00e86ba0ce50939205b215571ae66f7fa7eff2e6f"
+    },
+    {
+      "path": "src/scene/data/ribosome-4ug0-largeSubunit.json",
+      "bytes": 319690,
+      "sha256": "df482074a4df631a1795d8436a0bef40e43167003a0b52cc1bbc98f697d0cfe7"
+    },
+    {
+      "path": "src/scene/data/ribosome-4ug0-smallSubunit.json",
+      "bytes": 188069,
+      "sha256": "211c1ef11a4db9c1568f755f62b81ee1754778073b084ed7e13a7a5faee3756b"
+    },
+    {
+      "path": "src/scene/data/ribosome-7k00-largeSubunit.json",
+      "bytes": 180703,
+      "sha256": "407d7e0e70bc4b081d48663228192f4d562aa6bd0b7e09822ef62763d8216767"
+    },
+    {
+      "path": "src/scene/data/ribosome-7k00-smallSubunit.json",
+      "bytes": 117727,
+      "sha256": "bf15e0c5867d8940608903ca479182f01621b11349ff4f52b3fa535431347d04"
+    },
+    {
+      "path": "src/scene/data/ribosome-8jiv-largeSubunit.json",
+      "bytes": 335494,
+      "sha256": "58d2c1929cc5fa270563d1b968785a87f1238c5b8047129003083d1370810ea8"
+    },
+    {
+      "path": "src/scene/data/ribosome-8jiw-smallSubunit.json",
+      "bytes": 215541,
+      "sha256": "be7a1fe2cc73a8b8999dd0ca9a5510956b449c0f8736ae744592ae1cae549c2c"
+    },
+    {
+      "path": "src/scene/data/tubulin-1jff.json",
+      "bytes": 25314,
+      "sha256": "977461699107843c691a78a6a2408ffed4b13e9fe163f8617c164d383a54cdf5"
+    },
+    {
+      "path": "src/scene/detail.worker.js",
+      "bytes": 595,
+      "sha256": "d0794d1526dc8ab08c512184cb57a83f8577e314390578db163ab1d5ba99af69"
+    },
+    {
+      "path": "src/scene/detailLoader.js",
+      "bytes": 3002,
+      "sha256": "3aa988c3b4328689f19243422925b379359babb65842ced0f896a7e0bf8aa1e6"
+    },
+    {
+      "path": "src/scene/detailModels.js",
+      "bytes": 5019,
+      "sha256": "9aa58dcbc3f0dcb8478f4b8c0393424c40f69c951a0880ac5bcf05cd0b468e9f"
+    },
+    {
+      "path": "src/scene/detailTransfer.js",
+      "bytes": 3582,
+      "sha256": "8e394bc9b6e8769d19d4df3db3a1c662cf5cac08c29441edf8ff8022f7cb47d0"
+    },
+    {
+      "path": "src/scene/erDetails.js",
+      "bytes": 8538,
+      "sha256": "68a566dd1a851781adf4246f6dc50fecdcf13d08ad7318a383a1a0945fafa24c"
+    },
+    {
+      "path": "src/scene/exactGeometry.js",
+      "bytes": 2881,
+      "sha256": "21162873efeb50e8e9367e766f1655f6d2020beceeb482c207e51dc9dcc8b3c3"
+    },
+    {
+      "path": "src/scene/facingCull.js",
+      "bytes": 14024,
+      "sha256": "264b645ef5f608251387b3e150b839225e304c26923f8b1362678d49493e60a1"
+    },
+    {
+      "path": "src/scene/framingDistanceCache.js",
+      "bytes": 1522,
+      "sha256": "4943d3058ff8b4287d465eee9b590c3a0a543f1dc26a40e5f8b29cd0a2f49d92"
+    },
+    {
+      "path": "src/scene/golgiDetails.js",
+      "bytes": 10159,
+      "sha256": "9a3307e43b2ca1d4d01d43411e91ae61ffe78e47e29f63c1138aa92dc7962a9f"
+    },
+    {
+      "path": "src/scene/implicitMembrane.js",
+      "bytes": 6590,
+      "sha256": "2c695b3cb3407556c02e2455dd0c46b1593b6bb80f556579a4cd6a04c09afdf2"
+    },
+    {
+      "path": "src/scene/indexRepeatedGeometry.js",
+      "bytes": 2617,
+      "sha256": "db3e166dd178c88a35775a002d75bcbd21c4c842ce4d1b99cb1708ffdddff5b1"
+    },
+    {
+      "path": "src/scene/loadDetailModel.js",
+      "bytes": 3356,
+      "sha256": "7f223dddc601f2a94ebb3b857228c6285aa1ad56dc58ff456359abbec56e1788"
+    },
+    {
+      "path": "src/scene/lysosomeDetails.js",
+      "bytes": 13338,
+      "sha256": "c4adf116ee59702af0966eb2ed9a22a5920dc743da267e9b84a8223016313291"
+    },
+    {
+      "path": "src/scene/membraneDetails.js",
+      "bytes": 6891,
+      "sha256": "28419095d6509d3be15fecf52a32ad6c0eed5726d6da68f6d0841fc01039f5c3"
+    },
+    {
+      "path": "src/scene/microbeGeometry.js",
+      "bytes": 12572,
+      "sha256": "9f5d78d6122795ac62dc09d4c74ac0960513dcd31197182be351eea51f53056d"
+    },
+    {
+      "path": "src/scene/mitochondriaDetails.js",
+      "bytes": 12915,
+      "sha256": "f2cf50ecfb4f1e3076d4f58af553fe7a84bd7d7486f3e8bfdb1d5a50af27f0f9"
+    },
+    {
+      "path": "src/scene/nuclearBodies.js",
+      "bytes": 5901,
+      "sha256": "4684b359d0f1e2654859839afa3691aeaf1ac71cbe07e1e95002f877a33070be"
+    },
+    {
+      "path": "src/scene/nuclearDetails.js",
+      "bytes": 4662,
+      "sha256": "a5e5a81436ee3e57ae83964170b80aa579b5f1d8786f8d5a2eb754aa103822bb"
+    },
+    {
+      "path": "src/scene/nucleusAssembly.js",
+      "bytes": 7587,
+      "sha256": "65bae9738356ab0fa8fc1c84804e3f2da3c7708f48056138d5481a0f4fe68650"
+    },
+    {
+      "path": "src/scene/parameciumDetails.js",
+      "bytes": 39126,
+      "sha256": "437ff758ae3d8fe77e2f18ada3202ad02acf4ab1721ba0096127c610689f89b7"
+    },
+    {
+      "path": "src/scene/parameciumMembranes.js",
+      "bytes": 7600,
+      "sha256": "5b0d34a7d51f72ac83bbf2ad47b11e769c0a98ff3dfd151dbb01a81ea705b0fc"
+    },
+    {
+      "path": "src/scene/peroxisomeDetails.js",
+      "bytes": 7642,
+      "sha256": "244634cb47fe742595493a5bb19b519e97aa539ae79031b5119e355e2a5b72ab"
+    },
+    {
+      "path": "src/scene/peroxisomeReference.js",
+      "bytes": 3823,
+      "sha256": "30c30399ace44fbb37ab6cc2add271aa2835e6feeac97d3b23ee2989c2850935"
+    },
+    {
+      "path": "src/scene/phageDetails.js",
+      "bytes": 15600,
+      "sha256": "953474889a7fb9477f6a950c6fbb78ce3494bc0c968df1b9efbfe25f8fba4ac7"
+    },
+    {
+      "path": "src/scene/picking.js",
+      "bytes": 2612,
+      "sha256": "78d3d710aca42b791b8638c114370bbb03357716ab5d0cc60a482efeb118f2e7"
+    },
+    {
+      "path": "src/scene/picking.worker.js",
+      "bytes": 998,
+      "sha256": "65b59bd18c423d40a05defa51079e54d624a6b4cdeb1ae2964e84b29b2c28900"
+    },
+    {
+      "path": "src/scene/pickingCandidates.js",
+      "bytes": 1447,
+      "sha256": "f58ee87316597dfb3b58c73bba81d2ec2c7dca4b9df3fe54fe80606f98e5d898"
+    },
+    {
+      "path": "src/scene/plantCompartmentDetails.js",
+      "bytes": 11802,
+      "sha256": "ea368cfa0a77f4fa3442e1c05f30e40f2a2666d5e42e639d20bff11927553e58"
+    },
+    {
+      "path": "src/scene/plantDetails.js",
+      "bytes": 5754,
+      "sha256": "b7f5ee506d3538e9a0702cd01f9a3332cd2625bce5809c3105968f927dac52c1"
+    },
+    {
+      "path": "src/scene/plantOrganelleDetails.js",
+      "bytes": 6102,
+      "sha256": "b8525d8635ad98ee856e77980c6e78679d514cf0776ada4bfd5363f006d29c54"
+    },
+    {
+      "path": "src/scene/plantStromaDetails.js",
+      "bytes": 5165,
+      "sha256": "9a5b645d4c62b218a1b2dae9d9b83899a83b547177226a45aae712abab35837a"
+    },
+    {
+      "path": "src/scene/plantWallDetails.js",
+      "bytes": 11339,
+      "sha256": "9dffc5023d4664b0d007d72a7c5d5f7fd64f249c3cbc803dc051036490150b2a"
+    },
+    {
+      "path": "src/scene/preparedModelCache.js",
+      "bytes": 1887,
+      "sha256": "8dfc656935b74515b2c5c0add6c4b2bd37c4e94d816e7d4ad5ff7e4e5e4bc439"
+    },
+    {
+      "path": "src/scene/presentation.js",
+      "bytes": 14486,
+      "sha256": "39f31875ea535b053782808b7beeaf453795ede288317a6ddc8dbd009ed02dbe"
+    },
+    {
+      "path": "src/scene/presentationAppearance.js",
+      "bytes": 1868,
+      "sha256": "5eb964818e637e2ca7dd31359df08e306d4c7834b7cacb85e8ec1a6291526410"
+    },
+    {
+      "path": "src/scene/ribosomeDetails.js",
+      "bytes": 12735,
+      "sha256": "f119263c80c006b29f548e98d92800088f933455c66d9bfe3c8bfbb574e42e3a"
+    },
+    {
+      "path": "src/scene/ribosomeReference.js",
+      "bytes": 2997,
+      "sha256": "7b98b9cd9ed24702f0ff4294b86f69fedaa763b31f7d23a7dc2680f955de3632"
+    },
+    {
+      "path": "src/scene/sceneCapture.js",
+      "bytes": 22528,
+      "sha256": "988c61a9e87808aceafd242b6f68dcf103da5476b937dfbc61e181637c4c3e2b"
+    },
+    {
+      "path": "src/scene/specimenGeometry.js",
+      "bytes": 8017,
+      "sha256": "9ed17e83dbc436a7ce5120f6fe3e9c0bf29a1cc219ee6a5a99c5a1529c483728"
+    },
+    {
+      "path": "src/scene/structuralGeometry.js",
+      "bytes": 2527,
+      "sha256": "8b5a68cc49369b9b75565eed3cc70aaa333329ff17e33b7485530af525958cd3"
+    },
+    {
+      "path": "src/scene/structureDomUpdates.js",
+      "bytes": 582,
+      "sha256": "096784a39e026b91c420eed4233a6949f9a825d67e6ba413b6927681124ec589"
+    },
+    {
+      "path": "src/scene/structureLabelModes.js",
+      "bytes": 520,
+      "sha256": "dc7db8130cfed3643b300a6990b5787ba3d2211a63e4905cf7d3c6ec82b4059a"
+    },
+    {
+      "path": "src/scene/tubulinReference.js",
+      "bytes": 1758,
+      "sha256": "afae8027cd36b36c95728c3ad09cfc43758d7ce10e85c1fafafafc206d2497c1"
+    },
+    {
+      "path": "src/scene/viewCapabilities.js",
+      "bytes": 357,
+      "sha256": "7fed01755d03027a09009b274173ca9a12f0792255612b7f99ff82b43001e7c5"
+    },
+    {
+      "path": "src/scene/viewFraming.js",
+      "bytes": 1109,
+      "sha256": "2ca2aa2bd565c1ef6f755ba92fe05c3bd4ff684466babb61cac060eff1f5a91f"
+    },
+    {
+      "path": "src/scene/yeastDetails.js",
+      "bytes": 12841,
+      "sha256": "4d223ffd347ea46a3842e82b78d913008c0fcb2d51e0dad52ab8abe911e7b996"
+    },
+    {
+      "path": "src/studio/Studio.jsx",
+      "bytes": 29850,
+      "sha256": "c403d93f61086a26458246bcbdb91dd3c6dbd3625df0e2fbaf81b6508da64dc5"
+    },
+    {
+      "path": "src/studio/composition.js",
+      "bytes": 5082,
+      "sha256": "b7e2ffbbb60d81332a0c8fa4da9b66af66d5a8fff165fda08c07aa64f17c24f3"
+    },
+    {
+      "path": "src/studio/config.js",
+      "bytes": 4008,
+      "sha256": "376ac17c93198cab96f7a2bad44d079b0007fa0eeabbb70817c55a7ba1e00fb9"
+    },
+    {
+      "path": "src/studio/previewPlayback.js",
+      "bytes": 2659,
+      "sha256": "22edfbedb0d52ac6b9100fbaae63a57b8fa647800e2825a22c1605d215c72a28"
+    },
+    {
+      "path": "src/studio/recordVideo.js",
+      "bytes": 4706,
+      "sha256": "3aa299f6bb752e9ea39eaff127f0126f6b31f7e96a3fcf8d856bbc0395fa5c07"
+    },
+    {
+      "path": "src/studio/studio.css",
+      "bytes": 12292,
+      "sha256": "3cc7942d7a0bbe049e5dcce57c439db786c5ebacb55d42a7c12dda7da5edaef6"
+    },
+    {
+      "path": "src/styles.css",
+      "bytes": 26672,
+      "sha256": "a45874a999c1f164b17853c08d524f96a8db455a7c5eb41fb8e24b7b7f8f08f1"
+    },
+    {
+      "path": "src/viewContext.js",
+      "bytes": 7437,
+      "sha256": "3abab13d5844bf5342a8cae60a173a45032297646f4fc19b30786df91a1c4f96"
+    }
+  ]
+}

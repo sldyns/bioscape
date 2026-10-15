@@ -34,3 +34,7 @@ After: paired DNA sugar/phosphate/base motifs; individual nucleotide motifs on t
 - Instance batches: chromatinAccess 4; tad 4; plantGenome 21; plantRdDM 23.
 
 These are geometry/behavior checks, not visual acceptance. No browser/screenshot review was performed here. The four models have no known local finite-state or resource failures, but the accepted-baseline visual verdict remains open for root review, particularly label density around AGO4/DRM2 and readability of membrane lumina at normal camera distance. Thylakoid lamellae and crista junctions are simplified communicating structures, not a meshed ultrastructural reconstruction.
+
+## 2026-10-15 assembly refinement
+
+Native baseline review identified generic remodeler/RdDM bead-rings, disconnected loader helices and flat organelle cuts. Connected beveled fold envelopes now form ISWI and RdDM clefts; cohesin has stronger coiled-coils and a connected loader scaffold/head bridge; double envelopes expose membrane cut thickness and granal sacs show dorsal faces/lumina. Science, controls and absolute motion remain unchanged. Added `assemblyRefinement.test.mjs`; original focused science, label, upstream and resource regressions pass. Full evidence and resource delta: `docs/qa/process-refinement-2026-10-15/agents/refine_chromatin_regulation.md`. Rendered acceptance awaits root captures.

@@ -3,6 +3,13 @@ import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import definition from "../src/processes/secretionProcess.js";
 import baselineDefinition from "./fixtures/secretion-performance-ae697be/secretionProcess.mjs";
+import {
+  secretionRefinementDelta,
+  secretionStructuralNodes,
+  secretionResourceIdentity,
+  assertSecretionResourceIdentity,
+  secretionCandidateSnapshot,
+} from "./helpers/secretion-refinement-20261015-delta.mjs";
 
 // The portable fixture is the complete deployed ae697be implementation, with
 // its original helper. Compare every retained buffer, including hidden meshes;
@@ -14,7 +21,10 @@ const baselineNodes = [],
   candidateNodes = [];
 baseline.group.traverse((node) => baselineNodes.push(node));
 candidate.group.traverse((node) => candidateNodes.push(node));
-assert.equal(candidateNodes.length, baselineNodes.length);
+const delta = secretionRefinementDelta(candidate, baseline);
+const candidateResources = secretionResourceIdentity(candidate);
+const candidateSnapshots = new Map();
+let reverseStates = 0;
 const geometryPairs = new Map(),
   materialPairs = new Map();
 let comparedBytes = 0,
@@ -85,12 +95,14 @@ function materialState(material) {
   delete state.uuid;
   return state;
 }
-function nodeState(node, nodes) {
+function nodeState(node, paths, { replacedName, omitAdded = false } = {}) {
   return [
-    node.name,
+    replacedName ?? node.name,
     node.type,
-    nodes.indexOf(node.parent),
-    node.children.map((child) => nodes.indexOf(child)),
+    paths.get(node.parent) ?? null,
+    node.children
+      .filter((child) => !omitAdded || !delta.additions.has(paths.get(child)))
+      .map((child) => paths.get(child)),
     node.visible,
     node.castShadow,
     node.receiveShadow,
@@ -107,10 +119,11 @@ function nodeState(node, nodes) {
     bounds(node),
   ];
 }
-for (let i = 0; i < baselineNodes.length; i++) {
-  const a = candidateNodes[i],
-    b = baselineNodes[i];
-  if (b.geometry) {
+// Exhaustive reviewed delta: 334 retained nodes; exactly 16 original cut-edge
+// tubes change only name + prescribed tube geometry; exactly 32 new detail
+// nodes. Ancestor/type/name/same-kind occurrence selectors survive insertions.
+for (const { actual: a, expected: b, replaced } of delta.pairs) {
+  if (b.geometry && !replaced) {
     if (geometryPairs.has(b.geometry))
       assert.equal(a.geometry, geometryPairs.get(b.geometry));
     geometryPairs.set(b.geometry, a.geometry);
@@ -121,38 +134,104 @@ for (let i = 0; i < baselineNodes.length; i++) {
     materialPairs.set(b.material, a.material);
   }
 }
-function compare(progress) {
+function compare(progress, reverse = false) {
   baseline.update(progress);
   candidate.update(progress);
-  const context = `progress ${String(progress)}`;
-  const currentNodes = [];
-  candidate.group.traverse((node) => currentNodes.push(node));
-  assert.equal(currentNodes.length, candidateNodes.length, context);
-  for (let i = 0; i < candidateNodes.length; i++) {
-    const a = candidateNodes[i],
-      b = baselineNodes[i];
-    assert.equal(currentNodes[i], a, `${context} node identity ${i}`);
-    equalValue(
-      nodeState(a, candidateNodes),
-      nodeState(b, baselineNodes),
-      `${context} node ${i} ${a.name}`,
+  baseline.group.updateMatrixWorld(true);
+  candidate.group.updateMatrixWorld(true);
+  const context = `progress ${String(progress)}${reverse ? " reverse replay" : ""}`;
+  const currentPaths = secretionStructuralNodes(candidate.group);
+  assert.deepEqual(
+    [...currentPaths.keys()],
+    [...delta.current.keys()],
+    `${context} structural paths`,
+  );
+  for (const [path, node] of currentPaths)
+    assert.equal(
+      node,
+      delta.current.get(path),
+      `${context} node identity ${path}`,
     );
-    if (b.geometry) assert.equal(a.geometry, geometryPairs.get(b.geometry));
+  assertSecretionResourceIdentity(
+    secretionResourceIdentity(candidate),
+    candidateResources,
+    context,
+  );
+  for (const { path, actual: a, expected: b, replaced } of delta.pairs) {
+    equalValue(
+      nodeState(a, delta.canonical, {
+        replacedName: replaced ? b.name : undefined,
+        omitAdded: true,
+      }),
+      nodeState(b, delta.referencePaths),
+      `${context} original node ${path}`,
+    );
+    if (b.geometry && !replaced)
+      assert.equal(a.geometry, geometryPairs.get(b.geometry));
     if (b.material) assert.equal(a.material, materialPairs.get(b.material));
     equalAttribute(
       a.instanceMatrix,
       b.instanceMatrix,
-      `${context} instances ${i}`,
+      `${context} instances ${path}`,
     );
-    equalAttribute(a.instanceColor, b.instanceColor, `${context} colors ${i}`);
+    equalAttribute(
+      a.instanceColor,
+      b.instanceColor,
+      `${context} colors ${path}`,
+    );
   }
   for (const [expected, actual] of geometryPairs)
     compareGeometry(actual, expected, context);
   for (const [expected, actual] of materialPairs)
     equalValue(materialState(actual), materialState(expected), context);
+  for (const [path, detail] of delta.expectedDetails) {
+    const actual = currentPaths.get(path);
+    compareGeometry(
+      actual.geometry,
+      detail.geometry,
+      `${context} prescribed ${detail.kind} ${path}`,
+    );
+    if (delta.additions.has(path)) {
+      // New details inherit the exact old cord's local/world transforms and
+      // drawing state; their only node-state differences are their own names.
+      equalValue(
+        nodeState(actual, delta.canonical, {
+          replacedName: detail.baselineNode.name,
+        }),
+        nodeState(detail.baselineNode, delta.referencePaths),
+        `${context} added detail state ${path}`,
+      );
+      const expectedMaterial = materialState(detail.baselineNode.material);
+      if (detail.kind === "ribbon") {
+        expectedMaterial.color = 0xb9b3a0;
+        expectedMaterial.userData = {
+          ...expectedMaterial.userData,
+          tintWithCisterna: false,
+        };
+      }
+      equalValue(
+        materialState(actual.material),
+        expectedMaterial,
+        `${context} added detail material ${path}`,
+      );
+    }
+  }
   equalValue(candidate.labels, baseline.labels, `${context} labels`);
   equalValue(candidate.camera, baseline.camera, `${context} camera`);
-  comparedStates++;
+  const key = String(progress),
+    snapshot = secretionCandidateSnapshot(candidate);
+  if (candidateSnapshots.has(key))
+    assert.deepEqual(
+      snapshot,
+      candidateSnapshots.get(key),
+      `${context} complete candidate repeat`,
+    );
+  else {
+    assert(!reverse, "reverse state must already have a forward reference");
+    candidateSnapshots.set(key, snapshot);
+  }
+  if (reverse) reverseStates++;
+  else comparedStates++;
 }
 
 const boundaries = [
@@ -179,7 +258,12 @@ const sequence = [
   -1,
   2,
 ];
-for (const progress of sequence) compare(progress);
+for (const progress of sequence) {
+  compare(progress);
+  candidate.update(0.97831);
+  candidate.update(0.03197);
+  compare(progress, true);
+}
 
 const named = (name) => candidate.group.getObjectByName(name);
 const er = named("continuous-ER-carrier-neck").geometry;
@@ -239,10 +323,43 @@ assert.equal(
   "0c3ca513491442f08cf2963637e1696354e47d36f3c5b040d26684296bedb1dc",
   "Frozen fixture is the exact ae697be source",
 );
+const baselineHelperSha256 = createHash("sha256")
+  .update(
+    await readFile(
+      new URL(
+        "./fixtures/secretion-performance-ae697be/secretoryDetails.js",
+        import.meta.url,
+      ),
+    ),
+  )
+  .digest("hex");
+assert.equal(
+  baselineHelperSha256,
+  "7229d640920a7d9108e3f7e1132c495c6dd6c1dd9fe47ae44bce96cbca5348e4",
+  "Frozen helper remains exact ae697be source",
+);
+assertSecretionResourceIdentity(
+  secretionResourceIdentity(candidate),
+  candidateResources,
+  "after cache invalidation probes",
+);
 const report = {
   baseline: "ae697be",
   baselineSha256,
-  result: "all states bitwise equal",
+  baselineHelperSha256,
+  result:
+    "retained original state bitwise equal; exact reviewed cisternal detail delta",
+  originalNodes: baselineNodes.length,
+  byteExactRetainedNodes: 334,
+  prescribedOriginalReplacements: 16,
+  classifiedAdditionalNodes: 32,
+  reverseStates,
+  candidateResourceCounts: {
+    nodes: candidateResources.nodes.length,
+    geometries: candidateResources.geometries.length,
+    materials: candidateResources.materials.length,
+    buffers: candidateResources.buffers.length,
+  },
   comparedStates,
   nodes: candidateNodes.length,
   uniqueGeometries: geometryPairs.size,
@@ -252,7 +369,11 @@ const report = {
   coverage: [
     "all indexed vertex/normal/uv buffers, index buffers, instance matrices",
     "hidden and visible nodes, geometry/instance bounds, material serialization",
-    "hierarchy, object identity, transforms, labels, camera, userData",
+    "structural ancestor/type/name/occurrence pairing and exhaustive 334 retained +16 replaced +32 added classification",
+    "all original transforms, world matrices, node bounds, material states, labels, camera and userData",
+    "all changed/new geometry exact against frozen baseline control-point derivation",
+    "complete candidate snapshot repeats and reverse replay at every original pose",
+    "candidate object/geometry/material/attribute/typed-array/buffer identity",
     "dense playback, boundary epsilon, reverse/random seeks, non-finite progress",
     "dependency cache invalidation and unchanged-state upload suppression",
   ],
@@ -266,5 +387,5 @@ if (reportFlag !== -1) {
   );
 }
 console.log(
-  `Secretion equivalence passed: ${comparedStates} states; ${candidateNodes.length} nodes; ${geometryPairs.size} geometries; all buffer bytes, transforms, materials, bounds and labels match ae697be.`,
+  `Secretion reviewed-delta equivalence passed: ${comparedStates} original states + ${reverseStates} reverse replays; 334 retained nodes exact, 16 prescribed edge replacements, 32 additions; all 382 candidate nodes checked.`,
 );

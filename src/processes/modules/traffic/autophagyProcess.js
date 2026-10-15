@@ -166,8 +166,14 @@ function create() {
     rim.mesh.visible = !closed;
     rim.mesh.position.set(center, 0, 0);
     rim.set((t) => {
-      const r = 1.24 + 0.18 * t;
-      return [-r * Math.cos(thetaMax), r * Math.sin(thetaMax)];
+      // A semicircular turn joins the two cisternal faces tangentially.
+      // Its endpoints retain the exact inner/outer membrane attachment sites.
+      const r = 1.33 - 0.09 * Math.cos(Math.PI * t),
+        turn = 0.09 * Math.sin(thetaMax) * Math.sin(Math.PI * t);
+      return [
+        -r * Math.cos(thetaMax) + turn * Math.sin(thetaMax),
+        r * Math.sin(thetaMax) + turn * Math.cos(thetaMax),
+      ];
     });
     lysosome.mesh.visible = !fused;
     lysosome.mesh.position.set(0, 0, 0);

@@ -7,15 +7,22 @@ import {
 } from "./helpers/process-cache-snapshot.mjs";
 import { createStomataScientificCacheComparison } from "./helpers/stomata-scientific-cache-delta.mjs";
 
-const fixture = JSON.parse(
-  await fs.readFile(
-    new URL(
-      "./fixtures/process-geometry-cache-b-ae697be.json",
-      import.meta.url,
-    ),
-    "utf8",
-  ),
+import {
+  createRefinementComparison,
+  createCurrentStateGuard,
+} from "./helpers/process-refinement-20261015-cache.mjs";
+await import("../src/processes/modules/membrane/cutaway-thickness.test.mjs");
+const covered = new Set();
+const adapterCounts = {};
+const fixtureBytes = await fs.readFile(
+  new URL("./fixtures/process-geometry-cache-b-ae697be.json", import.meta.url),
 );
+assert.equal(
+  createHash("sha256").update(fixtureBytes).digest("hex"),
+  "387cb30abae96bd746cab6d61aa28d1693697b0eca3d9ec7dff4a40a18b633cd",
+  "retain immutable original B pose fixture",
+);
+const fixture = JSON.parse(fixtureBytes);
 assert.equal(fixture.sourceCommit, "ae697be");
 const referenceRoot = new URL(
   "./fixtures/process-cache-b-reference-ae697be/",
@@ -43,10 +50,20 @@ for (const row of fixture.rows) {
     .default;
   const model = definition.create({ rootId: row.rootId });
   const reference = referenceDefinition.create({ rootId: row.rootId });
+  const constructedAgain = definition.create({ rootId: row.rootId });
+  assert.deepEqual(
+    processCacheSnapshot(model),
+    processCacheSnapshot(constructedAgain),
+    `${row.id}: deterministic constructor`,
+  );
+  assert.deepEqual(model.camera, constructedAgain.camera);
+  disposeCacheModel(constructedAgain);
   const scientificComparison =
     row.id === "stomata"
       ? createStomataScientificCacheComparison(model, reference)
-      : null;
+      : createRefinementComparison(row.id, model, reference);
+  if (scientificComparison) covered.add(row.id);
+  const guard = createCurrentStateGuard(model);
   const scientificStates = new Map();
   const parameters = {},
     referenceParameters = {};
@@ -78,16 +95,22 @@ for (const row of fixture.rows) {
             processCacheSnapshot(reference),
             context,
           );
+        guard.pose(pose.progress, parameters, context);
+        if (scientificComparison)
+          adapterCounts[row.id] = (adapterCounts[row.id] ?? 0) + 1;
         poses++;
       }
     }
   } finally {
-    scientificComparison?.dispose();
+    scientificComparison?.dispose?.();
     disposeCacheModel(model);
     disposeCacheModel(reference);
   }
 }
+assert.deepEqual([...covered].sort(), ["osmoticBalance", "stomata"]);
 assert.equal(poses, 756, "retain every original B-group comparison");
 console.log(
-  `PASS: ${poses} B-group comparisons retain immutable ae697be source and every pose. All fields remain exact except the documented two stomata nuclear translations and two vacuolar z/normal/bounds repairs; these receive full-mesh compartment assertions, repeated poses, parameter changes and reverse seeks.`,
+  `PASS: ${poses} B-group comparisons retain immutable ae697be source and every pose. Unchanged models remain fully exact; stomata retains its narrow compartment repair adapter and osmoticBalance retains every old subtree plus an asserted cut face. All current poses pass whole-scene repeated/reverse seeks and exact resource identities.`,
 );
+
+console.log(JSON.stringify({ adapterCounts }));

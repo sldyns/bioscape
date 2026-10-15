@@ -28,8 +28,8 @@
     },
     "width": 640,
     "height": 400,
-    "duration": 6.96775,
-    "bytes": 372161,
+    "duration": 6.965899,
+    "bytes": 378848,
     "mimeType": "video/webm;codecs=vp9",
     "progress": [
       0,
@@ -52,9 +52,12 @@
       "zoom": 1.0000000000000002
     },
     "path": "/home/processes/mitosis.webm",
-    "sha256": "6a14c8dfa79e383b4bdb15c51708d86d6a01597a2cca9df5f5a3712b9c6c4c76",
+    "sha256": "5246450c33fa100d7757c1d3561799fc8435b021ab1701cdbe54644ce2da667f",
     "background": "#f5f5f7",
-    "labels": false
+    "labels": false,
+    "sourceRevisionManifest": "docs/qa/process-refinement-2026-10-15/candidate-source-before-bounds.json",
+    "decoderVerification": "docs/qa/homepage/process-motion-verification-20261015.json",
+    "finalSourceEquivalence": "docs/qa/homepage/process-motion-verification-20261015.json"
   },
   {
     "id": "photosynthesis",
@@ -63,9 +66,9 @@
     "path": "/home/processes/photosynthesis.webm",
     "width": 640,
     "height": 400,
-    "duration": 6.958664,
-    "bytes": 299124,
-    "sha256": "5132910e45be5ded864d277b5df1a95fdd374f32ef86eec55ab96e098c4236be",
+    "duration": 6.963194,
+    "bytes": 290897,
+    "sha256": "b6b2f13b50ef79798621a7e14b71cd4797e2d6a679f52bbda9631dbe49707e21",
     "mimeType": "video/webm;codecs=vp9",
     "progress": [
       0,
@@ -75,6 +78,22 @@
     "fpsRequested": 24,
     "source": "src/processes/ProcessScene.jsx captureFrame",
     "background": "#f5f5f7",
-    "labels": false
+    "labels": false,
+    "view": {
+      "direction": [
+        0.04988537799322565,
+        0.1870701674745962,
+        0.9810791005334378
+      ],
+      "target": [
+        0,
+        0.2,
+        0
+      ],
+      "zoom": 0.9999999999999998
+    },
+    "sourceRevisionManifest": "docs/qa/process-refinement-2026-10-15/candidate-source-before-bounds.json",
+    "decoderVerification": "docs/qa/homepage/process-motion-verification-20261015.json",
+    "finalSourceEquivalence": "Photosynthesis source closure unchanged by final division-bounds optimization."
   }
 ]

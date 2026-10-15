@@ -198,6 +198,23 @@ function create() {
   spindleII.forEach((mesh, i) => {
     mesh.name = `sporulation-spindle-II-${i}`;
   });
+  // Parallel fibers resolve the intranuclear spindle as a bundle. Their ends
+  // remain within the same pole bodies, following the original spindle pose.
+  const fiberPose = new THREE.Object3D();
+  for (const spindle of [spindleI, ...spindleII]) {
+    const fibers = new THREE.InstancedMesh(k.cylinder, gold, 6);
+    fibers.name = "meiotic-spindle-parallel-fibers";
+    spindle.add(fibers);
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2;
+      fiberPose.position.set(1.65 * Math.cos(angle), 0, 1.65 * Math.sin(angle));
+      fiberPose.scale.set(0.32, 1, 0.32);
+      fiberPose.updateMatrix();
+      fibers.setMatrixAt(i, fiberPose.matrix);
+    }
+    fibers.computeBoundingBox();
+    fibers.computeBoundingSphere();
+  }
   const poles = centers.map((c) => k.ball(c, 0.08, gold));
   poles.forEach((mesh, i) => {
     mesh.name = `sporulation-spb-${i}`;
@@ -353,14 +370,26 @@ function create() {
       membraneInner[i].geometry.computeBoundingBox();
       membraneInner[i].geometry.computeBoundingSphere();
       membraneInner[i].visible = q > 0.59;
+      // After enclosure, expose the same front viewing section as the spore
+      // wall. Keep the full closed geometry for topology/state inspection;
+      // rendering the closed front cap would veil every internal structure.
+      const displayedIndices = q >= 0.84 ? 14 * 36 * 6 : 24 * 36 * 6;
+      membranes[i].mesh.geometry.setDrawRange(0, displayedIndices);
+      membraneInner[i].geometry.setDrawRange(0, displayedIndices);
       const cupAngle = 0.22 * nucleation + (Math.PI - 0.22) * closure,
         rimAttachment = attached * Math.exp(-Math.pow(cupAngle / 0.48, 2));
-      closureRims[i].visible = q > 0.59 && q < 0.84;
-      closureRims[i].scale.setScalar(Math.max(0.001, Math.sin(cupAngle)));
+      const viewingCut = q >= 0.84,
+        displayedAngle = viewingCut ? (14 / 24) * cupAngle : cupAngle,
+        rimRadius = viewingCut ? 0.947 : 1;
+      closureRims[i].visible = q > 0.59;
+      closureRims[i].userData.viewingCut = viewingCut;
+      closureRims[i].scale.setScalar(
+        Math.max(0.001, rimRadius * Math.sin(displayedAngle)),
+      );
       closureRims[i].position.set(
         centers[i][0] + membraneAnchors[i].x * rimAttachment,
         centers[i][1] + membraneAnchors[i].y * rimAttachment,
-        -0.64 * Math.cos(cupAngle) +
+        -0.64 * rimRadius * Math.cos(displayedAngle) +
           (membraneAnchors[i].z + 0.64) * rimAttachment,
       );
       walls[i][0].visible = q > 0.84;
@@ -508,8 +537,8 @@ export default {
         "Prospore membranes enclose nuclei and cytoplasm",
       ),
       description: B(
-        "减数分裂 II 期间，在改建的纺锤体极体附近形成前孢子膜。膜杯生长并最终闭合，各包围一个单倍体核和一部分胞质；模型用相邻的内外膜层与闭合前缘显示包裹过程，膜厚度经过夸张。",
-        "During meiosis II, prospore membranes form near remodeled spindle pole bodies. Membrane cups expand and close around individual haploid nuclei and some cytoplasm. Adjacent inner and outer membrane surfaces and a closing leading edge show enclosure, with exaggerated membrane thickness.",
+        "减数分裂 II 期间，在改建的纺锤体极体附近形成前孢子膜。膜杯生长并最终闭合，各包围一个单倍体核和一部分胞质；模型用相邻的内外膜层与闭合前缘显示包裹过程，膜厚度经过夸张；闭合后展示的开口仅为观察剖面，不代表膜仍未闭合。",
+        "During meiosis II, prospore membranes form near remodeled spindle pole bodies. Membrane cups expand and close around individual haploid nuclei and some cytoplasm. Adjacent inner and outer membrane surfaces and a closing leading edge show enclosure, with exaggerated membrane thickness. After closure, the displayed opening is a viewing cutaway, not an unclosed membrane.",
       ),
     },
     {

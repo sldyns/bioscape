@@ -281,7 +281,10 @@ function create() {
         0.25,
       );
       nad[i].visible = p > 0.42;
-      const close = Math.sin(Math.PI * ease(p, 0.54, 0.74));
+      // Separate closure/reopening for the two ATP-yielding reaction windows.
+      const close =
+        Math.sin(Math.PI * ease(p, 0.54, 0.74)) +
+        Math.sin(Math.PI * ease(p, 0.76, 0.95));
       enzymeLobes[i].left.position.x = -0.58 + 0.12 * close;
       enzymeLobes[i].right.position.x = 0.58 - 0.12 * close;
     }

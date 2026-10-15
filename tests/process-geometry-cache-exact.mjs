@@ -6,6 +6,18 @@ import {
   disposeCacheModel,
 } from "./helpers/process-cache-snapshot.mjs";
 
+import {
+  createRefinementComparison,
+  createCurrentStateGuard,
+} from "./helpers/process-refinement-20261015-cache.mjs";
+// Geometry-derived mechanism/attachment assertions remain mandatory alongside
+// exact retained-subtree comparisons; these are the local owners' science gates.
+await import("../src/processes/modules/bacterialCore/science.test.mjs");
+await import("../src/processes/modules/chromatin/science.test.mjs");
+await import("../src/processes/modules/chromatin/assemblyRefinement.test.mjs");
+await import("../src/processes/modules/genome/science.test.mjs");
+const covered = new Set();
+const adapterCounts = {};
 const referenceDirectory = new URL(
   "./fixtures/process-cache-a-reference-ae697be/",
   import.meta.url,
@@ -68,6 +80,17 @@ for (const row of fixture.rows) {
   ).default;
   const model = definition.create({ rootId: row.rootId });
   const reference = referenceDefinition.create({ rootId: row.rootId });
+  const constructedAgain = definition.create({ rootId: row.rootId });
+  assert.deepEqual(
+    processCacheSnapshot(model),
+    processCacheSnapshot(constructedAgain),
+    `${row.id}: deterministic constructor`,
+  );
+  assert.deepEqual(model.camera, constructedAgain.camera);
+  disposeCacheModel(constructedAgain);
+  const comparison = createRefinementComparison(row.id, model, reference);
+  const guard = createCurrentStateGuard(model);
+  if (comparison) covered.add(row.id);
   const parameters = {};
   const referenceParameters = {};
   try {
@@ -78,11 +101,16 @@ for (const row of fixture.rows) {
       for (let repeat = 0; repeat < 2; repeat++) {
         model.update(pose.progress, parameters);
         reference.update(pose.progress, referenceParameters);
-        assert.deepEqual(
-          processCacheSnapshot(model),
-          processCacheSnapshot(reference),
-          `${row.id}/${row.rootId} p=${pose.progress} ${JSON.stringify(parameters)} repeat=${repeat}`,
-        );
+        if (comparison) comparison.assert(`${row.id} p=${pose.progress}`);
+        else
+          assert.deepEqual(
+            processCacheSnapshot(model),
+            processCacheSnapshot(reference),
+            `${row.id}/${row.rootId} p=${pose.progress} ${JSON.stringify(parameters)} repeat=${repeat}`,
+          );
+        guard.pose(pose.progress, parameters, `${row.id} p=${pose.progress}`);
+        if (comparison)
+          adapterCounts[row.id] = (adapterCounts[row.id] ?? 0) + 1;
         poses++;
       }
     }
@@ -92,6 +120,12 @@ for (const row of fixture.rows) {
   }
 }
 assert.equal(poses, 1724);
-console.log(
-  `PASS: ${poses} full process snapshots match immutable ae697be in the same runtime, including repeated poses and condition changes.`,
+assert.deepEqual(
+  [...covered].sort(),
+  ["bacterialDivision", "chromatinAccess", "dnaRepair", "tad"].sort(),
 );
+console.log(
+  `PASS: ${poses} comparisons retain immutable ae697be unchanged subtrees and scientific art adapters; all current models pass repeated/reverse seeks and exact resource identities.`,
+);
+
+console.log(JSON.stringify({ adapterCounts }));

@@ -327,14 +327,16 @@ export default {
           fy += cleave * 1.15;
           fx += cleave * 0.25;
         } else {
+          // A continuous serpentine compact fold: alternating extended runs
+          // joined by rounded hairpins; this is a trace, not an atomic structure.
           const q = (i - 9) / (n - 9),
-            a = q * Math.PI * 8,
-            rad = 0.34 + 0.16 * Math.sin(q * Math.PI * 3);
-          const tx = 2.65 + 0.45 * Math.cos(a),
+            a = q * Math.PI * 6;
+          const tx = 2.65 + 0.52 * Math.cos(a),
             ty =
-              0.45 * Math.sin(a) * Math.sin(q * Math.PI) +
-              0.25 * Math.cos(q * 7),
-            tz = rad * Math.sin(a * 0.75);
+              0.35 * Math.sin(q * Math.PI * 4) +
+              0.15 * Math.cos(q * Math.PI * 2),
+            tz = 0.36 * Math.sin(q * Math.PI * 2) + 0.12 * Math.cos(a);
+
           fx += (tx - fx) * fold;
           fy += (ty - fy) * fold;
           fz += (tz - fz) * fold;

@@ -190,6 +190,26 @@ function create({ rootId = "cell" } = {}) {
     lidMat,
     hsp,
   );
+  k.tube(
+    [
+      [-0.58, -0.55, -0.22],
+      [-0.62, -0.4, -0.3],
+      [-0.51, -0.39, -0.3],
+    ],
+    0.07,
+    lidMat,
+    hsp,
+  ).name = "Hsp70-lid-hinge";
+  k.tube(
+    [
+      [-0.55, -0.87, -0.24],
+      [-0.67, -1.04, -0.28],
+      [-0.63, -1.25, -0.2],
+    ],
+    0.11,
+    domainMat,
+    hsp,
+  ).name = "Hsp70-interdomain-linker";
   const lid = new THREE.Group();
   lid.name = "Hsp70-alpha-lid";
   hsp.add(lid);

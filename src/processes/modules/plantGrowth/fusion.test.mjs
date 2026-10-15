@@ -346,10 +346,36 @@ for (const extensibility of ["yielding", "restrained"])
       )[0].children[0],
     );
     const fiber = named(w.group, "Deposited cellulose microfibril")[13];
-    anchorOnVertex(
-      w.labels[4],
-      fiber,
-      Math.floor(fiber.geometry.attributes.position.count / 2),
+    const geometry = fiber.geometry;
+    assert(fiber.visible && visible(fiber), "deposited cellulose is visible");
+    assert(geometry.index, "cellulose reveal uses indexed tube geometry");
+    const radialSegments = geometry.parameters.radialSegments;
+    const perSegmentIndices = radialSegments * 6;
+    const drawStart = geometry.drawRange.start;
+    const drawEnd = Math.min(
+      geometry.index.count,
+      drawStart + geometry.drawRange.count,
+    );
+    assert.equal(drawStart, 0, "deposition reveals its anchored origin first");
+    assert.equal(
+      (drawEnd - drawStart) % perSegmentIndices,
+      0,
+      "only complete tube segments are revealed",
+    );
+    const revealedSegments = (drawEnd - drawStart) / perSegmentIndices;
+    assert(revealedSegments > 0, "active cellulose label has visible geometry");
+    const vertex = Math.floor(revealedSegments / 2) * (radialSegments + 1);
+    let referencedByVisibleTriangle = false;
+    for (let i = drawStart; i < drawEnd; i++)
+      if (geometry.index.getX(i) === vertex) referencedByVisibleTriangle = true;
+    assert(
+      referencedByVisibleTriangle,
+      "label midpoint belongs to rendered triangles",
+    );
+    anchorOnVertex(w.labels[4], fiber, vertex);
+    assert(
+      w.labels[4].active,
+      "cellulose anchor remains active at existing test poses",
     );
   }
 console.log(

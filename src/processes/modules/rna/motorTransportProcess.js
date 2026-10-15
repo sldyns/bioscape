@@ -179,18 +179,30 @@ export default {
     cargo.name = "motor-cargo";
     // A vesicle cutaway has an opaque bilayer rim and a visible lumen.
     const vesicle = k.mesh(
-      new THREE.SphereGeometry(0.64, 40, 28, 0.65, Math.PI * 2 - 1.3),
+      new THREE.SphereGeometry(
+        0.64,
+        40,
+        28,
+        Math.PI / 2 + 0.65,
+        Math.PI * 2 - 1.3,
+      ),
       mem,
       [0, 2, 0],
       cargo,
     );
     const lining = k.mesh(
-      new THREE.SphereGeometry(0.595, 40, 28, 0.65, Math.PI * 2 - 1.3),
+      new THREE.SphereGeometry(
+        0.595,
+        40,
+        28,
+        Math.PI / 2 + 0.65,
+        Math.PI * 2 - 1.3,
+      ),
       k.material("#d4dfcd", { side: THREE.DoubleSide }),
       [0, 2, 0],
       cargo,
     );
-    for (const a of [0.65, Math.PI * 2 - 0.65]) {
+    for (const a of [Math.PI / 2 + 0.65, Math.PI * 2.5 - 0.65]) {
       const pts = [];
       for (let i = 0; i <= 36; i++) {
         const t = (i / 36) * Math.PI;
@@ -247,10 +259,15 @@ export default {
       );
       k.segment([-0.12, -0.1, 0], [0.13, -0.1, 0], 0.04, violet, head);
     }
-    const kl = [
-      k.segment([0, 0, 0], [0, 1, 0], 0.06, violet, kin),
-      k.segment([0, 0, 0], [0, 1, 0], 0.06, pale, kin),
-    ];
+    const kl = [violet, pale].map((mat, head) =>
+      Array.from({ length: 8 }, (_, i) => {
+        const mesh = k.segment([0, 0, 0], [0, 1, 0], 0.045, mat, kin);
+        mesh.name = `kinesin-neck-${head}-${i}`;
+        return mesh;
+      }),
+    );
+    const neckStart = [0, 0, 0],
+      neckEnd = [0, 0, 0];
     for (let strand = 0; strand < 2; strand++) {
       const points = Array.from({ length: 81 }, (_, i) => {
         const t = i / 80,
@@ -447,7 +464,17 @@ export default {
         const offset = sign * (foot[i] - mean),
           lift = i === movingHead ? Math.sin(fraction * Math.PI) * 0.28 : 0;
         kh[i].position.set(offset, -0.36 + lift, i ? 0.1 : -0.1);
-        link(kl[i], [offset, -0.3 + lift, i ? 0.1 : -0.1], [0, 0.42, 0], 0.06);
+        for (let j = 0; j < 8; j++) {
+          for (let end = 0; end < 2; end++) {
+            const point = end ? neckEnd : neckStart,
+              t = (j + end) / 8;
+            point[0] =
+              offset * (1 - t) + Math.sin(Math.PI * t) * (i ? 0.12 : -0.12);
+            point[1] = (-0.3 + lift) * (1 - t) + 0.42 * t;
+            point[2] = (i ? 0.1 : -0.1) * (1 - t) + Math.sin(Math.PI * t) * 0.1;
+          }
+          link(kl[i][j], neckStart, neckEnd, 0.045);
+        }
         const dx = offset + sign * 0.23;
         dh[i].position.set(dx, 0.25 + lift, i ? 0.13 : -0.13);
         db[i].position.set(offset, -0.42 + lift, i ? 0.13 : -0.13);

@@ -1,21 +1,21 @@
 import { THREE, sceneKit, clamp, ease } from "../../kit.js";
 import { articulatedChain } from "./mechanics.js";
 import { ribosomeAssembly } from "./ribosomeAssembly.js";
+import { helix, sheet } from "./molecularDetails.js";
 import { labelAnchors } from "./labelAnchors.js";
 
 function movableBond(k, name, material, parent, radius = 0.045) {
   const mesh = k.segment([0, 0, 0], [0, 1, 0], radius, material, parent);
   mesh.name = name;
+  const d = new THREE.Vector3(),
+    up = new THREE.Vector3(0, 1, 0);
   return {
     mesh,
     set(a, b) {
-      const d = new THREE.Vector3().subVectors(b, a);
+      d.subVectors(b, a);
       mesh.position.copy(a).add(b).multiplyScalar(0.5);
       mesh.scale.set(radius, Math.max(1e-6, d.length()), radius);
-      mesh.quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0),
-        d.normalize(),
-      );
+      mesh.quaternion.setFromUnitVectors(up, d.normalize());
     },
   };
 }
@@ -37,24 +37,50 @@ function tRNA(k, parent, material, name) {
   tip.name = `${name}-3prime-CCA`;
   const anticodon = k.ball([0, 0, 0], [0.19, 0.07, 0.075], material, body);
   anticodon.name = `${name}-anticodon`;
+  const path = Array.from({ length: 12 }, () => new THREE.Vector3());
+  const curve = new THREE.CatmullRomCurve3(path, false, "centripetal");
+  // Paired acceptor/anticodon stems are schematic crosspieces of the same RNA trace.
+  const stemEnds = [
+    [0, 1, 10, 9],
+    [1, 2, 9, 6],
+    [2, 3, 6, 5],
+  ];
+  const stemPairs = stemEnds.flatMap((indices, stem) =>
+    Array.from({ length: 4 }, (_, i) => ({
+      indices,
+      t: (i + 0.5) / 4,
+      bond: movableBond(
+        k,
+        `${name}-paired-stem-${stem}-${i}`,
+        material,
+        body,
+        0.023,
+      ),
+    })),
+  );
+  const pairA = new THREE.Vector3(),
+    pairB = new THREE.Vector3();
   function set(x, end, away = 0) {
     const y = -1.03 - away * 0.4,
       elbowX = x - 0.38;
-    const path = [
-      [end.x - 0.16, end.y - 0.04, end.z - 0.035],
-      [elbowX - 0.1, 0.42 - away * 0.3, -0.04],
-      [x - 0.15, -0.39 - away * 0.4, 0.01],
-      [x - 0.17, y + 0.09, 0.07],
-      [x, y, 0.09],
-      [x + 0.17, y + 0.09, 0.07],
-      [x + 0.14, -0.37 - away * 0.4, 0.04],
-      [elbowX + 0.24, 0.39 - away * 0.3, 0.1],
-      [elbowX + 0.3, 0.68 - away * 0.3, 0.2],
-      [elbowX + 0.07, 0.75 - away * 0.3, 0.15],
-      [end.x + 0.08, end.y - 0.1, end.z + 0.04],
-      end.toArray(),
-    ].map((p) => new THREE.Vector3(...p));
-    const curve = new THREE.CatmullRomCurve3(path, false, "centripetal");
+    path[0].set(end.x - 0.16, end.y - 0.04, end.z - 0.035);
+    path[1].set(elbowX - 0.1, 0.42 - away * 0.3, -0.04);
+    path[2].set(x - 0.15, -0.39 - away * 0.4, 0.01);
+    path[3].set(x - 0.17, y + 0.09, 0.07);
+    path[4].set(x, y, 0.09);
+    path[5].set(x + 0.17, y + 0.09, 0.07);
+    path[6].set(x + 0.14, -0.37 - away * 0.4, 0.04);
+    path[7].set(elbowX + 0.24, 0.39 - away * 0.3, 0.1);
+    path[8].set(elbowX + 0.3, 0.68 - away * 0.3, 0.2);
+    path[9].set(elbowX + 0.07, 0.75 - away * 0.3, 0.15);
+    path[10].set(end.x + 0.08, end.y - 0.1, end.z + 0.04);
+    path[11].set(end.x, end.y, end.z);
+    for (const pair of stemPairs) {
+      const [a, b, c, d] = pair.indices;
+      curve.getPoint((a + (b - a) * pair.t) / 11, pairA);
+      curve.getPoint((c + (d - c) * pair.t) / 11, pairB);
+      pair.bond.set(pairA, pairB);
+    }
     for (let i = 0; i < chain.points.length; i++)
       curve.getPoint(i / (chain.points.length - 1), chain.points[i]);
     chain.commit();
@@ -162,6 +188,17 @@ export function createTranslation({ rootId = "cell" } = {}) {
     factor,
   );
   factorHead.name = "release-factor-head";
+  sheet(k, factor, [1.24, -0.64, 0.31], 0.39, 0.59, 4, factorMat).name =
+    "release-factor-decoding-sheet";
+  helix(
+    k,
+    factor,
+    [0.51, 0.25, 0.26],
+    [0.2, 0.79, 0.17],
+    0.095,
+    3,
+    factorMat,
+  ).name = "release-factor-catalytic-helix";
   const labels = [
     k.label(
       [-3.65, 3.03, 0],
@@ -283,7 +320,8 @@ export function createTranslation({ rootId = "cell" } = {}) {
       peptide.points[i].x += 0.45 * drift;
     }
     peptide.commit();
-    aa.position.copy(aTip).add(new THREE.Vector3(0, 0.2, 0));
+    aa.position.copy(aTip);
+    aa.position.y += 0.2;
     if (transferred) {
       aa.position.x = 0.45 * (1 - trans) + 0.45 * drift;
       aa.position.y = 1.18 + 1.6 * release;

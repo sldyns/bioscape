@@ -176,34 +176,81 @@ export function cleftComplex(
   root.name = "open-subunit-cleft-schematic";
   parent.add(root);
   root.scale.setScalar(scale);
-  const lobes = [
-    [-0.56, 0.04, -0.28, 0.27, 0.52, 0.26],
-    [0.52, 0.07, -0.25, 0.27, 0.47, 0.25],
-    [0, 0.55, -0.28, 0.5, 0.2, 0.25],
-    [-0.36, -0.4, -0.23, 0.26, 0.24, 0.2],
-    [0.35, -0.42, -0.21, 0.23, 0.23, 0.2],
-    [-0.65, 0.45, -0.24, 0.2, 0.22, 0.18],
-    [0.62, 0.37, -0.3, 0.17, 0.21, 0.17],
+  // Continuous domain silhouettes surround a foreground substrate cleft.
+  // These are schematic fold envelopes, not fitted molecular coordinates.
+  const dark = k.material(colors[0]),
+    light = k.material(colors[1]);
+  const domains = [
+    [
+      [-0.77, -0.32],
+      [-0.73, 0.27],
+      [-0.46, 0.59],
+      [-0.24, 0.4],
+      [-0.29, 0.09],
+      [-0.19, -0.29],
+      [-0.39, -0.54],
+    ],
+    [
+      [0.19, -0.36],
+      [0.3, 0.05],
+      [0.28, 0.39],
+      [0.49, 0.54],
+      [0.74, 0.24],
+      [0.78, -0.19],
+      [0.57, -0.51],
+    ],
+    [
+      [-0.47, -0.5],
+      [-0.19, -0.7],
+      [0.27, -0.67],
+      [0.55, -0.45],
+      [0.28, -0.28],
+      [-0.2, -0.3],
+    ],
   ];
-  for (let i = 0; i < lobes.length; i++) {
-    const q = lobes[i];
-    k.ball(
-      q.slice(0, 3),
-      q.slice(3),
-      k.material(colors[i % colors.length]),
-      root,
-    );
+  for (let i = 0; i < domains.length; i++) {
+    const mesh = foldDomain(k, root, domains[i], i === 1 ? light : dark, 0.28);
+    mesh.position.z = -0.23;
+    mesh.name = [
+      "substrate-cleft-clamp-domain",
+      "substrate-cleft-wall-domain",
+      "connected-basal-platform",
+    ][i];
   }
-  for (let i = 0; i < 4; i++)
+  k.tube(
+    [
+      [-0.42, 0.4, -0.35],
+      [-0.21, 0.55, -0.46],
+      [0.2, 0.53, -0.46],
+      [0.45, 0.38, -0.35],
+    ],
+    0.1,
+    light,
+    root,
+    28,
+  ).name = "posterior-domain-bridge";
+  for (const side of [-1, 1]) {
+    k.tube(
+      [
+        [side * 0.27, -0.27, 0.03],
+        [side * 0.35, 0.02, 0.08],
+        [side * 0.33, 0.29, 0.03],
+      ],
+      0.034,
+      light,
+      root,
+      24,
+    ).name = "substrate-cleft-rim";
     alphaHelix(
       k,
       root,
-      [i < 2 ? -0.5 : 0.49, -0.29 + (i % 2) * 0.36, -0.02],
-      [i < 2 ? -0.43 : 0.41, -0.02 + (i % 2) * 0.36, 0.06],
-      0.055,
-      k.material(colors[(i + 1) % 2]),
-      3,
+      [side * 0.56, -0.25, 0.02],
+      [side * 0.59, 0.19, 0.04],
+      0.042,
+      light,
+      4,
     );
+  }
   return root;
 }
 
@@ -319,4 +366,115 @@ export function cutSac(k, parent, center, radii, color, thickness = 0.025) {
     root,
   );
   return root;
+}
+
+// Rounded, domed fold envelopes. Surface depth follows distance from the curved
+// outline, so narrow recognition arms stay continuous without filling the cleft.
+export function foldDomain(k, parent, points, material, depth = 0.24) {
+  const shape = new THREE.Shape();
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i],
+      prev = points[(i + points.length - 1) % points.length],
+      next = points[(i + 1) % points.length];
+    const entry = [p[0] * 0.76 + prev[0] * 0.24, p[1] * 0.76 + prev[1] * 0.24];
+    const exit = [p[0] * 0.76 + next[0] * 0.24, p[1] * 0.76 + next[1] * 0.24];
+    if (i === 0) shape.moveTo(...entry);
+    else shape.lineTo(...entry);
+    shape.quadraticCurveTo(...p, ...exit);
+  }
+  shape.closePath();
+  const outline = shape.getSpacedPoints(40).slice(0, -1);
+  const planar = outline.map((p) => p.clone());
+  const triangles = THREE.ShapeUtils.triangulateShape(outline, []);
+  const midpointCache = new Map();
+  function midpoint(a, b) {
+    const key = a < b ? a + ":" + b : b + ":" + a;
+    if (midpointCache.has(key)) return midpointCache.get(key);
+    const index = planar.length;
+    planar.push(planar[a].clone().add(planar[b]).multiplyScalar(0.5));
+    midpointCache.set(key, index);
+    return index;
+  }
+  let faces = triangles;
+  for (let pass = 0; pass < 2; pass++) {
+    const refined = [];
+    for (const [a, b, c] of faces) {
+      const ab = midpoint(a, b),
+        bc = midpoint(b, c),
+        ca = midpoint(c, a);
+      refined.push([a, ab, ca], [ab, b, bc], [ca, bc, c], [ab, bc, ca]);
+    }
+    faces = refined;
+  }
+  function edgeDistance(p) {
+    let distance = Infinity;
+    for (let i = 0; i < outline.length; i++) {
+      const a = outline[i],
+        b = outline[(i + 1) % outline.length],
+        dx = b.x - a.x,
+        dy = b.y - a.y;
+      const t = Math.max(
+        0,
+        Math.min(
+          1,
+          ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy),
+        ),
+      );
+      distance = Math.min(
+        distance,
+        Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy),
+      );
+    }
+    return distance;
+  }
+  const vertices = [],
+    indices = [],
+    count = planar.length;
+  for (const sign of [1, -1])
+    for (const p of planar) {
+      const dome = Math.sqrt(Math.max(0, 1 - Math.exp(-edgeDistance(p) * 18)));
+      vertices.push(p.x, p.y, sign * (0.035 + depth * 0.7 * dome));
+    }
+  for (const face of faces) {
+    let [a, b, c] = face;
+    const pa = planar[a],
+      pb = planar[b],
+      pc = planar[c];
+    if ((pb.x - pa.x) * (pc.y - pa.y) - (pb.y - pa.y) * (pc.x - pa.x) < 0)
+      [b, c] = [c, b];
+    indices.push(a, b, c, a + count, c + count, b + count);
+  }
+  // Include every subdivided boundary edge: front, rear and rim form one
+  // watertight graph without T junctions, including narrow concave arms.
+  for (let i = 0; i < outline.length; i++) {
+    const a = i,
+      b = (i + 1) % outline.length,
+      mid = midpointCache.get(a < b ? a + ":" + b : b + ":" + a);
+    const am = midpointCache.get(a < mid ? a + ":" + mid : mid + ":" + a);
+    const mb = midpointCache.get(mid < b ? mid + ":" + b : b + ":" + mid);
+    const chain = [a, am, mid, mb, b];
+    for (let j = 0; j < 4; j++) {
+      let u = chain[j],
+        v = chain[j + 1];
+      // Outline direction determines the outward rim winding.
+      if (THREE.ShapeUtils.isClockWise(outline)) [u, v] = [v, u];
+      indices.push(u, v + count, v, u, u + count, v + count);
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.type = "DomedFoldGeometry";
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(vertices, 3),
+  );
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  geometry.userData = {
+    roundedOutline: true,
+    domedSurface: true,
+    outlineSamples: 40,
+  };
+  return k.mesh(geometry, material, [0, 0, 0], parent);
 }

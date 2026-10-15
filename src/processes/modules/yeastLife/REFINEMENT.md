@@ -36,3 +36,7 @@ After: enzymes have multiple opaque domains around an exposed cleft, helical bac
 - Fermentation: 162 nodes / 33 geometries / 24 materials.
 
 The owned files are formatted. Mechanistic scope and embedded sources are retained. This pass has **not** been accepted visually: root screenshot review remains required for normal-camera readability, occlusion and comparison with the accepted detail baseline. No browser or device validation was run by this agent.
+
+## 2026-10-15 follow-up
+
+Native baseline images were audited for all four models. Budding and mating retain their readable layered compartments and contact/nuclear events. Sporulation's thin spindle now has six parallel shared-cylinder fibers on each original spindle pose. Fermentation's twelve-petal cartoon contour is replaced by seven asymmetrical folded domains and two open pocket lips; the two lips share their geometry. Chemical accounting and all controls remain unchanged. Shared cutaway/pore updates reuse iteration arrays. See `docs/qa/process-refinement-2026-10-15/agents/refine_yeast_operons.md` for source images, measured buffer deltas and the still-open root-render acceptance gate.

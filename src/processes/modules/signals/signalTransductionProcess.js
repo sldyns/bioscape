@@ -51,6 +51,13 @@ function create() {
       "y",
       0.023,
     );
+    const domainCenters = Array.from({ length: 5 }, (_, d) => [
+      0.07 * Math.sin(d),
+      1.83 + d * 0.15,
+      0.03,
+    ]);
+    const ectodomain = k.tube(domainCenters, 0.045, recMat, r, 40);
+    ectodomain.name = "PDGFR-continuous-Ig-domain-chain";
     for (let d = 0; d < 5; d++) {
       const domain = new THREE.Group();
       r.add(domain);

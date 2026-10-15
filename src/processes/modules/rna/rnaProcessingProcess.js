@@ -158,6 +158,7 @@ export default {
           mesh: k.mesh(baseGeometry, baseMaterial, [0, 0, 0], intron),
         });
     }
+    for (const item of intronBases) item.mesh.name = `intron-base-${item.i}`;
     const pts = Array.from({ length: n + 1 }, () => new THREE.Vector3());
     // Cap base, ribose and three linked phosphates show the unusual end connection.
     k.mesh(baseGeometry, gold, [-0.18, 0.17, 0], cap);
@@ -354,12 +355,13 @@ export default {
         beads[i].position.copy(a);
       }
       for (const item of intronBases) {
-        item.mesh.position.copy(pts[item.i]);
-        item.mesh.position.y += 0.15;
-        item.mesh.rotation.z = Math.atan2(
-          pts[item.i + 1].y - pts[item.i].y,
-          pts[item.i + 1].x - pts[item.i].x,
-        );
+        // Use the local chain normal, including after lariat formation.
+        d.copy(pts[item.i + 1])
+          .sub(pts[item.i])
+          .normalize();
+        a.set(-d.y, d.x, 0).normalize();
+        item.mesh.position.copy(pts[item.i]).addScaledVector(a, 0.15);
+        item.mesh.rotation.z = Math.atan2(d.y, d.x);
       }
       stub.position.set(-2.2 * join + cut * 0.8, -cut * 0.75, 0);
       stub.visible = p < 0.9;

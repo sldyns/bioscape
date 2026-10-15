@@ -109,6 +109,10 @@ function create({ rootId = "cell" } = {}) {
     for (const x of [-0.075, 0.075])
       k.ball([x, -0.04, 0.22], 0.035, k.material("#bfc299"), g);
     // A small seven-membered Sm protein ring supports a snRNA stem loop.
+    const smMat = k.material("#8ca8b1");
+    const smRing = k.ring([0.14, 0.93, -0.12], 0.24, 0.075, smMat, g);
+    smRing.rotation.x = 0;
+    smRing.name = "Sm-continuous-heptamer-support";
     for (let i = 0; i < 7; i++) {
       const a = (i * Math.PI * 2) / 7;
       k.ball(

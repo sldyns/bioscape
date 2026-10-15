@@ -46,21 +46,45 @@ function create() {
     m.name = "Cortical microtubule";
   });
   leafletEdge(k, patch, cesa);
-  // Twisted glucan bundles reinforce the wall; matrix tethers cross between bundles.
+  // A shallow common twist keeps chains parallel instead of drawing springs.
+  const bundlePoints = [];
+  for (let i = 0; i <= 96; i++) {
+    const t = i / 96,
+      a = t * Math.PI * 4;
+    bundlePoints.push(
+      new THREE.Vector3(t * 4.84, 0.025 * Math.sin(a), 0.025 * Math.cos(a)),
+    );
+  }
+  const bundleGeometry = new THREE.TubeGeometry(
+    new THREE.CatmullRomCurve3(bundlePoints),
+    128,
+    0.013,
+    8,
+  );
   for (let row = 0; row < 7; row++)
     for (let strand = 0; strand < 3; strand++) {
-      const pts = [];
-      for (let i = 0; i <= 96; i++) {
-        const x = -2.42 + (i / 96) * 4.84,
-          a = (i / 96) * Math.PI * 18 + strand * 2.094;
-        pts.push([
-          x,
-          -1.8 + row * 0.6 + 0.045 * Math.sin(a),
-          0.95 + 0.045 * Math.cos(a),
-        ]);
-      }
-      k.tube(pts, 0.013, cellulose, patch, 128);
+      const m = k.mesh(
+        bundleGeometry,
+        cellulose,
+        [-2.42, -1.8 + row * 0.6 + (strand - 1) * 0.026, 0.95],
+        patch,
+      );
+      m.name = "Parallel cellulose wall bundle";
     }
+  const depositPoints = [];
+  for (let i = 0; i <= 128; i++) {
+    const t = i / 128,
+      a = t * Math.PI * 4;
+    depositPoints.push(
+      new THREE.Vector3(t * 4.3, 0.012 * Math.sin(a), 0.012 * Math.cos(a)),
+    );
+  }
+  const depositGeometry = new THREE.TubeGeometry(
+    new THREE.CatmullRomCurve3(depositPoints),
+    128,
+    0.017,
+    8,
+  );
   for (let row = 0; row < 6; row++)
     for (let i = 0; i < 4; i++)
       k.tube(
@@ -127,16 +151,8 @@ function create() {
     }
     const fibers = [];
     for (let j = 0; j < 3; j++) {
-      const points = [];
-      for (let n = 0; n <= 128; n++) {
-        const t = n / 128;
-        points.push([
-          t - 0.5,
-          0.012 * Math.sin(t * Math.PI * 24 + j * 2),
-          0.012 * Math.cos(t * Math.PI * 24 + j * 2),
-        ]);
-      }
-      const m = k.tube(points, 0.017, newCellulose, patch, 128);
+      const m = k.mesh(depositGeometry, newCellulose, [0, 0, 0], patch);
+      m.rotation.z = direction > 0 ? 0 : Math.PI;
       m.name = "Deposited cellulose microfibril";
       fibers.push(m);
     }
@@ -204,6 +220,7 @@ function create() {
       deposition = ease(p, 0.14, 0.82),
       extension = yielding ? ease(p, 0.55, 1) * 0.32 : 0;
     patch.scale.y = 1 + extension;
+    depositGeometry.setDrawRange(0, Math.floor(128 * deposition) * 48);
     machines.forEach(({ machine, fibers, direction, y }) => {
       const start = -direction * 2.15,
         x = start + direction * 4.3 * deposition;
@@ -211,12 +228,8 @@ function create() {
       machine.scale.y = 1 / (1 + extension);
       fibers.forEach((m, j) => {
         m.visible = p >= 0.14;
-        m.position.set(
-          (start + x) / 2,
-          y + (j - 1) * 0.038,
-          0.52 + (j - 1) * 0.018,
-        );
-        m.scale.set(Math.max(0.001, 4.3 * deposition), 1, 1);
+        m.position.set(start, y + (j - 1) * 0.038, 0.52 + (j - 1) * 0.018);
+        m.scale.set(1, 1 / (1 + extension), 1);
       });
     });
     arrows.forEach((a) => {
@@ -234,7 +247,7 @@ function create() {
       labels[4],
       machines[4].fibers[1],
       group,
-      Math.floor(machines[4].fibers[1].geometry.attributes.position.count / 2),
+      Math.max(0, Math.floor((128 * deposition) / 2) * 9),
     );
     labels[5].position.splice(0, 3, 0, 0, -0.6);
     labels[4].active = p >= 0.2;

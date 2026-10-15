@@ -138,6 +138,39 @@ export default {
       }
     }
     geometry.addGroup(runStart, ix.count - runStart, runMaterial);
+    // Collect only the perimeter of the cutaway, not internal triangle edges.
+    // Joining both leaflets here makes the membrane thickness readable while
+    // keeping the original closed surface for volume/area measurements.
+    const windowEdges = new Map();
+    for (const part of geometry.groups) {
+      if (part.materialIndex !== 1) continue;
+      for (let i = part.start; i < part.start + part.count; i += 3) {
+        const triangle = [ix.getX(i), ix.getX(i + 1), ix.getX(i + 2)];
+        for (let j = 0; j < 3; j++) {
+          const a = triangle[j],
+            b = triangle[(j + 1) % 3];
+          const key = a < b ? `${a}:${b}` : `${b}:${a}`;
+          if (windowEdges.has(key)) windowEdges.delete(key);
+          else windowEdges.set(key, [a, b]);
+        }
+      }
+    }
+    const cutEdges = [...windowEdges.values()];
+    const cutGeometry = new THREE.BufferGeometry();
+    const cutPositions = new Float32Array(cutEdges.length * 18);
+    cutGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(cutPositions, 3),
+    );
+    const cutFace = k.mesh(
+      cutGeometry,
+      k.material("#d7a4a2", {
+        roughness: 0.58,
+        side: THREE.DoubleSide,
+      }),
+    );
+    cutFace.name = "cutaway-continuous-membrane-thickness";
+    cutFace.userData.boundaryEdges = cutEdges.length;
     const innerGeometry = geometry.clone();
     const inner = k.mesh(innerGeometry, [
       k.material("#9c6f79", { roughness: 0.64 }),
@@ -319,6 +352,23 @@ export default {
         for (let i = 0; i < arr.length; i++) arr[i] *= areaScale;
         const innerArray = innerGeometry.attributes.position.array;
         for (let i = 0; i < arr.length; i++) innerArray[i] = arr[i] * 0.935;
+        // Six vertices per boundary edge form two triangles. The same absolute
+        // deformation drives the cut face, leaflets and attached cortex.
+        for (let n = 0; n < cutEdges.length; n++) {
+          const a = cutEdges[n][0],
+            b = cutEdges[n][1];
+          for (let j = 0; j < 6; j++) {
+            const vertex = j === 0 || j === 3 || j === 5 ? a : b;
+            const inset = j >= 2 && j !== 3 ? 0.935 : 1;
+            for (let axis = 0; axis < 3; axis++)
+              cutPositions[n * 18 + j * 3 + axis] =
+                arr[vertex * 3 + axis] * inset;
+          }
+        }
+        cutGeometry.attributes.position.needsUpdate = true;
+        cutGeometry.computeVertexNormals();
+        cutGeometry.computeBoundingBox();
+        cutGeometry.computeBoundingSphere();
         innerGeometry.attributes.position.needsUpdate = true;
         innerGeometry.computeVertexNormals();
         innerGeometry.computeBoundingBox();

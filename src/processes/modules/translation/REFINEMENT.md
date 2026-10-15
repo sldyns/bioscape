@@ -29,3 +29,7 @@ Metal-cluster markers reuse the common sphere/cylinder geometry; RNA stems and m
 ## Visual acceptance boundary
 
 No browser or screenshots were used, per assignment. All four now have concrete mechanism-specific structural improvements, but none is claimed to have passed the user's visual baseline from tests alone. Root screenshot review must confirm normal-distance readability, peptide visibility within the cutaway, Hsp70 groove occupancy and label placement. No remaining finite-state or resource-stability failures are known.
+
+## 2026-10-15 continuation
+
+Current models preserve the experimental 4UG0 assembly introduced after the historical refinement above. Added articulated paired tRNA crosspieces and release-factor secondary structure, attached Hsp70 hinge/linker, continuous Sm-ring support, and rear MoFe assembly interfaces. Translation reuses its curve/control and bond vectors per frame. Detailed original-image audit, frozen-source resource deltas and acceptance boundaries: `docs/qa/process-refinement-2026-10-15/agents/refine_translation.md`. Root screenshot acceptance remains pending.

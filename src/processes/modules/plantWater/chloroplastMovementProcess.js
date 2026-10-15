@@ -129,6 +129,26 @@ const process = {
       [0, -2.6, 0],
     );
     bottom.rotation.x = -Math.PI / 2;
+    // Bounded rear cutaway surfaces make the wall/cortex route legible while
+    // leaving the front and upper illumination aperture open.
+    const rearWall = k.mesh(
+      new THREE.BoxGeometry(5, 5.3, 0.08),
+      wall,
+      [0, 0, -1.54],
+    );
+    rearWall.name = "rear anticlinal wall cutaway";
+    const corticalMat = k.material("#dedbc0", { side: THREE.DoubleSide });
+    const rearCortex = k.mesh(
+      new THREE.PlaneGeometry(4.86, 5.16),
+      corticalMat,
+      [0, 0, -1.493],
+    );
+    rearCortex.name = "rear cortical cytoplasm surface";
+    const sideGeometry = new THREE.BoxGeometry(0.08, 5.3, 0.3);
+    for (const side of [-1, 1]) {
+      const surface = k.mesh(sideGeometry, wall, [side * 2.54, 0, -1.35]);
+      surface.name = "bounded anticlinal wall surface";
+    }
     const chloroplasts = [],
       makeChloroplast = chloroplastFactory(k);
     for (let i = 0; i < 16; i++) chloroplasts.push(makeChloroplast(group));

@@ -171,14 +171,17 @@ export default {
       mrna = [],
       bases = [];
     const targetPoints = Array.from({ length: 28 }, () => new THREE.Vector3());
+    const joinDelta = new THREE.Vector3(),
+      joinUp = new THREE.Vector3(0, 1, 0),
+      tip = new THREE.Vector3(),
+      endPoint = new THREE.Vector3(),
+      bondStart = new THREE.Vector3(),
+      bondEnd = new THREE.Vector3();
     const join = (mesh, a, b, radius) => {
-      const d = new THREE.Vector3().subVectors(b, a);
+      const d = joinDelta.subVectors(b, a);
       mesh.position.copy(a).add(b).multiplyScalar(0.5);
       mesh.scale.set(radius, Math.max(d.length(), 1e-6), radius);
-      mesh.quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0),
-        d.normalize(),
-      );
+      mesh.quaternion.setFromUnitVectors(joinUp, d.normalize());
     };
     for (let i = 0; i < 22; i++) {
       const x = guideX(i);
@@ -370,7 +373,8 @@ export default {
           bulge - (slicing ? cleavage * 0.28 : 0),
           0.28,
         );
-        const tip = targetPoints[i].clone().add(new THREE.Vector3(0, 0.14, 0));
+        tip.copy(targetPoints[i]);
+        tip.y += 0.14;
         join(bases[i], targetPoints[i], tip, 0.034);
         bases[i].visible = !(
           match &&
@@ -381,7 +385,7 @@ export default {
         const end =
           i < 27
             ? targetPoints[i + 1]
-            : targetPoints[i].clone().add(new THREE.Vector3(0.05, 0, 0));
+            : endPoint.copy(targetPoints[i]).setX(targetPoints[i].x + 0.05);
         join(m, targetPoints[i], end, 0.055);
         m.visible =
           bases[i].visible &&
@@ -389,12 +393,9 @@ export default {
           !(slicing && cleavage > 0 && i === cutIndex);
       });
       bonds.forEach((m, i) => {
-        const start = new THREE.Vector3(guideX(i), 0.31, 0.28).add(
-          risc.position,
-        );
-        const end = targetPoints[i + 3]
-          .clone()
-          .add(new THREE.Vector3(0, 0.14, 0));
+        const start = bondStart.set(guideX(i), 0.31, 0.28).add(risc.position);
+        const end = bondEnd.copy(targetPoints[i + 3]);
+        end.y += 0.14;
         join(m, start, end, 0.018);
         m.visible =
           match &&

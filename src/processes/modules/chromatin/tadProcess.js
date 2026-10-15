@@ -1,6 +1,6 @@
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 import { dynamicTube, moveSegment, rightHandedDuplex } from "./geometry.js";
-import { duplexDetails, alphaHelix, cleftComplex } from "./structure.js";
+import { duplexDetails, alphaHelix, foldDomain } from "./structure.js";
 
 function create() {
   const k = sceneKit(),
@@ -23,7 +23,7 @@ function create() {
       cohesin,
       [side * 0.07, -2.03, -0.03],
       [side * 0.56, -1.45, 0.0],
-      0.043,
+      0.058,
       mat,
       9,
     );
@@ -32,7 +32,7 @@ function create() {
       cohesin,
       [side * 0.56, -1.45, 0],
       [side * 0.25, -0.95, 0.06],
-      0.043,
+      0.058,
       mat,
       7,
     );
@@ -64,16 +64,47 @@ function create() {
     cohesin,
     80,
   ).name = "kleisin-link";
-  for (let i = 0; i < 7; i++)
+  const loaderMat = k.material("#92a197");
+  const loader = foldDomain(
+    k,
+    cohesin,
+    [
+      [0.3, -1.08],
+      [0.42, -0.88],
+      [0.72, -0.93],
+      [0.96, -1.2],
+      [0.99, -1.61],
+      [0.83, -1.85],
+      [0.61, -1.76],
+      [0.69, -1.45],
+      [0.59, -1.19],
+    ],
+    loaderMat,
+    0.18,
+  );
+  loader.position.z = -0.08;
+  loader.name = "NIPBL-associated-continuous-loader-scaffold";
+  for (let i = 0; i < 5; i++)
     alphaHelix(
       k,
       cohesin,
-      [0.68 + 0.06 * Math.cos(i), -1.8 + i * 0.14, 0],
-      [0.88 + 0.06 * Math.cos(i), -1.77 + i * 0.14, 0.12],
-      0.037,
-      k.material("#92a197"),
+      [0.65, -1.67 + i * 0.14, 0.07],
+      [0.87, -1.59 + i * 0.12, 0.08],
+      0.033,
+      loaderMat,
       3,
     );
+  k.tube(
+    [
+      [-0.25, -0.95, 0.07],
+      [0, -1.07, 0.13],
+      [0.25, -0.95, 0.07],
+    ],
+    0.065,
+    k.material("#9b826c"),
+    cohesin,
+    24,
+  ).name = "kleisin-head-bridge";
   const ctcf = [];
   for (let i = 0; i < 2; i++) {
     const root = new THREE.Group();

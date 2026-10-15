@@ -126,6 +126,8 @@ function cisterna(parent, color, radii, bend = 0.36) {
       });
     }
   }
+  const cutEdgeMaterial = material("#b9b3a0", 0.94),
+    cutLeafletMaterial = material(color, 0.94);
   for (const phi of [Math.PI, Math.PI * 2]) {
     const edge = [];
     for (let i = 0; i <= 48; i++) {
@@ -140,7 +142,33 @@ function cisterna(parent, color, radii, bend = 0.36) {
         ),
       );
     }
-    tube(root, edge, 0.025, material(color, 0.94), 64);
+    // Expose the hydrophobic membrane cross-section instead of closing the
+    // observation cut with a thick rounded cord. Two rails delimit the polar
+    // leaflet surfaces; the narrow ribbon between them is membrane, not lumen.
+    const cutPositions = [],
+      cutIndices = [];
+    for (let i = 0; i < edge.length; i++) {
+      for (const side of [-1, 1])
+        cutPositions.push(edge[i].x + side * 0.018, edge[i].y, edge[i].z);
+      if (i < edge.length - 1) {
+        const a = i * 2;
+        cutIndices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+      }
+    }
+    const cutGeometry = new THREE.PlaneGeometry(1, 1, edge.length - 1, 1);
+    cutGeometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(cutPositions, 3),
+    );
+    cutGeometry.setIndex(cutIndices);
+    cutGeometry.computeVertexNormals();
+    const cut = mesh(root, cutGeometry, cutEdgeMaterial);
+    cut.name = "cisterna-hydrophobic-cut-edge";
+    for (const side of [-1, 1]) {
+      const rail = edge.map((p) => V(p.x + side * 0.018, p.y, p.z));
+      const leaflet = tube(root, rail, 0.009, cutLeafletMaterial, 64);
+      leaflet.name = "cisterna-polar-cut-leaflet";
+    }
   }
   const lipids = lipidSurface(root, sites, color, 0.018);
   lipids.heads.material.transparent = true;
@@ -165,7 +193,8 @@ function cisterna(parent, color, radii, bend = 0.36) {
   ];
   for (const m of materials) {
     m.userData.baseOpacity = m.opacity;
-    m.userData.tintWithCisterna = m !== lipids.tails.material;
+    m.userData.tintWithCisterna =
+      m !== lipids.tails.material && m !== cutEdgeMaterial;
     m.transparent = true;
     m.depthWrite = false;
   }

@@ -6,6 +6,7 @@ import { visibleProcessBounds } from "./sceneBounds.js";
 import { placeLabel } from "./labelLayout.js";
 import { prepareAnnotationLabels } from "./annotationDom.js";
 import { createProcessPose } from "./playbackClock.js";
+import { disposeScene } from "./disposeScene.js";
 import {
   applySceneView,
   normalizeSceneView,
@@ -15,29 +16,6 @@ import {
 
 const clampProgress = (value) =>
   Number.isFinite(value) ? THREE.MathUtils.clamp(value, 0, 1) : 0;
-
-// Process models own their resources; dispose shared geometry and materials once.
-function disposeScene(scene) {
-  const geometries = new Set();
-  const materials = new Set();
-  const textures = new Set();
-  scene?.traverse((object) => {
-    if (object.isInstancedMesh) object.dispose();
-    if (object.geometry) geometries.add(object.geometry);
-    for (const material of Array.isArray(object.material)
-      ? object.material
-      : [object.material]) {
-      if (!material) continue;
-      materials.add(material);
-      for (const value of Object.values(material)) {
-        if (value?.isTexture) textures.add(value);
-      }
-    }
-  });
-  geometries.forEach((geometry) => geometry.dispose());
-  materials.forEach((material) => material.dispose());
-  textures.forEach((texture) => texture.dispose());
-}
 
 export default function ProcessScene({
   definition,
@@ -141,8 +119,7 @@ export default function ProcessScene({
         "webglcontextrestored",
         onContextRestored,
       );
-      disposeScene(scene);
-      for (const material of model?.materials ?? []) material.dispose();
+      disposeScene(scene, model?.materials ?? []);
       environment?.dispose();
       room?.dispose();
       pmrem?.dispose();

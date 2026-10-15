@@ -152,6 +152,8 @@ function create() {
       );
       c.group.rotation.z = (1 - align) * (i % 2 ? -0.3 : 0.27);
       c.group.scale.setScalar(1 - exit * 0.12);
+      // Centromere leads poleward while chromosome arms trail smoothly.
+      c.setDeflection(0, -side * 0.23 * Math.sin(Math.PI * separate));
       const attached = !(blocked && i === 3 && side === 1);
       c.fibre.visible = p > 0.1 && p < 0.84;
       c.orientKinetochore(side, !attached);
@@ -190,6 +192,7 @@ function create() {
         y,
         z + side * 0.022,
         0.008 * (1 - ease(p, 0.74, 0.84)),
+        y * 0.45,
       );
     });
     labels[0].active = p < 0.94;

@@ -5,6 +5,7 @@ import {
   nucleotideDetails,
   cleftComplex,
   alphaHelix,
+  foldDomain,
 } from "./structure.js";
 
 function create() {
@@ -127,6 +128,25 @@ function create() {
   ).name = "DCL3-duplex-clamp";
   const ago = protein([0.9, 1.15, 0.03], agoMat, 0.56);
   ago.name = "AGO4-guide-binding-groove-PAZ-MID-PIWI-schematic";
+  // A low bilobed cradle distinguishes Argonaute from the polymerase clamp.
+  const guideCradle = foldDomain(
+    k,
+    ago,
+    [
+      [-0.61, -0.24],
+      [-0.38, -0.43],
+      [0.18, -0.45],
+      [0.59, -0.21],
+      [0.52, -0.03],
+      [0.12, -0.18],
+      [-0.37, -0.09],
+    ],
+    agoMat,
+    0.19,
+  );
+  guideCradle.position.z = 0.08;
+  guideCradle.name = "AGO4-connected-PAZ-MID-guide-cradle";
+
   for (let i = 0; i < 4; i++)
     alphaHelix(
       k,
@@ -147,6 +167,25 @@ function create() {
   guidePocket.name = "AGO4-guide-end-binding-pocket";
   const drm = protein([2.4, -0.72, 0.18], k.material("#b79883"), 0.31);
   drm.name = "DRM2-target-recognition-and-methyltransferase-domains";
+  const recognitionArm = foldDomain(
+    k,
+    drm,
+    [
+      [-0.38, 0.08],
+      [-0.6, -0.12],
+      [-0.58, -0.44],
+      [-0.23, -0.64],
+      [0.13, -0.58],
+      [0.25, -0.4],
+      [0.02, -0.32],
+      [-0.28, -0.35],
+    ],
+    k.material("#b79883"),
+    0.17,
+  );
+  recognitionArm.position.z = 0.07;
+  recognitionArm.name = "DRM2-continuous-substrate-recognition-arm";
+
   k.ring([0, -0.24, 0.22], 0.1, 0.026, k.material("#d3b98a"), drm).name =
     "DRM2-cytosine-recognition-pocket";
   // Replace exactly one original A-strand base instance. Its sugar and

@@ -20,3 +20,9 @@ All four passed: esbuild bundling; bilingual stage fields; finite geometry/norma
 ## Acceptance boundary
 
 The models have substantial structure changes, but normal-distance readability and comparison with the accepted transcription baseline still require the root agent's screenshots. No browser or full-workspace tests were run here, and no model is claimed visually accepted from smoke tests alone. The smallest conjugation-stage nuclei deliberately use schematic chromatin to preserve readable nuclear counts; inspect these during screenshot review.
+
+## 2026-10-15 oral-apparatus continuation
+
+Division/conjugation oral rods now use a shared open concave tapered paired-wall model with two exposed rims and three instanced curved membranelle rows. Nuclear/membrane geometry, shape cache, feeding/CV and all motion semantics retained. Focused oral invariants, refinement smoke and 2026-10-05 division regression pass. Frozen full-output equivalence intentionally conflicts with the changed oral subtrees; fixtures/test remain intact. See docs/qa/process-refinement-2026-10-15/agents/refine_paramecium.md for evidence and pending rendered acceptance.
+
+Conjugation follow-up: root-authorized foreground oral observation window now exposes the reciprocal pronuclear path without moving apparatus/nuclei or altering the physical passage. Real paired-wall cut edges and bilingual educational-cutaway explanation added. Division helper defaults unchanged. Scientific/frozen gates pass; awaiting replacement conjugation captures for visual acceptance.

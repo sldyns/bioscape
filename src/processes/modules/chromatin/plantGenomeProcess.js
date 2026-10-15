@@ -25,8 +25,8 @@ function create() {
     for (const shrink of [1, 0.89]) {
       const mat = k.material(color, {
         side: THREE.DoubleSide,
-        transparent: true,
-        opacity: shrink === 1 ? 0.86 : 0.72,
+        transparent: false,
+        opacity: 1,
         depthWrite: true,
       });
       const half = k.mesh(
@@ -39,6 +39,37 @@ function create() {
       // The front half is removed to expose the interior rather than depict a sealed bubble.
       const rim = k.ring([0, 0, 0], 1, 0.017, k.material(color), root);
       rim.scale.set(scale[0] * shrink, scale[1] * shrink, 1);
+      // A short annular wall exposes the thickness of each membrane at the cut.
+      const vertices = [],
+        indices = [],
+        width = 0.028;
+      for (let i = 0; i <= 96; i++) {
+        const a = (i / 96) * Math.PI * 2;
+        for (const edge of [0, 1])
+          vertices.push(
+            (scale[0] * shrink - edge * width) * Math.cos(a),
+            (scale[1] * shrink - edge * width) * Math.sin(a),
+            0.016,
+          );
+        if (i < 96) {
+          const j = i * 2;
+          indices.push(j, j + 1, j + 2, j + 1, j + 3, j + 2);
+        }
+      }
+      const cut = new THREE.BufferGeometry();
+      cut.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(vertices, 3),
+      );
+      cut.setIndex(indices);
+      cut.computeVertexNormals();
+      const face = k.mesh(
+        cut,
+        k.material(color, { side: THREE.DoubleSide }),
+        [0, 0, 0],
+        root,
+      );
+      face.name = "envelope-membrane-cut-thickness";
     }
     root.name = "double-envelope-open-front-cutaway";
     const lips = new THREE.InstancedMesh(k.sphere, k.material(color), 192);
@@ -132,7 +163,7 @@ function create() {
   // Lumen-bearing thylakoid sacs are stacked, with bridging stroma lamellae.
   for (let column = 0; column < 2; column++)
     for (let level = 0; level < 4; level++) {
-      cutSac(
+      const sac = cutSac(
         k,
         group,
         [2.92 + column * 0.7, 1.03 + level * 0.15, -0.08],
@@ -140,6 +171,8 @@ function create() {
         "#78966d",
         0.018,
       );
+      sac.rotation.x = 0.38;
+      sac.name = "granal-thylakoid-open-lumen-and-visible-dorsal-face";
       if (level % 2 === 0)
         cutSac(
           k,

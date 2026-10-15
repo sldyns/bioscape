@@ -16,3 +16,7 @@ Baseline inspected: `src/processes/transcriptionProcess.js` and `src/scene/membr
 ## Review boundary
 
 No browser, screenshot, thumbnail, or shared-renderer changes were made. These are concrete structural revisions, but visual parity with the accepted baseline is not yet established: root must judge normal-distance readability and occlusion in screenshots. No model is declared visually accepted from smoke results. Retained simplifications include compressed Golgi transport, schematic enucleation mechanics, and omitted signaling branches/feedback.
+
+## 2026-10-15 incremental pass
+
+PDGFR Ig-domain centers now have a continuous backbone. Apoptosis and erythroblast membrane rear faces reuse the exact authoritative implicit geometry; paired section contours follow its actual triangles through neck formation/fission. Erythroblast Hb tetramers grow smoothly and separate tangentially from ribosomes. Cytotoxic granules now expose a membrane hemisphere, cut rim and enclosed core at the original whole-granule radius. Scientific branches remain unchanged. Focused smoke and new refinement tests pass; root rendered/performance acceptance remains required. Detailed evidence: `docs/qa/process-refinement-2026-10-15/agents/refine_signals.md`.

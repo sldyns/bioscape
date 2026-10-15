@@ -1,3 +1,4 @@
+import { surfaceSection } from "./surfaceSection.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 import { labelAnchors } from "./labelAnchors.js";
 
@@ -27,6 +28,7 @@ function create() {
     [-4, -3.6, -1.4],
     [4, 3.6, 1.4],
   ]);
+  const plasmaSection = surfaceSection(k, plasma.mesh, "#95aaa3");
   const nuclearMat = k.material("#b0abc1", {
     transparent: true,
     opacity: 0.32,
@@ -362,6 +364,7 @@ function create() {
       });
     });
     plasma.update(lobes, 0.14);
+    plasmaSection.update();
     labels[2].active = bax.visible && t < 0.81;
     labels[3].active = t >= 0.36 && t < 0.85;
     labels[3].text =

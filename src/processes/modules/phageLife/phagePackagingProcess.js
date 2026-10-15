@@ -276,7 +276,9 @@ export default {
       subunits.forEach(({ g, atpase, a }, i) => {
         const cycle =
           atp && p > 0.25 && p < 0.78
-            ? 0.5 + 0.5 * Math.sin(p * 90 + i * 1.26)
+            ? (0.5 + 0.5 * Math.sin(p * 90 + i * 1.26)) *
+              ease(p, 0.25, 0.28) *
+              (1 - ease(p, 0.75, 0.78))
             : 0;
         g.position.set(
           (0.53 - 0.055 * cycle) * Math.cos(a),

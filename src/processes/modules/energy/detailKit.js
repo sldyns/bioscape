@@ -16,6 +16,7 @@ export function flowScale(t) {
 // explicitly supplied, source-backed count; null preserves an unresolved contour.
 export function energyDetails(k) {
   const { group, material, mesh, ball, segment, tube } = k;
+  const catalyticHeads = [];
   const labelAnchors = [],
     labelPoint = new THREE.Vector3();
   // Label positions are leader endpoints. Bind object labels to real geometry;
@@ -50,6 +51,13 @@ export function energyDetails(k) {
     return anchor(label, target, center.toArray());
   }
   function syncLabelAnchors() {
+    // The stator remains fixed; beta domains breathe around the turning shaft.
+    for (const { domain, angle, rotor } of catalyticHeads) {
+      const closure = 0.5 - 0.5 * Math.cos(rotor.rotation.y - angle);
+      domain.scale.x = 0.53 * (1 - 0.12 * closure);
+      domain.scale.z = 0.6 * (1 + 0.08 * closure);
+      domain.rotation.z = 0.07 * Math.sin(rotor.rotation.y - angle);
+    }
     for (const binding of labelAnchors) {
       const { label, target, local } = binding;
       target.updateWorldMatrix(true, false);
@@ -96,6 +104,10 @@ export function energyDetails(k) {
     g.scale.set(...scale);
     parent.add(g);
     g.name = "schematic-transmembrane-helix-bundle";
+    // A compact hydrophobic envelope gives the bundle continuous protein mass;
+    // the perimeter helices and loops remain exposed as secondary structure.
+    const core = ball([0, 0, 0], [0.19, 0.41, 0.19], mat, g);
+    core.name = "transmembrane-protein-envelope";
     for (let i = 0; i < count; i++) {
       const a = (i * Math.PI * 2) / count;
       helix(
@@ -390,6 +402,10 @@ export function energyDetails(k) {
       );
       g.rotation.y = -a;
       if (i === 1) g.children[0].name = "F1-label-surface";
+      if (i % 2) {
+        g.userData.catalyticBeta = true;
+        catalyticHeads.push({ domain: g, angle: a, rotor });
+      }
     }
     for (let i = 0; i < 3; i++) {
       const a = ((i * 2 + 0.5) * Math.PI) / 3;

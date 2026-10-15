@@ -188,8 +188,15 @@ export default {
       head.group.position.set(-2 + 2 * join, 1.05 + 0.64 * clear, 0);
       head.group.scale.setScalar(expand);
       head.panels.forEach((m, i) => {
-        m.visible = shell > (i / head.panels.length) * 0.72;
-        m.scale.setScalar(1 + (1 - shell) * 0.18);
+        // Staggered coat incorporation grows each prebuilt facet continuously.
+        // Zero-sized hidden facets have the same limiting transform on reveal.
+        const incorporation = ease(
+          shell,
+          (i / head.panels.length) * 0.72,
+          (i / head.panels.length) * 0.72 + 0.28,
+        );
+        m.visible = incorporation > 0;
+        m.scale.setScalar(Math.max(1e-8, incorporation));
       });
       head.scaffolding.visible = clear < 1;
       head.scaffolding.scale.setScalar(1 - 0.82 * clear);
@@ -204,7 +211,9 @@ export default {
       tail.lumen.scale.y = Math.max(0.02, tailGrow);
       tail.lumen.position.y = -2.12 + tailGrow * 1.06;
       tail.sheath.forEach((r, i) => {
-        r.visible = tailGrow > (i + 1) / 19;
+        const incorporation = ease(tailGrow, i / 19, (i + 1) / 19);
+        r.visible = incorporation > 0;
+        r.scale.setScalar(Math.max(1e-8, incorporation));
       });
       tail.terminator.visible = p > 0.59;
       const attach = active ? ease(p, 0.94, 0.99) : 0;

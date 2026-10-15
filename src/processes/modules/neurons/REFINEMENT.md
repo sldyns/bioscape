@@ -22,3 +22,10 @@ Substantial structure changes are implemented and locally validated. No browser,
 Root screenshot `/tmp/atlas-refinement/actionPotential.png` showed the earlier overall view as two narrow membrane strips. Reorganized into a large molecular membrane cutaway on the left and a smaller rounded axon propagation view on the right. The enlarged Na/K pores include clearly separated entry/exit collars and three local ion markers each; their gates match a fixed marked fourth region of the axon, connected by a stationary leader. The smaller axon now has a rounded cutaway wall and large internal color bands for the traveling depolarization/repolarization/refractory sequence. The enlargement is a different scale, explicitly labeled in Chinese and English. Camera elevation exposes membrane thickness and pore entrances.
 
 Additional checks passed: full-buffer deterministic seeks, all stimulus states, finite buffers/bounds, resource identity, esbuild, and explicit enlarged-Na-open at `.48` / enlarged-K-open at `.55` with both closed under no stimulus. Updated actionPotential has 521 nodes. Revised visual arrangement still awaits root screenshot review.
+
+### 2026-10-15 continuation
+
+- actionPotential: the enlarged membrane now omits its camera-facing half to expose the channel lumen/gates and local ion transit; both cut leaflets and the original propagation/control semantics remain.
+- muscle: replaced the solid SR rod with a continuous hollow cutaway cisterna with inner/outer walls, longitudinal cut edges and open end rims. This is a bounded reservoir illustration, not a full SR network.
+- synapse and ciliaryMotion: personally reviewed baseline images; retained mature compartment/assembly detail because no concrete anatomical replacement was justified.
+- All four models retain their scientific state object across updates. New focused tests cover that identity, actual enlarged-lipid placement and hollow SR geometry. Full audit/resource inventory and rendered-acceptance gate: `docs/qa/process-refinement-2026-10-15/agents/refine_neurons.md`.

@@ -958,6 +958,13 @@ function create() {
       }
     }
     rotor.rotation.y = TAU * 2 * ramp(p, 0.46, 1);
+    // Alpha/beta crown stays attached to the stator; alternating beta domains
+    // change conformation sequentially as the asymmetric central shaft turns.
+    for (let i = 1; i < 6; i += 2) {
+      const closure = 0.5 - 0.5 * Math.cos(rotor.rotation.y - (i * TAU) / 6);
+      head.children[i].scale.x = 0.23 * (1 - 0.12 * closure);
+      head.children[i].scale.z = 0.22 * (1 + 0.08 * closure);
+    }
     // Leader endpoints identify the actual structure or explanatory route;
     // the shared annotation layer independently chooses each text position.
     anchorFlow(0, 0, 0.25);

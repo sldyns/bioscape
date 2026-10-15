@@ -1,3 +1,4 @@
+import { oralApparatus } from "./oralApparatus.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { nuclearCell } from "./nuclearCell.js";
 import { nuclearDetail } from "./fineStructure.js";
@@ -12,8 +13,8 @@ export default {
   ),
   duration: 40,
   intro: b(
-    "尾草履虫的相容配偶暂时接合，交换单倍体原核并各自形成合核。模型追踪到合核后代分化为大核原基与保留小核；末期单小核的选择展示恢复营养供给后的代表性过程；持续饥饿时多个候选小核可保留。后续两次细胞分裂未展开。颜色标示亲本来源，核数量依此物种。",
-    "Compatible P. caudatum partners temporarily join, exchange haploid pronuclei and each form a synkaryon. The model ends with macronuclear anlagen and a retained micronucleus; the final selection of one micronucleus represents nutritionally supported postconjugational development; multiple candidates may persist under continued starvation. Two subsequent cell fissions are omitted. Colors identify parental origin and nuclear counts are species-specific.",
+    "尾草履虫的相容配偶暂时接合，交换单倍体原核并各自形成合核。模型追踪到合核后代分化为大核原基与保留小核；末期单小核的选择展示恢复营养供给后的代表性过程；持续饥饿时多个候选小核可保留。后续两次细胞分裂未展开。口器前壁的观察剖窗用于显露原核交换，并非生理性缺口。颜色标示亲本来源，核数量依此物种。",
+    "Compatible P. caudatum partners temporarily join, exchange haploid pronuclei and each form a synkaryon. The model ends with macronuclear anlagen and a retained micronucleus; the final selection of one micronucleus represents nutritionally supported postconjugational development; multiple candidates may persist under continued starvation. Two subsequent cell fissions are omitted. An observational cut in the foreground oral wall exposes pronuclear exchange; it is not a physiological opening. Colors identify parental origin and nuclear counts are species-specific.",
   ),
   stages: [
     {
@@ -171,16 +172,7 @@ export default {
         width: 1.01,
         color: i ? "#c8bca4" : "#a8c3b4",
       });
-      k.tube(
-        [
-          [0.74, 0.66, 0.43],
-          [0.68, 0.18, 0.48],
-          [0.59, -0.3, 0.49],
-        ],
-        0.1,
-        k.material("#b6a17f"),
-        cell,
-      );
+      oralApparatus(k, cell, { observationWindow: true });
       const old = k.ball([-0.29, 0.65, 0.26], [0.38, 0.62, 0.25], oldMat, cell);
       old.name = `maternal-macronucleus-${i}`;
       const oldFragments = [];

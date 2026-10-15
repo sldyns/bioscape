@@ -34,3 +34,7 @@ After:
 `node src/processes/modules/traffic/smoke.mjs` passes bilingual metadata, all attributes/instance matrices finite, bounds between 2 and 20, deterministic repeated seeks, resource/node stability, coat lattice counts, membrane topology and native-reference signals. Both models bundle with esbuild. No allocations of geometries, materials or nodes occur in update. No controls were removed; these two models do not define condition controls.
 
 Rendered screenshot acceptance against the transcription baseline remains **pending root review**. Node/bundle checks establish the contract and scientific state transitions, not normal-distance visual acceptance. No browser, SVG, global renderer, kit, catalog or shared tests were edited in this refinement pass.
+
+## 2026-10-15 continuation
+
+Bent three-section cage legs and inward schematic terminal contacts replace single straight struts using shared geometry/materials. The phagophore's original inner/outer endpoints now connect through a rounded rim whose turn tapers during closure. Existing cargo folds, topology, source scope and fusion transitions retained. Focused science and new `refinement20261015.test.mjs` pass; new rendered acceptance remains pending root review. Full audit/resource costs: `docs/qa/process-refinement-2026-10-15/agents/refine_traffic_secretion.md`.

@@ -1,6 +1,7 @@
 import { THREE } from "../../kit.js";
 // Schematic mesoscale structures, not atomically fitted coordinates.
 const vesicleResources = new WeakMap();
+const chromatidResources = new WeakMap();
 const anchorPoint = new THREE.Vector3();
 const anchorInstance = new THREE.Matrix4();
 // Labels use geometry attachment points; their screen offsets belong to the
@@ -72,7 +73,16 @@ export function chromatid(k, mat) {
       r = 0.065 * (0.52 + 0.48 * Math.abs(2 * t - 1));
     points.push([r * Math.cos(a), -0.37 + 0.74 * t, r * Math.sin(a)]);
   }
-  k.tube(points, 0.026, mat, g, 192);
+  if (!chromatidResources.has(k)) {
+    const centerline = new THREE.CatmullRomCurve3(
+      points.map((p) => new THREE.Vector3(...p)),
+    );
+    chromatidResources.set(
+      k,
+      new THREE.TubeGeometry(centerline, 192, 0.026, 8),
+    );
+  }
+  k.mesh(chromatidResources.get(k), mat, [0, 0, 0], g);
   const chromatin = [];
   for (let j = 0; j < 66; j++) {
     const t = j / 65,

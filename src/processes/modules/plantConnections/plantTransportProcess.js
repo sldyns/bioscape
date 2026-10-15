@@ -224,11 +224,45 @@ function create() {
   const sugar = new THREE.Group();
   group.add(sugar);
   sugar.name = "tracked-sucrose";
-  const ringGeometry = new THREE.TorusGeometry(0.16, 0.045, 8, 6);
-  const r1 = mesh(ringGeometry, sucroseMat, [-0.13, 0, 0], sugar),
-    r2 = mesh(ringGeometry, sucroseMat, [0.17, 0, 0], sugar);
-  r2.rotation.z = 0.4;
-  segment([-0.01, 0, 0], [0.05, 0, 0], 0.045, sucroseMat, sugar);
+  // Ring-level cargo cartoon, not fitted atomic coordinates: sucrose contains
+  // glucopyranose (six-membered) and fructofuranose (five-membered) joined by O.
+  const glucoseRing = mesh(
+    new THREE.TorusGeometry(0.15, 0.035, 8, 6),
+    sucroseMat,
+    [-0.18, 0, 0],
+    sugar,
+  );
+  glucoseRing.name = "sucrose-glucopyranose-six-membered-ring";
+  const fructoseRing = mesh(
+    new THREE.TorusGeometry(0.135, 0.035, 8, 5),
+    sucroseMat,
+    [0.18, 0, 0],
+    sugar,
+  );
+  fructoseRing.rotation.z = Math.PI;
+  fructoseRing.name = "sucrose-fructofuranose-five-membered-ring";
+  const bridge = segment(
+    [-0.03, 0, 0],
+    [0.045, 0, 0],
+    0.028,
+    sucroseMat,
+    sugar,
+  );
+  bridge.name = "sucrose-glycosidic-bridge";
+  const oxygen = material("#d1a498");
+  ball([0.0075, 0, 0], 0.043, oxygen, sugar).name = "sucrose-glycosidic-oxygen";
+  ball([-0.105, Math.sin(Math.PI / 3) * 0.15, 0], 0.039, oxygen, sugar).name =
+    "sucrose-glucose-ring-oxygen";
+  ball(
+    [
+      0.18 - Math.cos((2 * Math.PI) / 5) * 0.135,
+      Math.sin((2 * Math.PI) / 5) * 0.135,
+      0,
+    ],
+    0.039,
+    oxygen,
+    sugar,
+  ).name = "sucrose-fructose-ring-oxygen";
   const coupledH = protons[0];
   const atp = new THREE.Group();
   group.add(atp);
@@ -418,6 +452,10 @@ export default {
     },
   ],
   sources: [
+    {
+      title: "PubChem sucrose: glucopyranosyl fructofuranoside ring identity",
+      url: "https://pubchem.ncbi.nlm.nih.gov/compound/Sucrose",
+    },
     {
       title:
         "Pedersen et al. (2007), Crystal structure of the plasma membrane proton pump",

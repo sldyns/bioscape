@@ -1,3 +1,4 @@
+import { surfaceSection } from "./surfaceSection.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 import { labelAnchors } from "./labelAnchors.js";
 
@@ -33,6 +34,7 @@ function create() {
     ],
     [44, 32, 16],
   );
+  const plasmaSection = surfaceSection(k, plasma.mesh, "#b99d9d");
   const nuclear = new THREE.Group();
   group.add(nuclear);
   nuclear.position.set(-0.86, 0.2, 0.07);
@@ -193,6 +195,7 @@ function create() {
         0.009,
       );
     }
+    h.name = "hemoglobin-tetramer";
     hemoglobin.push({ h, x, y });
   }
   const mito = k.ring([-1.82, -0.71, 0.12], 0.26, 0.06, k.material("#b2a18c"));
@@ -335,11 +338,13 @@ function create() {
       r.position.y = hemoglobin[i].y * (1 - 0.3 * condense);
     });
     hemoglobin.forEach(({ h, x, y }, i) => {
-      h.visible = synthesis > (i + 1) / 22;
+      const growth = ease(synthesis, (i + 1) / 22, (i + 1) / 22 + 0.08);
+      h.visible = growth > 0;
+      h.scale.setScalar(Math.max(0.001, growth));
       h.position.set(
-        -0.75 + (x + 0.75) * (1 - 0.32 * condense),
-        y * (1 - 0.32 * condense),
-        0.14,
+        -0.75 + (x + 0.75) * (1 - 0.32 * condense) - y * 0.16,
+        y * (1 - 0.32 * condense) + (x + 0.75) * 0.16,
+        0.38,
       );
     });
     mito.position.set(-1.82 + 0.35 * condense, -0.71, 0.12);
@@ -357,6 +362,7 @@ function create() {
       ],
       0.13,
     );
+    plasmaSection.update();
     // Attach the regional constriction callout to the membrane section,
     // not to an invented cortical ring or a fixed point outside the cell.
     constrictionPoint[0] = (-0.75 + nuclear.position.x) / 2;

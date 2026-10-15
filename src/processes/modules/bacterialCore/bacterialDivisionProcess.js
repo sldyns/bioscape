@@ -222,9 +222,9 @@ const process = {
     const dnaPieces = [[], []],
       pieces = 288;
     const dnaPoint = (t) => [
-      (1.06 + 0.12 * Math.cos(t * 17)) * Math.cos(t),
-      (0.3 + 0.12 * Math.cos(t * 17)) * Math.sin(t),
-      0.13 * Math.sin(t * 17) + 0.04 * Math.sin(t * 3),
+      (0.95 + 0.14 * Math.cos(t * 17)) * Math.cos(t),
+      (0.34 + 0.15 * Math.cos(t * 17)) * Math.sin(t),
+      0.24 * Math.sin(t * 17) + 0.11 * Math.sin(t * 3),
     ];
     for (let s = 0; s < 2; s++)
       for (let i = 0; i < pieces; i++)

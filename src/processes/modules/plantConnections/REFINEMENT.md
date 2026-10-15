@@ -35,3 +35,9 @@ All four passed finite vertex/normal/instance buffers and bounds (largest dimens
 Current scene inventories: plantTransport 242 nodes / 2346 structural instances; plasmodesmata 460 / 1056; photorespiration 254 / 45; c4cam 498 / 1308. Files are formatted with Prettier. No material objects are swapped during update.
 
 These checks establish mechanical integrity, not visual acceptance. Root screenshot review is still required to judge normal-view legibility and comparison with the accepted transcription/structural baseline; no screenshot-based baseline pass is claimed here.
+
+## 2026-10-15 native-image audit continuation
+
+Personally reviewed current native baseline images for all four processes (both C4/CAM branches); earlier details above remain history. Retained existing membrane, pore, organelle and carbon-storage anatomy after checking the clear silhouettes and preserved scientific invariants. Plant transport cargo changed from two identical hexagons to distinct six-membered glucopyranose / five-membered fructofuranose rings with a visible oxygen bridge and ring oxygen markers. This is a schematic ring cartoon, not atomic coordinates. PubChem sucrose provides ring-identity support. Existing energy branches and rigid cargo trajectory remain intact.
+
+New `cargoRefinement.test.mjs` and existing science/topology/CAM/anchors/smoke tests pass. Transport resource delta against the frozen current baseline: +3 nodes, +1 geometry, +1 material and +2,208 geometry buffer bytes; no update-time construction. Detailed seven-image audit and all six process decisions are in `docs/qa/process-refinement-2026-10-15/agents/refine_plant_connections.md`. Root after-image acceptance remains pending.

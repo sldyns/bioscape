@@ -1,3 +1,4 @@
+import { oralApparatus } from "./oralApparatus.js";
 import { binaryNuclearFission } from "./nuclearLineage.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { nuclearCell } from "./nuclearCell.js";
@@ -164,26 +165,7 @@ export default {
       }
     const oral = [];
     for (let i = 0; i < 2; i++) {
-      const g = new THREE.Group();
-      group.add(g);
-      k.tube(
-        [
-          [0.72, 0.48, 0.52],
-          [0.53, 0, 0.58],
-          [0.5, -0.35, 0.57],
-        ],
-        0.085,
-        k.material("#b29a75"),
-        g,
-      );
-      for (let j = 0; j < 6; j++)
-        k.segment(
-          [0.72 - j * 0.025, 0.37 - j * 0.1, 0.61],
-          [0.92 - j * 0.025, 0.3 - j * 0.1, 0.61],
-          0.012,
-          k.material("#c6b795"),
-          g,
-        );
+      const g = oralApparatus(k, group);
       oral.push(g);
     }
     const furrow = k.ring([0, 0, 0], 1.05, 0.028, k.material("#7f9e8c"));

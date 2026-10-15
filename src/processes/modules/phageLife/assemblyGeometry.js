@@ -21,6 +21,9 @@ export function cutawayHead(k, parent) {
     transparent: true,
     opacity: 0.6,
   });
+  const capsomerMaterial = k.material("#bbccd2"),
+    innerMaterial = k.material("#8ba3b0", { side: THREE.DoubleSide }),
+    cutMaterial = k.material("#758c99", { side: THREE.DoubleSide });
   const clip = (polygon, axis, value, less) => {
     const out = [];
     for (let j = 0; j < polygon.length; j++) {
@@ -57,15 +60,10 @@ export function cutawayHead(k, parent) {
         k,
         panel,
         [polygon[0], polygon[j], polygon[j + 1]],
-        k.material("#bbccd2"),
+        capsomerMaterial,
         { radius: 0.065 },
       );
-    const inner = k.mesh(
-      geo,
-      k.material("#8ba3b0", { side: THREE.DoubleSide }),
-      [0, 0, 0],
-      panel,
-    );
+    const inner = k.mesh(geo, innerMaterial, [0, 0, 0], panel);
     inner.scale.setScalar(0.957);
     for (let j = 0; j < polygon.length; j++) {
       const a = polygon[j],
@@ -82,12 +80,7 @@ export function cutawayHead(k, parent) {
           ),
         );
         rim.computeVertexNormals();
-        k.mesh(
-          rim,
-          k.material("#758c99", { side: THREE.DoubleSide }),
-          [0, 0, 0],
-          panel,
-        );
+        k.mesh(rim, cutMaterial, [0, 0, 0], panel);
       }
     }
     panels.push(panel);

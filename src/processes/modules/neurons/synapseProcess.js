@@ -466,7 +466,7 @@ export default {
       else anchorVertex(labels[2], vesicle.children[0], 12 * (36 + 1));
       anchorObject(labels[4], receptors[0].channel.bindingAnchors[0]);
       anchorObject(labels[5], uptake);
-      group.userData = {
+      Object.assign(group.userData, {
         process: "synapse",
         specimen: "mammalian central glutamatergic synapse",
         calcium: allowed ? "available" : "blocked",
@@ -481,7 +481,7 @@ export default {
               ? "extracellular cleft"
               : "astrocytic uptake",
         transmitterEntersPostsynapticCell: false,
-      };
+      });
     }
     update(0);
     return {

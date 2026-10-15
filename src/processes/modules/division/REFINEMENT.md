@@ -27,3 +27,9 @@ Mouse spermatocyte identity, two-autosome-pair subset, reciprocal nonsister dist
 `node src/processes/modules/division/division.smoke.mjs` passes for both definitions: 246 mitosis nodes / 355 meiosis nodes. It checks bilingual stages, finite positions/normals/instance matrices and bounds, complete material inventories, stable resource/node identities, required structural features, repeated seeks across 13 transition samples, checkpoint/control restoration, biological state and esbuild bundling. Owned JavaScript and smoke files formatted with Prettier.
 
 Visual acceptance remains open for root screenshot review. No claim is made that code tests alone meet the accepted visual baseline. Chromatin packing and membrane crossfades are educational approximations; molecular recombination chemistry, decondensation into a full interphase chromatin network, and the detailed membrane-abscission machinery are not expanded. No known local runtime failures remain.
+
+## 2026-10-15 continuous arms and segregation motion
+
+Rounded true telomeres and exactly continuous distal exchange joins replace segmented tapered arm ends. Thinner, less densely wound surface paths expose the continuous core. Centromere-leading arm flexion follows mitotic and both meiotic segregation axes; existing crossover deformation remains additive. Stationary spindle inputs skip buffer rebuilding. New focused motion/junction/cache checks and existing science/smoke/path regressions pass. Root rendered acceptance remains open; see `docs/qa/process-refinement-2026-10-15/agents/refine_division.md`.
+
+The first 14-phase rendered review withheld acceptance because surface winding still dominated. Found and corrected inward chromosome core triangle winding; exterior normals now have a focused regression. Embedded path/domain detail into the condensed mass and softened radial relief; mitotic interpolar bundles now bow gently into a fan. Second rendered acceptance pending.

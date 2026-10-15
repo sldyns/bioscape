@@ -193,7 +193,11 @@ function create() {
         ? -exchange.x * Math.min(1, cross * 2) * (1 - separateI)
         : 0;
       // The previous reset path kept +0 when its subsequent target was -0.
-      c.setDeflection(deflection === 0 ? 0 : deflection);
+      c.setDeflection(
+        deflection === 0 ? 0 : deflection,
+        -homolog * 0.17 * Math.sin(Math.PI * separateI) * (1 - rotate) +
+          sister * 0.2 * Math.sin(Math.PI * separateII) * rotate,
+      );
       c.setDistalMaterial(recombinant && cross >= 0.5 ? c.exchanged : c.base);
       const aI = p >= 0.28 && p < 0.55,
         aII = p >= 0.62 && p < 0.91;

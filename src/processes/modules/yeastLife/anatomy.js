@@ -88,6 +88,8 @@ export function layeredCutaway(
   heads.frustumCulled = false;
   k.group.add(heads);
   const temp = new THREE.Object3D();
+  const edgeObjects = [edge, heads],
+    leafletFactors = [layerSpecs.at(-1)[0], layerSpecs.at(-2)[0]];
   function update() {
     const src = geometry.attributes.position.array;
     for (const layer of layers) {
@@ -118,7 +120,7 @@ export function layeredCutaway(
           edgePositions[offset + 2] = src[index + 2] * f;
         }
         if (i % 2 === 1)
-          for (const f of [layerSpecs.at(-1)[0], layerSpecs.at(-2)[0]]) {
+          for (const f of leafletFactors) {
             temp.position.set(
               src[index] * (axis === "x" ? 1 : f),
               src[index + 1] * (axis === "y" ? 1 : f),
@@ -133,7 +135,7 @@ export function layeredCutaway(
     edge.geometry.computeVertexNormals();
     edge.geometry.computeBoundingSphere();
     edge.geometry.computeBoundingBox();
-    for (const item of [edge, heads]) {
+    for (const item of edgeObjects) {
       item.visible = source.visible;
       item.position.copy(source.position);
       item.quaternion.copy(source.quaternion);
@@ -315,17 +317,22 @@ export function proteinPocket(k, parent, tint = "#bda989") {
     k.material("#ccbfa8"),
     k.material("#aa987e"),
   ];
-  for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * TAU,
-      x = 0.47 * Math.cos(a),
-      y = 0.76 * Math.sin(a);
-    const l = k.ball(
-      [x, y, -0.28],
-      [0.25 + (i % 3) * 0.035, 0.21, 0.21],
-      domainMats[i % 3],
-      parent,
-    );
-    l.rotation.z = a;
+  // Deliberately asymmetric folded surfaces leave the substrate-facing cleft
+  // open. These are schematic domains, not a claimed subunit count or structure.
+  const lobes = [
+    [-0.44, -0.49, -0.29, 0.3, 0.31, 0.24, -0.25],
+    [-0.51, 0.02, -0.29, 0.27, 0.43, 0.26, 0.12],
+    [-0.35, 0.57, -0.29, 0.37, 0.27, 0.25, -0.32],
+    [0.19, 0.71, -0.34, 0.34, 0.24, 0.22, 0.18],
+    [0.48, 0.24, -0.35, 0.27, 0.38, 0.25, -0.22],
+    [0.43, -0.43, -0.35, 0.29, 0.34, 0.24, 0.32],
+    [-0.03, -0.71, -0.32, 0.38, 0.21, 0.24, -0.1],
+  ];
+  for (let i = 0; i < lobes.length; i++) {
+    const [x, y, z, sx, sy, sz, rotation] = lobes[i];
+    const lobe = k.ball([x, y, z], [sx, sy, sz], domainMats[i % 3], parent);
+    lobe.name = "enzyme-folded-domain";
+    lobe.rotation.z = rotation;
   }
   const foldMat = k.material("#dfd1b4");
   for (let i = 0; i < 5; i++) {
@@ -358,8 +365,20 @@ export function proteinPocket(k, parent, tint = "#bda989") {
     );
     mesh.rotation.z = -0.22;
   }
-  const rim = k.ring([0, 0, -0.11], 0.3, 0.035, k.material("#8f806b"), parent);
-  rim.scale.set(0.8, 1.5, 1);
+  const lipGeometry = new THREE.TorusGeometry(
+      0.3,
+      0.035,
+      8,
+      28,
+      Math.PI * 0.72,
+    ),
+    lipMaterial = k.material("#8f806b");
+  for (const angle of [0.17, Math.PI + 0.17]) {
+    const lip = k.mesh(lipGeometry, lipMaterial, [0, 0, -0.11], parent);
+    lip.name = "open-enzyme-cleft-lip";
+    lip.scale.set(0.8, 1.5, 1);
+    lip.rotation.z = angle;
+  }
   k.ball([0.06, 0.12, -0.04], 0.07, k.material("#c0a265"), parent);
 }
 export function surfacePores(k, source, rows = 40, columns = 48) {
@@ -377,6 +396,7 @@ export function surfacePores(k, source, rows = 40, columns = 48) {
     point = new THREE.Vector3(),
     local = new THREE.Vector3(),
     quat = new THREE.Quaternion();
+  const poreObjects = [pores, subunits];
   function update() {
     const a = source.geometry.attributes.position,
       n = source.geometry.attributes.normal;
@@ -407,7 +427,7 @@ export function surfacePores(k, source, rows = 40, columns = 48) {
         subunits.setMatrixAt(i * 8 + j, temp.matrix);
       }
     }
-    for (const m of [pores, subunits]) {
+    for (const m of poreObjects) {
       m.visible = source.visible;
       m.position.copy(source.position);
       m.quaternion.copy(source.quaternion);

@@ -65,8 +65,41 @@ export function molecularKit(group) {
         new THREE.Color(color).lerp(new THREE.Color("#e4dfd8"), 0.22),
       ),
       dark = mat(new THREE.Color(color).multiplyScalar(0.78));
+    // Distinct schematic assemblies expose their functional opening. These
+    // domains describe the teaching silhouette, not fitted atomic subunits.
+    const assemblies = {
+      recognition: [
+        [-0.43, 0.04, -0.12, 0.22, 0.29, 0.25],
+        [0.39, 0.08, -0.16, 0.26, 0.32, 0.23],
+        [0, -0.29, -0.24, 0.47, 0.14, 0.2],
+        [-0.56, 0.34, -0.18, 0.14, 0.24, 0.17],
+      ],
+      TFIIH: [
+        [-0.46, 0.02, -0.19, 0.3, 0.43, 0.32],
+        [0.43, 0.05, -0.19, 0.27, 0.39, 0.3],
+        [0, -0.37, -0.26, 0.49, 0.18, 0.24],
+        [-0.3, 0.48, -0.27, 0.25, 0.2, 0.22],
+        [0.17, 0.48, -0.29, 0.23, 0.17, 0.21],
+        [0.6, 0.36, -0.25, 0.18, 0.2, 0.2],
+        [-0.65, -0.28, -0.26, 0.18, 0.19, 0.21],
+      ],
+      primase: [
+        [-0.25, -0.07, -0.12, 0.29, 0.36, 0.27],
+        [0.31, 0.1, -0.15, 0.24, 0.28, 0.24],
+        [0.03, -0.24, -0.19, 0.27, 0.13, 0.2],
+        [0.43, 0.38, -0.19, 0.14, 0.22, 0.15],
+      ],
+      ligase: [
+        [-0.38, 0, -0.15, 0.18, 0.4, 0.25],
+        [0.34, 0.02, -0.15, 0.18, 0.36, 0.25],
+        [0, -0.32, -0.2, 0.36, 0.17, 0.22],
+        [-0.22, 0.36, -0.18, 0.22, 0.17, 0.21],
+        [0.24, 0.33, -0.18, 0.16, 0.15, 0.19],
+      ],
+    };
     const domains =
-      kind === "nuclease"
+      assemblies[kind] ??
+      (kind === "nuclease"
         ? [
             [-0.25, 0.18, -0.1, 0.28, 0.25, 0.18],
             [0.21, 0.17, -0.1, 0.2, 0.3, 0.19],
@@ -78,7 +111,9 @@ export function molecularKit(group) {
             [0, -0.34, -0.2, 0.38, 0.21, 0.28],
             [-0.32, 0.42, -0.18, 0.2, 0.18, 0.21],
             [0.28, 0.4, -0.19, 0.2, 0.22, 0.21],
-          ];
+          ]);
+    g.userData.schematicAssembly = kind;
+    g.userData.domainCount = domains.length;
     domains.forEach((v, i) =>
       blob(g, i % 2 ? light : m, v.slice(0, 3), v.slice(3)),
     );
