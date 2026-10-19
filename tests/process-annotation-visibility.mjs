@@ -10,6 +10,7 @@ import * as THREE from "three";
 // Run the real component/effects with a recording DOM and renderer. This checks
 // scheduling and layout access without a browser, GPU or timing assumptions.
 const runtime = { current: null };
+let nextId = 0;
 const globals = new Map(
   [
     "window",
@@ -105,6 +106,7 @@ class Controls {
   }
   saveState() {}
   addEventListener() {}
+  listenToKeyEvents() {}
   dispose() {}
 }
 runtime.three = {
@@ -141,6 +143,9 @@ function fixture(Component, annotations = false) {
   };
   runtime.current = context;
   context.hooks = {
+    useId() {
+      return (context.slots[context.index++] ??= `annotation-${nextId++}`);
+    },
     useRef(initial) {
       const i = context.index++;
       return (context.slots[i] ??= { current: initial });
@@ -316,7 +321,7 @@ try {
             const host = "globalThis.__processAnnotationRuntime";
             if (path === "react")
               return {
-                contents: `export const useRef=(...a)=>${host}.current.hooks.useRef(...a); export const useState=(...a)=>${host}.current.hooks.useState(...a); export const useEffect=(...a)=>${host}.current.hooks.useEffect(...a); export default {createElement:(...a)=>${host}.current.hooks.createElement(...a)};`,
+                contents: `export const useId=(...a)=>${host}.current.hooks.useId(...a); export const useRef=(...a)=>${host}.current.hooks.useRef(...a); export const useState=(...a)=>${host}.current.hooks.useState(...a); export const useEffect=(...a)=>${host}.current.hooks.useEffect(...a); export default {createElement:(...a)=>${host}.current.hooks.createElement(...a)};`,
               };
             if (path === "three")
               return {

@@ -1,3 +1,5 @@
+import StudioLoading from "./components/StudioLoading.jsx";
+import { lockPageScroll } from "./scrollLock.js";
 import { project } from "./project";
 import AboutModel from "./components/AboutModel";
 import ProcessDirectory from "./processes/ProcessDirectory";
@@ -140,6 +142,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
       camera: sharedState?.camera,
     }),
     processStates = useRef(new Map()),
+    directoryFilters = useRef(new Map()),
     structureCamera = useRef(
       sharedState?.origin?.camera || sharedState?.camera,
     );
@@ -605,8 +608,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
   }, [lang, en, node.name, experience, path, processId, comparison]);
   useEffect(() => {
     if (!about) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const releaseScroll = lockPageScroll();
     aboutRef.current?.querySelector("button")?.focus();
     const key = (e) => {
       if (e.key === "Escape") {
@@ -614,8 +616,17 @@ export default function App({ historySession, onHome, onSceneLeave }) {
         setAbout(false);
       }
       if (e.key === "Tab") {
-        const items = aboutRef.current?.querySelectorAll("button,a[href]");
-        if (!items?.length) return;
+        const items = [
+          ...(aboutRef.current?.querySelectorAll(
+            "button:not(:disabled), a[href], summary",
+          ) || []),
+        ].filter(
+          (element) =>
+            element.getClientRects().length &&
+            (!element.closest("details:not([open])") ||
+              element.tagName === "SUMMARY"),
+        );
+        if (!items.length) return;
         const first = items[0],
           last = items[items.length - 1];
         if (!aboutRef.current.contains(document.activeElement)) {
@@ -633,7 +644,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     window.addEventListener("keydown", key);
     return () => {
       window.removeEventListener("keydown", key);
-      document.body.style.overflow = previousOverflow;
+      releaseScroll();
       const focusTarget = previousFocus.current?.isConnected
         ? previousFocus.current
         : catalogTitle.current;
@@ -812,6 +823,10 @@ export default function App({ historySession, onHome, onSceneLeave }) {
               processId={processId}
               rootId={path[0]}
               lang={lang}
+              initialFilters={directoryFilters.current.get(path[0])}
+              onFiltersChange={(filters) =>
+                directoryFilters.current.set(path[0], filters)
+              }
               suspended={modalOpen}
               onSelect={(key) => navigate(path, true, "process", key)}
               onBack={() => navigate(path, true, "process", null)}
@@ -1232,9 +1247,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
       {studio && (
         <Suspense
           fallback={
-            <div className="share-backdrop" role="status">
-              {t("正在准备工作台…", "Preparing Studio…")}
-            </div>
+            <StudioLoading lang={lang} onClose={() => setStudio(null)} />
           }
         >
           <Studio

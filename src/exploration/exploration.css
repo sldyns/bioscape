@@ -328,3 +328,7 @@
     transition: none;
   }
 }
+
+.studio-loading-dialog .share-copy {
+  min-height: 44px;
+}

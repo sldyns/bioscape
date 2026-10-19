@@ -10,6 +10,7 @@ import {
 } from "./geometrySnapshot.test-support.mjs";
 import { sceneKit } from "../../kit.js";
 import { hollowInlet } from "./scientificGeometry.js";
+import { assertVacuolePoreReview } from "./vacuolePoreReview.test-support.mjs";
 
 // RPP-01 nuclear repair and the 2026-10-15 oral-art delta are explicit.
 // Every other division subtree stays strictly on the immutable baseline.
@@ -310,6 +311,8 @@ export async function runGeometryEquivalence() {
         assert.deepEqual(current.model.camera, original.model.camera);
       } else if (row.id === "parameciumConjugation") {
         conjugationNonoral(current, original);
+      } else if (row.id === "contractileVacuole") {
+        assertVacuolePoreReview(current, original, progress, row.parameters);
       } else {
         assert.deepEqual(
           currentExpected,

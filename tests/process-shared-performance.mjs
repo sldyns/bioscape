@@ -13,6 +13,7 @@ import { restoreProcessSession } from "../src/exploration/processSession.js";
 // Execute the real React component bodies/effects. Only browser/GPU adapters are
 // replaced; model transforms, annotation projection/layout and disposal are real.
 const runtime = { current: null };
+let nextId = 0;
 let groupProcessStructures;
 const originals = new Map(
   [
@@ -130,6 +131,7 @@ class Controls {
   }
   saveState() {}
   addEventListener() {}
+  listenToKeyEvents() {}
   dispose() {}
 }
 
@@ -210,6 +212,9 @@ function fixture(Component, props) {
     return slot.value;
   };
   f.hooks = {
+    useId() {
+      return (f.slots[f.index++] ??= `shared-${nextId++}`);
+    },
     useRef(initial) {
       return (f.slots[f.index++] ??= { current: initial });
     },
@@ -440,6 +445,7 @@ try {
               return {
                 contents: [
                   ...[
+                    "useId",
                     "useRef",
                     "useState",
                     "useEffect",

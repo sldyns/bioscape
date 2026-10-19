@@ -2,7 +2,7 @@ import { createFacingCull } from "./scene/facingCull";
 import { createDetailLoader } from "./scene/detailLoader";
 import { createPickingIndex } from "./scene/picking";
 import { createPickingCandidates } from "./scene/pickingCandidates.js";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -50,14 +50,17 @@ export default function CellScene({
   allowZoom = true,
   autoRotateLimit = 0,
 }) {
+  const keyboardHintId = useId();
   const host = useRef(),
     engine = useRef(),
     live = useRef();
+  const recoveryView = useRef(null);
   const [error, setError] = useState(null),
     [attempt, setAttempt] = useState(0);
   live.current = {
     nodeId,
     viewKey,
+    resetKey,
     highlight,
     onEnter,
     mode,
@@ -102,6 +105,16 @@ export default function CellScene({
     const facingCull = createFacingCull(renderer);
     const loseContext = (event) => {
       event.preventDefault();
+      if (api?.ready)
+        recoveryView.current = {
+          viewKey: currentKey,
+          nodeId: live.current.nodeId,
+          resetKey: live.current.resetKey,
+          initialView: JSON.stringify(
+            normalizeSceneView(live.current.initialView),
+          ),
+          view: readView(),
+        };
       contextLost = true;
       publishReady(null);
       capture?.dispose();
@@ -133,6 +146,10 @@ export default function CellScene({
     scene.matrixWorldAutoUpdate = false;
     camera.position.set(0.5, 0.65, 11.4);
     const controls = new OrbitControls(camera, renderer.domElement);
+    renderer.domElement.tabIndex = 0;
+    renderer.domElement.setAttribute("role", "img");
+    renderer.domElement.setAttribute("aria-labelledby", keyboardHintId);
+    controls.listenToKeyEvents(renderer.domElement);
     controls.enableZoom = allowZoom;
     controls.enableDamping = !reduceMotion;
     controls.enablePan = false;
@@ -562,7 +579,18 @@ export default function CellScene({
         ),
       });
       renderer.shadowMap.needsUpdate = true;
-      if (live.current.initialView) setView(live.current.initialView);
+      // A rebuilt renderer should resume this view, unless navigation or an
+      // explicit reset requested a different one while the context was lost.
+      const recovery = recoveryView.current;
+      recoveryView.current = null;
+      const resume =
+        recovery?.viewKey === currentKey &&
+        recovery.nodeId === live.current.nodeId &&
+        recovery.resetKey === live.current.resetKey &&
+        recovery.initialView ===
+          JSON.stringify(normalizeSceneView(live.current.initialView));
+      const initial = resume ? recovery.view : live.current.initialView;
+      if (initial) setView(initial);
     }
     function requestNode(id) {
       const key = live.current.viewKey;
@@ -1258,6 +1286,11 @@ export default function CellScene({
       ref={host}
       aria-label={lang === "en" ? "Interactive 3D model" : "可交互三维模型"}
     >
+      <p id={keyboardHintId} className="scene-keyboard-hint" aria-hidden="true">
+        {lang === "en"
+          ? "3D model · Shift + arrow keys to rotate · Tab to leave"
+          : "三维模型 · Shift + 方向键旋转 · Tab 移到其他控件"}
+      </p>
       {error && (
         <div className="webgl-error" role="alert">
           <p>

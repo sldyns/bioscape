@@ -619,16 +619,18 @@ export default {
             const x = -3.55 + (i / (pairCount - 1)) * 5.2,
               a = dnaPoint(x, strand, center, opening * 0.96),
               b = dnaPoint(x, 1 - strand, center, opening * 0.96),
-              opened = tx > 0 && Math.abs(x - center) < 0.36;
+              local = Math.max(0, 1 - Math.abs(x - center) / 0.45),
+              baseOpening = opening * local * local * (3 - 2 * local),
+              baseExtension = 0.48 * (1 - baseOpening) + 0.17 * baseOpening;
             writer.bead(phosphates[strand], i, a, 0.044);
             writer.segment(
               bases[strand],
               i,
               a,
               [
-                a[0] + (opened ? (strand ? 0.065 : -0.065) : 0),
-                a[1] + (b[1] - a[1]) * (opened ? 0.17 : 0.48),
-                a[2] + (b[2] - a[2]) * (opened ? 0.17 : 0.48),
+                a[0] + (strand ? 0.065 : -0.065) * baseOpening,
+                a[1] + (b[1] - a[1]) * baseExtension,
+                a[2] + (b[2] - a[2]) * baseExtension,
               ],
               0.032,
             );

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -31,8 +31,10 @@ export default function ProcessScene({
   initialView,
   onViewChange,
 }) {
+  const keyboardHintId = useId();
   const host = useRef(null);
   const engine = useRef(null);
+  const recoveryView = useRef(null);
   const keyHost = useRef(null);
   const live = useRef();
   live.current = {
@@ -43,6 +45,7 @@ export default function ProcessScene({
     annotations,
     onSceneReady,
     initialView,
+    resetKey,
     onViewChange,
   };
   const lastReady = useRef({ callback: null, api: null });
@@ -142,6 +145,16 @@ export default function ProcessScene({
     };
     const onContextLost = (event) => {
       event.preventDefault();
+      if (api?.ready)
+        recoveryView.current = {
+          definition,
+          rootId,
+          resetKey: live.current.resetKey,
+          initialView: JSON.stringify(
+            normalizeSceneView(live.current.initialView),
+          ),
+          view: view(),
+        };
       contextLost = true;
       publishReady(null);
       capture?.dispose();
@@ -274,6 +287,10 @@ export default function ProcessScene({
       scene.matrixWorldAutoUpdate = false;
       camera = new THREE.PerspectiveCamera(36, 1, 0.1, 150);
       controls = new OrbitControls(camera, renderer.domElement);
+      renderer.domElement.tabIndex = 0;
+      renderer.domElement.setAttribute("role", "img");
+      renderer.domElement.setAttribute("aria-labelledby", keyboardHintId);
+      controls.listenToKeyEvents(renderer.domElement);
       controls.enablePan = false;
       controls.enableDamping = !window.matchMedia(
         "(prefers-reduced-motion: reduce)",
@@ -531,7 +548,16 @@ export default function ProcessScene({
           }
         },
       };
-      if (live.current.initialView) setView(live.current.initialView);
+      const recovery = recoveryView.current;
+      recoveryView.current = null;
+      const resume =
+        recovery?.definition === definition &&
+        recovery.rootId === rootId &&
+        recovery.resetKey === live.current.resetKey &&
+        recovery.initialView ===
+          JSON.stringify(normalizeSceneView(live.current.initialView));
+      const initial = resume ? recovery.view : live.current.initialView;
+      if (initial) setView(initial);
       observer = new ResizeObserver(() => resize());
       observer.observe(element);
       document.fonts?.addEventListener("loadingdone", invalidateAnnotations);
@@ -542,7 +568,14 @@ export default function ProcessScene({
         invalidateAnnotations,
         reset() {
           if (disposed) return;
-          controls.reset();
+          const damping = controls.enableDamping;
+          try {
+            // Consume the pending orbit delta before restoring the default pose.
+            controls.enableDamping = false;
+            controls.reset();
+          } finally {
+            controls.enableDamping = damping;
+          }
           controls.target.copy(target);
           camera.position
             .copy(target)
@@ -605,6 +638,15 @@ export default function ProcessScene({
             : "Rotatable, zoomable process model"
         }
       >
+        <p
+          id={keyboardHintId}
+          className="scene-keyboard-hint"
+          aria-hidden="true"
+        >
+          {lang === "en"
+            ? "3D model · Shift + arrow keys to rotate · Tab to leave"
+            : "三维模型 · Shift + 方向键旋转 · Tab 移到其他控件"}
+        </p>
         {error && (
           <div className="process-scene-error" role="alert">
             <p>

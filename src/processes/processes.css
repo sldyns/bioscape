@@ -1,8 +1,9 @@
 .process-workspace {
+  --process-chrome-height: 162px;
   display: grid;
   grid-template-columns: 218px minmax(0, 1fr) 306px;
   min-height: 550px;
-  height: calc(100svh - 162px);
+  height: calc(100svh - var(--process-chrome-height));
 }
 .process-catalog,
 .process-explanation {
@@ -486,6 +487,11 @@
   .process-stage {
     min-height: 510px;
   }
+  .process-workspace[data-process] {
+    grid-template-rows:
+      minmax(510px, calc(100svh - var(--process-chrome-height)))
+      auto;
+  }
   .process-explanation {
     grid-column: 1 / -1;
     border-left: 0;
@@ -498,6 +504,9 @@
   }
 }
 @media (max-width: 700px) {
+  .process-workspace {
+    --process-chrome-height: 193px;
+  }
   .process-directory {
     display: flex;
     flex-direction: column;
@@ -604,7 +613,8 @@
     margin-top: 15px;
   }
 }
-@media (max-height: 480px) and (min-width: 601px) {
+/* The full desktop layout needs 550px plus 162px of navigation. */
+@media (max-height: 712px) and (min-width: 601px) {
   .atlas:has(.process-workspace) .app-header {
     height: 48px;
     padding: 6px 14px;
@@ -626,7 +636,15 @@
     padding-block: 3px;
   }
   .process-workspace {
+    --process-chrome-height: 126px;
     grid-template-columns: 150px minmax(0, 1fr);
+  }
+  .process-workspace[data-process] {
+    grid-template-rows:
+      minmax(235px, calc(100svh - var(--process-chrome-height)))
+      auto;
+    height: auto;
+    min-height: 0;
   }
   .process-stage {
     height: calc(100svh - 126px);
@@ -660,6 +678,12 @@
   }
   .process-step-controls {
     display: none;
+  }
+  .process-explanation {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    overflow: visible;
   }
 }
 
@@ -804,7 +828,7 @@
     min-height: 28px;
   }
 }
-@media (max-height: 480px) and (min-width: 601px) {
+@media (max-height: 712px) and (min-width: 601px) {
   .process-visual,
   .process-scene-shell .process-canvas {
     min-height: 0;
@@ -842,5 +866,12 @@
   }
   .process-reading-controls select {
     font-size: 11px;
+  }
+}
+@media (min-height: 481px) and (max-height: 712px) and (min-width: 601px) {
+  .process-step-controls {
+    display: flex;
+    grid-column: 1 / -1;
+    margin-top: 0;
   }
 }

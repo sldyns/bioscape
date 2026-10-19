@@ -1,5 +1,6 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Search, X } from "lucide-react";
+import { lockPageScroll } from "../scrollLock.js";
 import {
   comparisonGroups,
   getComparisonEntry,
@@ -33,6 +34,9 @@ export default function ModelPicker({
       .join(" / ");
   const isSelected = (entry) =>
     entry.id === selected.id && entry.rootId === selected.rootId;
+  useEffect(() => {
+    if (open) return lockPageScroll();
+  }, [open]);
   useEffect(() => {
     if (open) {
       dialog.current.showModal();
@@ -133,6 +137,12 @@ export default function ModelPicker({
                 setActive(0);
               }}
               onKeyDown={(event) => {
+                // IME confirmation and candidate navigation belong to the input.
+                if (
+                  event.nativeEvent.isComposing ||
+                  event.nativeEvent.keyCode === 229
+                )
+                  return;
                 if (["ArrowDown", "ArrowUp"].includes(event.key)) {
                   event.preventDefault();
                   setActive((current) =>

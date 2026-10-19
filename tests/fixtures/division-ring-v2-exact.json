@@ -1,0 +1,228 @@
+{
+  "reference": {
+    "source": "/Users/kun/Documents/vc/docs/qa/division-tail-2026-10-16/baseline-source/src/processes/modules/division/divisionShapes.js",
+    "sha256": "2a126270c789d3195f833b05156a36c2550e66045ca9e891b2606ef5ff65c868",
+    "description": "Independent frozen V2 prior to ring tables/hoist/raw and normal+bounds fusion"
+  },
+  "expected": {
+    "constructor": "cbf63df7cd3c7fb3eaab71242e4bd15af243d81da87b91e75095b2247a2fc30e",
+    "states": [
+      {
+        "actionIndex": 0,
+        "ring": 0,
+        "queries": 100,
+        "hash": "8478a45ce9ea214db20b75bcb56286451817264e9d1995e17c5af81376a8ba47"
+      },
+      {
+        "actionIndex": 0,
+        "ring": 1,
+        "queries": 100,
+        "hash": "7f621f442f84a3f29803dd659b311be301252ec6ae712873f125c764e41f3c53"
+      },
+      {
+        "actionIndex": 0,
+        "ring": 2,
+        "queries": 100,
+        "hash": "0c0b1e77a1d507537687ca25935da5289599d82053b60406ac856b6c6d0ecb85"
+      },
+      {
+        "actionIndex": 1,
+        "ring": 0,
+        "queries": 0,
+        "hash": "96e50a79ee835cc655157a05b71563b30a3d26dbdd6e570f34f6f271d9ca2dea"
+      },
+      {
+        "actionIndex": 1,
+        "ring": 1,
+        "queries": 0,
+        "hash": "96e50a79ee835cc655157a05b71563b30a3d26dbdd6e570f34f6f271d9ca2dea"
+      },
+      {
+        "actionIndex": 1,
+        "ring": 2,
+        "queries": 0,
+        "hash": "96e50a79ee835cc655157a05b71563b30a3d26dbdd6e570f34f6f271d9ca2dea"
+      },
+      {
+        "actionIndex": 2,
+        "ring": 0,
+        "queries": 100,
+        "hash": "01260bc45a48249e9d54448197d554d8756c10e44da4d986d4238baaf74171d7"
+      },
+      {
+        "actionIndex": 2,
+        "ring": 1,
+        "queries": 100,
+        "hash": "17589f670d16ce7533c035ac992a85dfd3ccdc77ca976b9a7ea619534669bd3a"
+      },
+      {
+        "actionIndex": 2,
+        "ring": 2,
+        "queries": 100,
+        "hash": "20fa638c1ff00e2d842a362fdb43167ca5615d6130f86685c7c077cea59c558c"
+      },
+      {
+        "actionIndex": 3,
+        "ring": 0,
+        "queries": 0,
+        "hash": "cdc535bb2f8a54ad7b2eecf203859648fac09ea91c9b5f40ced6724289f5ae2b"
+      },
+      {
+        "actionIndex": 3,
+        "ring": 1,
+        "queries": 0,
+        "hash": "12e9ecbb7efebb23d8355e4bfd0619c8c02226149589b4872784370ca41f8285"
+      },
+      {
+        "actionIndex": 3,
+        "ring": 2,
+        "queries": 0,
+        "hash": "2d92488493cb48b3f1b360a447c8c2d3f0901e3943bfd6355a8eeeec7fb6d73f"
+      },
+      {
+        "actionIndex": 4,
+        "ring": 0,
+        "queries": 0,
+        "hash": "752f5bc0b6ee974d69284350137165c00fd012f85593047c138c203f32b927f8"
+      },
+      {
+        "actionIndex": 4,
+        "ring": 1,
+        "queries": 0,
+        "hash": "752f5bc0b6ee974d69284350137165c00fd012f85593047c138c203f32b927f8"
+      },
+      {
+        "actionIndex": 4,
+        "ring": 2,
+        "queries": 0,
+        "hash": "752f5bc0b6ee974d69284350137165c00fd012f85593047c138c203f32b927f8"
+      },
+      {
+        "actionIndex": 5,
+        "ring": 0,
+        "queries": 100,
+        "hash": "2ce74aee6487bbfd2ca50070135ff0f4bed241efc0c20795d0c12ebb117c605c"
+      },
+      {
+        "actionIndex": 5,
+        "ring": 1,
+        "queries": 100,
+        "hash": "47e1ae567994915395c245336c11411ec17e109ad62e1c164d02968e727c5a0a"
+      },
+      {
+        "actionIndex": 5,
+        "ring": 2,
+        "queries": 100,
+        "hash": "755affebb872c009f7f5db3fe7d4334f41a8e4506e51d919d7873c55f34ce85b"
+      },
+      {
+        "actionIndex": 6,
+        "ring": 0,
+        "queries": 100,
+        "hash": "62e6746fff10dde0c7dfc580b24417f6c64564e2e5b3c171d31be5972b021a3e"
+      },
+      {
+        "actionIndex": 6,
+        "ring": 1,
+        "queries": 100,
+        "hash": "5b46293574f6d9dd3754ce7e533d620d00ce106cddd418bf38c5fcf5c19a8d62"
+      },
+      {
+        "actionIndex": 6,
+        "ring": 2,
+        "queries": 100,
+        "hash": "b7337e71e23896f5871ba2346c697cf69debbd4b868562b7b52162ffcc4955f4"
+      },
+      {
+        "actionIndex": 7,
+        "ring": 0,
+        "queries": 100,
+        "hash": "5f50c0557ce1f7602d6b5b9d0e35647f7aa2a79a475f10d41f487d502d947a04"
+      },
+      {
+        "actionIndex": 7,
+        "ring": 1,
+        "queries": 100,
+        "hash": "d853c84d2ef75c21337791c7502280d2ac0e5b5178db719d67d79b6aa7f89f52"
+      },
+      {
+        "actionIndex": 7,
+        "ring": 2,
+        "queries": 100,
+        "hash": "2b4c4b8944549163ba4b14473cc0a151273056f96a2d19884de409fcfe11916a"
+      },
+      {
+        "actionIndex": 8,
+        "ring": 0,
+        "queries": 0,
+        "hash": "f9ecda0d9be4aa906f340530b861ca3ca67bae9526edf4a8e2cf1cdc8ebac4aa"
+      },
+      {
+        "actionIndex": 8,
+        "ring": 1,
+        "queries": 0,
+        "hash": "f9ecda0d9be4aa906f340530b861ca3ca67bae9526edf4a8e2cf1cdc8ebac4aa"
+      },
+      {
+        "actionIndex": 8,
+        "ring": 2,
+        "queries": 0,
+        "hash": "f9ecda0d9be4aa906f340530b861ca3ca67bae9526edf4a8e2cf1cdc8ebac4aa"
+      },
+      {
+        "actionIndex": 9,
+        "ring": 0,
+        "queries": 100,
+        "hash": "c92b8c849eb2a3bf32385770b356b59a9720de196de50b2f9d46bd722ea902ac"
+      },
+      {
+        "actionIndex": 9,
+        "ring": 1,
+        "queries": 100,
+        "hash": "98990e8d1c478223006436a557c258495d506b636abe24bb8e6562b0b766aa19"
+      },
+      {
+        "actionIndex": 9,
+        "ring": 2,
+        "queries": 100,
+        "hash": "b6e15dcd83dd0800f60c9a2e30e9066fd4dcbc0a7282c15b7524efa5ef610f3d"
+      },
+      {
+        "actionIndex": 10,
+        "ring": 0,
+        "queries": 0,
+        "hash": "c345231c4fd8ed2b0f649a1b9cef113a034ffe15d8dac4d519e77e4f2f4c6282"
+      },
+      {
+        "actionIndex": 10,
+        "ring": 1,
+        "queries": 0,
+        "hash": "de677854bdff18fd64106b470b9777e34a89e3795c2ca1d43aa526194f4109ba"
+      },
+      {
+        "actionIndex": 10,
+        "ring": 2,
+        "queries": 0,
+        "hash": "de8da6c5436c86043858edffdeb148a0da74c4572212ba9084c0a1546b678586"
+      },
+      {
+        "actionIndex": 11,
+        "ring": 0,
+        "queries": 0,
+        "hash": "73f5cff7e211efd64de8bd7d9661badd2d0ca7b06cdaba96527a706aaa21ad5c"
+      },
+      {
+        "actionIndex": 11,
+        "ring": 1,
+        "queries": 0,
+        "hash": "73f5cff7e211efd64de8bd7d9661badd2d0ca7b06cdaba96527a706aaa21ad5c"
+      },
+      {
+        "actionIndex": 11,
+        "ring": 2,
+        "queries": 0,
+        "hash": "73f5cff7e211efd64de8bd7d9661badd2d0ca7b06cdaba96527a706aaa21ad5c"
+      }
+    ]
+  }
+}

@@ -235,7 +235,7 @@ function ProcessPlayer({
   useEffect(() => {
     const button = selectedStep.current,
       rail = button?.parentElement;
-    if (rail && rail.scrollWidth > rail.clientWidth)
+    if (rail && rail.scrollWidth > rail.clientWidth) {
       rail.scrollTo({
         left:
           button.offsetLeft -
@@ -243,6 +243,22 @@ function ProcessPlayer({
           (rail.clientWidth - button.offsetWidth) / 2,
         behavior: "instant",
       });
+    } else {
+      const catalog = rail?.closest(".process-catalog");
+      if (!catalog || catalog.scrollHeight <= catalog.clientHeight) return;
+      const bounds = catalog.getBoundingClientRect(),
+        visibleTop = Math.max(0, bounds.top) + 8,
+        visibleBottom = Math.min(window.innerHeight, bounds.bottom) - 8,
+        selected = button.getBoundingClientRect(),
+        above = selected.top - visibleTop,
+        below = selected.bottom - visibleBottom;
+      if (visibleBottom <= visibleTop) return;
+      if (above < 0 || below > 0)
+        catalog.scrollBy({
+          top: above < 0 ? above : below,
+          behavior: "instant",
+        });
+    }
   }, [stageIndex, lang]);
 
   function seek(value) {

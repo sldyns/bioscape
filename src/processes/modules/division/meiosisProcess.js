@@ -59,6 +59,14 @@ function create() {
       }),
     ),
   );
+  const pairChromatids = [0, 1].map((pair) =>
+    chromosomes.filter((c) => c.pair === pair),
+  );
+  const chiasmaChromatids = [0, 1].map((pair) =>
+    chromosomes.find(
+      (c) => c.pair === pair && c.homolog === -1 && c.sister === 1,
+    ),
+  );
   const chiasmata = [0, 1].map((pair) => ({
     pair,
     marker: Object.assign(k.ring([0, 0, 0.24], 0.065, 0.014, k.gold), {
@@ -170,6 +178,12 @@ function create() {
       );
       mesh.position.set(side * 2.05, up * poleIIY, 0);
     });
+    const sinSeparateI = Math.sin(Math.PI * separateI),
+      sinSeparateII = Math.sin(Math.PI * separateII),
+      aI = p >= 0.28 && p < 0.55,
+      aII = p >= 0.62 && p < 0.91,
+      bundleRadius =
+        0.009 * (aI ? 1 - ease(p, 0.51, 0.55) : 1 - ease(p, 0.86, 0.91));
     chromosomes.forEach((c) => {
       const { homolog, sister } = c;
       const pairY = c.pair === 0 ? 0.64 : -0.78;
@@ -186,7 +200,7 @@ function create() {
       c.group.scale.setScalar(1 - final * 0.3);
       const recombinant =
         (homolog === -1 && sister === 1) || (homolog === 1 && sister === -1);
-      const exchange = c.restAxisPoint(c.exchangeY);
+      const exchange = recombinant ? c.restAxisPoint(c.exchangeY) : null;
       // The two nonsister paths meet at the same homologous coordinate. Beyond
       // this junction each path crosses to the opposite side; it relaxes in I.
       const deflection = recombinant
@@ -195,12 +209,10 @@ function create() {
       // The previous reset path kept +0 when its subsequent target was -0.
       c.setDeflection(
         deflection === 0 ? 0 : deflection,
-        -homolog * 0.17 * Math.sin(Math.PI * separateI) * (1 - rotate) +
-          sister * 0.2 * Math.sin(Math.PI * separateII) * rotate,
+        -homolog * 0.17 * sinSeparateI * (1 - rotate) +
+          sister * 0.2 * sinSeparateII * rotate,
       );
       c.setDistalMaterial(recombinant && cross >= 0.5 ? c.exchanged : c.base);
-      const aI = p >= 0.28 && p < 0.55,
-        aII = p >= 0.62 && p < 0.91;
       c.fibre.visible = aI || aII;
       if (aI) {
         // Both sister kinetochores of each homolog face the same pole in meiosis I.
@@ -214,7 +226,7 @@ function create() {
           target.x,
           target.y,
           target.z,
-          0.009 * (aI ? 1 - ease(p, 0.51, 0.55) : 1 - ease(p, 0.86, 0.91)),
+          bundleRadius,
         );
       } else {
         c.orientKinetochore(sister);
@@ -228,7 +240,7 @@ function create() {
           target.x,
           target.y,
           target.z,
-          0.009 * (aI ? 1 - ease(p, 0.51, 0.55) : 1 - ease(p, 0.86, 0.91)),
+          bundleRadius,
         );
       }
       c.cohesion.visible = sister === -1 && p < 0.705;
@@ -245,25 +257,25 @@ function create() {
         );
       else k.setSegment(c.cohesion, x, y, 0.3, x, y + 0.26, 0.3, 0.038);
     });
+    k.beginAxisPointFrame();
+    chromosomes.forEach((c) => c.beginAxisPoints());
     chiasmata.forEach(({ pair: idx, marker }) => {
-      const c = chromosomes.find(
-        (c) => c.pair === idx && c.homolog === -1 && c.sister === 1,
-      );
-      const junction = c.axisPoint(c.exchangeY);
+      const c = chiasmaChromatids[idx];
+      const junction = c.axisPointPrepared(c.exchangeY);
       marker.visible = cross >= 0.5 && p < 0.35;
       marker.position.copy(junction);
     });
     synapses.forEach(({ pair: idx, rung, mesh }) => {
       mesh.visible = p >= 0.12 && p < 0.24;
-      const pairChromatids = chromosomes.filter((c) => c.pair === idx);
+      const pairGroup = pairChromatids[idx];
       const y = (rung + 1) * 0.5 * (idx ? 0.49 : 0.65);
-      const left = pairChromatids[0]
-        .axisPoint(y)
-        .add(pairChromatids[1].axisPoint(y))
+      const left = pairGroup[0]
+        .axisPointPrepared(y)
+        .add(pairGroup[1].axisPointPrepared(y))
         .multiplyScalar(0.5);
-      const right = pairChromatids[2]
-        .axisPoint(y)
-        .add(pairChromatids[3].axisPoint(y))
+      const right = pairGroup[2]
+        .axisPointPrepared(y)
+        .add(pairGroup[3].axisPointPrepared(y))
         .multiplyScalar(0.5);
       k.setSegment(
         mesh,

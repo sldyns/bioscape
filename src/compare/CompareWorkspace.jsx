@@ -428,7 +428,7 @@ export default function CompareWorkspace({
                   }
                 >
                   <CellScene
-                    key={`${pane.id}-${sceneGeneration}`}
+                    key={sceneGeneration}
                     nodeId={pane.id}
                     viewKey={`comparison/${paneIdentities[side]}/${pane.id}`}
                     mode={pane.mode}

@@ -1,16 +1,23 @@
+import { lockPageScroll } from "../scrollLock.js";
 import React, { useEffect, useRef, useState } from "react";
 import { Check, Copy, X } from "lucide-react";
 
 export default function ShareDialog({ url, lang, onClose }) {
   const root = useRef(),
     input = useRef();
+  const copyRequest = useRef(0);
+  useEffect(
+    () => () => {
+      copyRequest.current += 1;
+    },
+    [],
+  );
   const [copied, setCopied] = useState(false);
   const [failed, setFailed] = useState(false);
   const en = lang === "en";
   useEffect(() => {
     const previous = document.activeElement;
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const releaseScroll = lockPageScroll();
     input.current?.focus();
     input.current?.select();
     const key = (event) => {
@@ -37,16 +44,22 @@ export default function ShareDialog({ url, lang, onClose }) {
     window.addEventListener("keydown", key, true);
     return () => {
       window.removeEventListener("keydown", key, true);
-      document.body.style.overflow = overflow;
+      releaseScroll();
       previous?.isConnected && previous.focus();
     };
   }, [onClose]);
   async function copy() {
+    const request = ++copyRequest.current;
+    setCopied(false);
+    setFailed(false);
     try {
       await navigator.clipboard.writeText(url);
+      if (request !== copyRequest.current) return;
       setCopied(true);
       setFailed(false);
     } catch {
+      if (request !== copyRequest.current) return;
+      setCopied(false);
       input.current?.focus();
       input.current?.select();
       setFailed(true);

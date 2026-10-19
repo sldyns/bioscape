@@ -11,7 +11,7 @@ Baseline inspected: `src/processes/transcriptionProcess.js` and `src/scene/membr
 
 ## Local validation
 
-`node src/processes/modules/signals/smoke.mjs` passes for all four models: bilingual/distinct stages, finite geometry and instance buffers, finite bounds (largest dimension within 2–20), stable node/geometry/material resource identities, repeated seeks, all condition branches, thumbnail existence, and esbuild compilation. Every model exposes its complete material inventory, including preallocated alternate caspase materials. Repeated elements use shared sphere/cylinder resources and instancing for membrane headgroups, histones, and DNA base pairs. Geometry/material/node construction remains outside update.
+`node src/processes/modules/signals/smoke.mjs` passes for all four models: bilingual/distinct stages, finite geometry and instance buffers, finite bounds (largest dimension within 2–20), stable node/geometry/material resource identities, repeated seeks, all condition branches, thumbnail existence, and esbuild compilation. Every model exposes its complete material inventory, including preallocated alternate caspase materials. Repeated elements use shared sphere/cylinder primitives and instanced membrane headgroups. In the current chromatinFiber implementation, each histone core has its own cylinder geometry and the DNA duplex uses two continuous tube meshes; differentiation deforms the independent chromatin vertex buffers. Geometry/material/node construction remains outside update.
 
 ## Review boundary
 

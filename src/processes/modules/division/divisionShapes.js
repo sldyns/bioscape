@@ -1,8 +1,34 @@
 import { THREE, sceneKit } from "../../kit.js";
+import { computeIndexedFloat32VertexNormals } from "./indexedFloat32Normals.js";
 
 const TAU = Math.PI * 2;
+// Shared per module, doubles retain the exact original Math.sin/cos results.
+const ringCenterTrig = new Float64Array(202);
+for (let i = 0; i <= 100; i++) {
+  const angle = (i * TAU) / 100;
+  ringCenterTrig[i * 2] = Math.cos(angle);
+  ringCenterTrig[i * 2 + 1] = Math.sin(angle);
+}
+const ringTubeOffsets = new Float64Array(18);
+for (let j = 0; j <= 8; j++) {
+  const angle = (j * TAU) / 8;
+  ringTubeOffsets[j * 2] = 0.013 * Math.cos(angle);
+  ringTubeOffsets[j * 2 + 1] = 0.013 * Math.sin(angle);
+}
+const ringMotorSamples = new Float64Array(84);
+for (let i = 0; i < 28; i++) {
+  const a = (i * TAU) / 28;
+  ringMotorSamples[i * 3] = a;
+  ringMotorSamples[i * 3 + 1] = Math.cos(a);
+  ringMotorSamples[i * 3 + 2] = Math.sin(a);
+}
 export function divisionKit() {
   const k = sceneKit();
+  const axisFrameInverse = new THREE.Matrix4();
+  function beginAxisPointFrame() {
+    k.group.updateWorldMatrix(true, false);
+    axisFrameInverse.copy(k.group.matrixWorld).invert();
+  }
   const green = k.material("#628c88", { roughness: 0.58 });
   const purple = k.material("#9484ad", { roughness: 0.58 });
   const gold = k.material("#bd9153", { metalness: 0.08 });
@@ -50,8 +76,45 @@ export function divisionKit() {
   }
   function setInstance(object, index, ax, ay, az, bx, by, bz, radius) {
     setSegment(temp, ax, ay, az, bx, by, bz, radius);
-    temp.updateMatrix();
-    object.setMatrixAt(index, temp.matrix);
+    // Same Matrix4.compose expressions, stored directly into the Float32 destination.
+    const te = object.instanceMatrix.array,
+      offset = index * 16;
+    const q = temp.quaternion,
+      x = q.x,
+      y = q.y,
+      z = q.z,
+      w = q.w;
+    const x2 = x + x,
+      y2 = y + y,
+      z2 = z + z;
+    const xx = x * x2,
+      xy = x * y2,
+      xz = x * z2;
+    const yy = y * y2,
+      yz = y * z2,
+      zz = z * z2;
+    const wx = w * x2,
+      wy = w * y2,
+      wz = w * z2;
+    const sx = temp.scale.x,
+      sy = temp.scale.y,
+      sz = temp.scale.z;
+    te[offset] = (1 - (yy + zz)) * sx;
+    te[offset + 1] = (xy + wz) * sx;
+    te[offset + 2] = (xz - wy) * sx;
+    te[offset + 3] = 0;
+    te[offset + 4] = (xy - wz) * sy;
+    te[offset + 5] = (1 - (xx + zz)) * sy;
+    te[offset + 6] = (yz + wx) * sy;
+    te[offset + 7] = 0;
+    te[offset + 8] = (xz + wy) * sz;
+    te[offset + 9] = (yz - wx) * sz;
+    te[offset + 10] = (1 - (xx + yy)) * sz;
+    te[offset + 11] = 0;
+    te[offset + 12] = temp.position.x;
+    te[offset + 13] = temp.position.y;
+    te[offset + 14] = temp.position.z;
+    te[offset + 15] = 1;
   }
   function finish(object) {
     object.instanceMatrix.needsUpdate = true;
@@ -394,7 +457,7 @@ export function divisionKit() {
           positions[i] = original[i] + displacement(original[i + 1]);
         }
         geometry.attributes.position.needsUpdate = true;
-        geometry.computeVertexNormals();
+        computeIndexedFloat32VertexNormals(geometry);
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
       }
@@ -485,6 +548,17 @@ export function divisionKit() {
         object.computeBoundingSphere();
       }
     }
+    // Prepared points retain the original two transforms; refresh after pose changes.
+    const preparedAxisWorld = new THREE.Matrix4();
+    function beginAxisPoints() {
+      group.updateWorldMatrix(true, false);
+      preparedAxisWorld.copy(group.matrixWorld);
+    }
+    function axisPointPrepared(y) {
+      return new THREE.Vector3(axis(y) + displacement(y), y, 0)
+        .applyMatrix4(preparedAxisWorld)
+        .applyMatrix4(axisFrameInverse);
+    }
     function axisPoint(y) {
       group.updateWorldMatrix(true, false);
       return k.group.worldToLocal(
@@ -514,6 +588,8 @@ export function divisionKit() {
       orientKinetochore,
       attachmentPoint,
       axisPoint,
+      beginAxisPoints,
+      axisPointPrepared,
       restAxisPoint,
       setDeflection,
       exchangeY,
@@ -622,12 +698,21 @@ export function divisionKit() {
       for (let trackIndex = 0; trackIndex < tracks.length; trackIndex++) {
         const geometry = tracks[trackIndex].geometry,
           positions = geometry.attributes.position;
+        if (
+          positions.isInterleavedBufferAttribute ||
+          positions.normalized ||
+          positions.itemSize !== 3 ||
+          !(positions.array instanceof Float32Array)
+        )
+          throw new Error(
+            "QA ring raw writes require ordinary Float32 xyz positions",
+          );
+        const positionArray = positions.array;
         const inset = 0.025 + (2 - trackIndex) * 0.024;
         for (let i = 0; i <= 100; i++) {
-          const angle = (i * TAU) / 100,
-            radius = contour[i] - inset;
-          centers[i * 2] = Math.cos(angle) * radius;
-          centers[i * 2 + 1] = Math.sin(angle) * radius;
+          const radius = contour[i] - inset;
+          centers[i * 2] = ringCenterTrig[i * 2] * radius;
+          centers[i * 2 + 1] = ringCenterTrig[i * 2 + 1] * radius;
         }
         for (let i = 0; i <= 100; i++) {
           const before = (i + 99) % 100,
@@ -635,29 +720,35 @@ export function divisionKit() {
           const tx = centers[after * 2] - centers[before * 2],
             ty = centers[after * 2 + 1] - centers[before * 2 + 1],
             length = Math.hypot(tx, ty);
+          const normalX = ty / length,
+            normalY = tx / length;
           for (let j = 0; j <= 8; j++) {
-            const angle = (j * TAU) / 8,
-              radial = 0.013 * Math.cos(angle);
-            positions.setXYZ(
-              i * 9 + j,
-              centers[i * 2] + (ty / length) * radial,
-              centers[i * 2 + 1] - (tx / length) * radial,
-              (trackIndex - 1) * 0.028 + 0.013 * Math.sin(angle),
-            );
+            const radial = ringTubeOffsets[j * 2];
+            const x = centers[i * 2] + normalX * radial,
+              y = centers[i * 2 + 1] - normalY * radial,
+              z = (trackIndex - 1) * 0.028 + ringTubeOffsets[j * 2 + 1];
+            const offset = (i * 9 + j) * 3;
+            positionArray[offset] = x;
+            positionArray[offset + 1] = y;
+            positionArray[offset + 2] = z;
           }
         }
         positions.needsUpdate = true;
-        geometry.computeVertexNormals();
+        computeIndexedFloat32VertexNormals(geometry);
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
       }
       for (let i = 0; i < motors.count; i++) {
-        const a = (i * TAU) / motors.count,
+        const a = ringMotorSamples[i * 3],
           sample = (i * 100) / motors.count,
           lo = Math.floor(sample),
           t = sample - lo,
           radius = contour[lo] * (1 - t) + contour[lo + 1] * t - 0.049;
-        temp.position.set(Math.cos(a) * radius, Math.sin(a) * radius, 0.017);
+        temp.position.set(
+          ringMotorSamples[i * 3 + 1] * radius,
+          ringMotorSamples[i * 3 + 2] * radius,
+          0.017,
+        );
         temp.rotation.set(0, 0, a);
         temp.scale.set(0.036, 0.014, 0.018);
         temp.updateMatrix();
@@ -810,7 +901,18 @@ export function divisionKit() {
       group,
       "cell-membrane-cut-edge",
     );
+    let shapeInitialized = false,
+      lastPinch,
+      lastElongation,
+      lastAxis;
     function shape(pinch = 0, elongation = 1, axis = "x") {
+      if (
+        shapeInitialized &&
+        Object.is(pinch, lastPinch) &&
+        Object.is(elongation, lastElongation) &&
+        axis === lastAxis
+      )
+        return;
       for (const { geometry, original, offset } of surfaces) {
         const arr = geometry.attributes.position.array;
         for (let i = 0; i < arr.length; i += 3) {
@@ -824,7 +926,7 @@ export function divisionKit() {
           arr[i + 2] = z * rz * waist * offset;
         }
         geometry.attributes.position.needsUpdate = true;
-        geometry.computeVertexNormals();
+        computeIndexedFloat32VertexNormals(geometry);
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
       }
@@ -850,6 +952,10 @@ export function divisionKit() {
         );
       }
       finish(edge);
+      shapeInitialized = true;
+      lastPinch = pinch;
+      lastElongation = elongation;
+      lastAxis = axis;
     }
     function opacity(t) {
       group.visible = t > 0.001;
@@ -863,6 +969,7 @@ export function divisionKit() {
   }
   return {
     ...k,
+    beginAxisPointFrame,
     green,
     purple,
     gold,

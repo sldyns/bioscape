@@ -398,14 +398,50 @@ export function createRepair({ rootId = "cell" } = {}) {
       point(x, strand, a, detached);
       k.bead(s.phosphates, i, a, visible ? 0.058 : 0);
       point(x, 1 - strand, mate);
-      const paired =
-        !inPatch ||
-        (!detached &&
-          (opened < 0.2 || replacement || fill > (x - left) / (right - left)));
-      mid.copy(a).lerp(mate, paired ? 0.46 : 0.12);
-      if (detached)
-        mid.copy(a).addScaledVector(new THREE.Vector3(0, -1, 0), 0.15);
+      // Follow the continuous bubble and filling front. A threshold in the
+      // displayed base length would move an already visible tip instantly.
+      const atBase = (x - left) / (right - left),
+        paired =
+          !inPatch || replacement
+            ? 1
+            : detached
+              ? 0
+              : 1 -
+                opened *
+                  (strand === 0
+                    ? 1
+                    : 1 -
+                      ease(
+                        fill,
+                        atBase,
+                        Math.min(1, atBase + (3 * STEP) / (right - left)),
+                      )),
+        extension = paired === 1 ? 0.46 : 0.12 + 0.34 * paired;
+      mid.copy(a).lerp(mate, extension);
+      if (detached) {
+        // At release onset the tip stays in place, then follows the excised
+        // fragment into its existing local orientation.
+        mid.x += (a.x - mid.x) * released;
+        mid.y += (a.y - 0.15 - mid.y) * released;
+        mid.z += (a.z - mid.z) * released;
+      }
       k.segment(s.bases, i, a, mid, visible ? 0.032 : 0, visible ? 0.075 : 0);
+      // The generic quaternion's antiparallel fallback can erase a small Z
+      // component. These repair bases lie in YZ planes; retain that component
+      // exactly, including the existing cuboid's equivalent half-turn roll.
+      const array = s.bases.instanceMatrix.array,
+        offset = i * 16,
+        dy = mid.y - a.y,
+        dz = mid.z - a.z;
+      if (dy < 0 && array[offset + 6] === 0 && Math.abs(dz) > 1e-12) {
+        const length = Math.hypot(dy, dz),
+          roll = array[offset] < 0 ? -1 : 1,
+          radius = visible ? 0.032 : 0;
+        array[offset + 5] = dy;
+        array[offset + 6] = dz;
+        array[offset + 9] = (-roll * radius * dz) / length;
+        array[offset + 10] = (roll * radius * dy) / length;
+      }
     }
     k.finish(s.rail, s.phosphates, s.bases);
   }

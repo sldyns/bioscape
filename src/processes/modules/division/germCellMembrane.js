@@ -134,6 +134,104 @@ export function germCellMembrane(k) {
     yLobe = new Float64Array(ny + 1),
     yHorizontal = new Float64Array(ny + 1),
     yVertical = new Float64Array(ny + 1);
+  const rowMin = new Float32Array(nx / 2),
+    rowMax = new Float32Array(nx / 2);
+  function extractLayer(level, geometry, activeCount) {
+    const positions = geometry.attributes.position.array,
+      normals = geometry.attributes.normal.array;
+    positions.fill(0);
+    normals.fill(0);
+    edgeCache.fill(0);
+    let cursor = 0;
+    const box = geometry.boundingBox;
+    box.makeEmpty();
+    for (let cell = 0; cell < activeCount; cell++) {
+      if (activeMin[cell] > level || activeMax[cell] < level) continue;
+      const n = activeCells[cell];
+      for (let tetIndex = 0; tetIndex < tetraOffsets.length; tetIndex++) {
+        const tet = tetraOffsets[tetIndex];
+        let mask = 0;
+        ids[0] = n + tet[0];
+        v[0] = field[ids[0]];
+        if (v[0] < level) mask |= 1;
+        ids[1] = n + tet[1];
+        v[1] = field[ids[1]];
+        if (v[1] < level) mask |= 2;
+        ids[2] = n + tet[2];
+        v[2] = field[ids[2]];
+        if (v[2] < level) mask |= 4;
+        ids[3] = n + tet[3];
+        v[3] = field[ids[3]];
+        if (v[3] < level) mask |= 8;
+        const tri = triangles[mask];
+        if (!tri.length) continue;
+        const crossings = crossingEdges[mask];
+        for (let edgeIndex = 0; edgeIndex < crossings.length; edgeIndex++) {
+          const e = crossings[edgeIndex],
+            edge = edges[e],
+            a = edge[0],
+            b = edge[1];
+          const low = Math.min(ids[a], ids[b]),
+            high = Math.max(ids[a], ids[b]),
+            key = low * 7 + edgeKinds[high - low],
+            cached = edgeCache[key] - 1;
+          edgeKeys[e] = key;
+          const e3 = e * 3;
+          if (cached >= 0) {
+            ep[e3] = positions[cached];
+            en[e3] = normals[cached];
+            ep[e3 + 1] = positions[cached + 1];
+            en[e3 + 1] = normals[cached + 1];
+            ep[e3 + 2] = positions[cached + 2];
+            en[e3 + 2] = normals[cached + 2];
+            continue;
+          }
+          const t = (level - v[a]) / (v[b] - v[a]);
+          const a3 = ids[a] * 3,
+            b3 = ids[b] * 3;
+          ep[e3] = coordinates[a3] * (1 - t) + coordinates[b3] * t;
+          en[e3] = gradients[a3] * (1 - t) + gradients[b3] * t;
+          ep[e3 + 1] = coordinates[a3 + 1] * (1 - t) + coordinates[b3 + 1] * t;
+          en[e3 + 1] = gradients[a3 + 1] * (1 - t) + gradients[b3 + 1] * t;
+          ep[e3 + 2] = coordinates[a3 + 2] * (1 - t) + coordinates[b3 + 2] * t;
+          en[e3 + 2] = gradients[a3 + 2] * (1 - t) + gradients[b3 + 2] * t;
+          const norm = Math.hypot(en[e3], en[e3 + 1], en[e3 + 2]) || 1;
+          en[e3] /= norm;
+          en[e3 + 1] /= norm;
+          en[e3 + 2] /= norm;
+        }
+        for (let triIndex = 0; triIndex < tri.length; triIndex++) {
+          const e = tri[triIndex];
+          if (cursor + 3 > positions.length)
+            throw new Error("Germ-cell surface capacity exceeded");
+          if (!edgeCache[edgeKeys[e]]) edgeCache[edgeKeys[e]] = cursor + 1;
+          const e3 = e * 3;
+          positions[cursor] = ep[e3];
+          normals[cursor++] = en[e3];
+          positions[cursor] = ep[e3 + 1];
+          normals[cursor++] = en[e3 + 1];
+          positions[cursor] = ep[e3 + 2];
+          normals[cursor++] = en[e3 + 2];
+          box.min.x = Math.min(box.min.x, ep[e * 3]);
+          box.min.y = Math.min(box.min.y, ep[e * 3 + 1]);
+          box.min.z = Math.min(box.min.z, ep[e * 3 + 2]);
+          box.max.x = Math.max(box.max.x, ep[e * 3]);
+          box.max.y = Math.max(box.max.y, ep[e * 3 + 1]);
+          box.max.z = Math.max(box.max.z, ep[e * 3 + 2]);
+        }
+      }
+    }
+    geometry.setDrawRange(0, cursor / 3);
+    geometry.attributes.position.needsUpdate = true;
+    geometry.attributes.normal.needsUpdate = true;
+    geometry.attributes.position.clearUpdateRanges();
+    geometry.attributes.normal.clearUpdateRanges();
+    geometry.attributes.position.addUpdateRange(0, cursor);
+    geometry.attributes.normal.addUpdateRange(0, cursor);
+    // A conservative sphere avoids rescanning the unused fixed-capacity tail.
+    box.getCenter(geometry.boundingSphere.center);
+    geometry.boundingSphere.radius = box.min.distanceTo(box.max) * 0.5;
+  }
   function update(first, second) {
     if (first === lastFirst && second === lastSecond) return;
     lastFirst = first;
@@ -178,7 +276,7 @@ export function germCellMembrane(k) {
     }
     for (let l = 0; l <= nz; l++)
       for (let j = 0; j <= ny; j++)
-        for (let i = 0; i <= nx; i++) {
+        for (let i = 0; i <= nx / 2; i++) {
           const p = i + j * row + l * plane,
             n = p * 3;
           gradients[n] =
@@ -190,6 +288,11 @@ export function germCellMembrane(k) {
           gradients[n + 2] =
             (field[p + (l < nz ? plane : 0)] - field[p - (l > 0 ? plane : 0)]) /
             ((l === 0 || l === nz ? 1 : 2) * dz);
+          const mirrored = (nx - i + j * row + l * plane) * 3;
+          // Exact mirrored finite differences; equal samples subtract to +0.
+          gradients[mirrored] = gradients[n] === 0 ? 0 : -gradients[n];
+          gradients[mirrored + 1] = gradients[n + 1];
+          gradients[mirrored + 2] = gradients[n + 2];
         }
     // Screen each cell once for both leaflets. Only cells that can intersect an
     // isosurface enter the six-tetrahedron extraction loop.
@@ -200,91 +303,28 @@ export function germCellMembrane(k) {
           const n = i + j * row + l * plane;
           let min = Infinity,
             max = -Infinity;
-          for (let c = 0; c < 8; c++) {
-            const value = field[n + cornerOffsets[c]];
-            min = Math.min(min, value);
-            max = Math.max(max, value);
+          if (i < nx / 2) {
+            for (let c = 0; c < 8; c++) {
+              const value = field[n + cornerOffsets[c]];
+              min = Math.min(min, value);
+              max = Math.max(max, value);
+            }
+            rowMin[i] = min;
+            rowMax[i] = max;
+          } else {
+            // Mirrored cells contain the same eight Float32 scalar samples.
+            // Emit in the original ascending x order after reusing their range.
+            min = rowMin[nx - 1 - i];
+            max = rowMax[nx - 1 - i];
           }
           if (min > 0 || max < -0.035) continue;
           activeCells[activeCount] = n;
           activeMin[activeCount] = min;
           activeMax[activeCount++] = max;
         }
-    for (const { level, geometry } of layers) {
-      const positions = geometry.attributes.position.array,
-        normals = geometry.attributes.normal.array;
-      positions.fill(0);
-      normals.fill(0);
-      edgeCache.fill(0);
-      let cursor = 0;
-      const box = geometry.boundingBox;
-      box.makeEmpty();
-      for (let cell = 0; cell < activeCount; cell++) {
-        if (activeMin[cell] > level || activeMax[cell] < level) continue;
-        const n = activeCells[cell];
-        for (const tet of tetraOffsets) {
-          let mask = 0;
-          for (let q = 0; q < 4; q++) {
-            ids[q] = n + tet[q];
-            v[q] = field[ids[q]];
-            if (v[q] < level) mask |= 1 << q;
-          }
-          const tri = triangles[mask];
-          if (!tri.length) continue;
-          for (const e of crossingEdges[mask]) {
-            const [a, b] = edges[e];
-            const low = Math.min(ids[a], ids[b]),
-              high = Math.max(ids[a], ids[b]),
-              key = low * 7 + edgeKinds[high - low],
-              cached = edgeCache[key] - 1;
-            edgeKeys[e] = key;
-            if (cached >= 0) {
-              for (let q = 0; q < 3; q++) {
-                ep[e * 3 + q] = positions[cached + q];
-                en[e * 3 + q] = normals[cached + q];
-              }
-              continue;
-            }
-            const t = (level - v[a]) / (v[b] - v[a]);
-            for (let q = 0; q < 3; q++) {
-              ep[e * 3 + q] =
-                coordinates[ids[a] * 3 + q] * (1 - t) +
-                coordinates[ids[b] * 3 + q] * t;
-              en[e * 3 + q] =
-                gradients[ids[a] * 3 + q] * (1 - t) +
-                gradients[ids[b] * 3 + q] * t;
-            }
-            const norm =
-              Math.hypot(en[e * 3], en[e * 3 + 1], en[e * 3 + 2]) || 1;
-            for (let q = 0; q < 3; q++) en[e * 3 + q] /= norm;
-          }
-          for (const e of tri) {
-            if (cursor + 3 > positions.length)
-              throw new Error("Germ-cell surface capacity exceeded");
-            if (!edgeCache[edgeKeys[e]]) edgeCache[edgeKeys[e]] = cursor + 1;
-            for (let q = 0; q < 3; q++) {
-              positions[cursor] = ep[e * 3 + q];
-              normals[cursor++] = en[e * 3 + q];
-            }
-            box.min.x = Math.min(box.min.x, ep[e * 3]);
-            box.min.y = Math.min(box.min.y, ep[e * 3 + 1]);
-            box.min.z = Math.min(box.min.z, ep[e * 3 + 2]);
-            box.max.x = Math.max(box.max.x, ep[e * 3]);
-            box.max.y = Math.max(box.max.y, ep[e * 3 + 1]);
-            box.max.z = Math.max(box.max.z, ep[e * 3 + 2]);
-          }
-        }
-      }
-      geometry.setDrawRange(0, cursor / 3);
-      geometry.attributes.position.needsUpdate = true;
-      geometry.attributes.normal.needsUpdate = true;
-      geometry.attributes.position.clearUpdateRanges();
-      geometry.attributes.normal.clearUpdateRanges();
-      geometry.attributes.position.addUpdateRange(0, cursor);
-      geometry.attributes.normal.addUpdateRange(0, cursor);
-      // A conservative sphere avoids rescanning the unused fixed-capacity tail.
-      box.getCenter(geometry.boundingSphere.center);
-      geometry.boundingSphere.radius = box.min.distanceTo(box.max) * 0.5;
+    for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
+      const layer = layers[layerIndex];
+      extractLayer(layer.level, layer.geometry, activeCount);
     }
   }
   // Piecewise-linear interpolation in the same tetrahedra as the rendered

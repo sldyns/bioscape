@@ -484,8 +484,8 @@ export default {
   id: "plasmodesmata",
   title: b("胞间连丝的选择性通行", "Selective traffic through plasmodesmata"),
   intro: b(
-    "拟南芥相邻根细胞间单个胞间连丝的放大剖面。小溶质沿胞质套筒交换；中央连丝管连接两侧内质网。胼胝质积累会收窄颈部。演示一种未被主动转运的大分子被排除，不为所有蛋白或 RNA 设统一尺寸阈值；比例和时序均为示意。",
-    "An enlarged cutaway of one plasmodesma between neighboring Arabidopsis root cells. Small solutes exchange through the cytoplasmic sleeve; the desmotubule connects the ER. Callose accumulation narrows the neck. One untargeted bulky cargo is excluded; no universal size cutoff is assigned to proteins or RNA. Dimensions and timing are schematic.",
+    "以拟南芥相邻根细胞间具有可见胞质套筒的胞间连丝为例，展示放大剖面。小溶质沿胞质套筒交换；中央连丝管连接两侧内质网。胼胝质积累会收窄颈部。演示一种未被主动转运的大分子被排除，不为所有蛋白或 RNA 设统一尺寸阈值；比例和时序均为示意。",
+    "An enlarged cutaway of a plasmodesma with a visible cytoplasmic sleeve between neighboring Arabidopsis root cells. Small solutes exchange through the cytoplasmic sleeve; the desmotubule connects the ER. Callose accumulation narrows the neck. One untargeted bulky cargo is excluded; no universal size cutoff is assigned to proteins or RNA. Dimensions and timing are schematic.",
   ),
   duration: 32,
   controls: [
@@ -542,8 +542,8 @@ export default {
         "ER continuity and a distinct cargo route",
       ),
       description: b(
-        "中央的压缩内质网连接两细胞；本模型的可溶性货物始终在其外侧的胞质套筒中移动。",
-        "The central appressed ER connects both cells; soluble cargo in this model always travels through the cytoplasmic sleeve outside it.",
+        "中央的压缩内质网连接两细胞；本模型的可溶性货物沿其外侧的胞质套筒移动。部分新形成的胞间连丝没有可见套筒，仍允许分子通行，因此不能把这里的孔道外观推广为所有类型。",
+        "The central appressed ER connects both cells; soluble cargo in this model travels through the sleeve outside it. Some newly formed plasmodesmata have no visible sleeve yet permit molecular movement, so this pore appearance does not represent every type.",
       ),
     },
     {
@@ -556,6 +556,11 @@ export default {
     },
   ],
   sources: [
+    {
+      title:
+        "Architecture and permeability of post-cytokinesis plasmodesmata lacking cytoplasmic sleeves (Nicolas et al., 2017)",
+      url: "https://www.nature.com/articles/nplants201782",
+    },
     {
       title:
         "Callose biosynthesis regulates symplastic trafficking during root development (Vatén et al., 2011)",

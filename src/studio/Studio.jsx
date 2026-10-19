@@ -1,3 +1,4 @@
+import { lockPageScroll } from "../scrollLock.js";
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -113,6 +114,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
   const [isExportingImage, setIsExportingImage] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
+  const [previewError, setPreviewError] = useState("");
   const [notice, setNotice] = useState("");
   const [shareBusy, setShareBusy] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
@@ -142,6 +144,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
     originalSource.canExplode || originalSource.api?.canExplode,
   );
   const exportBusy = isRecording || isExportingImage;
+  const feedbackError = previewError || error;
 
   const release = (ref) => {
     if (ref.current) URL.revokeObjectURL(ref.current.url);
@@ -158,11 +161,10 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
   useEffect(() => {
     mounted.current = true;
     const focused = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
+    const releaseScroll = lockPageScroll();
     const appRoot = document.getElementById("root");
     const previousInert = appRoot?.inert;
     if (appRoot) appRoot.inert = true;
-    document.body.style.overflow = "hidden";
     dialog.current?.querySelector(".studio-close")?.focus();
     const handleKey = (event) => {
       if (event.key === "Escape") {
@@ -202,7 +204,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
       release(videoResource);
       releaseCapture();
       window.removeEventListener("keydown", handleKey, true);
-      document.body.style.overflow = previousOverflow;
+      releaseScroll();
       if (appRoot) appRoot.inert = previousInert;
       if (focused?.isConnected) focused.focus({ preventScroll: true });
     };
@@ -231,7 +233,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
     let firstFrame = true;
     setPreviewBusy(true);
     setPlayingPreview(false);
-    setError("");
+    setPreviewError("");
     const clock = createPreviewPlayback({
       duration: preferences.duration,
       initialFraction: fraction.current,
@@ -263,7 +265,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
       onError(cause) {
         setPreviewReady(false);
         setPreviewBusy(false);
-        setError(errorText(cause, en));
+        setPreviewError(errorText(cause, en));
       },
     });
     playback.current = clock;
@@ -331,6 +333,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
       mode,
     );
     if (next === preferences) return;
+    setError("");
     setNotice("");
     playback.current?.pause();
     release(videoResource);
@@ -392,6 +395,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
   async function share() {
     if (!onShare || shareBusy) return;
     setShareBusy(true);
+    setError("");
     setCopied(false);
     try {
       const snapshot = await originalSource.getSnapshot?.();
@@ -475,7 +479,10 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setRefresh((value) => value + 1)}
+                  onClick={() => {
+                    setError("");
+                    setRefresh((value) => value + 1);
+                  }}
                   disabled={
                     exportBusy ||
                     previewBusy ||
@@ -596,6 +603,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                 disabled={exportBusy}
                 onClick={() => {
                   setMode("image");
+                  setError("");
                   playback.current?.pause();
                   setNotice("");
                 }}
@@ -609,6 +617,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                 disabled={exportBusy}
                 onClick={() => {
                   setMode("video");
+                  setError("");
                   setNotice("");
                 }}
               >
@@ -745,9 +754,9 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
         </div>
         <footer className="studio-footer">
           <div className="studio-feedback" aria-live="polite">
-            {error && (
+            {feedbackError && (
               <p className="studio-error" role="alert">
-                {error}
+                {feedbackError}
               </p>
             )}
             {notice && <p className="studio-notice">{notice}</p>}

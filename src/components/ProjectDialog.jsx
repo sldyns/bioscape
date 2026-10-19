@@ -1,3 +1,4 @@
+import { lockPageScroll } from "../scrollLock.js";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowUpRight, Mail, X } from "lucide-react";
@@ -79,13 +80,12 @@ export default function ProjectDialog({
   useEffect(() => {
     const dialog = dialogRef.current;
     const previousFocus = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
+    const releaseScroll = lockPageScroll();
     dialog.showModal();
-    document.body.style.overflow = "hidden";
     titleRef.current?.focus({ preventScroll: true });
     return () => {
       dialog.close();
-      document.body.style.overflow = previousOverflow;
+      releaseScroll();
       if (previousFocus?.isConnected)
         previousFocus.focus({ preventScroll: true });
     };

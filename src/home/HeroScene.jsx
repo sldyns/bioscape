@@ -108,6 +108,7 @@ export default function HeroScene({ lang, onExplore }) {
         role="region"
         aria-label={t(`${model.zh}三维预览`, `${model.en} 3D preview`)}
         onPointerDown={() => setPaused(true)}
+        onFocus={() => setPaused(true)}
       >
         {!ready && (
           <img

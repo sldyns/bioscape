@@ -356,7 +356,11 @@ export default {
       bladderSurface.update(!disconnected);
       duct.visible = open;
       poreCover.visible = !open;
-      pore.scale.setScalar(open ? 1 : 0.74);
+      // Expand the rim before discharge and settle it by arm reconnection.
+      // Duct and cover events keep their existing illustrative timing.
+      const poreExpansion =
+        ease(cycle, 0.74, 0.76) * (1 - ease(cycle, 0.91, 0.94));
+      pore.scale.setScalar(0.74 + 0.26 * poreExpansion);
       inlets.forEach((o, i) => {
         o.group.visible = !disconnected;
         o.update(radius, bladder.scale.z, (i * Math.PI) / 3);

@@ -18,8 +18,100 @@ const movedLabels = {
   dnaRepair: [],
   osmoticBalance: [],
 };
+const repairBases = new Set([
+  "damaged-strand-attached-bases",
+  "intact-template-attached-bases",
+  "repair-patch-attached-bases",
+]);
 function subtree(group) {
   return processCacheSnapshot({ group, labels: [] });
+}
+function repairBaseSnapshot(object, reference, root, context) {
+  assert(object.isInstancedMesh && reference.isInstancedMesh);
+  assert.equal(object.count, 80);
+  assert.equal(object.count, reference.count);
+  const attribute = object.instanceMatrix,
+    array = attribute.array,
+    old = reference.instanceMatrix.array,
+    phosphate = root.getObjectByName(
+      object.name.replace("-attached-bases", "-phosphate-groups"),
+    );
+  assert.equal(array.constructor, old.constructor);
+  assert.equal(array.length, old.length);
+  assert(array.every(Number.isFinite), `${context}: finite base matrices`);
+  assert(phosphate?.isInstancedMesh && phosphate.count === object.count);
+  for (let i = 0; i < object.count; i++) {
+    const j = i * 16,
+      width = Math.hypot(array[j], array[j + 1], array[j + 2]),
+      depth = Math.hypot(array[j + 8], array[j + 9], array[j + 10]);
+    for (const k of [3, 7, 11, 15])
+      assert.equal(array[j + k], old[j + k], `${context}: affine base matrix`);
+    for (const offset of [0, 8])
+      assert(
+        Math.abs(
+          Math.hypot(...array.slice(j + offset, j + offset + 3)) -
+            Math.hypot(...old.slice(j + offset, j + offset + 3)),
+        ) < 1e-6,
+        `${context}: retained base cross-section`,
+      );
+    const anchorError = Math.hypot(
+      ...[0, 1, 2].map(
+        (k) =>
+          array[j + 12 + k] -
+          0.5 * array[j + 4 + k] -
+          phosphate.instanceMatrix.array[j + 12 + k],
+      ),
+    );
+    assert(anchorError < 2e-6, `${context}: actual base attachment`);
+    if (width > 1e-8 && depth > 1e-8)
+      assert(
+        Math.hypot(array[j + 4], array[j + 5], array[j + 6]) > 0.05,
+        `${context}: visible base keeps physical length`,
+      );
+    for (const x of [-0.5, 0.5])
+      for (const y of [-0.5, 0.5])
+        for (const z of [-0.5, 0.5]) {
+          const corner = [0, 1, 2].map(
+            (k) =>
+              array[j + k] * x +
+              array[j + 4 + k] * y +
+              array[j + 8 + k] * z +
+              array[j + 12 + k],
+          );
+          for (let k = 0; k < 3; k++)
+            assert(
+              corner[k] >= object.boundingBox.min.getComponent(k) - 1e-6 &&
+                corner[k] <= object.boundingBox.max.getComponent(k) + 1e-6,
+              `${context}: actual base bounds`,
+            );
+          assert(
+            Math.hypot(
+              ...corner.map(
+                (value, k) =>
+                  value - object.boundingSphere.center.getComponent(k),
+              ),
+            ) <=
+              object.boundingSphere.radius + 1e-6,
+            `${context}: actual base sphere`,
+          );
+        }
+  }
+  // S04 deliberately changes only these three instance buffers and their
+  // bounds. Keep historical primitives/materials/visibility/transforms exact.
+  // The mandatory repair-base-continuity regression checks the new motion.
+  const saved = array.slice(),
+    box = object.boundingBox,
+    sphere = object.boundingSphere;
+  try {
+    array.set(old);
+    object.boundingBox = reference.boundingBox;
+    object.boundingSphere = reference.boundingSphere;
+    return historicalUserDataSnapshot(object, reference);
+  } finally {
+    array.set(saved);
+    object.boundingBox = box;
+    object.boundingSphere = sphere;
+  }
 }
 function historicalUserDataSnapshot(root, old) {
   const restored = [];
@@ -107,7 +199,11 @@ export function createRefinementComparison(id, model, reference) {
         const j = id === "osmoticBalance" && i > 1 ? i - 1 : i;
         const old = reference.group.children[j];
         assert.deepEqual(
-          id === "dnaRepair" ? historicalUserDataSnapshot(o, old) : subtree(o),
+          id === "dnaRepair"
+            ? repairBases.has(o.name)
+              ? repairBaseSnapshot(o, old, model.group, context)
+              : historicalUserDataSnapshot(o, old)
+            : subtree(o),
           subtree(old),
           `${context}: unchanged root ordinal ${i}`,
         );

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./processes.css";
 import { ChevronRight, ArrowUpRight } from "lucide-react";
 import { getNode } from "../hierarchy";
@@ -12,6 +12,8 @@ export default function ProcessDirectory({
   onStructure,
   titleRef,
   restoreFocus,
+  initialFilters,
+  onFiltersChange,
 }) {
   const t = (zh, en) => (lang === "en" ? en : zh);
   const entries = processesByRoot[rootId] ?? [];
@@ -21,11 +23,20 @@ export default function ProcessDirectory({
       : rootId === "yeast"
         ? t("真菌", "Fungi")
         : getNode(rootId, lang).name;
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("all");
   const categories = [
     ...new Set(entries.map((id) => processCatalog[id].category)),
   ];
+  const searchInput = useRef(null);
+  const [{ query, category }, setFilters] = useState(() => ({
+    query: initialFilters?.query ?? "",
+    category: categories.includes(initialFilters?.category)
+      ? initialFilters.category
+      : "all",
+  }));
+  const updateFilters = (next) => {
+    setFilters(next);
+    onFiltersChange?.(next);
+  };
   const visibleEntries = useMemo(
     () =>
       entries.filter((id) => {
@@ -108,10 +119,13 @@ export default function ProcessDirectory({
               {t("搜索过程", "Search processes")}
             </label>
             <input
+              ref={searchInput}
               id="process-search"
               type="search"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) =>
+                updateFilters({ query: event.target.value, category })
+              }
               placeholder={t("搜索过程", "Search processes")}
             />
             <label className="sr-only" htmlFor="process-category">
@@ -120,7 +134,9 @@ export default function ProcessDirectory({
             <select
               id="process-category"
               value={category}
-              onChange={(event) => setCategory(event.target.value)}
+              onChange={(event) =>
+                updateFilters({ query, category: event.target.value })
+              }
             >
               <option value="all">{t("全部类别", "All categories")}</option>
               {categories.map((key) => (
@@ -166,8 +182,8 @@ export default function ProcessDirectory({
                 {t("没有找到匹配的过程。", "No matching processes.")}{" "}
                 <button
                   onClick={() => {
-                    setQuery("");
-                    setCategory("all");
+                    updateFilters({ query: "", category: "all" });
+                    searchInput.current?.focus({ preventScroll: true });
                   }}
                 >
                   {t("清除筛选", "Clear filters")}
