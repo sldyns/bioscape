@@ -2,7 +2,13 @@ import { createFacingCull } from "./scene/facingCull";
 import { createDetailLoader } from "./scene/detailLoader";
 import { createPickingIndex } from "./scene/picking";
 import { createPickingCandidates } from "./scene/pickingCandidates.js";
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -86,6 +92,9 @@ export default function CellScene({
     lastReady.current = { callback, api };
     callback?.(api);
   };
+  // OrbitControls must disconnect from the original document before DOM removal.
+  useLayoutEffect(() => () => engine.current?.dispose(), [attempt]);
+
   useEffect(() => {
     const el = host.current;
     const layoutParent = el.parentElement;
@@ -1205,7 +1214,8 @@ export default function CellScene({
         invalidate();
       },
     };
-    return () => {
+    const dispose = () => {
+      if (destroyed) return;
       destroyed = true;
       publishReady(null);
       capture.dispose();
@@ -1217,6 +1227,7 @@ export default function CellScene({
       pickingIndex.dispose();
       cancelAnimationFrame(frame);
       observer.disconnect();
+      controls.removeEventListener("change", orbitChanged);
       controls.dispose();
       renderer.domElement.removeEventListener("pointerdown", pointerDown);
       renderer.domElement.removeEventListener("pointerup", pointerUp);
@@ -1252,6 +1263,8 @@ export default function CellScene({
       layoutParent.style.removeProperty("--label-rail");
       engine.current = null;
     };
+    if (engine.current) engine.current.dispose = dispose;
+    return dispose;
   }, [attempt]);
   useEffect(() => {
     publishReady(engine.current?.api?.ready ? engine.current.api : null);

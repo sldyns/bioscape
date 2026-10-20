@@ -68,8 +68,8 @@ export default {
       at: 0.76,
       title: b("切除转运肽", "Remove the transit peptide"),
       description: b(
-        "基质加工肽酶切除 N 端转运肽，形成成熟蛋白的 N 端。切割可在导入过程中发生；此处为教学清晰而在链进入后强调这一事件。",
-        "Stromal processing peptidase removes the N-terminal transit peptide, creating the mature N terminus. Cleavage can occur during import; it is highlighted after entry here for clarity.",
+        "基质加工肽酶切除 N 端转运肽，形成成熟蛋白的 N 端。切割可在导入过程中发生；此处在链进入后突出显示。切下的转运肽可暂留在加工肽酶上再经进一步切割释放，图中将后续步骤合并为片段分离。",
+        "Stromal processing peptidase removes the N-terminal transit peptide, creating the mature N terminus. Cleavage can occur during import; it is highlighted after entry here. The transit peptide can remain bound to SPP before further cleavage releases it; these later steps are condensed into fragment separation.",
       ),
     },
     {
@@ -327,17 +327,14 @@ export default {
           fy += cleave * 1.15;
           fx += cleave * 0.25;
         } else {
-          // A continuous serpentine compact fold: alternating extended runs
-          // joined by rounded hairpins; this is a trace, not an atomic structure.
-          const q = (i - 9) / (n - 9),
-            a = q * Math.PI * 6;
-          const tx = 2.65 + 0.52 * Math.cos(a),
-            ty =
-              0.35 * Math.sin(q * Math.PI * 4) +
-              0.15 * Math.cos(q * Math.PI * 2),
-            tz = 0.36 * Math.sin(q * Math.PI * 2) + 0.12 * Math.cos(a);
+          // An open compact 3D trace keeps the mature termini distinct.
+          // This schematic does not assign an atomic or secondary structure.
+          const q = (i - 9) / (n - 9);
+          const tx = 3.2 - 1.1 * q,
+            ty = 0.35 * Math.sin(q * Math.PI * 4),
+            tz = 0.36 * Math.cos(q * Math.PI * 4);
 
-          fx += (tx - fx) * fold;
+          fx += (tx - fx) * fold + 8 * fold * (1 - fold) * (1 - q);
           fy += (ty - fy) * fold;
           fz += (tz - fz) * fold;
         }
@@ -361,8 +358,25 @@ export default {
       for (const item of sidechains) {
         const point = pts[item.i];
         sideEnd.copy(point);
-        sideEnd.y += item.i % 8 ? 0.13 : -0.13;
-        sideEnd.z += 0.08;
+        if (fold > 0 && item.i >= 9) {
+          const q = (item.i - 9) / (n - 9),
+            initialAngle = Math.atan2(0.08, item.i % 8 ? 0.13 : -0.13),
+            outwardAngle = Math.atan2(
+              0.36 * Math.cos(q * Math.PI * 4),
+              0.35 * Math.sin(q * Math.PI * 4),
+            ),
+            angleDelta = Math.atan2(
+              Math.sin(outwardAngle - initialAngle),
+              Math.cos(outwardAngle - initialAngle),
+            ),
+            angle = initialAngle + fold * angleDelta,
+            length = Math.hypot(0.13, 0.08);
+          sideEnd.y += length * Math.cos(angle);
+          sideEnd.z += length * Math.sin(angle);
+        } else {
+          sideEnd.y += item.i % 8 ? 0.13 : -0.13;
+          sideEnd.z += 0.08;
+        }
         dir.copy(sideEnd).sub(point);
         item.mesh.position.copy(point).add(sideEnd).multiplyScalar(0.5);
         item.mesh.scale.set(0.025, dir.length(), 0.025);

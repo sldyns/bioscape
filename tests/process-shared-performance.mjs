@@ -121,8 +121,9 @@ class Renderer {
   }
 }
 
-class Controls {
+class Controls extends THREE.EventDispatcher {
   constructor(camera) {
+    super();
     this.camera = camera;
     this.target = new THREE.Vector3();
   }
@@ -130,7 +131,6 @@ class Controls {
     this.camera.lookAt(this.target);
   }
   saveState() {}
-  addEventListener() {}
   listenToKeyEvents() {}
   dispose() {}
 }
@@ -168,6 +168,7 @@ function fixture(Component, props) {
     elements: [],
     slots: [],
     effects: [],
+    layoutEffects: [],
     index: 0,
     writes: 0,
     reads: 0,
@@ -231,6 +232,18 @@ function fixture(Component, props) {
     },
     useMemo: memo,
     useCallback: (callback, dependencies) => memo(() => callback, dependencies),
+    useLayoutEffect(callback, dependencies) {
+      const slot = (f.slots[f.index++] ??= {});
+      if (
+        !slot.dependencies ||
+        dependencies.some((v, i) => !Object.is(v, slot.dependencies[i]))
+      )
+        f.layoutEffects.push(() => {
+          slot.cleanup?.();
+          slot.dependencies = [...dependencies];
+          slot.cleanup = callback();
+        });
+    },
     useEffect(callback, dependencies) {
       const slot = (f.slots[f.index++] ??= {});
       if (
@@ -280,7 +293,9 @@ function fixture(Component, props) {
     globalThis.cancelAnimationFrame = (id) => f.jobs.delete(id);
     f.index = 0;
     f.effects = [];
+    f.layoutEffects = [];
     f.tree = Component(f.props);
+    f.layoutEffects.forEach((effect) => effect());
     f.effects.forEach((effect) => effect());
   };
   f.flush = () => {
@@ -449,6 +464,7 @@ try {
                     "useRef",
                     "useState",
                     "useEffect",
+                    "useLayoutEffect",
                     "useMemo",
                     "useCallback",
                   ].map(

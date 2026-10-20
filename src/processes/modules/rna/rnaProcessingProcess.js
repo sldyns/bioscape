@@ -256,10 +256,12 @@ export default {
       const nucleotide = new THREE.Group();
       tail.add(nucleotide);
       tailNucleotides.push(nucleotide);
+      // The retained RNA end starts the first bond; each newly added nucleotide
+      // belongs at that bond's far end, including the final 3′ nucleotide.
       nucleotide.position.set(
-        x,
-        0.13 * Math.sin(i * 0.65),
-        0.15 * (Math.cos(i * 0.65) - 1),
+        x + 0.13,
+        0.13 * Math.sin((i + 1) * 0.65),
+        0.15 * (Math.cos((i + 1) * 0.65) - 1),
       );
       k.mesh(sugarGeometry, gold, [0, 0, 0], nucleotide);
       k.segment([0, 0, 0], [0, 0.14, 0], 0.022, gold, nucleotide);

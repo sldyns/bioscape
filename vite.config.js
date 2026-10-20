@@ -9,6 +9,8 @@ const noticeText = (file) =>
   readFileSync(new URL(`./${file}`, import.meta.url), "utf8");
 export default defineConfig({
   base: "./",
+  // Historical QA pages are not application dependency entries.
+  optimizeDeps: { entries: ["index.html"] },
   plugins: [
     {
       name: "release-notices",

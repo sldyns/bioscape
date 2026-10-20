@@ -1,4 +1,10 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -64,6 +70,12 @@ export default function ProcessScene({
   const [busy, setBusy] = useState(true);
   const [attempt, setAttempt] = useState(0);
 
+  // OrbitControls must disconnect from the original document before DOM removal.
+  useLayoutEffect(
+    () => () => engine.current?.dispose(),
+    [definition, rootId, attempt],
+  );
+
   useEffect(() => {
     const element = host.current;
     let renderer, controls, environment, pmrem, room, observer;
@@ -85,7 +97,15 @@ export default function ProcessScene({
         live.current.progressSource?.current ?? live.current.progress,
       );
     let pose;
-    const view = () => readSceneView(camera, controls.target, fittedDistance);
+    let currentViewFitDistance = null;
+    const view = () => {
+      camera.updateMatrixWorld();
+      return readSceneView(
+        camera,
+        controls.target,
+        currentViewFitDistance ? currentViewFitDistance() : fittedDistance,
+      );
+    };
     const orbitChanged = () => {
       requestRender();
       if (suppressViewChange || !api?.ready || !live.current.onViewChange)
@@ -113,6 +133,7 @@ export default function ProcessScene({
       cancelAnimationFrame(frame);
       observer?.disconnect();
       document.fonts?.removeEventListener("loadingdone", invalidateAnnotations);
+      controls?.removeEventListener("change", orbitChanged);
       controls?.dispose();
       renderer?.domElement.removeEventListener(
         "webglcontextlost",
@@ -393,14 +414,16 @@ export default function ProcessScene({
           ),
         );
       };
+      currentViewFitDistance = () => fitDistance();
       const resize = (initial = false) => {
         if (disposed) return;
         const rect = element.getBoundingClientRect();
         width = Math.max(1, rect.width);
         height = Math.max(1, rect.height);
+        camera.updateMatrixWorld();
         const zoomRatio = initial
           ? 1
-          : camera.position.distanceTo(controls.target) / fittedDistance;
+          : camera.position.distanceTo(controls.target) / fitDistance();
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
         camera.updateMatrixWorld();
@@ -417,7 +440,7 @@ export default function ProcessScene({
         );
         camera.updateProjectionMatrix();
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        renderer.setSize(width, height);
+        renderer.setSize(width, height, false);
         requestRender();
       };
       labelLayer = document.createElement("div");
@@ -473,17 +496,26 @@ export default function ProcessScene({
       resize(true);
       controls.saveState();
       const setView = (value) => {
-        if (!api?.ready || !normalizeSceneView(value)) return false;
+        const normalized = normalizeSceneView(value);
+        if (!api?.ready || !normalized) return false;
         suppressViewChange = true;
         const damping = controls.enableDamping;
         try {
           controls.enableDamping = false;
           controls.update();
+          const fitCamera = camera.clone();
+          const fitTarget = new THREE.Vector3().fromArray(normalized.target);
+          fitCamera.position.fromArray(normalized.direction).add(fitTarget);
+          fitCamera.lookAt(fitTarget);
+          fitCamera.updateMatrixWorld();
+          fittedDistance = fitDistance(fitCamera);
+          controls.minDistance = fittedDistance * 0.3;
+          controls.maxDistance = fittedDistance * 3;
           const applied = applySceneView(
             camera,
             controls.target,
             fittedDistance,
-            value,
+            normalized,
           );
           if (applied) {
             controls.update();
@@ -502,7 +534,10 @@ export default function ProcessScene({
         scene,
         camera,
         target: controls.target,
-        getFittedDistance: () => fittedDistance,
+        getFittedDistance: () => {
+          camera.updateMatrixWorld();
+          return fitDistance();
+        },
         fitDistance,
         getLabels: () =>
           (model.labels ?? []).map((label) => ({

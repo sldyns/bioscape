@@ -221,7 +221,8 @@ export default {
       [0.3, 0.25, 0.26],
       k.material("#c4b69b"),
     );
-    k.segment([0, 1.35, 0], [0, 1.14, 0], 0.09, gold, cargo);
+    // Reach the vesicle shell while retaining the lower motor attachment.
+    k.segment([0, 1.38, 0], [0, 1.14, 0], 0.09, gold, cargo);
     const kh = [];
     for (let i = 0; i < 2; i++) {
       const head = new THREE.Group();

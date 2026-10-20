@@ -1256,7 +1256,7 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   height: 47px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: safe center;
   gap: 6px;
   border-bottom: 1px solid var(--line);
   background: #fff;

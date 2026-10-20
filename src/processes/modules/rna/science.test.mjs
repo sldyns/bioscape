@@ -71,6 +71,68 @@ console.log(
   "rna-01: actual backbone connectivity at 1005 times in both roots PASS",
 );
 
+// Locate the sugar from actual cap-center vertices; the chain must reach each
+// newly added nucleotide, rather than leaving its last bond beyond the marker.
+function sugarCenter(mesh) {
+  const p = mesh.geometry.attributes.position;
+  const center = new THREE.Vector3();
+  let count = 0;
+  for (let i = 0; i < p.count; i++) {
+    if (Math.abs(p.getX(i)) < 1e-8 && Math.abs(p.getY(i)) < 1e-8) {
+      center.add(new THREE.Vector3().fromBufferAttribute(p, i));
+      count++;
+    }
+  }
+  assert(count >= 2, "pentose cap centers must be present");
+  return center.divideScalar(count).applyMatrix4(mesh.matrixWorld);
+}
+for (const rootId of ["cell", "plant"]) {
+  const view = rna.create({ rootId });
+  const tail = view.group.getObjectByName("poly-a-tail");
+  const exon = view.group.getObjectByName("exon-2").children[0];
+  const nucleotides = tail.children.filter((node) => node.isGroup);
+  const links = tail.children.filter((node) => node.isMesh);
+  assert.equal(nucleotides.length, 20);
+  assert.equal(links.length, nucleotides.length);
+  for (const p of [
+    ...times,
+    0.77 - 1e-7,
+    0.77 + 1e-7,
+    0.92 - 1e-7,
+    0.92 + 1e-7,
+    1,
+    0.82,
+    0.69,
+    0.79,
+    0,
+    1,
+  ]) {
+    seek(view, p);
+    const oldEnd = tubeEnd(exon, true);
+    const centers = nucleotides.map((node) => sugarCenter(node.children[0]));
+    for (let i = 0; i < links.length; i++) {
+      assert.equal(links[i].visible, nucleotides[i].visible);
+      if (!links[i].visible) continue;
+      if (i === 0)
+        assert(
+          centers[i].distanceTo(oldEnd) > 0.05,
+          "new nucleotide must not overlap the retained RNA end",
+        );
+      near(
+        end(links[i], false),
+        i === 0 ? oldEnd : centers[i - 1],
+        `${rootId} poly(A) bond ${i} start, p=${p}`,
+      );
+      near(
+        end(links[i], true),
+        centers[i],
+        `${rootId} poly(A) bond ${i} end, p=${p}`,
+      );
+    }
+  }
+}
+console.log("rna-01: poly(A) endpoint connectivity and reverse seeks PASS");
+
 const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
 function intersect(a, b, c, d) {
@@ -172,6 +234,41 @@ function feet(kind) {
   );
 }
 const cargo = view.group.getObjectByName("motor-cargo");
+// Test the two physical contacts, not a matching endpoint constant.
+{
+  const connector = cargo.children.find(
+    (mesh) => mesh.geometry?.type === "CylinderGeometry",
+  );
+  assert(connector, "cargo connector must exist");
+  const tree = new MeshBVH(connector.geometry.clone());
+  const inverse = new THREE.Matrix4(),
+    transform = new THREE.Matrix4();
+  const touches = (mesh) => {
+    transform.multiplyMatrices(inverse, mesh.matrixWorld);
+    return tree.intersectsGeometry(mesh.geometry, transform);
+  };
+  for (const kind of ["kinesin", "dynein"])
+    for (const atp of ["available", "depleted"])
+      for (const p of [0.27, 0.5, 0.88, 1]) {
+        seek(view, p, { motor: kind, atp });
+        inverse.copy(connector.matrixWorld).invert();
+        assert(
+          touches(cargo.children[0]),
+          `cargo connector must touch vesicle shell: ${kind}/${atp}, p=${p}`,
+        );
+        const meshes = [];
+        view.group.getObjectByName(kind).traverse((object) => {
+          if (object.isMesh) meshes.push(object);
+        });
+        assert(
+          meshes.some(touches),
+          `cargo connector must remain attached to motor: ${kind}/${atp}, p=${p}`,
+        );
+      }
+  tree.geometry.dispose();
+}
+console.log("rna-motor-cargo: actual shell and motor triangle contacts PASS");
+
 function progressForFraction(t) {
   // Invert the monotone progress ease numerically; positions are still read
   // from rendered meshes, not from an exported trajectory implementation.
@@ -713,4 +810,41 @@ export function assertNPCDefaultLabelVisibility() {
 const npcVisibility = assertNPCDefaultLabelVisibility();
 console.log(
   `20261004-rna-rendered-03: ${npcVisibility.checks.length} fitted-default-camera beta/Ran first-hit checks across six root/NLS configurations; stable local point through 1005 seeks each; three original beta-to-Ran negative replays PASS`,
+);
+
+// Mature chains must remain open without intersections between nonadjacent
+// rendered backbone segments. Read actual transformed cylinder triangles.
+{
+  const imported = organelle.create({ rootId: "plant" });
+  const chain = Array.from({ length: 67 }, (_, i) =>
+    imported.group.getObjectByName(`import-chain-${i + 9}`),
+  );
+  const tree = new MeshBVH(chain[0].geometry.clone());
+  const boxes = chain.map(() => new THREE.Box3());
+  const inverse = new THREE.Matrix4();
+  const relative = new THREE.Matrix4();
+  for (const p of [0.85, 0.9, 0.925, 0.95, 0.975, 0.99, 1]) {
+    seek(imported, p, { transit: "present" });
+    for (let i = 0; i < chain.length; i++) {
+      chain[i].geometry.computeBoundingBox();
+      boxes[i]
+        .copy(chain[i].geometry.boundingBox)
+        .applyMatrix4(chain[i].matrixWorld);
+    }
+    for (let i = 0; i < chain.length - 2; i++) {
+      inverse.copy(chain[i].matrixWorld).invert();
+      for (let j = i + 2; j < chain.length; j++) {
+        if (!boxes[i].intersectsBox(boxes[j])) continue;
+        relative.multiplyMatrices(inverse, chain[j].matrixWorld);
+        assert(
+          !tree.intersectsGeometry(chain[j].geometry, relative),
+          `imported mature chain self-intersection: ${i + 9}/${j + 9}, p=${p}`,
+        );
+      }
+    }
+  }
+  tree.geometry.dispose();
+}
+console.log(
+  "rna-organelle-fold: actual nonadjacent mature-chain triangles PASS",
 );

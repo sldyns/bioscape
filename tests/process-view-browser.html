@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><title>Process live view round trip</title>
+  <h1>Process live view round trip</h1>
+  <pre id="result">Running live framebuffer checks...</pre>
+  <div id="fixture"></div>
+  <div id="images"></div>
+  <style>
+    #fixture {
+      width: 756px;
+      height: 324px;
+    }
+    .process-scene-shell,
+    .process-canvas {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .process-model-labels,
+    .process-annotation-key {
+      display: none;
+    }
+    pre {
+      white-space: pre-wrap;
+    }
+    #images {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    #images canvas {
+      width: 378px;
+      height: 162px;
+    }
+  </style>
+  <script type="module" src="./process-view-browser.jsx"></script>
+</html>

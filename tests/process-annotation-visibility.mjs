@@ -95,8 +95,9 @@ class Renderer {
     runtime.current.draws++;
   }
 }
-class Controls {
+class Controls extends THREE.EventDispatcher {
   constructor(camera) {
+    super();
     this.camera = camera;
     this.target = new THREE.Vector3();
   }
@@ -105,7 +106,6 @@ class Controls {
     return false;
   }
   saveState() {}
-  addEventListener() {}
   listenToKeyEvents() {}
   dispose() {}
 }
@@ -135,6 +135,7 @@ function fixture(Component, annotations = false) {
     slots: [],
     index: 0,
     effects: [],
+    layoutEffects: [],
     fonts: new Set(),
     observers: [],
     progress: { current: 0 },
@@ -159,6 +160,19 @@ function fixture(Component, annotations = false) {
           slot.value = typeof value === "function" ? value(slot.value) : value;
         },
       ];
+    },
+    useLayoutEffect(callback, dependencies) {
+      const i = context.index++;
+      const slot = (context.slots[i] ??= {});
+      if (
+        !slot.dependencies ||
+        dependencies.some((v, n) => !Object.is(v, slot.dependencies[n]))
+      )
+        context.layoutEffects.push(() => {
+          slot.cleanup?.();
+          slot.dependencies = [...dependencies];
+          slot.cleanup = callback();
+        });
     },
     useEffect(callback, dependencies) {
       const i = context.index++;
@@ -256,7 +270,9 @@ function fixture(Component, annotations = false) {
     Object.assign(context.props, props);
     context.index = 0;
     context.effects = [];
+    context.layoutEffects = [];
     Component(context.props);
+    context.layoutEffects.forEach((effect) => effect());
     context.effects.forEach((effect) => effect());
   };
   context.flush = () => {
@@ -321,7 +337,7 @@ try {
             const host = "globalThis.__processAnnotationRuntime";
             if (path === "react")
               return {
-                contents: `export const useId=(...a)=>${host}.current.hooks.useId(...a); export const useRef=(...a)=>${host}.current.hooks.useRef(...a); export const useState=(...a)=>${host}.current.hooks.useState(...a); export const useEffect=(...a)=>${host}.current.hooks.useEffect(...a); export default {createElement:(...a)=>${host}.current.hooks.createElement(...a)};`,
+                contents: `export const useId=(...a)=>${host}.current.hooks.useId(...a); export const useRef=(...a)=>${host}.current.hooks.useRef(...a); export const useState=(...a)=>${host}.current.hooks.useState(...a); export const useEffect=(...a)=>${host}.current.hooks.useEffect(...a); export const useLayoutEffect=(...a)=>${host}.current.hooks.useLayoutEffect(...a); export default {createElement:(...a)=>${host}.current.hooks.createElement(...a)};`,
               };
             if (path === "three")
               return {

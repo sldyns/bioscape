@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <title>Process document-listener cleanup</title>
+  <h1>Process document-listener cleanup</h1>
+  <pre id="result">Running actual React unmount checks...</pre>
+  <div id="fixture"></div>
+  <style>
+    #fixture {
+      width: 756px;
+      height: 324px;
+    }
+    .process-scene-shell,
+    .process-canvas {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .process-model-labels,
+    .process-annotation-key {
+      display: none;
+    }
+    pre {
+      white-space: pre-wrap;
+    }
+  </style>
+  <script type="module" src="./process-disposal-browser.jsx"></script>
+</html>
