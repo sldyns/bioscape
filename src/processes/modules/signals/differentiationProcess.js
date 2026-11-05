@@ -73,6 +73,7 @@ function create() {
     const position = mesh.geometry.attributes.position;
     const rest = new Float64Array(position.count * 3);
     const restNormals = new Float64Array(position.count * 3),
+      waistFalloff = new Float64Array(position.count),
       intoNormal = new THREE.Matrix3().getNormalMatrix(toNuclear),
       fromNormal = new THREE.Matrix3().getNormalMatrix(fromNuclear),
       v = new THREE.Vector3();
@@ -81,6 +82,10 @@ function create() {
     for (let i = 0; i < position.count; i++) {
       v.fromBufferAttribute(position, i).applyMatrix4(toNuclear);
       rest.set(v.toArray(), i * 3);
+      // This coefficient depends only on the captured rest-space x. Retain
+      // Number precision and the original operation order before each seek.
+      const nx = rest[i * 3] / 1.1;
+      waistFalloff[i] = Math.exp((-nx * nx) / 0.16);
       minX = Math.min(minX, v.x);
       maxX = Math.max(maxX, v.x);
       v.fromBufferAttribute(mesh.geometry.attributes.normal, i).applyMatrix3(
@@ -95,7 +100,14 @@ function create() {
     box.expandByPoint(v.set(maxX, 0, 0).applyMatrix4(fromNuclear));
     mesh.geometry.boundingBox = box;
     mesh.geometry.boundingSphere = box.getBoundingSphere(new THREE.Sphere());
-    deformingMeshes.push({ mesh, rest, restNormals, fromNuclear, fromNormal });
+    deformingMeshes.push({
+      mesh,
+      rest,
+      restNormals,
+      waistFalloff,
+      fromNuclear,
+      fromNormal,
+    });
   }
   capture(nuclearSurface);
   for (const fiber of nuclear.children.filter(
@@ -280,6 +292,7 @@ function create() {
         mesh,
         rest,
         restNormals,
+        waistFalloff,
         fromNuclear,
         fromNormal,
       } of deformingMeshes) {
@@ -287,8 +300,7 @@ function create() {
           normal = mesh.geometry.attributes.normal;
         for (let i = 0; i < position.count; i++) {
           const x = rest[i * 3],
-            nx = x / 1.1,
-            reduction = deform * Math.exp((-nx * nx) / 0.16),
+            reduction = deform * waistFalloff[i],
             waist = 1 - reduction,
             derivative = (2 * x * reduction) / (1.1 * 1.1 * 0.16),
             y = rest[i * 3 + 1],

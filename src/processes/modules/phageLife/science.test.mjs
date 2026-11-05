@@ -177,6 +177,122 @@ for (const p of [0, 0.03, 0.05, 0.1, 0.15]) {
 
 const b = lysogenic.create();
 const get = (name) => b.group.getObjectByName(name);
+const fission = get("lambda-dividing-envelope"),
+  fissionSurfaces = fission.children.filter((o) => o.name.endsWith("-surface"));
+assert.equal(
+  fissionSurfaces.length,
+  10,
+  "both daughter halves keep five envelope leaflets/layers",
+);
+function fissionState() {
+  const hash = createHash("sha256");
+  for (const o of fissionSurfaces)
+    for (const attr of Object.values(o.geometry.attributes))
+      hash.update(new Uint8Array(attr.array.buffer));
+  fission.traverse((o) => {
+    if (o.isInstancedMesh)
+      hash.update(new Uint8Array(o.instanceMatrix.array.buffer));
+  });
+  return hash.digest("hex");
+}
+for (const p of [
+  0.5, 0.51, 0.535, 0.55, 0.56, 0.58, 0.6, 0.62, 0.629, 0.63, 0.64,
+]) {
+  b.update(p, { fate: "maintain" });
+  b.group.updateMatrixWorld(true);
+  assert(
+    effective(fission),
+    "one constricting cutaway replaces overlapping complete cells",
+  );
+  assert(
+    !effective(get("lambda-left-host")) && !effective(get("lambda-right-host")),
+  );
+  for (const mesh of fissionSurfaces) {
+    const position = mesh.geometry.attributes.position,
+      normal = mesh.geometry.attributes.normal,
+      side = mesh.userData.fissionSide;
+    for (let i = 0; i < position.count; i++) {
+      assert(
+        position.getX(i) * side >= -1e-7,
+        "actual daughter surface never crosses septal plane",
+      );
+      for (const v of [
+        position.getX(i),
+        position.getY(i),
+        position.getZ(i),
+        normal.getX(i),
+        normal.getY(i),
+        normal.getZ(i),
+      ])
+        assert(Number.isFinite(v), "all deformed vertices/normals finite");
+    }
+    const waist = new THREE.Vector3().fromBufferAttribute(position, 0);
+    if (p < 0.63)
+      assert(
+        Math.abs(waist.x) < 1e-7,
+        "open half-envelopes meet at one common waist",
+      );
+    else
+      assert(
+        Math.abs(waist.y) < 1e-7 && Math.abs(waist.z) < 1e-7,
+        "waist closes before daughters separate",
+      );
+  }
+  assert.equal(
+    fission.children.filter(
+      (o) => o.name.endsWith("-headgroups") && effective(o) && o.count === 128,
+    ).length,
+    8,
+  );
+  assert.equal(
+    fission.children.filter(
+      (o) => o.name.endsWith("-lipid-tails") && effective(o) && o.count === 256,
+    ).length,
+    8,
+  );
+  assert.equal(
+    fission.children.filter(
+      (o) =>
+        o.name.endsWith("-wall-crosslinks") && effective(o) && o.count === 96,
+    ).length,
+    2,
+  );
+  if (p >= 0.56) {
+    for (let i = 0; i < 2; i++) {
+      const side = i ? 1 : -1,
+        chr = get(`lambda-chromosome-${i}`),
+        v = new THREE.Vector3();
+      chr.traverse((o) => {
+        if (!o.isMesh || o.isInstancedMesh || !effective(o)) return;
+        const position = o.geometry.attributes.position,
+          index = o.geometry.index,
+          start = o.geometry.drawRange.start,
+          end = Math.min(
+            index ? index.count : position.count,
+            start + o.geometry.drawRange.count,
+          );
+        for (let j = start; j < end; j++) {
+          v.fromBufferAttribute(
+            position,
+            index ? index.getX(j) : j,
+          ).applyMatrix4(o.matrixWorld);
+          assert(
+            v.x * side > 0.02,
+            "drawn chromosome/prophage backbones clear septal plane before closure",
+          );
+        }
+      });
+    }
+  }
+  const expected = fissionState();
+  b.update(1, { fate: "induce" });
+  b.update(p, { fate: "maintain" });
+  assert.equal(
+    fissionState(),
+    expected,
+    "deformed surfaces/lipid matrices restore after seek and fate switch",
+  );
+}
 for (const fate of ["maintain", "induce"]) {
   for (const p of [0.65, 0.8, 0.96, 0.975, 1]) {
     b.update(p, { fate });
@@ -286,6 +402,104 @@ for (const [model, scene] of [
     }
   }
 }
+// Reuse the real T4 model above. These are authored assembly checkpoints, not
+// labels selected from the production join branch or a second copy of ease().
+// At .74 joining has not started; .79 is halfway through; .84 is complete,
+// while envelope disruption does not start until .85.
+const lyticLabelCheckpoints = [
+  {
+    progress: 0.66,
+    joining: 0,
+    mature: false,
+    zh: "前头 · 独立装配的尾",
+    en: "Proheads · separate tails",
+  },
+  {
+    progress: 0.74,
+    joining: 0,
+    mature: false,
+    zh: "前头 · 独立装配的尾",
+    en: "Proheads · separate tails",
+  },
+  {
+    progress: 0.79,
+    joining: 0.5,
+    mature: false,
+    zh: "头尾结合中",
+    en: "Head–tail joining",
+  },
+  {
+    progress: 0.84,
+    joining: 1,
+    mature: true,
+    zh: "成熟子代 · 待释放",
+    en: "Mature progeny · awaiting release",
+  },
+  {
+    progress: 0.849,
+    joining: 1,
+    mature: true,
+    zh: "成熟子代 · 待释放",
+    en: "Mature progeny · awaiting release",
+  },
+];
+const lyticAssemblyLabel = a.labels[5],
+  lyticAssemblyText = lyticAssemblyLabel.text;
+function checkLyticAssemblyLabel(checkpoint, sequence) {
+  a.update(checkpoint.progress);
+  const context = `${sequence} at ${checkpoint.progress}`;
+  assert.equal(a.labels[5], lyticAssemblyLabel, `${context}: source label`);
+  assert.equal(
+    lyticAssemblyLabel.text,
+    lyticAssemblyText,
+    `${context}: keep the bilingual object used by annotations`,
+  );
+  assert.equal(lyticAssemblyLabel.active, true, `${context}: visible label`);
+  assert.equal(lyticAssemblyText.zh, checkpoint.zh, `${context}: Chinese`);
+  assert.equal(lyticAssemblyText.en, checkpoint.en, `${context}: English`);
+  assert(
+    Math.abs(a.group.userData.tailJoiningProgress - checkpoint.joining) < 1e-12,
+    `${context}: real model joining state`,
+  );
+  assert.equal(
+    a.group.userData.mature,
+    checkpoint.mature,
+    `${context}: mature`,
+  );
+  assert.equal(
+    a.group.userData.envelopeIntegrity,
+    1,
+    `${context}: before lysis`,
+  );
+  assert.equal(
+    a.group.userData.progenyReleased,
+    false,
+    `${context}: not released`,
+  );
+}
+for (const checkpoint of lyticLabelCheckpoints)
+  checkLyticAssemblyLabel(checkpoint, "forward assembly");
+for (const checkpoint of [...lyticLabelCheckpoints].reverse())
+  checkLyticAssemblyLabel(checkpoint, "reverse seek");
+// Hidden text is not a user-facing contract. Assert it stays hidden, then
+// require both languages to recover on re-entry from early and late stages.
+for (const [hiddenProgress, checkpoint] of [
+  [1, lyticLabelCheckpoints[2]],
+  [0, lyticLabelCheckpoints[3]],
+  [0.85, lyticLabelCheckpoints[0]],
+  [0.51, lyticLabelCheckpoints[2]],
+]) {
+  a.update(hiddenProgress);
+  assert.equal(
+    a.labels[5].active,
+    false,
+    `assembly label is hidden at ${hiddenProgress}`,
+  );
+  checkLyticAssemblyLabel(checkpoint, `re-entry from ${hiddenProgress}`);
+}
+console.log(
+  "PASS phageLife-lytic-label: bilingual assembly states, reverse seeks and hidden-stage re-entry",
+);
 console.log(
   "PASS phageLife-01: continuous forward DNA, fixed outlet, conserved length, open capsid/tube/baseplate and no duplicate genome",
 );

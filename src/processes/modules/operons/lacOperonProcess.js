@@ -115,6 +115,9 @@ const model = {
       rna = k.material("#ca947c"),
       blue = k.material("#7792ab");
     const detailedDNA = duplex(k, { y: -0.5, radius: 0.2 });
+    // duplex() starts closed. With zero opening, bubble positions cannot
+    // change its geometry; the first closing frame still restores the helix.
+    let dnaWasClosed = true;
     const box = new THREE.BoxGeometry(1, 1, 1);
     for (const [x, w, mat] of [
       [-3.15, 0.7, green],
@@ -164,10 +167,22 @@ const model = {
     k.segment([-0.13, 0, 0], [0.13, 0, 0], 0.045, gold, lactose);
     const beta = k.ball([-0.5, 2.1, 0], [0.45, 0.32, 0.27], blue);
     beta.name = "Pre-existing beta-galactosidase";
-    const polymerases = Array.from({ length: 3 }, () => {
+    const polymeraseMaterials = [];
+    const polymerases = Array.from({ length: 3 }, (_, i) => {
       const g = new THREE.Group();
       group.add(g);
-      polymeraseBody(k, g, blue, 0.75);
+      // Staggered arrivals need independent opacity, including every detailed
+      // domain. Allocate once; settled proteins keep their original opaque look.
+      const bodyKit = {
+        ...k,
+        material: (color, options = {}) =>
+          k.material(color, {
+            ...options,
+            name: "lac-rnap-" + i + "-" + color,
+          }),
+      };
+      polymeraseBody(bodyKit, g, bodyKit.material("#7792ab"), 0.75);
+      polymeraseMaterials.push(materialInventory(g));
       return g;
     });
     const transcriptionBubbles = polymerases.map(() => ({ x: 0, opening: 0 }));
@@ -247,9 +262,27 @@ const model = {
       polymerases.forEach((m, i) => {
         const start = 0.53 + i * 0.075,
           end = 0.87 + i * 0.04,
-          t = ease(p, start, end);
-        m.visible = i < count && p >= start - 0.035 && t < 1;
-        m.position.set(-1.8 + 5.7 * t, -0.33, 0.22);
+          t = ease(p, start, end),
+          arrival = ease(p, start - 0.07, start - 0.035),
+          departure = ease(p, end, end + 0.04),
+          opacity = arrival * (1 - departure);
+        // A complete polymerase approaches the promoter and later leaves it;
+        // neither its protein shape nor its detail grows or gets replaced.
+        m.visible = i < count && opacity > 0;
+        m.position.set(
+          -1.8 + 5.7 * t,
+          -0.33 + 0.9 * (1 - arrival + departure),
+          0.22,
+        );
+        for (const material of polymeraseMaterials[i]) {
+          const transparent = opacity < 1;
+          if (material.transparent !== transparent) {
+            material.transparent = transparent;
+            material.needsUpdate = true;
+          }
+          material.opacity = opacity;
+          material.depthWrite = !transparent;
+        }
         transcriptionBubbles[i].x = m.position.x;
         // Loading opens DNA before elongation; after release it reanneals
         // continuously. Each polymerase retains its own bounded bubble.
@@ -263,7 +296,14 @@ const model = {
           Math.floor((transcripts[i].geometry.index.count * t) / 6) * 6,
         );
       });
-      detailedDNA.update(transcriptionBubbles);
+      const dnaClosed =
+        transcriptionBubbles[0].opening === 0 &&
+        transcriptionBubbles[1].opening === 0 &&
+        transcriptionBubbles[2].opening === 0;
+      if (!dnaClosed || !dnaWasClosed) {
+        detailedDNA.update(transcriptionBubbles);
+      }
+      dnaWasClosed = dnaClosed;
       rnaDetails.forEach((d) => d.update());
       bridges.forEach((bridge, i) =>
         bridge.update(

@@ -128,6 +128,9 @@ const model = {
       radius: 0.19,
       count: 58,
     });
+    // duplex() starts closed. Restore it on the first closing frame, then
+    // retain its exact matrices while the opening remains zero.
+    let dnaWasClosed = true;
     const box = new THREE.BoxGeometry(1, 1, 1);
     const uas = k.mesh(box, green, [-1.8, -0.73, 0]);
     uas.scale.set(0.85, 0.12, 0.12);
@@ -277,16 +280,26 @@ const model = {
         glucose = parameters.glucose === "high",
         induced = gal && !glucose,
         ligand = gal ? ease(p, 0.15, 0.3) : 0,
-        release = gal ? ease(p, 0.35, 0.55) : 0;
+        release = gal ? ease(p, 0.35, 0.55) : 0,
+        opening = induced ? ease(p, 0.68, 0.72) * (1 - ease(p, 0.96, 1)) : 0;
       labels.forEach((label) => (label.active = true));
       halves[0].position.x = -0.34 + 0.15 * ligand;
       halves[1].position.x = 0.34 - 0.15 * ligand;
       sugar.visible = gal && p > 0.15;
       atp.visible = gal && p > 0.15;
-      gal80.position.set(-1.8 + 1.85 * release, 0.57 + 0.92 * release, 0.16);
+      // Move the interacting pair together to keep it clear of Mig1–Cyc8/Tup1.
+      // The shared offset preserves the Gal3/Gal80 relative pose at every time;
+      // no galactose means no release and therefore no presentation offset.
+      const complexOffsetX = 1.3 * release,
+        complexOffsetY = -0.3 * release;
+      gal80.position.set(
+        -1.8 + 1.85 * release + complexOffsetX,
+        0.57 + 0.92 * release + complexOffsetY,
+        0.16,
+      );
       gal3.position.set(
-        1.65 - 1.1 * ease(p, 0.28, 0.51) * (gal ? 1 : 0),
-        1.7,
+        1.65 - 1.1 * ease(p, 0.28, 0.51) * (gal ? 1 : 0) + complexOffsetX,
+        1.7 + complexOffsetY,
         0,
       );
       gal3.rotation.z = -0.25 * ligand;
@@ -303,10 +316,10 @@ const model = {
         0,
         Math.floor((rna.geometry.index.count * ease(p, 0.72, 0.97)) / 6) * 6,
       );
-      detailedDNA.update(
-        polymerase.position.x,
-        induced ? ease(p, 0.68, 0.72) * (1 - ease(p, 0.96, 1)) : 0,
-      );
+      if (opening !== 0 || !dnaWasClosed) {
+        detailedDNA.update(polymerase.position.x, opening);
+      }
+      dnaWasClosed = opening === 0;
       rnaDetail.update();
       bridge.update(
         rna.geometry.parameters.path,
@@ -319,7 +332,9 @@ const model = {
       labels[3].text =
         release > 0.9
           ? b("Gal3–Gal80 复合体", "Gal3–Gal80 complex")
-          : b("Gal80 遮挡激活域", "Gal80 masks activation domain");
+          : release > 0
+            ? b("Gal80", "Gal80")
+            : b("Gal80 遮挡激活域", "Gal80 masks activation domain");
       labels[4].text = !gal
         ? b("Gal3：无诱导物", "Gal3: no inducer")
         : sugar.visible && atp.visible

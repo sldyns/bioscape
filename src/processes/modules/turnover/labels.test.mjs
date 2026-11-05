@@ -164,8 +164,20 @@ test("proteasome leaders identify current named structures and actual visible pr
 
 test("Cas9 leaders preserve nuclease/PAM/strand identity under current parent transforms", () => {
   const scene = crispr.create();
+  const drawn = (object) => {
+    for (let parent = object; parent; parent = parent.parent)
+      if (!parent.visible) return false;
+    const materials = Array.isArray(object.material)
+      ? object.material
+      : [object.material];
+    return (
+      materials.some((material) => material?.visible && material.opacity > 0) &&
+      object.geometry?.attributes.position.count > 0 &&
+      object.geometry.drawRange.count > 0
+    );
+  };
   for (const target of ["matched", "noPam", "mismatch"])
-    for (const p of samples) {
+    for (const p of [...samples, 0.445, 0.446, 0.455, 0.456, 0.46]) {
       seek(scene, p, { target });
       const labels = scene.labels;
       near(
@@ -210,12 +222,29 @@ test("Cas9 leaders preserve nuclease/PAM/strand identity under current parent tr
         scaffold.localToWorld(local),
         "tracrRNA leader terminates on its actual scaffold curve",
       );
-      if (labels[8].active)
-        near(
-          labels[8],
-          point(find(scene, "Cas9 DNA backbone 0 24")),
-          "displaced leader remains on non-target rail",
+      if (labels[8].active) {
+        const displacedSegments = [];
+        for (let index = 15; index < 34; index++) {
+          const backbone = find(scene, `Cas9 DNA backbone 0 ${index}`);
+          if (
+            drawn(backbone) &&
+            !drawn(find(scene, `Cas9 DNA pair ${index}`)) &&
+            !drawn(find(scene, `Cas9 DNA pair ${index + 1}`)) &&
+            drawn(find(scene, `Cas9 RNA DNA pair ${index - 15}`)) &&
+            drawn(find(scene, `Cas9 RNA DNA pair ${index - 14}`))
+          )
+            displacedSegments.push(backbone);
+        }
+        assert.ok(
+          displacedSegments.some(
+            (object) =>
+              new THREE.Vector3(...labels[8].position).distanceTo(
+                point(object),
+              ) < 2e-6,
+          ),
+          "displaced leader reaches a drawn non-target segment whose two ends have lost DNA pairing and acquired guide pairing",
         );
+      }
     }
 });
 

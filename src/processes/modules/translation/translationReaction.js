@@ -255,6 +255,8 @@ export function createTranslation({ rootId = "cell" } = {}) {
       1,
     ),
   ];
+  // Representation, enlargement and reading conventions are context notes.
+  for (const index of [1, 2, 12, 13]) labels[index].annotationKind = "context";
   labels[0].priority = 6;
   labels[0].compactText = { zh: "人 80S 实验结构", en: "Human 80S structure" };
   labels[2].priority = 6;

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import "./annotationRegression.test.mjs";
 import * as THREE from "three";
 import { build } from "esbuild";
 import auxin from "./auxinProcess.js";

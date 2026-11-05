@@ -25,21 +25,29 @@ function prosporeMembrane(k, material) {
   g.setAttribute("position", new THREE.BufferAttribute(v, 3));
   g.setIndex(index);
   const mesh = k.mesh(g, material);
+  const cosines = new Float64Array(m + 1),
+    sines = new Float64Array(m + 1);
+  for (let j = 0; j <= m; j++) {
+    const angle = (j / m) * Math.PI * 2;
+    cosines[j] = Math.cos(angle);
+    sines[j] = Math.sin(angle);
+  }
   return {
     mesh,
     shape(closure, attachment, attached, nucleation) {
       const maxAngle = 0.22 * nucleation + (Math.PI - 0.22) * closure;
-      for (let i = 0; i <= n; i++)
+      for (let i = 0; i <= n; i++) {
+        const t = (i / n) * maxAngle,
+          anchorWeight = attached * Math.exp(-Math.pow(t / 0.48, 2)),
+          radius = 0.64 * Math.sin(t),
+          z = -0.64 * Math.cos(t) + (attachment.z + 0.64) * anchorWeight;
         for (let j = 0; j <= m; j++) {
-          const t = (i / n) * maxAngle,
-            a = (j / m) * Math.PI * 2,
-            q = (i * (m + 1) + j) * 3;
-          const anchorWeight = attached * Math.exp(-Math.pow(t / 0.48, 2));
-          v[q] = 0.64 * Math.sin(t) * Math.cos(a) + attachment.x * anchorWeight;
-          v[q + 1] =
-            0.64 * Math.sin(t) * Math.sin(a) + attachment.y * anchorWeight;
-          v[q + 2] = -0.64 * Math.cos(t) + (attachment.z + 0.64) * anchorWeight;
+          const q = (i * (m + 1) + j) * 3;
+          v[q] = radius * cosines[j] + attachment.x * anchorWeight;
+          v[q + 1] = radius * sines[j] + attachment.y * anchorWeight;
+          v[q + 2] = z;
         }
+      }
       g.attributes.position.needsUpdate = true;
       g.computeVertexNormals();
       g.computeBoundingSphere();
@@ -430,7 +438,11 @@ function create() {
     anchor.atMesh(2, chromatid[0].centromere);
     anchor.atMesh(3, chromatid[0].centromere);
     anchor.atMesh(4, chromatid[1].centromere);
-    anchor.atVertex(5, membranes[1].mesh, 24 * 37);
+    // The closed topology stays intact; point at the rim of the displayed
+    // membrane section once its front cap is cut away for observation.
+    const membrane = membranes[1].mesh,
+      membraneRimRow = membrane.geometry.drawRange.count / (36 * 6);
+    anchor.atVertex(5, membrane, membraneRimRow * 37);
     let sporeWall = walls[0][0];
     for (const layer of walls[0]) if (layer.visible) sporeWall = layer;
     anchor.atVertex(6, sporeWall, 14 * 41 + 20);

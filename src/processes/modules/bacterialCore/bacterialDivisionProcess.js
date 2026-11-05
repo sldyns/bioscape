@@ -373,6 +373,7 @@ const process = {
       ),
     ];
     let envelopeElongation, envelopeConstriction, envelopeSeparation;
+    let dnaReplication, dnaPostReplication, dnaSeparation;
     function update(raw, parameters = {}) {
       const p = clamp(raw),
         blocked = parameters.septalSynthesis === "blocked";
@@ -521,50 +522,61 @@ const process = {
       // Three connected DNA arms share two exact fork coordinates until termination.
       const postReplication = ease(p, 0.41, 0.49),
         forkAngle = replication * Math.PI;
-      chromosomes.forEach((c) => {
-        c.position.set(0, 0, 0.18);
-        c.scale.set(1, 1, 1);
-      });
-      const branchPoint = (t, side) => {
-        const q = dnaPoint(t),
-          sign = side ? 1 : -1;
-        const opening =
-          forkAngle > 0
-            ? Math.max(0, Math.cos(((t / forkAngle) * Math.PI) / 2)) ** 2
-            : 0;
-        q[0] +=
-          sign *
-          (0.9 * replication * opening * (1 - postReplication) +
-            1.7 * postReplication +
-            separation * 0.4);
-        return q;
-      };
-      for (let side = 0; side < 2; side++)
-        for (let i = 0; i < pieces; i++) {
-          const a = -forkAngle + (2 * forkAngle * i) / pieces,
-            z = -forkAngle + (2 * forkAngle * (i + 1)) / pieces;
-          dnaPieces[side][i].visible = replication > 0;
-          segment(
-            dnaPieces[side][i],
-            branchPoint(a, side),
-            branchPoint(z, side),
-            0.034,
-          );
+      // Replication, segregation and cell separation are the complete DNA
+      // dependencies; FtsZ and synthase motion still follows p every frame.
+      if (
+        replication !== dnaReplication ||
+        postReplication !== dnaPostReplication ||
+        separation !== dnaSeparation
+      ) {
+        chromosomes.forEach((c) => {
+          c.position.set(0, 0, 0.18);
+          c.scale.set(1, 1, 1);
+        });
+        const branchPoint = (t, side) => {
+          const q = dnaPoint(t),
+            sign = side ? 1 : -1;
+          const opening =
+            forkAngle > 0
+              ? Math.max(0, Math.cos(((t / forkAngle) * Math.PI) / 2)) ** 2
+              : 0;
+          q[0] +=
+            sign *
+            (0.9 * replication * opening * (1 - postReplication) +
+              1.7 * postReplication +
+              separation * 0.4);
+          return q;
+        };
+        for (let side = 0; side < 2; side++)
+          for (let i = 0; i < pieces; i++) {
+            const a = -forkAngle + (2 * forkAngle * i) / pieces,
+              z = -forkAngle + (2 * forkAngle * (i + 1)) / pieces;
+            dnaPieces[side][i].visible = replication > 0;
+            segment(
+              dnaPieces[side][i],
+              branchPoint(a, side),
+              branchPoint(z, side),
+              0.034,
+            );
+          }
+        for (let i = 0; i < unreplicated.length; i++) {
+          const a =
+              forkAngle +
+              ((Math.PI * 2 - 2 * forkAngle) * i) / unreplicated.length,
+            z =
+              forkAngle +
+              ((Math.PI * 2 - 2 * forkAngle) * (i + 1)) / unreplicated.length;
+          unreplicated[i].visible = replication < 1;
+          segment(unreplicated[i], dnaPoint(a), dnaPoint(z), 0.034);
         }
-      for (let i = 0; i < unreplicated.length; i++) {
-        const a =
-            forkAngle +
-            ((Math.PI * 2 - 2 * forkAngle) * i) / unreplicated.length,
-          z =
-            forkAngle +
-            ((Math.PI * 2 - 2 * forkAngle) * (i + 1)) / unreplicated.length;
-        unreplicated[i].visible = replication < 1;
-        segment(unreplicated[i], dnaPoint(a), dnaPoint(z), 0.034);
-      }
-      for (let i = 0; i < 2; i++) {
-        const point = dnaPoint((i ? 1 : -1) * forkAngle);
-        forks[i].visible = replication > 0 && replication < 1;
-        forks[i].position.set(point[0], point[1], point[2] + 0.18);
+        for (let i = 0; i < 2; i++) {
+          const point = dnaPoint((i ? 1 : -1) * forkAngle);
+          forks[i].visible = replication > 0 && replication < 1;
+          forks[i].position.set(point[0], point[1], point[2] + 0.18);
+        }
+        dnaReplication = replication;
+        dnaPostReplication = postReplication;
+        dnaSeparation = separation;
       }
       const assembled = ease(p, 0.48, 0.59),
         departure = blocked ? 0 : ease(p, 0.76, 0.83),

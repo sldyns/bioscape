@@ -152,7 +152,9 @@ export function secretoryMembrane(k, parent, erMaterial, plasmaMaterial) {
       if (length < 1e-12) return;
       const ux = -vy / length,
         uy = vx / length,
-        erSide = compartments(mx, my).er < 0.08,
+        // Segment color needs only the same fixed ER distance, not the
+        // carrier/target distances or smooth unions used by field queries.
+        erSide = ellipse(mx, my, -2.1, 0.8, 1.2, 0.51) < 0.08,
         half = erSide ? 0.025 : 0.0195,
         color = erSide ? erMaterial.color : plasmaMaterial.color;
       const ap = [a[0] + ux * half, a[1] + uy * half],

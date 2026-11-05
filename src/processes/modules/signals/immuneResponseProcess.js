@@ -361,6 +361,23 @@ function create() {
     k.label([1.15, 1.48, 0.1], "肽–MHC-I", "Peptide–MHC-I", 2),
     k.label([2.7, -0.48, 0.2], "TCR + CD8", "TCR + CD8", 2),
   ];
+  // Keep endpoints strictly inside the real receptor mesh, near its front
+  // outer surface. Insetting actual vertices avoids ambiguous boundary rays
+  // without moving or simplifying either receptor as the MHC and TCR rotate.
+  const sphereInsetPoint = (target, thetaFraction, phiFraction) => {
+    const { widthSegments, heightSegments } = target.geometry.parameters;
+    const vertex =
+      Math.round(thetaFraction * heightSegments) * (widthSegments + 1) +
+      Math.round(phiFraction * widthSegments);
+    const position = target.geometry.getAttribute("position");
+    return [
+      position.getX(vertex) * 0.98,
+      position.getY(vertex) * 0.98,
+      position.getZ(vertex) * 0.98,
+    ];
+  };
+  const mhcLabelTarget = mhc.children[1],
+    tcrLabelTarget = tcr.children[1];
   const anchors = labelAnchors([
     { label: labels[0], target: group, local: [-2.7, 1.8, 0], region: true },
     { label: labels[1], target: tcell, local: [0.25, 0.9, 0], region: true },
@@ -368,8 +385,16 @@ function create() {
     { label: labels[3], target: proteasome.children[4] },
     { label: labels[4], target: tap.children[0] },
     { label: labels[5], target: golgi.children[0], local: [0, -0.42, 0] },
-    { label: labels[6], target: mhc.children[1] },
-    { label: labels[7], target: tcr.children[1] },
+    {
+      label: labels[6],
+      target: mhcLabelTarget,
+      local: sphereInsetPoint(mhcLabelTarget, 13 / 16, 5 / 24),
+    },
+    {
+      label: labels[7],
+      target: tcrLabelTarget,
+      local: sphereInsetPoint(tcrLabelTarget, 3 / 4, 1 / 4),
+    },
   ]);
   function update(progress, parameters = {}) {
     const p = clamp(progress),

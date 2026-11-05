@@ -464,6 +464,30 @@ export default {
       units[1].sugar.children[1],
       k.group,
     );
+    // Select a real head on the exposed cytoplasmic leaflet, rather than
+    // leaving the membrane callout in the empty region below the bilayer.
+    const membraneHeads = k.group.getObjectByName("phospholipid-heads--1"),
+      membraneMatrix = new THREE.Matrix4(),
+      membranePoint = new THREE.Vector3(),
+      membraneHint = new THREE.Vector3(2.7, -0.65, 0.7);
+    let membraneInstance = 0,
+      membraneDistance = Infinity;
+    for (let i = 0; i < membraneHeads.count; i++) {
+      membraneHeads.getMatrixAt(i, membraneMatrix);
+      membranePoint.setFromMatrixPosition(membraneMatrix);
+      const distance = membranePoint.distanceToSquared(membraneHint);
+      if (distance < membraneDistance) {
+        membraneDistance = distance;
+        membraneInstance = i;
+      }
+    }
+    const anchorMembrane = bindSurfaceLabel(
+      labels[6],
+      membraneHeads,
+      k.group,
+      [0, 0, 1],
+      membraneInstance,
+    );
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         blocked = parameters.antibiotic === "betaLactam";
@@ -572,6 +596,7 @@ export default {
         : b("新肽交联", "New peptide crosslinks");
       anchorRodA();
       anchorSubstrate();
+      anchorMembrane();
       catalyticPoint.toArray(labels[3].position);
       labels[5].active = blocked ? acylated : crosslinks > 0;
       (blocked ? catalyticPoint : units[0].crosslink.position).toArray(

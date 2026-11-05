@@ -27,6 +27,7 @@ export default {
             "PAM 邻近种子区多处错配",
             "Multiple PAM-proximal seed mismatches",
           ),
+          shortLabel: b("种子区多处错配", "Seed mismatches"),
         },
       ],
     },
@@ -52,8 +53,8 @@ export default {
       at: 0.36,
       title: b("局部解链与配对", "Unwind and pair"),
       description: b(
-        "从 PAM 邻近处开始，引导 RNA 与反向平行的靶 DNA 链配对；另一条 DNA 链被置换。本例多处种子区错配阻止稳定延伸。",
-        "Starting near the PAM, the guide pairs antiparallel with the target DNA strand and displaces the other DNA strand. Multiple seed mismatches in this example prevent stable propagation.",
+        "从 PAM 邻近处开始，引导 RNA 与反向平行的靶 DNA 链配对；另一条 DNA 链被置换。在“PAM 邻近种子区多处错配”对照条件下，本模型不支持稳定延伸。",
+        "Starting near the PAM, the guide pairs antiparallel with the target DNA strand and displaces the other DNA strand. In the “Multiple PAM-proximal seed mismatches” control condition, this model does not support stable propagation.",
       ),
     },
     {
@@ -363,6 +364,12 @@ export default {
       );
     const da = new THREE.Vector3(),
       db = new THREE.Vector3();
+    const openBaseOffsets = [
+      new THREE.Vector3(0, -0.12, 0),
+      new THREE.Vector3(0, 0.12, 0),
+    ];
+    const openPhase = Math.atan2(-0.08, 0.755) + 4 * Math.PI,
+      openRadius = Math.hypot(0.755, 0.08);
     for (let i = 0; i < 20; i++) {
       da.set(dnaX(first + i), -0.25, 0.38);
       detail.bead(guidePhosphate, i, da, 0.057);
@@ -433,7 +440,6 @@ export default {
       // Integrate the remaining twist rather than blending opposed Cartesian rails.
       // Every interval retains 0..0.44 rad of twist; opening never collapses radius.
       // Free flanks rotate continuously as the PAM-proximal region unwinds.
-      const openPhase = Math.atan2(-0.08, 0.755) + 4 * Math.PI;
       duplexPhase[last] =
         last * 0.44 + (openPhase - last * 0.44) * localOpen[last];
       for (let i = last - 1; i >= 0; i--)
@@ -446,7 +452,7 @@ export default {
           0.44 * (1 - (localOpen[i] + localOpen[i - 1]) / 2);
       for (let i = 0; i <= n; i++) {
         const local = localOpen[i],
-          radius = 0.26 * (1 - local) + Math.hypot(0.755, 0.08) * local;
+          radius = 0.26 * (1 - local) + openRadius * local;
         for (let s = 0; s < 2; s++) {
           const sign = s ? -1 : 1;
           points[s][i].set(
@@ -467,11 +473,11 @@ export default {
           da.copy(points[strand][i]);
           detail.bead(phosphates[strand], i, da, 0.059);
           detail.bead(sugars[strand], i, da, [0.049, 0.05, 0.045]);
-          const duplexTip = da.clone().lerp(points[1 - strand][i], 0.3);
-          const openTip = da
-            .clone()
-            .add(new THREE.Vector3(0, strand ? 0.12 : -0.12, 0));
-          baseTips[strand][i].copy(duplexTip).lerp(openTip, localOpen[i]);
+          const duplexTip = baseTips[strand][i]
+            .copy(da)
+            .lerp(points[1 - strand][i], 0.3);
+          const openTip = db.copy(da).add(openBaseOffsets[strand]);
+          duplexTip.lerp(openTip, localOpen[i]);
           detail.bar(
             nucleotideBases[strand],
             i,
@@ -522,7 +528,7 @@ export default {
       anchor[5](trScaffold, trAnchor.x, trAnchor.y, trAnchor.z);
       anchor[6](hnh.children[0]);
       anchor[7](ruvc.children[0]);
-      anchor[8](rows[0][24]);
+      anchor[8](rows[0][open > 0.4 ? 27 : 24]);
       labels[3].text = hasPam
         ? b("PAM · 5′-NGG-3′", "PAM · 5′-NGG-3′")
         : b("无兼容 PAM", "No compatible PAM");

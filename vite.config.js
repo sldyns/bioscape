@@ -1,9 +1,11 @@
+import { bufferPreparationHook } from "./scripts/rendererBufferPreparation.mjs";
 import { defineConfig } from "vite";
 import { readFileSync } from "node:fs";
 const releaseNotices = {
   "LICENSE.txt": "LICENSE",
   "NOTICE.txt": "docs/legal/NOTICE",
   "THIRD_PARTY_NOTICES.txt": "docs/legal/THIRD_PARTY_NOTICES.md",
+  "MEDIABUNNY-MPL-2.0.txt": "docs/legal/MEDIABUNNY-MPL-2.0.txt",
 };
 const noticeText = (file) =>
   readFileSync(new URL(`./${file}`, import.meta.url), "utf8");
@@ -12,6 +14,7 @@ export default defineConfig({
   // Historical QA pages are not application dependency entries.
   optimizeDeps: { entries: ["index.html"] },
   plugins: [
+    bufferPreparationHook(),
     {
       name: "release-notices",
       configureServer(server) {

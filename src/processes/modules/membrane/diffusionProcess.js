@@ -54,8 +54,8 @@ const definition = {
       at: 0.86,
       title: b("趋向动态平衡", "Approaching dynamic equilibrium"),
       description: b(
-        "浓度差缩小；平衡条件仍有双向交换，净通量为零。此有限示意不模拟体积、压力或真实动力学。",
-        "The gradient diminishes. At equilibrium, exchange persists in both directions with zero net flux. This finite illustration does not simulate volume, pressure, or real kinetics.",
+        "若初始存在氧浓度差或水活度差，净流动使差异趋于减小。起初相等或达到平衡时，双向交换仍持续，但没有由该差异驱动的净通量。此有限示意不模拟体积、压力或真实动力学。",
+        "If an oxygen-concentration or water-activity difference is present initially, net movement tends to reduce it. With initially equal sides or at equilibrium, bidirectional exchange persists without gradient-driven net flux. This finite illustration does not simulate volume, pressure, or real kinetics.",
       ),
     },
   ],
@@ -187,6 +187,7 @@ const definition = {
       k.label([-2.65, -0.1, 0.65], "疏水尾", "Hydrophobic tails"),
       k.label([2.7, 2.92, 0], "水 · 通道扩散", "Water · channel diffusion", 2),
     ];
+    labels[5].annotationKind = "context";
     const anchorChannel = bindSurfaceLabel(
       labels[2],
       channelLabelMesh,

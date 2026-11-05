@@ -81,6 +81,7 @@ for (const [built, source] of Object.entries({
   "LICENSE.txt": "LICENSE",
   "NOTICE.txt": "docs/legal/NOTICE",
   "THIRD_PARTY_NOTICES.txt": "docs/legal/THIRD_PARTY_NOTICES.md",
+  "MEDIABUNNY-MPL-2.0.txt": "docs/legal/MEDIABUNNY-MPL-2.0.txt",
 })) {
   assert.equal(
     fs.readFileSync(path.join(dist, built), "utf8"),

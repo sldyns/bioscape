@@ -312,6 +312,7 @@ const process = {
         7,
       ),
     ];
+    let chromosomePair, chromosomeIntegrated;
     function update(raw, parameters = {}) {
       const p = clamp(raw),
         match = parameters.homology !== "absent",
@@ -424,29 +425,35 @@ const process = {
       recFilament.flush();
       // Preserve the original chromosome until contact. Its displaced strand
       // remains connected at both D-loop junctions until the integration endpoint.
-      const residentPoint = (index, side) => {
-        const q = chrom((index / 110) * Math.PI * 2);
-        q[2] += side * 0.105;
-        const t = (44 - index) / 35;
-        if (side === 0 && pair > 0 && t >= 0 && t <= pair)
-          q[2] -= 0.35 * Math.sin((Math.PI * t) / pair);
-        return q;
-      };
-      for (let side = 0; side < 2; side++)
-        for (let i = 0; i < 110; i++) {
-          chr[side][i].visible = !(
-            side === 0 &&
-            integrated &&
-            i >= 9 &&
-            i < 44
-          );
-          write(
-            chr[side][i],
-            residentPoint(i, side),
-            residentPoint(i + 1, side),
-            0.035,
-          );
-        }
+      // Uptake and RecA movement do not alter the resident chromosome.
+      // Recompute it only when strand exchange or integration changes.
+      if (pair !== chromosomePair || integrated !== chromosomeIntegrated) {
+        const residentPoint = (index, side) => {
+          const q = chrom((index / 110) * Math.PI * 2);
+          q[2] += side * 0.105;
+          const t = (44 - index) / 35;
+          if (side === 0 && pair > 0 && t >= 0 && t <= pair)
+            q[2] -= 0.35 * Math.sin((Math.PI * t) / pair);
+          return q;
+        };
+        for (let side = 0; side < 2; side++)
+          for (let i = 0; i < 110; i++) {
+            chr[side][i].visible = !(
+              side === 0 &&
+              integrated &&
+              i >= 9 &&
+              i < 44
+            );
+            write(
+              chr[side][i],
+              residentPoint(i, side),
+              residentPoint(i + 1, side),
+              0.035,
+            );
+          }
+        chromosomePair = pair;
+        chromosomeIntegrated = integrated;
+      }
       for (let i = 0; i < capture.length; i++) {
         const point = (t) => [
           -2.02 - 0.43 * t,

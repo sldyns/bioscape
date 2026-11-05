@@ -34,6 +34,7 @@ const model = {
             "严重匮乏（带 Trp 的 tRNA 不足）",
             "Severely depleted (charged tRNA limiting)",
           ),
+          shortLabel: b("严重匮乏", "Severely depleted"),
         },
         { value: "high", label: b("充足", "High") },
       ],
@@ -131,6 +132,9 @@ const model = {
         k.material(c),
       );
     const detailedDNA = duplex(k, { y: 1.17, radius: 0.19 });
+    // duplex() starts closed. Restore it on the first closing frame, then
+    // retain its exact matrices while the opening remains zero.
+    let dnaWasClosed = true;
     const box = new THREE.BoxGeometry(1, 1, 1),
       operator = k.mesh(box, rep, [-3.1, 1.17, -0.02]);
     operator.scale.set(0.9, 0.11, 0.12);
@@ -373,10 +377,12 @@ const model = {
         0.14,
       );
       polymerase.visible = stall || p < 0.96;
-      detailedDNA.update(
-        polX,
-        ease(p, 0.17, 0.22) * (stall ? 1 : 1 - ease(p, 0.81, 0.96)),
-      );
+      const dnaOpening =
+        ease(p, 0.17, 0.22) * (stall ? 1 : 1 - ease(p, 0.81, 0.96));
+      if (dnaOpening !== 0 || !dnaWasClosed) {
+        detailedDNA.update(polX, dnaOpening);
+      }
+      dnaWasClosed = dnaOpening === 0;
       Object.values(branches).forEach((branch) =>
         branch.nucleotideDetails.forEach((d) => d.update()),
       );

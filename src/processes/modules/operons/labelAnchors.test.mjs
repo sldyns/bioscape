@@ -234,7 +234,12 @@ function check(s, m, params, p) {
     surface(s, 7, named(s, "Fps1 gate surface 0"));
     surface(s, 8, named(s, "Glycerol 1 first carbon"));
     tube(s, 10, named(s, "Nuclear GPD1 response RNA"));
-    [6, 11].forEach((i) => assert.equal(s.labels[i].annotationKind, "region"));
+    assert.equal(s.labels[6].annotationKind, "region");
+    assert.equal(s.labels[11].annotationKind, "context");
+    assert.notEqual(s.labels[11].active, false);
+    s.labels.forEach((label, index) => {
+      if (index !== 11) assert.notEqual(label.annotationKind, "context");
+    });
     assert.equal(s.labels[9].annotationKind, "state");
     if (params.osmolarity === "unchanged" || params.hog1 === "inhibited")
       assert.equal(s.labels[10].active, false);

@@ -226,6 +226,7 @@ function create({ rootId = "cell" } = {}) {
       1,
     ),
   ];
+  labels[4].annotationKind = "context";
   if (rootId === "plant")
     labels[1].text = B("ISWI 类 · CHR11/17", "ISWI family · CHR11/17");
   if (rootId === "yeast")

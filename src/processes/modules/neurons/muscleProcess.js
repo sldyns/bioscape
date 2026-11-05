@@ -300,7 +300,12 @@ export default {
       wall.name = name;
       return wall;
     }
-    reservoirWall(0.19, 5.2, srOuter, "SR cutaway outer membrane");
+    const srWall = reservoirWall(
+      0.19,
+      5.2,
+      srOuter,
+      "SR cutaway outer membrane",
+    );
     reservoirWall(0.15, 5.2, srInner, "SR exposed luminal membrane");
     // Rim strips join the inner and outer surfaces along both open cut edges.
     for (const angle of [cutStart, cutStart + cutArc]) {
@@ -403,7 +408,16 @@ export default {
         "Nucleotide state: " +
         (nucleotideState === "empty" ? "nucleotide-free" : nucleotideState);
       anchorObject(labels[0], mline, 0, 0.45, 0.5);
-      anchorObject(labels[1], sr, 0, 0, 1);
+      // The SR group is not a unit-radius primitive. Follow the actual open
+      // wall edge halfway along its axis, including mesh/ancestor transforms.
+      const srVertices = srWall.geometry.attributes.position;
+      anchorObject(
+        labels[1],
+        srWall,
+        srVertices.getX(0),
+        0,
+        srVertices.getZ(0),
+      );
       anchorObject(labels[2], thin[0].zDisc, 0, -0.45, 0.5);
       anchorObject(labels[3], thin[1].zDisc, 0, -0.45, 0.5);
       anchorInstance(labels[4], labelledActin, labelledActin.count - 1);

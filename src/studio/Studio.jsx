@@ -21,7 +21,7 @@ import {
   savePreferences,
 } from "./config.js";
 import { canvasBlob, drawComposition } from "./composition.js";
-import { preferredVideoFormat, recordVideo } from "./recordVideo.js";
+import { exportVideo, preferredExportFormat } from "./exportVideo.js";
 import { createPreviewPlayback, previewScale } from "./previewPlayback.js";
 import "./studio.css";
 
@@ -36,8 +36,12 @@ function storage() {
 function errorText(error, en) {
   if (error?.message === "VIDEO_UNSUPPORTED")
     return en
-      ? "This browser cannot record canvas video. Try a current desktop browser; PNG export is still available."
-      : "当前浏览器不支持模型视频录制。可使用新版桌面浏览器，或继续导出 PNG 图片";
+      ? "This browser cannot export canvas video. Try a current desktop browser; PNG export is still available."
+      : "当前浏览器不支持模型视频导出。可使用新版桌面浏览器，或继续导出 PNG 图片";
+  if (error?.message === "VIDEO_PAGE_HIDDEN")
+    return en
+      ? "Video generation stopped because this page was hidden. Keep it visible and try again."
+      : "视频生成因页面进入后台而停止。请保持此页面可见后重试";
   if (error?.message === "SCENE_NOT_READY")
     return en
       ? "The model is unavailable. Close the studio and reopen it after the model has loaded."
@@ -119,10 +123,8 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
   const [shareBusy, setShareBusy] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
-  const format = useMemo(() => preferredVideoFormat(), []);
-  const canRecord = Boolean(
-    format && globalThis.HTMLCanvasElement?.prototype.captureStream,
-  );
+  const format = useMemo(() => preferredExportFormat(), []);
+  const canRecord = Boolean(format);
   const effectivePreferences = useMemo(
     () => ({
       ...preferences,
@@ -354,7 +356,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
     setIsRecording(true);
     const canvas = document.createElement("canvas");
     try {
-      const result = await recordVideo({
+      const result = await exportVideo({
         canvas,
         duration: preferences.duration,
         signal: controller.signal,
@@ -381,12 +383,14 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
     } catch (cause) {
       if (mounted.current) {
         if (cause.name === "AbortError")
-          setNotice(t("录制已取消", "Recording cancelled."));
+          setNotice(t("视频生成已取消", "Video generation cancelled."));
         else setError(errorText(cause, en));
       }
     } finally {
       canvas.width = canvas.height = 0;
-      releaseCapture();
+      // Unmount already releases capture; a delayed encoder flush must not
+      // dispose the capture buffers of a subsequently reopened studio.
+      if (mounted.current) releaseCapture();
       if (recording.current === controller) recording.current = null;
       if (mounted.current) setIsRecording(false);
     }
@@ -521,7 +525,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                   controls
                   playsInline
                   preload="metadata"
-                  aria-label={t("已录制的视频", "Recorded video")}
+                  aria-label={t("已生成的视频", "Generated video")}
                 />
               ) : !previewReady ? (
                 <div className="studio-empty">
@@ -539,8 +543,8 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                   <span>
                     {isRecording
                       ? t(
-                          `录制中 ${Math.round(progress * 100)}%`,
-                          `Recording ${Math.round(progress * 100)}%`,
+                          `生成中 ${Math.round(progress * 100)}%`,
+                          `Generating ${Math.round(progress * 100)}%`,
                         )
                       : isExportingImage
                         ? t("正在导出图片", "Exporting image")
@@ -647,8 +651,8 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                 <p className="studio-format-note">
                   {canRecord
                     ? t(
-                        `输出 ${format.extension.toUpperCase()} · 无声视频。录制时请保持此标签页可见`,
-                        `${format.extension.toUpperCase()} output · silent video. Keep this tab visible while recording.`,
+                        "无声视频。生成时请保持此标签页可见；处理耗时可能超过视频时长",
+                        "Silent video. Keep this tab visible while generating; processing may take longer than playback.",
                       )
                     : errorText({ message: "VIDEO_UNSUPPORTED" }, en)}
                 </p>
@@ -765,14 +769,14 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                 <progress
                   value={progress}
                   max="1"
-                  aria-label={t("录制进度", "Recording progress")}
+                  aria-label={t("视频生成进度", "Video generation progress")}
                 />
                 <span>
                   {progress === 1
                     ? t("正在完成编码…", "Finishing encoding…")
                     : t(
-                        `正在录制 · ${Math.round(progress * 100)}%`,
-                        `Recording · ${Math.round(progress * 100)}%`,
+                        `正在生成 · ${Math.round(progress * 100)}%`,
+                        `Generating · ${Math.round(progress * 100)}%`,
                       )}
                 </span>
               </div>
@@ -820,7 +824,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                     className="studio-secondary"
                     onClick={() => recording.current?.abort()}
                   >
-                    {t("取消录制", "Cancel recording")}
+                    {t("取消生成", "Cancel generation")}
                   </button>
                 ) : (
                   <button
@@ -831,8 +835,8 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                   >
                     <Film size={15} />
                     {video
-                      ? t("重新录制", "Record again")
-                      : t("录制视频", "Record video")}
+                      ? t("重新生成", "Generate again")
+                      : t("生成视频", "Generate video")}
                   </button>
                 ))}
               {mode === "image" && (

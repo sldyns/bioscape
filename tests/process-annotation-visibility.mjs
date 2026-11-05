@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { build } from "esbuild";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -30,6 +30,9 @@ class Element {
     this.attributes = {};
     this.className = "";
     this.hidden = false;
+    this.parentElement = null;
+    this.tabIndex = tag === "button" ? 0 : -1;
+    this.listeners = new Map();
     this._text = "";
     this.style = new Proxy(
       {},
@@ -52,6 +55,17 @@ class Element {
   get textContent() {
     return this._text;
   }
+  get tagName() {
+    return this.tag.toUpperCase();
+  }
+  get nextElementSibling() {
+    const siblings = this.parentElement?.children ?? [];
+    return siblings[siblings.indexOf(this) + 1] ?? null;
+  }
+  get previousElementSibling() {
+    const siblings = this.parentElement?.children ?? [];
+    return siblings[siblings.indexOf(this) - 1] ?? null;
+  }
   get offsetWidth() {
     this.context.reads++;
     return this.context.props.annotations
@@ -63,20 +77,39 @@ class Element {
     return this.context.props.annotations ? 21 * this.context.fontScale : 0;
   }
   append(...items) {
+    for (const item of items) item.parentElement = this;
     this.children.push(...items);
   }
   prepend(...items) {
+    for (const item of items) item.parentElement = this;
     this.children.unshift(...items);
   }
   replaceChildren(...items) {
+    for (const item of this.children) item.parentElement = null;
+    for (const item of items) item.parentElement = this;
     this.children = items;
   }
   setAttribute(key, value) {
     this.context.writes++;
     this.attributes[key] = String(value);
   }
-  addEventListener() {}
-  removeEventListener() {}
+  removeAttribute(key) {
+    delete this.attributes[key];
+    if (key === "tabindex") this.tabIndex = -1;
+  }
+  addEventListener(type, callback) {
+    this.listeners.set(type, callback);
+  }
+  removeEventListener(type) {
+    this.listeners.delete(type);
+  }
+  scrollIntoView(options) {
+    this.scrollOptions = options;
+  }
+  focus() {
+    document.activeElement = this;
+    this.listeners.get("focus")?.();
+  }
   remove() {}
   getBoundingClientRect() {
     return this.context.viewport;
@@ -122,8 +155,9 @@ runtime.three = {
 runtime.Controls = Controls;
 globalThis.__processAnnotationRuntime = runtime;
 
-function fixture(Component, annotations = false) {
+function fixture(Component, annotations = false, options = {}) {
   const context = {
+    pendingInitializations: new Set(),
     elements: [],
     reads: 0,
     writes: 0,
@@ -200,6 +234,7 @@ function fixture(Component, annotations = false) {
     matchMedia: () => ({ matches: false }),
   };
   globalThis.document = {
+    activeElement: null,
     createElement: (tag) => new Element(tag),
     createElementNS: (_namespace, tag) => new Element(tag),
     fonts: {
@@ -240,6 +275,31 @@ function fixture(Component, annotations = false) {
           position: [1, 0, 0],
         },
       ];
+      const initial = labels[0],
+        product = labels[2];
+      if (options.physicalKind !== undefined)
+        for (const label of labels) label.annotationKind = options.physicalKind;
+      const contextLabels = options.contexts
+        ? [
+            {
+              text: {
+                zh: "空间靠近不等于转录",
+                en: "Proximity is not transcription",
+              },
+            },
+            { text: { zh: "本窗口无转录脉冲", en: "No burst in this window" } },
+          ]
+        : [];
+      for (const label of contextLabels) {
+        label.annotationKind = "context";
+        Object.defineProperty(label, "position", {
+          enumerable: true,
+          get() {
+            throw new Error("Context must never read a geometric position");
+          },
+        });
+      }
+      labels.splice(1, 0, ...contextLabels);
       return {
         group,
         labels,
@@ -247,9 +307,13 @@ function fixture(Component, annotations = false) {
         update(progress) {
           context.updates.push(progress);
           mesh.position.x = progress;
-          labels[0].active = progress < 0.5;
-          labels[2].active = progress >= 0.5;
-          labels[2].position[0] = 1 + progress;
+          initial.active = progress < 0.5;
+          product.active = progress >= 0.5;
+          product.position[0] = 1 + progress;
+          if (contextLabels.length) {
+            contextLabels[0].active = progress < 0.5;
+            contextLabels[1].active = progress >= 0.5;
+          }
         },
       };
     },
@@ -274,6 +338,8 @@ function fixture(Component, annotations = false) {
     Component(context.props);
     context.layoutEffects.forEach((effect) => effect());
     context.effects.forEach((effect) => effect());
+    if (context.pendingInitializations.size)
+      return Promise.all([...context.pendingInitializations]);
   };
   context.flush = () => {
     for (let i = 0; context.jobs.size && i < 8; i++) {
@@ -297,6 +363,9 @@ function fixture(Component, annotations = false) {
         aria: e.attributes["aria-label"],
         text: e.children.map((c) => c.textContent),
       })),
+    contexts: context.elements
+      .filter((e) => e.className === "process-annotation-context")
+      .map((e) => ({ text: e.textContent, hidden: e.hidden })),
   });
   context.dispose = () => context.slots.forEach((slot) => slot.cleanup?.());
   return context;
@@ -322,6 +391,37 @@ try {
       {
         name: "recording-scene-runtime",
         setup(build) {
+          // Track the real asynchronous framing helper without replacing its
+          // queue, cancellation, model updates, or bounds calculations.
+          build.onLoad(
+            { filter: /framingPreparation\.js$/ },
+            async ({ path }) => ({
+              contents:
+                (await readFile(path, "utf8")).replace(
+                  "export function createProcessFramingPreparation(",
+                  "function createActualProcessFramingPreparation(",
+                ) +
+                `
+export function createProcessFramingPreparation(options) {
+  const fixture = globalThis.__processAnnotationRuntime.current;
+  const preparation = createActualProcessFramingPreparation(options);
+  return {
+    start(...args) {
+      const promise = preparation.start(...args);
+      fixture.pendingInitializations.add(promise);
+      promise.then(() => fixture.pendingInitializations.delete(promise));
+      return promise;
+    },
+    cancel: (...args) => preparation.cancel(...args),
+    dispose: () => preparation.dispose(),
+    get pending() { return preparation.pending; },
+  };
+}
+`,
+              loader: "js",
+              resolveDir: resolve("src/processes"),
+            }),
+          );
           build.onResolve(
             {
               filter:
@@ -363,9 +463,9 @@ try {
     ],
   });
   const { default: ProcessScene } = await import(pathToFileURL(outfile));
-  await test("hidden process annotations do no layout work and resume the latest pose", () => {
+  await test("hidden process annotations do no layout work and resume the latest pose", async () => {
     const f = fixture(ProcessScene);
-    f.render();
+    await f.render();
     f.flush();
     assert(
       f.api?.ready && f.draws > 0,
@@ -379,7 +479,7 @@ try {
     const initialWrites = f.writes;
     f.progress.current = 0.7;
     f.api.requestRender();
-    f.render({ lang: "en" });
+    await f.render({ lang: "en" });
     f.viewport = { width: 390, height: 500 };
     f.fontScale = 1.2;
     f.observers.forEach((fn) => fn());
@@ -404,7 +504,7 @@ try {
     );
     assert.equal(exported[2].text, "Growing product");
     assert.equal(exported[2].active, true);
-    f.render({ annotations: true });
+    await f.render({ annotations: true });
     assert(
       f.jobs.size > 0,
       "Showing annotations while paused must request a frame",
@@ -430,15 +530,15 @@ try {
       beforeFont + 4,
       "Visible font changes must refresh metrics",
     );
-    f.render({ annotations: false });
+    await f.render({ annotations: false });
     f.flush();
     const hiddenReads = f.reads;
     f.fontScale = 1.4;
     f.fonts.forEach((fn) => fn());
-    f.render({ lang: "zh" });
+    await f.render({ lang: "zh" });
     f.flush();
     assert.equal(f.reads, hiddenReads);
-    f.render({ annotations: true });
+    await f.render({ annotations: true });
     f.flush();
     assert.equal(
       f.reads,
@@ -457,10 +557,147 @@ try {
     visible.viewport = { width: 390, height: 500 };
     visible.fontScale = 1.4;
     visible.progress.current = 0.7;
-    visible.render();
+    await visible.render();
     visible.flush();
     assert.deepEqual(visible.snapshot(), expected);
     visible.dispose();
+  });
+  await test("context notes retain text without geometry, numbering or molecular focus", async () => {
+    const f = fixture(ProcessScene, true, { contexts: true });
+    await f.render();
+    f.flush();
+    assert(
+      f.api?.ready,
+      "The context fixture must render without reading position",
+    );
+    const keys = f.elements.filter(
+      (e) => e.className === "process-annotation-item",
+    );
+    const notes = f.elements.filter(
+      (e) => e.className === "process-annotation-context",
+    );
+    const keyHost = notes[0].parentElement;
+    assert.equal(notes.length, 2);
+    assert.equal(
+      keys.length,
+      3,
+      "Only physical labels create molecular buttons",
+    );
+    assert.equal(f.snapshot().markers.length, 3);
+    assert.equal(f.snapshot().lines.length, 3);
+    assert.deepEqual(
+      f.elements
+        .filter((e) => e.className === "process-model-label")
+        .map((e) => e.dataset.label),
+      ["0", "3", "4"],
+      "Physical marker data keeps original model indices after the split",
+    );
+    assert.equal(
+      keyHost.tabIndex,
+      0,
+      "The existing scrolling key is keyboard-accessible",
+    );
+    for (const note of notes) {
+      assert.equal(note.tag, "p");
+      assert.equal(note.attributes.role, "note");
+      assert.equal(note.tabIndex, -1);
+      assert.equal(
+        note.listeners.size,
+        0,
+        "A context note has no molecular highlighting action",
+      );
+    }
+    assert.deepEqual(f.snapshot().keys[0].text, ["1", "初始复合体"]);
+    assert.deepEqual(
+      f.snapshot().contexts.map((note) => note.hidden),
+      [false, true],
+    );
+    keys[0].focus();
+    f.progress.current = 0.7;
+    f.api.requestRender();
+    f.flush();
+    assert.equal(
+      document.activeElement,
+      keys[2],
+      "Focus skips notes and inactive keys",
+    );
+    assert.deepEqual(f.snapshot().keys[2].text, ["1", "正在生成的产物"]);
+    assert.deepEqual(
+      f.snapshot().contexts.map((note) => note.hidden),
+      [true, false],
+    );
+    const stable = { reads: f.reads, writes: f.writes };
+    for (let i = 0; i < 100; i++) {
+      f.api.requestRender();
+      f.flush();
+    }
+    assert.deepEqual(
+      { reads: f.reads, writes: f.writes },
+      stable,
+      "Settled context frames do not write DOM or measure marker geometry",
+    );
+    const seek = f.api.captureFrame({ progress: 0 });
+    const capturedContexts = seek.filter(
+      (label) => label.annotationKind === "context",
+    );
+    assert.deepEqual(
+      capturedContexts.map((label) => label.active),
+      [true, false],
+    );
+    assert(capturedContexts.every((label) => !("position" in label)));
+    assert.equal(
+      f.api.getProgress(),
+      0.7,
+      "Capture restores the live progress",
+    );
+    await f.render({ annotations: false });
+    f.flush();
+    const hidden = { reads: f.reads, writes: f.writes };
+    f.progress.current = 0.1;
+    await f.render({ lang: "en" });
+    f.flush();
+    assert.deepEqual({ reads: f.reads, writes: f.writes }, hidden);
+    const hiddenCapture = f.api.captureFrame();
+    assert.deepEqual(
+      hiddenCapture
+        .filter((label) => label.annotationKind === "context")
+        .map((label) => label.text),
+      ["Proximity is not transcription", "No burst in this window"],
+      "Capture language remains current even while live annotations are hidden",
+    );
+    await f.render({ annotations: true });
+    f.flush();
+    assert.deepEqual(f.snapshot().contexts, [
+      { text: "Proximity is not transcription", hidden: false },
+      { text: "No burst in this window", hidden: true },
+    ]);
+    assert.equal(
+      document.activeElement,
+      keys[0],
+      "Reverse seek restores a remaining physical focus target",
+    );
+    f.dispose();
+    assert.equal(
+      keyHost.tabIndex,
+      -1,
+      "Context keyboard setup is removed on scene cleanup",
+    );
+  });
+  await test("region, state and unknown kinds retain the ordinary annotation path", async () => {
+    const original = fixture(ProcessScene, true);
+    await original.render();
+    original.flush();
+    const expected = original.snapshot();
+    const expectedCapture = original.api.captureFrame();
+    original.dispose();
+    for (const physicalKind of ["region", "state", "unknown", "Context"]) {
+      const f = fixture(ProcessScene, true, { physicalKind });
+      await f.render();
+      f.flush();
+      assert.deepEqual(f.snapshot(), expected);
+      assert.deepEqual(f.api.captureFrame(), expectedCapture);
+      f.dispose();
+    }
   });
 } finally {
   await rm(directory, { recursive: true, force: true });

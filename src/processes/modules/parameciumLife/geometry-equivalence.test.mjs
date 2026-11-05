@@ -8,9 +8,11 @@ import {
   disposeSnapshot,
   frozenDefinitions,
 } from "./geometrySnapshot.test-support.mjs";
-import { sceneKit } from "../../kit.js";
+import { THREE, sceneKit } from "../../kit.js";
 import { hollowInlet } from "./scientificGeometry.js";
 import { assertVacuolePoreReview } from "./vacuolePoreReview.test-support.mjs";
+import { runConjugationContinuityRegression } from "./conjugationContinuity.test-support.mjs";
+import { migrationPoseDelta } from "./conjugationMigration.test-support.mjs";
 
 // RPP-01 nuclear repair and the 2026-10-15 oral-art delta are explicit.
 // Every other division subtree stays strictly on the immutable baseline.
@@ -82,7 +84,54 @@ const groupState = (o) => [
   o.renderOrder,
   o.frustumCulled,
 ];
-function conjugationNonoral(current, original) {
+// Only these two existing historical samples have the reviewed resident delta.
+// The frozen fixture and reference bytes remain untouched.
+const residentPoseDeltas = new Map([
+  [0.55, 0.22],
+  [0.68, 0.22],
+]);
+function residentSnapshot(current, resident, frozenResident, progress) {
+  assert(residentPoseDeltas.has(progress));
+  assert.match(resident.name, /^stationary-pronucleus-[01]$/);
+  assert.equal(resident.name, frozenResident.name);
+  assert(
+    Math.abs(resident.position.x - residentPoseDeltas.get(progress)) < 1e-12,
+    `${resident.name} reviewed local x at ${progress}`,
+  );
+  assert(Math.abs(frozenResident.position.x - 0.36) < 1e-12);
+  const model = { group: resident, labels: [], camera: current.model.camera },
+    before = geometrySnapshot(model, current.parent),
+    labelsBefore = structuredClone(current.model.labels),
+    x = resident.position.x;
+  try {
+    // Permit only this root's x. Derived descendant world matrices follow it;
+    // all local transforms, geometry, materials and detail counts still hash.
+    resident.position.x = frozenResident.position.x;
+    return geometrySnapshot(model, current.parent);
+  } finally {
+    resident.position.x = x;
+    current.parent.updateMatrixWorld(true);
+    assert.deepEqual(geometrySnapshot(model, current.parent), before);
+    assert.deepEqual(current.model.labels, labelsBefore);
+  }
+}
+function reviewedConjugationLabels(current, original, progress) {
+  const labels = current.model.labels;
+  if (progress < 0.44 || progress >= 0.53) return labels;
+  assert.deepEqual(original.model.labels[3].text, {
+    zh: "原核 · 单倍体",
+    en: "Pronuclei · haploid",
+  });
+  assert.deepEqual(labels[3].text, {
+    zh: "原核形成中 · 单倍体",
+    en: "Pronuclei forming · haploid",
+  });
+  return labels.map((item, index) =>
+    index === 3 ? { ...item, text: original.model.labels[3].text } : item,
+  );
+}
+
+function conjugationNonoral(current, original, progress) {
   const top = [
     ["conjugating-partner-0", "Group"],
     ["conjugating-partner-1", "Group"],
@@ -103,18 +152,27 @@ function conjugationNonoral(current, original) {
       assert.deepEqual(childManifest(a), partnerChildren(i, true));
       assert.deepEqual(childManifest(b), partnerChildren(i, false));
       assert.deepEqual(groupState(a), groupState(b));
-      // Every child is accounted for, and ordinal 1 is the only art delta.
+      // Every child is accounted for. Besides oral art, only the two named
+      // resident roots at the two declared historical poses may change x.
       for (let j = 0; j < a.children.length; j++)
         if (j !== 1)
           assert.deepEqual(
-            geometrySnapshot(
-              {
-                group: a.children[j],
-                labels: [],
-                camera: current.model.camera,
-              },
-              current.parent,
-            ),
+            residentPoseDeltas.has(progress) &&
+              a.children[j].name === `stationary-pronucleus-${i}`
+              ? residentSnapshot(
+                  current,
+                  a.children[j],
+                  b.children[j],
+                  progress,
+                )
+              : geometrySnapshot(
+                  {
+                    group: a.children[j],
+                    labels: [],
+                    camera: current.model.camera,
+                  },
+                  current.parent,
+                ),
             geometrySnapshot(
               {
                 group: b.children[j],
@@ -128,17 +186,50 @@ function conjugationNonoral(current, original) {
       oralInvariant(a.children[1], true);
     } else
       assert.deepEqual(
-        geometrySnapshot(
-          { group: a, labels: [], camera: current.model.camera },
-          current.parent,
-        ),
+        i >= 3
+          ? migrationPoseDelta(current, a, original, b, progress)
+          : geometrySnapshot(
+              { group: a, labels: [], camera: current.model.camera },
+              current.parent,
+            ),
         geometrySnapshot(
           { group: b, labels: [], camera: original.model.camera },
           original.parent,
         ),
       );
   }
-  assert.deepEqual(current.model.labels, original.model.labels);
+  if (residentPoseDeltas.has(progress)) {
+    const resident = current.model.group.getObjectByName(
+        "stationary-pronucleus-0",
+      ),
+      label = current.model.labels[3],
+      anchor = current.model.group
+        .worldToLocal(resident.getWorldPosition(new THREE.Vector3()))
+        .toArray();
+    assert.equal(label.anchorTarget, "stationary-pronucleus-0");
+    assert.equal(
+      original.model.labels[3].anchorTarget,
+      "stationary-pronucleus-0",
+    );
+    assert.deepEqual(
+      label.position,
+      anchor,
+      "resident label follows its real object",
+    );
+    assert.deepEqual(
+      current.model.labels.map((item, index) =>
+        index === 3
+          ? { ...item, position: original.model.labels[3].position }
+          : item,
+      ),
+      original.model.labels,
+      "only label 3 position follows the reviewed resident delta",
+    );
+  } else
+    assert.deepEqual(
+      reviewedConjugationLabels(current, original, progress),
+      original.model.labels,
+    );
   assert.deepEqual(current.model.camera, original.model.camera);
 }
 function oralInvariant(group, expectedWindow = false) {
@@ -310,7 +401,7 @@ export async function runGeometryEquivalence() {
         );
         assert.deepEqual(current.model.camera, original.model.camera);
       } else if (row.id === "parameciumConjugation") {
-        conjugationNonoral(current, original);
+        conjugationNonoral(current, original, progress);
       } else if (row.id === "contractileVacuole") {
         assertVacuolePoreReview(current, original, progress, row.parameters);
       } else {
@@ -361,9 +452,15 @@ export async function runGeometryEquivalence() {
     parameciumConjugation: 62,
   });
 
-  const conjugation = (
+  const conjugationDefinition = (
     await import("./parameciumConjugationProcess.js")
-  ).default.create();
+  ).default;
+  runConjugationContinuityRegression(
+    conjugationDefinition,
+    originals.get("parameciumConjugation"),
+    conjugationNonoral,
+  );
+  const conjugation = conjugationDefinition.create();
   const lineage = [];
   conjugation.group.traverse((object) => {
     if (object.name.includes("-leaf-")) lineage.push(object.geometry);
@@ -418,7 +515,7 @@ export async function runGeometryEquivalence() {
   }
   disposeSnapshot({ group: kit.group });
   console.log(
-    `paramecium geometry equivalence PASS: ${states} same-runtime states; feeding/CV fully frozen, conjugation nonoral and division unchanged roots exact; oral invariants at every pose, whole-scene pause/reverse/resource identity and complete shape cache invalidation`,
+    `paramecium geometry equivalence PASS: ${states} same-runtime states; feeding/CV frozen under existing reviewed deltas, conjugation nonoral exact except two declared resident poses, division unchanged roots exact; oral invariants, pronuclear continuity/separation, whole-scene pause/reverse/resource identity and complete shape cache invalidation`,
   );
 }
 

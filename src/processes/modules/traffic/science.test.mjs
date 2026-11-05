@@ -58,6 +58,9 @@ for (const definition of [endocytosis, autophagy, secretion]) {
   for (const p of [
     0,
     0.12,
+    0.125,
+    0.135,
+    0.15,
     0.19,
     0.2,
     0.34,
@@ -65,6 +68,9 @@ for (const definition of [endocytosis, autophagy, secretion]) {
     0.42,
     0.65,
     0.67,
+    0.675,
+    0.685,
+    0.7,
     0.71,
     0.76,
     0.79,
@@ -101,6 +107,18 @@ for (const definition of [endocytosis, autophagy, secretion]) {
   scene.update(0.3);
   scene.update(0.76);
   assert.equal(state(scene), first);
+  for (const p of [0.12, 0.125, 0.135, 0.15, 0.67, 0.675, 0.685, 0.7]) {
+    scene.update(p);
+    const expected = state(scene);
+    scene.update(1);
+    scene.update(0);
+    scene.update(p);
+    assert.equal(
+      state(scene),
+      expected,
+      `${definition.id} reverse seek at ${p}`,
+    );
+  }
   await build({
     entryPoints: [
       fileURLToPath(
@@ -307,7 +325,7 @@ for (const definition of [endocytosis, autophagy, secretion]) {
       );
   }
 
-  for (const p of [0.125, 0.15, 0.195]) {
+  for (const p of [0.12, 0.1201, 0.121, 0.125, 0.135, 0.149, 0.15, 0.195]) {
     s.update(p);
     s.group.updateMatrixWorld(true);
     assert(erBridge.visible);
@@ -319,14 +337,95 @@ for (const definition of [endocytosis, autophagy, secretion]) {
     assert(golgiBridge.visible);
     seam(golgiBridge, active, incoming);
   }
-  for (const p of [0.675, 0.71, 0.765]) {
+  for (const p of [
+    0.67, 0.6701, 0.671, 0.675, 0.685, 0.699, 0.7, 0.71, 0.765,
+  ]) {
     s.update(p);
     s.group.updateMatrixWorld(true);
     assert(golgiBridge.visible);
     seam(golgiBridge, active, outgoing);
   }
+  // Measure rendered carrier vertices in world space: a newly appearing bud
+  // must begin near the donor mouth, then grow before cargo enters the neck.
+  const cargo = s.group.children.find((node) =>
+    node.children.some(
+      (child) => child.material?.emissive?.getHex() === 0x7a3c0f,
+    ),
+  );
+  assert(
+    cargo,
+    "selected luminal cargo must retain its original structural identity",
+  );
+  const extent = (carrier) => {
+    const mesh = carrier.getObjectByName("open-carrier-membrane");
+    const bounds = new THREE.Box3().setFromObject(mesh);
+    const size = bounds.getSize(new THREE.Vector3());
+    return Math.max(size.x, size.y, size.z);
+  };
+  for (const [carrier, start, end, axis, donorSide] of [
+    [incoming, 0.12, 0.15, "x", -1],
+    [outgoing, 0.67, 0.7, "y", 1],
+  ]) {
+    s.update(start - 0.0001);
+    assert(!carrier.visible);
+    s.update(start);
+    s.group.updateMatrixWorld(true);
+    assert(carrier.visible);
+    assert(extent(carrier) < 0.005, "full-size bud appears in one frame");
+    let last = 0;
+    for (const q of [0, 1 / 6, 1 / 3, 0.5, 2 / 3, 5 / 6, 1]) {
+      s.update(start + (end - start) * q);
+      s.group.updateMatrixWorld(true);
+      const size = extent(carrier);
+      assert(size >= last - 1e-8, "budding carrier shrinks while growing");
+      last = size;
+      if (q <= 0.5) {
+        const bridge = carrier === incoming ? erBridge : golgiBridge;
+        const donorRim = point(bridge, 144);
+        const cargoBounds = new THREE.Box3().setFromObject(cargo);
+        assert(
+          donorSide < 0
+            ? cargoBounds.max[axis] < donorRim[axis]
+            : cargoBounds.min[axis] > donorRim[axis],
+          "complete cargo enters an undersized bud before donor-side exit",
+        );
+      }
+    }
+    assert(last > 0.5 && last < 0.7, "mature carrier detail/size changed");
+  }
   const lipids = s.group.getObjectByName("persistent-carrier-membrane-lipids");
   assert(lipids);
+  s.update(0.78);
+  s.group.updateMatrixWorld(true);
+  const lipidMatrix = new THREE.Matrix4();
+  const localHeads = [];
+  const heads = lipids.children[0];
+  for (let i = 0; i < heads.count; i++) {
+    heads.getMatrixAt(i, lipidMatrix);
+    localHeads.push(
+      outgoing.worldToLocal(
+        new THREE.Vector3()
+          .setFromMatrixPosition(lipidMatrix)
+          .applyMatrix4(heads.matrixWorld),
+      ),
+    );
+  }
+  for (const p of [0.67, 0.671, 0.675, 0.685, 0.699, 0.7]) {
+    s.update(p);
+    s.group.updateMatrixWorld(true);
+    for (let i = 0; i < heads.count; i++) {
+      heads.getMatrixAt(i, lipidMatrix);
+      const actual = outgoing.worldToLocal(
+        new THREE.Vector3()
+          .setFromMatrixPosition(lipidMatrix)
+          .applyMatrix4(heads.matrixWorld),
+      );
+      assert(
+        actual.distanceTo(localHeads[i]) < 1e-6,
+        "lipid heads detach from growing carrier",
+      );
+    }
+  }
   const ids = lipids.children.map((o) => o.uuid),
     counts = lipids.children.map((o) => o.count);
   for (const p of [0.85, 0.9, 0.95, 0.98, 1]) {

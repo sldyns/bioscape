@@ -72,8 +72,8 @@ export default {
       at: 0.92,
       title: b("颈部封口", "Neck sealing"),
       description: b(
-        "gp13／gp14 在门户处组装，gp14 向内伸入的环形成保留 DNA 的闸门，为接尾准备位点；Hfq 辅助闸在此省略。本模型到接尾前封口结束，包装马达不充当尾部。",
-        "gp13/gp14 assemble at the portal; inward gp14 loops form a DNA-retention gate before tail docking. The accessory Hfq gate is omitted. The scene ends with pre-tail sealing; the packaging motor does not become the tail.",
+        "gp13／gp14 在门户处组装，gp14 向内伸入的环形成保留 DNA 的闸门，为接尾准备位点；Hfq 辅助闸在此省略。有 ATP 并完成切割后，下方双螺旋是与头内 DNA 分离的外部连接体残段。本模型到接尾前封口结束，包装马达不充当尾部。",
+        "gp13/gp14 assemble at the portal; inward gp14 loops form a DNA-retention gate before tail docking. The accessory Hfq gate is omitted. With ATP and cleavage complete, the external double helix below represents the concatemer remnant separated from packaged DNA. The scene ends with pre-tail sealing; the packaging motor does not become the tail.",
       ),
     },
   ],
@@ -194,6 +194,36 @@ export default {
       m.scale.set(r, Math.max(1e-6, delta.length()), r);
       m.quaternion.setFromUnitVectors(up, delta.normalize());
     }
+    // External DNA has fixed local geometry. Packaging only changes its
+    // visible interval and the parent group's position after cleavage.
+    for (let i = 0; i < 54; i++) {
+      const y = -4.1 + (i * 3.35) / 54,
+        ny = y + 3.35 / 54,
+        a = -i * 0.42;
+      for (let s = 0; s < 2; s++) {
+        const sign = s ? -1 : 1;
+        pose(
+          rails[s][i],
+          sign * 0.09 * Math.cos(a),
+          y,
+          sign * 0.09 * Math.sin(a),
+          sign * 0.09 * Math.cos(a - 0.42),
+          ny,
+          sign * 0.09 * Math.sin(a - 0.42),
+          0.033,
+        );
+      }
+      pose(
+        rungs[i],
+        0.09 * Math.cos(a),
+        y,
+        0.09 * Math.sin(a),
+        -0.09 * Math.cos(a),
+        y,
+        -0.09 * Math.sin(a),
+        0.018,
+      );
+    }
     const guide = k.mesh(
       new THREE.ConeGeometry(0.12, 0.33, 20),
       k.material("#b69963"),
@@ -259,6 +289,7 @@ export default {
         expand = 1 + 0.12 * ease(load, 0.12, 0.35),
         detach = atp ? ease(p, 0.82, 0.92) : 0,
         seal = atp ? ease(p, 0.92, 1) : 0,
+        concatemerCut = atp && p >= 0.85,
         scale = 1.27 * expand;
       head.group.position.set(0, 1.12, 0);
       head.group.scale.setScalar(scale);
@@ -294,34 +325,10 @@ export default {
         gap = atp ? ease(p, 0.79, 0.85) : 0;
       for (let i = 0; i < 54; i++) {
         const y = -4.1 + (i * 3.35) / 54,
-          ny = y + 3.35 / 54,
-          a = -i * 0.42;
+          ny = y + 3.35 / 54;
         const visible = y >= bottom && ny <= top - gap * 0.28;
-        for (let s = 0; s < 2; s++) {
-          const sign = s ? -1 : 1;
-          rails[s][i].visible = visible;
-          pose(
-            rails[s][i],
-            sign * 0.09 * Math.cos(a),
-            y,
-            sign * 0.09 * Math.sin(a),
-            sign * 0.09 * Math.cos(a - 0.42),
-            ny,
-            sign * 0.09 * Math.sin(a - 0.42),
-            0.033,
-          );
-        }
+        for (let s = 0; s < 2; s++) rails[s][i].visible = visible;
         rungs[i].visible = visible && i % 2 === 0;
-        pose(
-          rungs[i],
-          0.09 * Math.cos(a),
-          y,
-          0.09 * Math.sin(a),
-          -0.09 * Math.cos(a),
-          y,
-          -0.09 * Math.sin(a),
-          0.018,
-        );
       }
       // The downstream cut product clears the full portal/neck envelope.
       // Motor departure alone left its end inside the eventual seal's lumen.
@@ -332,7 +339,13 @@ export default {
       cutMarker.position.y = portalY - 0.15;
       labels[2].active = detach < 1;
       labels[3].active = guide.visible;
-      labels[4].active = p < 0.93 || !atp;
+      labels[4].active = true;
+      labels[4].text.zh = concatemerCut
+        ? "切割后的外部 DNA 残段"
+        : "外部双链 DNA";
+      labels[4].text.en = concatemerCut
+        ? "Cleaved external DNA remnant"
+        : "External double-stranded DNA";
       labels[5].active = atp && p >= 0.78 && p < 0.92;
       labels[6].active = head.neck.visible;
       labels[7].active = !atp && p >= 0.25;
@@ -359,7 +372,7 @@ export default {
         docked: dock === 1,
         packagedFraction: load,
         capsidExpansion: expand,
-        concatemerCut: atp && p >= 0.85,
+        concatemerCut,
         motorReleased: detach === 1,
         neckSealed: seal === 1,
         tailPresent: false,

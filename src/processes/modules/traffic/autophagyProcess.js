@@ -307,7 +307,7 @@ function create() {
 }
 export default {
   id: "autophagy",
-  title: b("宏自噬", "Macroautophagy"),
+  title: b("宏自噬", "Macro\u00adautophagy"),
   intro: b(
     "哺乳动物细胞中的宏自噬：隔离膜包围胞质蛋白聚集体，形成双膜自噬体，再与溶酶体融合。前侧切开以展示真实腔室；切口不是生理开口。膜来源与上游信号在此省略。货物以 TPI 的骨架作受损胞质酶示意，并非测定的聚集构象；腔内显示组织蛋白酶 D 的结构参考。",
     "Mammalian macroautophagy: a phagophore encloses a cytosolic protein aggregate, forms a double-membrane autophagosome and fuses with a lysosome. Front cutaways expose compartments; they are not physiological openings. Membrane sources and upstream signals are omitted. Cargo uses a TPI backbone to illustrate damaged cytosolic enzymes, not a measured aggregate conformation; luminal proteases use a cathepsin-D structural reference.",

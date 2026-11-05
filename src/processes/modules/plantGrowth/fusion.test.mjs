@@ -86,6 +86,105 @@ function anchorOnVertex(label, mesh, vertex = 0) {
     "named label terminates on actual target geometry",
   );
 }
+// Match actual triangle surfaces across all instances, rather than prescribing
+// an array index or the same vertex selected by the production anchor helper.
+function anchorTouchesSurface(label, modelRoot, mesh) {
+  const target = new THREE.Vector3(...label.position).applyMatrix4(
+      modelRoot.matrixWorld,
+    ),
+    positions = mesh.geometry.attributes.position,
+    index = mesh.geometry.index,
+    triangle = new THREE.Triangle(),
+    nearest = new THREE.Vector3(),
+    local = new THREE.Vector3(),
+    instance = new THREE.Matrix4(),
+    matrix = new THREE.Matrix4();
+  mesh.geometry.computeBoundingSphere();
+  // Distances and tolerance below are in geometry-local units.
+  const bounds = mesh.geometry.boundingSphere;
+  for (let j = 0; j < (mesh.isInstancedMesh ? mesh.count : 1); j++) {
+    matrix.copy(mesh.matrixWorld);
+    if (mesh.isInstancedMesh) {
+      mesh.getMatrixAt(j, instance);
+      matrix.multiply(instance);
+    }
+    local.copy(target).applyMatrix4(matrix.invert());
+    if (local.distanceTo(bounds.center) > bounds.radius + 1e-5) continue;
+    for (let i = 0; i < (index ? index.count : positions.count); i += 3) {
+      triangle.a.fromBufferAttribute(positions, index ? index.getX(i) : i);
+      triangle.b.fromBufferAttribute(
+        positions,
+        index ? index.getX(i + 1) : i + 1,
+      );
+      triangle.c.fromBufferAttribute(
+        positions,
+        index ? index.getX(i + 2) : i + 2,
+      );
+      triangle.closestPointToPoint(local, nearest);
+      if (nearest.distanceTo(local) < 1e-5) return true;
+    }
+  }
+  return false;
+}
+// The label belongs to modelRoot, while each box may inherit a rotated and
+// scaled wrapper. Test the solid in box-local space, never its loose world AABB.
+function anchorInsideBox(label, modelRoot, mesh) {
+  const inverse = new THREE.Matrix4().copy(mesh.matrixWorld).invert();
+  const local = new THREE.Vector3(...label.position)
+    .applyMatrix4(modelRoot.matrixWorld)
+    .applyMatrix4(inverse);
+  mesh.geometry.computeBoundingBox();
+  return mesh.geometry.boundingBox.containsPoint(local);
+}
+function assertPhragmoplastAnnotation(model, progress) {
+  const label = model.labels.find(
+    (item) => item.text.en === "Phragmoplast microtubules",
+  );
+  const tubulin = named(
+    model.group,
+    "Tubulin subunits on a hollow cylinder",
+  ).filter(
+    (mesh) =>
+      mesh.isInstancedMesh &&
+      mesh.parent?.name === "Phragmoplast microtubule protofilament cylinder",
+  );
+  assert(label && tubulin.length > 0, "named microtubule target exists");
+  const active = progress >= 0.3 && progress < 0.93;
+  assert.equal(
+    label.active,
+    active,
+    `microtubule annotation follows its appearance/disassembly boundary at ${progress}`,
+  );
+  const visibleTubulin = tubulin.filter(visible);
+  if (active) {
+    assert(
+      visibleTubulin.some((mesh) =>
+        anchorTouchesSurface(label, model.group, mesh),
+      ),
+      `active annotation reaches a real, effectively visible tubulin surface at ${progress}`,
+    );
+    // This also rejects the former side-wall anchor even though that anchor
+    // lay on real tubulin. A visible flag alone cannot detect an embedded target.
+    model.group.traverse((mesh) => {
+      if (
+        visible(mesh) &&
+        mesh.geometry?.type === "BoxGeometry" &&
+        mesh.material?.transparent !== true
+      )
+        assert(
+          !anchorInsideBox(label, model.group, mesh),
+          `microtubule endpoint is not buried inside an opaque wall/plate slab at ${progress}`,
+        );
+    });
+  } else {
+    assert.equal(
+      visibleTubulin.length,
+      0,
+      `inactive stage does not expose a microtubule target at ${progress}`,
+    );
+  }
+  return [label.active, ...label.position];
+}
 const d = division.create();
 const chromosomeLabelText = d.labels[1].text;
 for (const p of [
@@ -137,15 +236,53 @@ for (const p of [0.2, 0.32, 0.65, 0.91]) {
       d.labels[1],
       named(d.group, "Condensed looped chromatin chromatid")[5].children[0],
     );
-  if (d.labels[2].active)
-    anchorOnVertex(
-      d.labels[2],
-      named(d.group, "Phragmoplast microtubule protofilament cylinder")[1]
-        .children[0],
-    );
 }
 console.log(
   "20261004-plantGrowth-01: actual cell-plate rim continuous at both repeating fusion boundaries",
+);
+const savedAnchors = new Map();
+for (const p of [
+  0, 0.299999, 0.3, 0.32, 0.43, 0.65, 0.9, 0.91, 0.929999, 0.93, 1, 0.9, 0.43,
+  0.3, 0.299999, 0.93, 0.929999, 0,
+]) {
+  update(d, p);
+  const state = assertPhragmoplastAnnotation(d, p);
+  if (savedAnchors.has(p))
+    assert.deepEqual(
+      state,
+      savedAnchors.get(p),
+      `reverse seek restores annotation at ${p}`,
+    );
+  else savedAnchors.set(p, state);
+}
+// Keep the historical identity-space fixtures above and below untouched.
+// Updating the wrapper first propagates its nonidentity world matrix to children.
+const wrappedDivision = division.create();
+const wrapper = new THREE.Group();
+wrapper.position.set(10, -3, 2);
+wrapper.rotation.set(0.31, -0.47, 0.23);
+wrapper.scale.set(1.25, 0.8, 1.6);
+wrapper.add(wrappedDivision.group);
+const wrappedAnchors = new Map();
+for (const p of [0.3, 0.43, 0.9, 0.93, 0.9, 0.43, 0.3]) {
+  wrappedDivision.update(p);
+  wrapper.updateMatrixWorld(true);
+  const state = assertPhragmoplastAnnotation(wrappedDivision, p);
+  assert.deepEqual(
+    state,
+    savedAnchors.get(p),
+    "ancestor transforms do not alter model-local annotation coordinates",
+  );
+  if (wrappedAnchors.has(p))
+    assert.deepEqual(
+      state,
+      wrappedAnchors.get(p),
+      `wrapped reverse seek restores annotation at ${p}`,
+    );
+  else wrappedAnchors.set(p, state);
+}
+console.log(
+  "S214-plantGrowth: actual surface, solid-box exclusion and annotation boundaries hold under ancestor transforms and reverse seeks",
 );
 
 const f = fertilization.create();

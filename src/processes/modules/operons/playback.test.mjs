@@ -273,6 +273,136 @@ export function verifyGlycerolContainment(model = hog) {
   return { maximumRadius, innerEdge };
 }
 
+export function verifyLacRecruitmentContinuity(model = lac) {
+  const scene = model.create();
+  const polymerases = [];
+  scene.group.traverse((node) => {
+    if (node.name.startsWith("Bacterial RNAP:")) polymerases.push(node.parent);
+  });
+  assert.equal(polymerases.length, 3);
+  const surfaces = polymerases.map((body) => {
+    const meshes = [];
+    body.traverse((node) => {
+      if (node.isMesh) meshes.push(node);
+    });
+    assert(meshes.length > 10, "retain detailed RNAP domains");
+    return meshes;
+  });
+  const initialObjects = [];
+  scene.group.traverse((node) =>
+    initialObjects.push([node, node.geometry, node.material]),
+  );
+  const observe = (p, params, i) => {
+    scene.update(p, params);
+    const body = polymerases[i],
+      meshes = surfaces[i];
+    const opacity = meshes.map((node) => node.material.opacity);
+    assert(opacity.every((x) => Number.isFinite(x) && x >= 0 && x <= 1));
+    assert(
+      opacity.every((x) => Math.abs(x - opacity[0]) < 1e-12),
+      "all detailed domains fade together",
+    );
+    assert(
+      body.scale.equals(new THREE.Vector3(1, 1, 1)),
+      "RNAP must not grow from a tiny protein",
+    );
+    return {
+      exposure: body.visible ? opacity[0] : 0,
+      position: body.position.clone(),
+      state: JSON.stringify([
+        body.visible,
+        body.position.toArray(),
+        meshes.map((node) => [
+          node.material.opacity,
+          node.material.transparent,
+          node.material.depthWrite,
+        ]),
+      ]),
+    };
+  };
+  let checks = 0;
+  for (const params of scenarios(model)) {
+    for (let i = 0; i < 3; i++) {
+      const start = 0.53 + i * 0.075,
+        end = 0.87 + i * 0.04;
+      for (const boundary of [
+        start - 0.07,
+        start - 0.035,
+        start,
+        end,
+        end + 0.04,
+      ]) {
+        const jumps = [1e-4, 1e-5].map((epsilon) => {
+          const a = observe(boundary - epsilon, params, i);
+          const b = observe(boundary + epsilon, params, i);
+          return Math.max(
+            Math.abs(a.exposure - b.exposure),
+            a.position.distanceTo(b.position),
+          );
+        });
+        assert(
+          jumps[1] < 0.003,
+          "RNAP exposure or position has a finite boundary jump",
+        );
+        assert(
+          jumps[1] <= jumps[0] * 0.14 + 1e-6,
+          "RNAP boundary must converge to zero",
+        );
+        checks++;
+      }
+      const intermediate = observe(start - 0.0525, params, i);
+      const shouldAppear =
+        params.lactose === "present" && (params.glucose === "low" || i === 0);
+      assert.equal(
+        intermediate.exposure > 0 && intermediate.exposure < 1,
+        shouldAppear,
+        "continuous arrival respects both input conditions",
+      );
+      observe(start, params, i);
+      if (shouldAppear)
+        assert(
+          surfaces[i].every(
+            (node) =>
+              node.material.opacity === 1 &&
+              !node.material.transparent &&
+              node.material.depthWrite,
+          ),
+          "settled domains retain opaque rendering",
+        );
+      observe(1, params, i);
+      observe(0.2, params, i);
+      assert.equal(
+        observe(start - 0.0525, params, i).state,
+        intermediate.state,
+        "reverse seek restores every detailed domain opacity and pose",
+      );
+    }
+    scene.update(0.82, params);
+    assert.equal(
+      polymerases.filter((body) => body.visible).length,
+      params.lactose === "absent" ? 0 : params.glucose === "high" ? 1 : 3,
+    );
+    scene.update(1, params);
+    assert(polymerases.every((body) => !body.visible));
+  }
+  const finalObjects = [];
+  scene.group.traverse((node) =>
+    finalObjects.push([node, node.geometry, node.material]),
+  );
+  assert.deepEqual(
+    finalObjects,
+    initialObjects,
+    "updates must allocate no new geometry, objects or materials",
+  );
+  return checks;
+}
+
+const lacRecruitmentChecks = verifyLacRecruitmentContinuity();
+console.log(
+  "lac RNAP recruitment/release: " +
+    lacRecruitmentChecks +
+    " actual geometry/exposure boundary checks PASS.",
+);
 verifyInducerOrder();
 const motion = {};
 for (const m of [lac, trp, gal]) motion[m.id] = verifyDNATransitions(m);

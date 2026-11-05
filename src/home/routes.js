@@ -15,6 +15,14 @@ export function safeSceneHash(value) {
     : null;
 }
 
+// Native links and same-tab navigation carry the homepage language even when
+// storage is unavailable. Existing shared snapshots keep their own language.
+export function exploreSceneHash(hash, lang) {
+  const safe = safeSceneHash(hash);
+  if (!safe) return null;
+  return readSceneState(safe) ? safe : sceneHash(safe, { lang });
+}
+
 // Only an explicit homepage Resume applies its selected language. Original
 // shared links and existing history entries retain their serialized language.
 export function resumeSceneHash(hash, lang) {

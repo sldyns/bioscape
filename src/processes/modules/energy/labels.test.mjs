@@ -81,6 +81,15 @@ for (const rootId of ["cell", "plant", "yeast"]) {
   models.push(m);
   for (const p of times) {
     m.update(p);
+    assert.equal(m.labels[0].annotationKind, "context");
+    assert.notEqual(m.labels[0].active, false);
+    // Compartment and aggregate yield are notes; actual molecular targets stay physical.
+    m.labels.forEach((label, index) => {
+      assert.equal(
+        label.annotationKind === "context",
+        index === 0 || index === 11,
+      );
+    });
     for (const [index, name] of [
       [1, "carbon-2"],
       [4, "carbon-1"],

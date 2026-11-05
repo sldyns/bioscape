@@ -406,6 +406,16 @@ export function makePresentation(model, id, special = null) {
           .sub(bounds.getCenter(new THREE.Vector3()))
           .multiplyScalar(factor),
       );
+    const annotationTargets =
+      special?.userData.partAnnotationTargets?.[p.userData.hitId];
+    if (annotationTargets)
+      p.userData.annotationTargets = annotationTargets.map((point) =>
+        p.worldToLocal(
+          new THREE.Vector3(...point)
+            .sub(bounds.getCenter(new THREE.Vector3()))
+            .multiplyScalar(factor),
+        ),
+      );
     p.userData.home = p.position.clone();
     p.userData.restScale = p.scale.clone();
     p.userData.offset = direction;

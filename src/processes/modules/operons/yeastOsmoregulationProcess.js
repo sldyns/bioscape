@@ -317,6 +317,14 @@ const model = {
     const waters = Array.from({ length: 10 }, (_, i) =>
       k.ball([0, 0, 0], [0.06, 0.105, 0.06], watermat),
     );
+    const waterDirections = waters.map((_, i) => {
+      const angle = (-0.7 + i * 0.145) * Math.PI;
+      return {
+        cos: Math.cos(angle),
+        sin: Math.sin(angle),
+        rotation: angle - Math.PI / 2,
+      };
+    });
     const labels = [
       k.label([-2.6, 2.7, 0], "Sln1", "Sln1", 2),
       k.label([-2.4, 1.19, 0], "Ypd1", "Ypd1", 1),
@@ -328,7 +336,7 @@ const model = {
       ),
       k.label([-1.48, -0.91, 0], "Ssk2/22", "Ssk2/22", 1),
       k.label([-0.55, -0.93, 0], "Pbs2", "Pbs2", 1),
-      k.label([0.1, 0.72, 0], "Hog1", "Hog1", 2),
+      k.label([0.1, 0.72, 0], "Hog1 激酶", "Hog1 kinase", 2),
       k.label([1.35, 1.32, 0], "细胞核", "Nucleus", 1),
       k.label([4.2, 0.45, 0], "Fps1 开", "Fps1 open", 2),
       k.label([0.1, -2.27, 0], "胞质甘油", "Cytoplasmic glycerol", 2),
@@ -384,22 +392,28 @@ const model = {
         g.position.y = (-1.25 - Math.floor(i / 5) * 0.3) * volume;
         g.scale.setScalar(0.85);
       });
+      const outward = stress && p >= 0.14 && p < 0.31;
+      const inward = stress && functional && p >= 0.76 && p < 0.94;
+      const waterProgress = outward ? ease(p, 0.14, 0.31) : ease(p, 0.76, 0.94),
+        waterRadius = outward
+          ? 2.5 + 1.05 * waterProgress
+          : 3.55 - 0.8 * waterProgress;
       waters.forEach((w, i) => {
-        const a = (-0.7 + i * 0.145) * Math.PI;
-        const outward = stress && p >= 0.14 && p < 0.31;
-        const inward = stress && functional && p >= 0.76 && p < 0.94;
+        const direction = waterDirections[i];
         w.visible = outward || inward;
-        const t = outward ? ease(p, 0.14, 0.31) : ease(p, 0.76, 0.94),
-          r = outward ? 2.5 + 1.05 * t : 3.55 - 0.8 * t;
-        w.position.set(r * 1.3 * Math.cos(a), r * 0.9 * Math.sin(a), 0.13);
-        w.rotation.z = a - Math.PI / 2;
+        w.position.set(
+          waterRadius * 1.3 * direction.cos,
+          waterRadius * 0.9 * direction.sin,
+          0.13,
+        );
+        w.rotation.z = direction.rotation;
       });
       rnaDetail.update();
       labels[2].text = relayPhosphorylated
         ? b("Ssk1-P：抑制支路", "Ssk1-P: branch restrained")
         : b("Ssk1 去磷酸化", "Ssk1 dephosphorylated");
       labels[5].text = functional
-        ? b("Hog1", "Hog1")
+        ? b("Hog1 激酶", "Hog1 kinase")
         : b("Hog1 不可磷酸化", "Hog1 nonphosphorylatable");
       labels[7].text =
         shock > 0.8
@@ -427,7 +441,7 @@ const model = {
       anchors.surface(8, glycerol[1].children[0]);
       anchors.point(9, group, 0, 2.1 * volume, 0, "state");
       anchors.tube(10, rna);
-      anchors.point(11, wall, 0, -3.21, 0, "region");
+      anchors.point(11, wall, 0, -3.21, 0, "context");
       group.userData = {
         rootId,
         species: "Saccharomyces cerevisiae",

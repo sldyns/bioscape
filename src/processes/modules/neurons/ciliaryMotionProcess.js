@@ -401,6 +401,30 @@ export default {
     tubulinRows.forEach((v) => {
       v.track = motion.track(v.ox);
     });
+    // The material tracks deform in place, but each motor's doublet, neighbor
+    // and wall-facing angles are fixed by the initial nine-doublet topology.
+    armRows.forEach((r) => {
+      const radialCosine = Math.cos(r.a),
+        rx = 0.4 * radialCosine,
+        rz = 0.4 * Math.sin(r.a),
+        neighborIndex = (r.j + 8) % 9,
+        an = (neighborIndex * Math.PI * 2) / 9,
+        rx2 = 0.4 * Math.cos(an),
+        rz2 = 0.4 * Math.sin(an),
+        bx = rx2 - 0.085 * Math.sin(an),
+        bz = rz2 + 0.085 * Math.cos(an);
+      Object.assign(r, {
+        radialCosine,
+        rz,
+        neighborIndex,
+        rx2,
+        rz2,
+        anchorTrack: motion.track(rx),
+        neighborTrack: motion.track(bx),
+        aAngle: Math.atan2(bx - rx, bz - rz),
+        bAngle: Math.atan2(rx - bx, rz - bz),
+      });
+    });
     const sampleX = motion.X,
       sampleY = motion.Y;
     const materialPoint = new THREE.Vector3(),
@@ -537,25 +561,24 @@ export default {
       }
       const side = Math.sin(time) >= 0 ? 1 : -1;
       armRows.forEach((r) => {
-        const active = enabled && p >= 0.17 && Math.cos(r.a) * side > 0,
-          rx = 0.4 * Math.cos(r.a),
-          rz = 0.4 * Math.sin(r.a),
-          neighborIndex = (r.j + 8) % 9,
-          an = (neighborIndex * Math.PI * 2) / 9,
-          rx2 = 0.4 * Math.cos(an),
-          rz2 = 0.4 * Math.sin(an);
-        const u = motion.point(motion.track(rx), r.t, anchorPoint);
+        const {
+          rz,
+          neighborIndex,
+          rx2,
+          rz2,
+          anchorTrack,
+          neighborTrack,
+          aAngle,
+          bAngle,
+        } = r;
+        const active = enabled && p >= 0.17 && r.radialCosine * side > 0;
+        const u = motion.point(anchorTrack, r.t, anchorPoint);
         motion.geometric(rx2, u, neighborPoint);
-        const bx = rx2 - 0.085 * Math.sin(an),
-          bz = rz2 + 0.085 * Math.cos(an),
-          neighborTrack = motion.track(bx),
-          cycle = ((time / (Math.PI * 2)) * 3 + r.j * 0.13) % 1,
+        const cycle = ((time / (Math.PI * 2)) * 3 + r.j * 0.13) % 1,
           engaged = !active || cycle < 0.65;
         const contactDistance =
           motion.materialAt(neighborTrack, u) -
           (active ? 0.055 * Math.min(1, cycle / 0.65) : 0);
-        const aAngle = Math.atan2(bx - rx, bz - rz),
-          bAngle = Math.atan2(rx - bx, rz - bz);
         wallPoint(tubes[r.j * 4].mesh, r.t, aAngle, anchorSurface);
         wallPoint(
           tubes[neighborIndex * 4 + 2].mesh,

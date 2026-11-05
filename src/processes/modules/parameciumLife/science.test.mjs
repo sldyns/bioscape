@@ -97,6 +97,33 @@ for (const p of [0.26, 0.33, 0.5, 0.7]) {
 }
 
 const cv = cvModel.create();
+const isolationIndex = cvModel.stages.findIndex(
+  (stage) => stage.title.en === "Isolation before discharge",
+);
+const isolationStart = cvModel.stages[isolationIndex].at,
+  isolationEnd = cvModel.stages[isolationIndex + 1].at;
+for (const progress of [
+  isolationStart + 1e-6,
+  (isolationStart + isolationEnd) / 2,
+  isolationEnd - 1e-6,
+]) {
+  cv.update(progress, { osmotic: "freshwater" });
+  assert(
+    !visible(object(cv, "collecting-inlet-0")),
+    "the default isolation chapter must show disconnected radial arms",
+  );
+  assert(
+    object(cv, "central-contractile-bladder").scale.x > 0.78,
+    "the default isolation chapter must show a full pre-discharge bladder",
+  );
+}
+for (const progress of [0.55, 0.66, 0.715]) {
+  assert.equal(
+    cvModel.stages.findLastIndex((stage) => stage.at <= progress),
+    isolationIndex + 1,
+    "discharge, reconnection and refill must belong to the final chapter",
+  );
+}
 for (const osmotic of ["freshwater", "mild"]) {
   let entries = 0;
   for (let step = 0; step <= 120; step++) {

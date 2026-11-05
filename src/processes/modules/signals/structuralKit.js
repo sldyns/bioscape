@@ -1,4 +1,5 @@
 import { THREE } from "../../kit.js";
+import { preparedLineCurve3 } from "../../preparedLineCurve.js";
 
 // Schematic secondary structures: these are not atomic reconstructions.
 export function helix(
@@ -232,7 +233,7 @@ export function chromatinFiber(k, parent, points, radius = 0.032) {
   // A polyline avoids spline shortcuts through a histone at linker joins.
   const axis = new THREE.CurvePath();
   for (let i = 1; i < path.length; i++)
-    axis.add(new THREE.LineCurve3(path[i - 1], path[i]));
+    axis.add(preparedLineCurve3(path[i - 1], path[i]));
   const samples = 1200,
     strands = [[], []];
   for (let i = 0; i <= samples; i++) {
@@ -257,7 +258,7 @@ export function chromatinFiber(k, parent, points, radius = 0.032) {
   for (const pts of strands) {
     const curve = new THREE.CurvePath();
     for (let i = 1; i < pts.length; i++)
-      curve.add(new THREE.LineCurve3(pts[i - 1], pts[i]));
+      curve.add(preparedLineCurve3(pts[i - 1], pts[i]));
     const m = k.mesh(
       new THREE.TubeGeometry(curve, 1800, 0.004, 5, false),
       dna,

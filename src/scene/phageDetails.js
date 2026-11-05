@@ -93,6 +93,7 @@ function head(id = "phageHead") {
     b = V(),
     c = V(),
     hit = V();
+  let capsomerGeometry;
   for (let i = 0; i < pos.count; i++) {
     const direction = V(
         pos.getX(i),
@@ -114,13 +115,12 @@ function head(id = "phageHead") {
       const normal = b.clone().sub(a).cross(c.clone().sub(a)).normalize(),
         p = hit.clone().addScaledVector(normal, 0.009);
       if (p.y < -0.9 && Math.hypot(p.x, p.z) < 0.17) break;
-      const m = ball(
-        g,
-        p.toArray(),
-        [0.029, 0.029, 0.015],
-        i % 3 ? "#b6c3d1" : "#93a5ba",
-        id,
-      );
+      // Static subunits keep separate transforms and materials while sharing
+      // the unchanged local sphere inside this head only.
+      capsomerGeometry ??= new T.SphereGeometry(1, 32, 24);
+      const m = addMesh(g, capsomerGeometry, i % 3 ? "#b6c3d1" : "#93a5ba", id);
+      m.position.copy(p);
+      m.scale.set(0.029, 0.029, 0.015);
       m.quaternion.setFromUnitVectors(V(0, 0, 1), normal);
       if (p.z > 0.3) m.userData.cap = true;
       break;
@@ -215,7 +215,7 @@ function genome() {
   return g;
 }
 // Low-amplitude, deterministic domain relief stays inside the original bounds.
-function proteinBody(g, p, scale, color, id) {
+function proteinBodyGeometry() {
   const geo = new T.SphereGeometry(1, 32, 24),
     position = geo.attributes.position;
   for (let i = 0; i < position.count; i++) {
@@ -229,13 +229,20 @@ function proteinBody(g, p, scale, color, id) {
     position.setXYZ(i, x * fold, y * fold, z * fold);
   }
   geo.computeVertexNormals();
-  const mesh = addMesh(g, geo, color, id, { roughness: 0.56, clearcoat: 0.12 });
+  return geo;
+}
+function proteinBody(g, p, scale, color, id, geometry = proteinBodyGeometry()) {
+  const mesh = addMesh(g, geometry, color, id, {
+    roughness: 0.56,
+    clearcoat: 0.12,
+  });
   mesh.position.set(...p);
   mesh.scale.set(...scale);
   return mesh;
 }
 function sheath(id = "phageSheath") {
-  const g = new T.Group();
+  const g = new T.Group(),
+    proteinGeometry = proteinBodyGeometry();
   for (let j = 0; j < 23; j++)
     for (let k = 0; k < 6; k++) {
       const a = (k / 6) * TAU + j * 0.23,
@@ -246,6 +253,7 @@ function sheath(id = "phageSheath") {
         [0.105, 0.057, 0.07],
         j % 2 ? "#91aba8" : "#a8bfba",
         id,
+        proteinGeometry,
       );
       m.rotation.y = -a;
       if (p[2] > 0.025) m.userData.cap = true;

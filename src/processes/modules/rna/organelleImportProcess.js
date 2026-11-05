@@ -258,6 +258,21 @@ export default {
       beads = [],
       sidechains = [],
       pts = Array.from({ length: n + 1 }, () => new THREE.Vector3());
+    // Material coordinates and the mature reference trace never change.
+    // Store the exact Number results once; only deformation weights vary.
+    const chainShape = Array.from({ length: n + 1 }, (_, i) => {
+      const t = i / n,
+        q = (i - 9) / (n - 9);
+      return {
+        t,
+        q,
+        waveY: 0.24 * Math.sin(t * Math.PI * 6),
+        waveZ: 0.23 * Math.sin(t * Math.PI * 7),
+        tx: 3.2 - 1.1 * q,
+        ty: 0.35 * Math.sin(q * Math.PI * 4),
+        tz: 0.36 * Math.cos(q * Math.PI * 4),
+      };
+    });
     for (let i = 0; i < n; i++) {
       segments.push(
         k.segment([0, 0, 0], [0, 1, 0], 0.051, i < 9 ? transitMat : chainMat),
@@ -269,9 +284,17 @@ export default {
           mesh: k.ball([0, 0, 0], 0.074, i < 9 ? transitMat : chainMat),
         });
     }
-    for (let i = 0; i < n; i += 4)
+    for (let i = 0; i < n; i += 4) {
+      const initialAngle = Math.atan2(0.08, i % 8 ? 0.13 : -0.13),
+        outwardAngle = Math.atan2(chainShape[i].tz, chainShape[i].ty),
+        angleDelta = Math.atan2(
+          Math.sin(outwardAngle - initialAngle),
+          Math.cos(outwardAngle - initialAngle),
+        );
       sidechains.push({
         i,
+        initialAngle,
+        angleDelta,
         mesh: k.segment(
           [0, 0, 0],
           [0, 1, 0],
@@ -279,6 +302,8 @@ export default {
           i < 9 ? transitMat : chainMat,
         ),
       });
+    }
+    const sidechainLength = Math.hypot(0.13, 0.08);
     const sideEnd = new THREE.Vector3();
     const dir = new THREE.Vector3(),
       up = new THREE.Vector3(0, 1, 0);
@@ -314,12 +339,12 @@ export default {
         fold = targeted ? ease(p, 0.85, 1) : 0,
         lead = -1.25 + 0.58 * dock + 4.8 * thread;
       for (let i = 0; i <= n; i++) {
-        const t = i / n,
-          x = lead - 3.3 * t,
+        const shape = chainShape[i],
+          x = lead - 3.3 * shape.t,
           outside =
             Math.abs(x) > 0.8 ? Math.min(1, (Math.abs(x) - 0.8) / 0.8) : 0;
-        let y = 0.24 * Math.sin(t * Math.PI * 6) * outside,
-          z = 0.23 * Math.sin(t * Math.PI * 7) * outside;
+        let y = shape.waveY * outside,
+          z = shape.waveZ * outside;
         let fx = x,
           fy = y,
           fz = z;
@@ -329,10 +354,7 @@ export default {
         } else {
           // An open compact 3D trace keeps the mature termini distinct.
           // This schematic does not assign an atomic or secondary structure.
-          const q = (i - 9) / (n - 9);
-          const tx = 3.2 - 1.1 * q,
-            ty = 0.35 * Math.sin(q * Math.PI * 4),
-            tz = 0.36 * Math.cos(q * Math.PI * 4);
+          const { q, tx, ty, tz } = shape;
 
           fx += (tx - fx) * fold + 8 * fold * (1 - fold) * (1 - q);
           fy += (ty - fy) * fold;
@@ -359,20 +381,9 @@ export default {
         const point = pts[item.i];
         sideEnd.copy(point);
         if (fold > 0 && item.i >= 9) {
-          const q = (item.i - 9) / (n - 9),
-            initialAngle = Math.atan2(0.08, item.i % 8 ? 0.13 : -0.13),
-            outwardAngle = Math.atan2(
-              0.36 * Math.cos(q * Math.PI * 4),
-              0.35 * Math.sin(q * Math.PI * 4),
-            ),
-            angleDelta = Math.atan2(
-              Math.sin(outwardAngle - initialAngle),
-              Math.cos(outwardAngle - initialAngle),
-            ),
-            angle = initialAngle + fold * angleDelta,
-            length = Math.hypot(0.13, 0.08);
-          sideEnd.y += length * Math.cos(angle);
-          sideEnd.z += length * Math.sin(angle);
+          const angle = item.initialAngle + fold * item.angleDelta;
+          sideEnd.y += sidechainLength * Math.cos(angle);
+          sideEnd.z += sidechainLength * Math.sin(angle);
         } else {
           sideEnd.y += item.i % 8 ? 0.13 : -0.13;
           sideEnd.z += 0.08;

@@ -139,7 +139,9 @@ function create() {
     k.ball([0, 0, 0], 0.14, locusMat),
     k.ball([0, 0, 0], 0.14, locusMat),
   ];
-  const rightSite = k.ring([0, 0, 0], 0.2, 0.032, k.material("#bdada1"));
+  // A schematic site marker; its center stays at genomic coordinate 0.77.
+  const rightSite = k.ring([0, 0, 0], 0.36, 0.032, k.material("#71527d"));
+  rightSite.rotation.x = -Math.PI / 3;
   const contacts = [];
   for (let i = 0; i < 9; i++) contacts.push(k.mesh(k.cylinder, contactMat));
   // Genomic coordinates remain fixed while their spatial positions change.
@@ -217,6 +219,9 @@ function create() {
       2,
     ),
   ];
+  // Species scope and interpretation limits do not name point targets.
+  labels[0].annotationKind = "context";
+  labels[5].annotationKind = "context";
   let geometryLeft, geometryRight;
   function update(progress, parameters = {}) {
     const p = clamp(progress),

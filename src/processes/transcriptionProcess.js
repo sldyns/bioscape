@@ -232,10 +232,12 @@ function create() {
     );
     factors.scale.setScalar(1 - 0.75 * smooth(phase(p, 0.27, 0.4)));
     for (let strand = 0; strand < 2; strand++) {
+      // The previous segment's end is the next segment's exact start sample.
+      dnaPoint(-3.6, strand, a);
       for (let i = 0; i < dnaSegments; i++) {
-        dnaPoint(-3.6 + (7.2 * i) / dnaSegments, strand, a);
         dnaPoint(-3.6 + (7.2 * (i + 1)) / dnaSegments, strand, b);
         putSegment(rails[strand], i, a, b, 0.042);
+        a.copy(b);
       }
       for (let i = 0; i < pairs; i++) {
         const x = -3.56 + (7.12 * i) / (pairs - 1);

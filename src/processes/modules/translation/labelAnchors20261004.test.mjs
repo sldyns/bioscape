@@ -48,6 +48,14 @@ function rings(o) {
   });
 }
 function translationAnchors(s) {
+  for (const index of [1, 2, 12, 13]) {
+    assert.equal(s.labels[index].annotationKind, "context");
+    assert.notEqual(s.labels[index].active, false);
+  }
+  s.labels.forEach((label, index) => {
+    if (![1, 2, 12, 13].includes(index))
+      assert.notEqual(label.annotationKind, "context");
+  });
   atObject(s, 0, "experimental-4ug0");
   atObject(s, 3, "PTC-region-guide");
   const guide = object(s, "schematic-exit-guide-1");
@@ -77,6 +85,14 @@ function translationAnchors(s) {
   }
 }
 function foldingAnchors(s) {
+  for (const index of [9, 10]) {
+    assert.equal(s.labels[index].annotationKind, "context");
+    assert.notEqual(s.labels[index].active, false);
+  }
+  s.labels.forEach((label, index) => {
+    if (![9, 10].includes(index))
+      assert.notEqual(label.annotationKind, "context");
+  });
   for (const [i, name] of [
     [0, "experimental-4ug0"],
     [1, "folding-chain-residue-75"],

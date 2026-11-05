@@ -211,7 +211,7 @@ export function plateFootprint(x, z, width, depth) {
   );
 }
 
-export function plateMargin(angle, width, depth) {
+export function plateMargin(angle, width, depth, result = [0, 0]) {
   const dx = Math.cos(angle),
     dz = Math.sin(angle);
   let a = 0,
@@ -221,5 +221,7 @@ export function plateMargin(angle, width, depth) {
     if (plateFootprint(t * dx, t * dz, width, depth) < 0) a = t;
     else b = t;
   }
-  return [(a + b) * 0.5 * dx, (a + b) * 0.5 * dz];
+  result[0] = (a + b) * 0.5 * dx;
+  result[1] = (a + b) * 0.5 * dz;
+  return result;
 }

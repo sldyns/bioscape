@@ -133,6 +133,7 @@ export function transcriptionDetail(k, parent, { x0, x1, y, radius = 0.18 }) {
     b = new THREE.Vector3(),
     c = new THREE.Vector3(),
     d = new THREE.Vector3(),
+    direction = new THREE.Vector3(),
     up = new THREE.Vector3(0, 1, 0);
   function inst(geo, mat, count, name) {
     const m = new THREE.InstancedMesh(geo, mat, count);
@@ -157,7 +158,7 @@ export function transcriptionDetail(k, parent, { x0, x1, y, radius = 0.18 }) {
   function segment(mesh, i, start, end, r) {
     d.copy(end).sub(start);
     temp.position.copy(start).add(end).multiplyScalar(0.5);
-    temp.quaternion.setFromUnitVectors(up, d.clone().normalize());
+    temp.quaternion.setFromUnitVectors(up, direction.copy(d).normalize());
     temp.scale.set(r, Math.max(0.00001, d.length()), r);
     temp.updateMatrix();
     mesh.setMatrixAt(i, temp.matrix);
@@ -192,38 +193,66 @@ export function transcriptionDetail(k, parent, { x0, x1, y, radius = 0.18 }) {
     );
     return out;
   }
+  const dnaMeshes = [...rails, ...phosphates, ...bases],
+    rnaMeshes = [rna, rnaBases];
+  let previousDnaCenter,
+    previousDnaOpening,
+    previousRnaCenter,
+    previousRnaLength;
+  function updateBounds(meshes) {
+    for (const mesh of meshes) {
+      mesh.instanceMatrix.needsUpdate = true;
+      mesh.computeBoundingBox();
+      mesh.computeBoundingSphere();
+    }
+  }
   function update(center, opening, length, active) {
     opening = clamp(opening);
     polymerase.visible = active;
     polymerase.position.set(center, y + 0.02, 0.12);
     rna.visible = rnaBases.visible = length > 0;
-    for (let strand = 0; strand < 2; strand++) {
-      for (let i = 0; i < n; i++) {
-        point(x0 + ((x1 - x0) * i) / n, strand, center, opening, a);
-        point(x0 + ((x1 - x0) * (i + 1)) / n, strand, center, opening, b);
-        segment(rails[strand], i, a, b, 0.029);
+    // Only these local shape inputs determine the corresponding instance buffers.
+    // Visibility, polymerase transforms and caller-owned labels still update each call.
+    if (
+      !Object.is(center, previousDnaCenter) ||
+      !Object.is(opening, previousDnaOpening)
+    ) {
+      for (let strand = 0; strand < 2; strand++) {
+        point(x0 + ((x1 - x0) * 0) / n, strand, center, opening, a);
+        for (let i = 0; i < n; i++) {
+          point(x0 + ((x1 - x0) * (i + 1)) / n, strand, center, opening, b);
+          segment(rails[strand], i, a, b, 0.029);
+          a.copy(b);
+        }
+        for (let i = 0; i < pairs; i++) {
+          const x = x0 + ((x1 - x0) * (i + 0.5)) / pairs;
+          point(x, strand, center, opening, a);
+          point(x, 1 - strand, center, opening, b);
+          bead(phosphates[strand], i, a, 0.041);
+          c.copy(a).lerp(b, 0.46);
+          const w = opening * Math.max(0, 1 - Math.abs(x - center) / 0.5);
+          c.lerp(a, 0.7 * w);
+          segment(bases[strand], i, a, c, 0.022);
+        }
       }
-      for (let i = 0; i < pairs; i++) {
-        const x = x0 + ((x1 - x0) * (i + 0.5)) / pairs;
-        point(x, strand, center, opening, a);
-        point(x, 1 - strand, center, opening, b);
-        bead(phosphates[strand], i, a, 0.041);
-        c.copy(a).lerp(b, 0.46);
-        const w = opening * Math.max(0, 1 - Math.abs(x - center) / 0.5);
-        c.lerp(a, 0.7 * w);
-        segment(bases[strand], i, a, c, 0.022);
+      updateBounds(dnaMeshes);
+      previousDnaCenter = center;
+      previousDnaOpening = opening;
+    }
+    if (
+      !Object.is(center, previousRnaCenter) ||
+      !Object.is(length, previousRnaLength)
+    ) {
+      rnaPoint(0, center, length, a);
+      for (let i = 0; i < rnaN; i++) {
+        rnaPoint((i + 1) / rnaN, center, length, b);
+        segment(rna, i, a, b, 0.025);
+        bead(rnaBases, i, b, 0.032);
+        a.copy(b);
       }
-    }
-    for (let i = 0; i < rnaN; i++) {
-      rnaPoint(i / rnaN, center, length, a);
-      rnaPoint((i + 1) / rnaN, center, length, b);
-      segment(rna, i, a, b, 0.025);
-      bead(rnaBases, i, b, 0.032);
-    }
-    for (const m of [...rails, ...phosphates, ...bases, rna, rnaBases]) {
-      m.instanceMatrix.needsUpdate = true;
-      m.computeBoundingBox();
-      m.computeBoundingSphere();
+      updateBounds(rnaMeshes);
+      previousRnaCenter = center;
+      previousRnaLength = length;
     }
   }
   update((x0 + x1) / 2, 0, 0, false);

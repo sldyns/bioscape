@@ -171,21 +171,30 @@ export function corticalRows(
   const normal = new THREE.Vector3(),
     axis = new THREE.Vector3(0, 0, 1),
     previous = new THREE.Vector3();
+  // Cortical orientation is fixed by the row coordinates; shape changes only
+  // translate each instance. Keep the exact matrices from the original compose.
+  params.forEach(({ y, c, s }, i) => {
+    normal.set(c, y * 0.25, s).normalize();
+    temp.quaternion.setFromUnitVectors(axis, normal);
+    temp.scale.setScalar(1);
+    temp.updateMatrix();
+    cilia.setMatrixAt(i, temp.matrix);
+    temp.rotateX(Math.PI / 2);
+    temp.updateMatrix();
+    bases.setMatrixAt(i, temp.matrix);
+  });
+  const baseMatrices = bases.instanceMatrix.array,
+    ciliumMatrices = cilia.instanceMatrix.array;
   const shapeChanged = shapeState();
   function update(pinch = 0, stretch = 1, division = 0, separation = 0) {
     if (!shapeChanged(pinch, stretch, division, separation)) return;
     let segment = 0;
-    params.forEach(({ col, y, c, s, x, z }, i) => {
+    params.forEach(({ col, y, x, z }, i) => {
       const p = point(x, y, z, pinch, stretch, division, separation);
-      temp.position.set(...p);
-      normal.set(c, y * 0.25, s).normalize();
-      temp.quaternion.setFromUnitVectors(axis, normal);
-      temp.scale.setScalar(1);
-      temp.updateMatrix();
-      cilia.setMatrixAt(i, temp.matrix);
-      temp.rotateX(Math.PI / 2);
-      temp.updateMatrix();
-      bases.setMatrixAt(i, temp.matrix);
+      const offset = i * 16 + 12;
+      baseMatrices[offset] = ciliumMatrices[offset] = p[0];
+      baseMatrices[offset + 1] = ciliumMatrices[offset + 1] = p[1];
+      baseMatrices[offset + 2] = ciliumMatrices[offset + 2] = p[2];
       if (col) {
         pos[segment++] = previous.x;
         pos[segment++] = previous.y;

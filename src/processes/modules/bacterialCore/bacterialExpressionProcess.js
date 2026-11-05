@@ -328,7 +328,7 @@ const process = {
       k.label([-3.6, 0.17, 0], "模板链 3′ → 5′", "Template 3′ → 5′", 6),
       k.label([3.0, 1.8, 0], "编码链 5′ → 3′", "Coding 5′ → 3′", 5),
       k.label([0, 2.5, 0], "RNA 聚合酶全酶", "RNA polymerase holoenzyme", 9),
-      k.label([-1, 2.4, 0], "σ70", "σ70", 8),
+      k.label([-1, 2.4, 0], "σ70 因子", "σ70 factor", 8),
       k.label([0, -1, 0], "mRNA 5′ 端", "mRNA 5′ end", 7),
       k.label([0, 0, 0], "生长中的 3′ 端", "Growing 3′ end", 7),
       k.label([0, -2, 0], "70S = 30S + 50S", "70S = 30S + 50S", 9),
@@ -381,6 +381,7 @@ const process = {
         0.2 + 0.08 * Math.sin(u * 9),
       ];
     };
+    let dnaPolymeraseX, dnaOpening;
     function update(raw, parameters = {}) {
       const p = clamp(raw),
         available = parameters.sigma !== "absent";
@@ -404,37 +405,49 @@ const process = {
       currentOpening = opening;
       activeSite.position.set(...hybridPoint(0, px)).sub(polymerase.position);
       clampJaw.rotation.z = -0.3 * (1 - initiation);
-      for (let i = 0; i < 80; i++) {
-        const x = -4.25 + (i / 79) * 8.5,
-          aa = dnaPoint(x, 0, px, opening),
-          bb = dnaPoint(x, 1, px, opening),
-          mid = aa.map((v, j) => (v + bb[j]) * 0.5);
-        for (let strand = 0; strand < 2; strand++) {
-          const point = strand ? bb : aa;
-          phosphate.point(i * 2 + strand, point, 0.052);
-          const end = point.map((v, j) => v + (mid[j] - v) * 0.82);
-          baseHalves[strand].line(i, point, end, 0.031);
+      // The DNA frame depends only on polymerase X and bubble opening.
+      // Docking, translation, labels and progress continue updating below.
+      if (px !== dnaPolymeraseX || opening !== dnaOpening) {
+        for (let i = 0; i < 80; i++) {
+          const x = -4.25 + (i / 79) * 8.5,
+            aa = dnaPoint(x, 0, px, opening),
+            bb = dnaPoint(x, 1, px, opening),
+            mid = aa.map((v, j) => (v + bb[j]) * 0.5);
+          for (let strand = 0; strand < 2; strand++) {
+            const point = strand ? bb : aa;
+            phosphate.point(i * 2 + strand, point, 0.052);
+            const end = point.map((v, j) => v + (mid[j] - v) * 0.82);
+            baseHalves[strand].line(i, point, end, 0.031);
+          }
         }
-      }
-      phosphate.flush();
-      baseHalves.forEach((v) => v.flush());
-      for (let s = 0; s < 2; s++)
-        for (let i = 0; i < segmentCount; i++) {
-          const a = dnaPoint(-4.25 + (i * 8.5) / segmentCount, s, px, opening),
-            z = dnaPoint(
-              -4.25 + ((i + 1) * 8.5) / segmentCount,
-              s,
-              px,
-              opening,
-            );
-          setSegment(strands[s][i], ...a, ...z, 0.047);
+        phosphate.flush();
+        baseHalves.forEach((v) => v.flush());
+        for (let s = 0; s < 2; s++)
+          for (let i = 0; i < segmentCount; i++) {
+            const a = dnaPoint(
+                -4.25 + (i * 8.5) / segmentCount,
+                s,
+                px,
+                opening,
+              ),
+              z = dnaPoint(
+                -4.25 + ((i + 1) * 8.5) / segmentCount,
+                s,
+                px,
+                opening,
+              );
+            setSegment(strands[s][i], ...a, ...z, 0.047);
+          }
+        for (const item of rungs) {
+          const x = -4.25 + (item.i * 8.5) / segmentCount,
+            a = dnaPoint(x, 0, px, opening),
+            z = dnaPoint(x, 1, px, opening);
+          item.mesh.visible =
+            opening * Math.exp(-(((x - px) / 0.47) ** 4)) < 0.3;
+          setSegment(item.mesh, ...a, ...z, 0.024);
         }
-      for (const item of rungs) {
-        const x = -4.25 + (item.i * 8.5) / segmentCount,
-          a = dnaPoint(x, 0, px, opening),
-          z = dnaPoint(x, 1, px, opening);
-        item.mesh.visible = opening * Math.exp(-(((x - px) / 0.47) ** 4)) < 0.3;
-        setSegment(item.mesh, ...a, ...z, 0.024);
+        dnaPolymeraseX = px;
+        dnaOpening = opening;
       }
       const length = 0.15 + 2.65 * ease(p, 0.33, 0.82),
         transcript = available && p > 0.33;

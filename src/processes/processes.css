@@ -24,6 +24,7 @@
   line-height: 1.5;
   font-weight: 600;
   letter-spacing: -0.5px;
+  overflow-wrap: anywhere;
 }
 .process-catalog-back {
   margin-bottom: 20px;
@@ -179,6 +180,12 @@
   color: var(--ink);
   font: inherit;
 }
+.process-condition-detail {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
 .process-directory-card > svg {
   flex-shrink: 0;
   color: #939ba5;
@@ -207,12 +214,35 @@
   border-radius: 9px;
   line-height: 1.6;
 }
+.process-steps button > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .process-steps button:hover {
   background: #f5f5f7;
 }
 .process-steps button[aria-current] {
   background: #edf4fd;
   color: var(--blue);
+}
+@media (min-width: 601px) {
+  .process-workspace[data-process] .process-catalog {
+    display: flex;
+    flex-direction: column;
+  }
+  .process-workspace[data-process] .process-catalog > :not(.process-steps) {
+    flex-shrink: 0;
+  }
+  .process-workspace[data-process] .process-steps {
+    flex: 1 1 auto;
+    min-height: 96px;
+    padding-block: 2px;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+  .process-workspace[data-process] .process-steps button {
+    flex-shrink: 0;
+  }
 }
 .process-step-number {
   font-size: 10px;
@@ -238,10 +268,22 @@
   touch-action: none;
 }
 .process-canvas canvas {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   outline-offset: -3px;
+}
+.process-scene-preparing {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  background: #f5f5f7;
+  color: var(--muted, #5b6573);
+  pointer-events: none;
 }
 .process-scene-error {
   position: absolute;
@@ -395,6 +437,26 @@
 .process-explanation {
   border-left: 1px solid var(--line);
 }
+.process-reading-link,
+.process-reading-return {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border: 1px solid #e2e2e8;
+  border-radius: 8px;
+  background: #ffffffed;
+  color: var(--blue);
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.process-explanation h2:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 5px;
+  border-radius: 3px;
+}
 .process-explanation h2 {
   font-size: 24px;
   line-height: 1.45;
@@ -479,6 +541,13 @@
   }
 }
 @media (max-width: 800px) {
+  .process-reading-link,
+  .process-reading-return {
+    display: inline-flex;
+  }
+  .process-reading-return {
+    margin-bottom: 18px;
+  }
   .process-workspace {
     grid-template-columns: 160px minmax(0, 1fr);
     height: auto;
@@ -615,6 +684,13 @@
 }
 /* The full desktop layout needs 550px plus 162px of navigation. */
 @media (max-height: 712px) and (min-width: 601px) {
+  .process-reading-link,
+  .process-reading-return {
+    display: inline-flex;
+  }
+  .process-reading-return {
+    margin-bottom: 18px;
+  }
   .atlas:has(.process-workspace) .app-header {
     height: 48px;
     padding: 6px 14px;
@@ -686,6 +762,28 @@
     overflow: visible;
   }
 }
+@media (max-height: 712px) and (min-width: 1101px) {
+  .process-workspace[data-process] {
+    grid-template-columns: 150px minmax(0, 1fr) 286px;
+    grid-template-rows: minmax(
+      235px,
+      calc(100svh - var(--process-chrome-height))
+    );
+  }
+  .process-workspace[data-process] .process-explanation {
+    grid-column: 3;
+    grid-row: 1;
+    min-height: 0;
+    overflow-y: auto;
+    border-top: 0;
+    border-left: 1px solid var(--line);
+    padding: 24px 22px;
+  }
+  .process-reading-link,
+  .process-reading-return {
+    display: none;
+  }
+}
 
 /* Keep explanations and controls outside the geometry viewport. */
 .process-visual {
@@ -745,7 +843,8 @@
 .process-annotation-key:empty,
 .process-scene-shell[data-annotations="false"] .process-model-labels,
 .process-scene-shell[data-annotations="false"] .process-annotation-key,
-.process-annotation-item[hidden] {
+.process-annotation-item[hidden],
+.process-annotation-context[hidden] {
   display: none;
 }
 .process-annotation-item {
@@ -772,6 +871,23 @@
   font-size: 10px;
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
+}
+.process-annotation-context {
+  flex: 0 0 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 3px 0;
+  color: #666975;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.55;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.process-annotation-key:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: -2px;
 }
 .process-model-label.numbered {
   width: 21px;
@@ -873,5 +989,36 @@
     display: flex;
     grid-column: 1 / -1;
     margin-top: 0;
+  }
+}
+
+/* TAD scope notes share the existing key rows without reducing its canvas. */
+.process-workspace[data-process="tad"] .process-annotation-context {
+  flex: 0 1 auto;
+}
+
+/* Illustration captions share key rows without displacing the model canvas. */
+.process-workspace[data-process="yeastMating"] .process-annotation-context,
+.process-workspace[data-process="alternativeSplicing"]
+  .process-annotation-context,
+.process-workspace[data-process="diffusion"] .process-annotation-context,
+.process-workspace[data-process="yeastBudding"] .process-annotation-context,
+.process-workspace[data-process="promoterRegulation"]
+  .process-annotation-context,
+.process-workspace[data-process="plantGenome"] .process-annotation-context,
+.process-workspace[data-process="plantRdDM"] .process-annotation-context,
+.process-workspace[data-process="glycolysis"] .process-annotation-context,
+.process-workspace[data-process="proteinFolding"] .process-annotation-context,
+.process-workspace[data-process="translation"] .process-annotation-context,
+.process-workspace[data-process="yeastOsmoregulation"]
+  .process-annotation-context {
+  flex: 0 1 auto;
+}
+
+/* A horizontal key must not shrink note text to zero width. */
+@media (max-height: 712px) and (min-width: 601px) {
+  .process-workspace[data-process] .process-annotation-context {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 }

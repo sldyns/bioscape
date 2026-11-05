@@ -67,24 +67,57 @@ export function createReplication({ rootId = "cell" } = {}) {
     g.position.set(-0.3, 0, -0.03);
     clamps.push(g);
   }
-  // Polymerase identities are not tracked between Okazaki fragments. Fade
-  // dissociation/recruitment instead of displaying a molecule teleporting;
-  // while visible, the enzyme stays on the existing synthesis-tip calculation.
+  // Enzyme identities are not tracked between Okazaki fragments. Fade
+  // dissociation/recruitment instead of displaying a molecule teleporting.
   lag.name = "lagging-DNA-polymerase-recruitment";
-  const lagMaterials = new Map();
-  lag.traverse((object) => {
-    if (object.material && !lagMaterials.has(object.material))
-      lagMaterials.set(object.material, {
-        opacity: object.material.opacity,
-        transparent: object.material.transparent,
-        depthWrite: object.material.depthWrite,
-      });
-  });
+  const lagMaterials = new Map(),
+    primaseMaterials = new Map();
+  for (const [enzyme, materials] of [
+    [lag, lagMaterials],
+    [primase, primaseMaterials],
+  ])
+    enzyme.traverse((object) => {
+      if (object.material && !materials.has(object.material))
+        materials.set(object.material, {
+          opacity: object.material.opacity,
+          transparent: object.material.transparent,
+          depthWrite: object.material.depthWrite,
+        });
+    });
+  function showOccupancy(enzyme, materials, occupancy) {
+    enzyme.visible = occupancy > 1e-6;
+    for (const [material, rest] of materials) {
+      material.opacity = rest.opacity * occupancy;
+      material.transparent = rest.transparent || occupancy < 1;
+      material.depthWrite = occupancy < 1 ? false : rest.depthWrite;
+    }
+  }
+  // Protect domain edges as well as their centers from numbered labels.
+  // Cache these local samples once; only their world positions move.
+  const primaseSurface = primase.children
+      .slice(0, primase.userData.domainCount)
+      .flatMap((domain) => {
+        domain.updateMatrix();
+        return [
+          [0, 0, 0],
+          [-1, 0, 0],
+          [1, 0, 0],
+          [0, -1, 0],
+          [0, 1, 0],
+          [0, 0, -1],
+          [0, 0, 1],
+        ].map((point) =>
+          new THREE.Vector3(...point).applyMatrix4(domain.matrix),
+        );
+      }),
+    primaseTargets = primaseSurface.map(() => [0, 0, 0]),
+    annotationTargets = [],
+    annotationPoint = new THREE.Vector3();
   const labels = [
     label([-4.2, 1.65, 0], "亲本 3′", "Parental 3′"),
-    label([4.2, 0.75, 0], "5′", "5′"),
+    label([4.2, 0.75, 0], "亲本 5′", "Parental 5′"),
     label([-4.2, -1.65, 0], "亲本 5′", "Parental 5′"),
-    label([4.2, -0.75, 0], "3′", "3′"),
+    label([4.2, -0.75, 0], "亲本 3′", "Parental 3′"),
     label(
       [-2.2, 2.05, 0],
       "前导链 · 连续 5′ → 3′",
@@ -202,27 +235,37 @@ export function createReplication({ rootId = "cell" } = {}) {
     let j = Math.min(4, Math.max(0, Math.floor((progress - 0.24) / 0.12)));
     const right = -2.4 + j * 1.6,
       t = ease(progress, 0.24 + j * 0.12, 0.33 + j * 0.12),
-      tip = right - 1.6 * t;
+      synthesized = 1.6 * t,
+      tip = right - synthesized;
     point(tip, 3, a);
     lag.position.copy(a);
     lag.rotation.z = Math.PI;
     const fragmentStart = 0.24 + j * 0.12;
-    const recruitment = ease(progress, fragmentStart, fragmentStart + 0.014);
+    // The existing short RNA region is 0.25 units long. Keep primase at its
+    // growing 3′ end, then hand the completed RNA to the DNA polymerase.
+    primase.position.set(a.x, a.y - 0.18, a.z - 0.1);
+    const priming =
+      ease(synthesized, 0, 0.04) * (1 - ease(synthesized, 0.2, 0.25));
+    showOccupancy(primase, primaseMaterials, priming);
+    annotationTargets.length = 0;
+    if (primase.visible) {
+      primase.updateMatrix();
+      for (let i = 0; i < primaseSurface.length; i++) {
+        annotationPoint
+          .copy(primaseSurface[i])
+          .applyMatrix4(primase.matrix)
+          .toArray(primaseTargets[i]);
+        annotationTargets.push(primaseTargets[i]);
+      }
+    }
+    const recruitment = ease(synthesized, 0.25, 0.38);
     const release = ease(
       progress,
       fragmentStart + 0.09,
       fragmentStart + (j < 4 ? 0.106 : 0.1),
     );
     const occupancy = recruitment * (1 - release);
-    lag.visible = progress > 0.24 && progress < 0.82 && occupancy > 1e-6;
-    for (const [material, rest] of lagMaterials) {
-      material.opacity = rest.opacity * occupancy;
-      material.transparent = rest.transparent || occupancy < 1;
-      material.depthWrite = occupancy < 1 ? false : rest.depthWrite;
-    }
-    point(fork - 0.45, 1, a);
-    primase.position.set(a.x, a.y - 0.18, a.z - 0.1);
-    primase.visible = progress > 0.13 && progress < 0.75;
+    showOccupancy(lag, lagMaterials, occupancy);
     const lx = -2.4 + 4.8 * ease(progress, 0.9, 0.99);
     point(lx, 3, a);
     ligase.position.copy(a);
@@ -232,9 +275,10 @@ export function createReplication({ rootId = "cell" } = {}) {
     point(-4, 1, a).toArray(labels[2].position);
     point(4, 1, a).toArray(labels[3].position);
     labels[4].active = railAnchor(labels[4], strands[2].rail, true);
-    labels[5].active =
-      railAnchor(labels[5], strands[3].rail) ||
-      railAnchor(labels[5], primer.rail);
+    // During the first RNA-only start, its primer label is sufficient. Add the
+    // fragment annotation when DNA extension is visible, avoiding two markers
+    // competing for the same tiny primer and obscuring the primase.
+    labels[5].active = railAnchor(labels[5], strands[3].rail);
     helicase.position.toArray(labels[6].position);
     labels[6].active = helicase.visible;
     labels[7].active = railAnchor(labels[7], primer.rail);
@@ -261,6 +305,7 @@ export function createReplication({ rootId = "cell" } = {}) {
     materials: k.materials,
     update,
     labels,
+    annotationTargets,
     camera: { position: [0, 1.25, 12.8], target: [0, 0, 0] },
   };
 }
@@ -309,12 +354,7 @@ export function createRepair({ rootId = "cell" } = {}) {
     label([-4.2, -0.6, 0], "模板链 3′", "Template 3′"),
     label([4.2, -0.6, 0], "5′", "5′"),
     label([0, 1.3, 0], "相邻碱基光产物", "Adjacent-base photoproduct", 3),
-    label(
-      [0, -1.6, 0],
-      "完整模板与暴露碱基",
-      "Intact template and exposed bases",
-      3,
-    ),
+    label([0, -1.6, 0], "完整模板链", "Intact template strand", 3),
     label(
       [0, 1.65, 0],
       "同一条链上的两处切口",
@@ -327,12 +367,7 @@ export function createRepair({ rootId = "cell" } = {}) {
       "Excised damaged oligonucleotide",
       3,
     ),
-    label(
-      [0, 1.3, 0.4],
-      "从 3′ 端填补 · 5′ → 3′",
-      "Fill from 3′ end · 5′ → 3′",
-      3,
-    ),
+    label([0, 1.3, 0.4], "DNA 聚合酶 · 5′ → 3′", "DNA polymerase · 5′ → 3′", 3),
     label([1.35, 1.3, 0], "封闭骨架切口", "Seal backbone nick", 3),
     label(
       [0, 2.1, 0],

@@ -1606,10 +1606,10 @@ const rules = [
     when: {
       osmotic: "mild",
     },
-    kind: "condition",
+    kind: "reference",
     body: {
-      zh: "低渗程度减轻时进水负担下降，伸缩泡循环变慢；章节时点用于机制讲解，不代表实测排水频率。",
-      en: "A milder hypotonic load reduces water entry and slows the contractile-vacuole cycle; chapter timing explains the mechanism rather than measuring discharge frequency.",
+      zh: "低渗程度减轻时进水负担下降，伸缩泡循环变慢。章节按较强低渗条件的首轮循环排列；本对照的充盈、隔离与排水更晚发生，章节编号不表示此刻正处于该阶段。动画节律不代表实测排水频率。",
+      en: "A milder hypotonic load reduces water entry and slows the cycle. Chapters follow the first cycle in the more hypotonic condition; filling, isolation and discharge occur later in this comparison, so chapter numbers do not identify its instantaneous phase. Animation timing is not a measured discharge frequency.",
     },
     title: {
       zh: "低渗负担减轻，伸缩泡循环变慢",

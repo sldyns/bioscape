@@ -6,8 +6,8 @@ const model = {
   title: b("DNA 复制叉", "DNA replication fork"),
   duration: 36,
   intro: b(
-    "真核细胞核中一个向右推进的复制叉。两条亲本链反向平行；新 DNA 均以 5′→3′ 合成。模型展开局部 DNA，省略染色质和复制起始；长度、速度与酶大小不按比例。可关闭连接酶观察残留切口。聚合酶淡出与淡入简化表示片段间的解离和再招募，不追踪同一分子的扩散路径。",
-    "One rightward-moving replication fork in a eukaryotic nucleus. Parental strands are antiparallel; both new strands grow 5′→3′. Local DNA is spread out; chromatin and initiation are omitted. Lengths, rates and enzyme sizes are schematic. Disable ligase to reveal persistent nicks. Polymerase fades schematize dissociation and recruitment between fragments, without tracking the diffusion path of one molecule.",
+    "真核细胞核中一个向右推进的复制叉。两条亲本链反向平行；新 DNA 均以 5′→3′ 合成。模型展开局部 DNA，省略染色质和复制起始；长度、速度与酶大小不按比例。可关闭连接酶观察残留切口。引物酶与聚合酶的淡出、淡入示意 RNA 到 DNA 合成的交接及片段间的再招募；省略复合物内构象变化，不追踪同一分子的扩散路径。",
+    "One rightward-moving replication fork in a eukaryotic nucleus. Parental strands are antiparallel; both new strands grow 5′→3′. Local DNA is spread out; chromatin and initiation are omitted. Lengths, rates and enzyme sizes are schematic. Disable ligase to reveal persistent nicks. Primase and polymerase fades schematize the RNA-to-DNA synthesis handoff and recruitment between fragments; internal complex rearrangements and individual diffusion paths are omitted.",
   ),
   controls: [
     {
@@ -86,6 +86,11 @@ const model = {
     {
       title: "Mechanism of Lagging-Strand DNA Replication in Eukaryotes",
       url: "https://pubmed.ncbi.nlm.nih.gov/29357056/",
+    },
+    {
+      title:
+        "Molecular choreography of primer synthesis by the eukaryotic Pol α-primase (2023)",
+      url: "https://www.nature.com/articles/s41467-023-39441-1",
     },
   ],
   create: createReplication,

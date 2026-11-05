@@ -345,6 +345,12 @@ function create() {
     labels[2].active = p < 0.72;
     labels[3].active = p < 0.63;
     labels[4].active = p < 0.48;
+    labels[4].text =
+      release === 0
+        ? b("花粉管携带两个精细胞", "Pollen tube carries two sperm")
+        : release < 1
+          ? b("花粉管 · 释放两个精细胞", "Pollen tube · releasing two sperm")
+          : b("花粉管 · 已释放两个精细胞", "Pollen tube · both sperm released");
     labels[5].active = p >= 0.72;
     labels[6].active = p >= 0.72;
     anchorLabel(labels[0], integumentCells[18], group);

@@ -26,21 +26,36 @@ function matingSurface(k, material, side) {
   geometry.setAttribute("position", new THREE.BufferAttribute(points, 3));
   geometry.setIndex(indices);
   const mesh = k.mesh(geometry, material);
+  // Projection and opening vary, but the sampled polar/azimuth angles do not.
+  const polarCosines = new Float64Array(rings + 1),
+    polarSines = new Float64Array(rings + 1),
+    tips = new Float64Array(rings + 1),
+    cosines = new Float64Array(sides + 1),
+    sines = new Float64Array(sides + 1);
+  for (let r = 0; r <= rings; r++) {
+    const theta = (Math.PI * r) / rings;
+    polarCosines[r] = Math.cos(theta);
+    polarSines[r] = Math.sin(theta);
+    tips[r] = Math.exp((-theta * theta) / 0.3);
+  }
+  for (let j = 0; j <= sides; j++) {
+    const angle = (2 * Math.PI * j) / sides;
+    cosines[j] = Math.cos(angle);
+    sines[j] = Math.sin(angle);
+  }
   return {
     mesh,
     update(projection, opening) {
       for (let r = 0; r <= rings; r++) {
-        const theta = (Math.PI * r) / rings,
-          tip = Math.exp((-theta * theta) / 0.3);
+        const tip = tips[r];
         const x =
-          side * (1.68 - 1.16 * Math.cos(theta) - 0.52 * projection * tip);
-        const radius = 1.16 * Math.sin(theta) + 0.84 * opening * tip;
+          side * (1.68 - 1.16 * polarCosines[r] - 0.52 * projection * tip);
+        const radius = 1.16 * polarSines[r] + 0.84 * opening * tip;
         for (let j = 0; j <= sides; j++) {
-          const angle = (2 * Math.PI * j) / sides,
-            n = (r * (sides + 1) + j) * 3;
+          const n = (r * (sides + 1) + j) * 3;
           points[n] = x;
-          points[n + 1] = radius * Math.cos(angle);
-          points[n + 2] = radius * Math.sin(angle);
+          points[n + 1] = radius * cosines[j];
+          points[n + 2] = radius * sines[j];
         }
       }
       geometry.attributes.position.needsUpdate = true;
@@ -208,8 +223,20 @@ function create() {
       "Same-type a/a: no mating fusion here",
       10,
     ),
+    k.label(
+      [0, 0, 0],
+      "胞质融合通道膜边缘",
+      "Membrane rim of the fusion channel",
+      9,
+    ),
   ];
-  const anchor = labelAnchors(labels);
+  labels[2].annotationKind = "context";
+  labels[6].annotationKind = "context";
+  const anchor = labelAnchors(labels),
+    polePoint = new THREE.Vector3(),
+    microtubuleTip = new THREE.Vector3(),
+    fusionRimPoint = new THREE.Vector3(),
+    fusionRimMatrix = new THREE.Matrix4();
   function update(raw, parameters = {}) {
     const p = clamp(raw),
       compatible = parameters.partner !== "same",
@@ -232,13 +259,13 @@ function create() {
         if (strand.geometry.type === "TubeGeometry")
           strand.material = side === 0 || !compatible ? teal : rose;
       // A dorsal SPB site leaves microtubules on the cytoplasmic NE face.
-      const pole = new THREE.Vector3(nx - sign * 0.294, 0, 0.4);
+      const pole = polePoint.set(nx - sign * 0.294, 0, 0.4);
       const tipX = THREE.MathUtils.lerp(
         sign * (0.86 - 0.2 * projection),
         -sign * 0.13,
         ease(q, 0.62, 0.655),
       );
-      const mtTip = new THREE.Vector3(tipX, 0, 0.53);
+      const mtTip = microtubuleTip.set(tipX, 0, 0.53);
       microtubules[side].visible = compatible && q > 0.28 && q < 0.77;
       placeSegment(microtubules[side], pole, mtTip);
       poles[side].visible = microtubules[side].visible;
@@ -345,12 +372,28 @@ function create() {
     labels[4].active = compatible && q >= 0.64 && q < 0.9;
     labels[5].active = compatible && q >= 0.9;
     labels[6].active = !compatible;
+    labels[7].active = compatible && q >= 0.9;
     anchor.atVertex(0, left.mesh, 20 * 49);
     anchor.atVertex(1, right.mesh, 20 * 49);
     anchor.atVertex(3, left.mesh, 0);
     if (fused.mesh.visible) anchor.atVertex(4, fused.mesh, 20 * 49);
     else anchor.atVertex(4, nuclei[0], 14 * 41 + 20);
     anchor.atVertex(5, fused.mesh, 14 * 49);
+    // Anchor to a real sphere vertex on the lower-front membrane rim.
+    fusionLipids.getMatrixAt(12, fusionRimMatrix);
+    fusionRimPoint
+      .fromBufferAttribute(
+        fusionLipids.geometry.attributes.position,
+        8 * 25 + 6,
+      )
+      .applyMatrix4(fusionRimMatrix);
+    anchor.atMesh(
+      7,
+      fusionLipids,
+      fusionRimPoint.x,
+      fusionRimPoint.y,
+      fusionRimPoint.z,
+    );
     group.userData = {
       species: "Saccharomyces cerevisiae",
       process: "mating",
@@ -362,7 +405,7 @@ function create() {
       plasmogamy: q >= 0.62,
       karyogamy: q >= 0.9,
       ploidy: q >= 0.9 ? "2n" : "n + n",
-      nuclei: q > 0.77 ? 1 : 2,
+      nuclei: q >= 0.77 ? 1 : 2,
       matingTypeSwitchingModeled: false,
     };
   }

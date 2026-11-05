@@ -342,6 +342,8 @@ function create({ rootId = "bacterium" } = {}) {
       1,
     ),
   );
+  const ammoniaProductCaption = labels[7].text,
+    formingAmmoniaCaption = b("NH₃ 形成中", "NH₃ forming");
   const feSurface = fe.getObjectByName("Fe-protein-upper-domain"),
     alphaSurface = moFe.getObjectByName("alpha-domain-right"),
     betaSurface = moFe.getObjectByName("beta-domain-right");
@@ -455,6 +457,10 @@ function create({ rootId = "bacterium" } = {}) {
     moMat.color.set(blocked ? "#ac9690" : "#879ea7");
     betaMat.color.set(blocked ? "#b6a69b" : "#a3b8ab");
     labels[7].active = !blocked && p >= 0.8;
+    labels[7].text =
+      labels[7].active && productFormation < 1
+        ? formingAmmoniaCaption
+        : ammoniaProductCaption;
     labels[8].active = h2.visible;
     labels[10].active = blocked;
     labels[6].active = p < 0.8;

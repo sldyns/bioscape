@@ -17,8 +17,17 @@ function textLines(ctx, value, width, maxLines) {
         lines.push(`${line.trimEnd()}…`);
         return lines;
       }
-      lines.push(line.trimEnd());
-      line = characters[index].trimStart();
+      // Keep a word together when a space offers a break. Text without spaces
+      // (including CJK and overlong tokens) still wraps at character boundaries.
+      const boundary = characters[index] === " " ? -1 : line.lastIndexOf(" ");
+      const remainder = line.slice(boundary + 1) + characters[index];
+      if (boundary > 0 && ctx.measureText(remainder).width <= width) {
+        lines.push(line.slice(0, boundary));
+        line = remainder;
+      } else {
+        lines.push(line.trimEnd());
+        line = characters[index].trimStart();
+      }
     } else line = next;
   }
   if (line) lines.push(line);
@@ -37,18 +46,30 @@ export function drawComposition(
     source.kind === "process" &&
     preferences.composition === "portrait" &&
     source.subtitle;
-  const layout = compositionLayout({
+  let layout = compositionLayout({
     ...preferences,
     scientificNote: Boolean(source.scientificNote),
     description: Boolean(description),
   });
-  const { width, height, model, padding } = layout;
+  const { width, height, padding } = layout;
   const pixelWidth = Math.max(1, Math.round(width * scale));
   const pixelHeight = Math.max(1, Math.round(height * scale));
   if (canvas.width !== pixelWidth) canvas.width = pixelWidth;
   if (canvas.height !== pixelHeight) canvas.height = pixelHeight;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("CANVAS_UNAVAILABLE");
+  ctx.font = `400 ${layout.footerSize}px ${FONT}`;
+  const scientificNotes = source.scientificNote
+    ? textLines(ctx, source.scientificNote, width - padding * 2, Infinity)
+    : [];
+  if (scientificNotes.length > 2)
+    layout = compositionLayout({
+      ...preferences,
+      scientificNote: true,
+      scientificNoteLines: scientificNotes.length,
+      description: Boolean(description),
+    });
+  const { model } = layout;
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   const background = BACKGROUNDS[preferences.background];
   ctx.clearRect(0, 0, width, height);
@@ -121,15 +142,15 @@ export function drawComposition(
   {
     ctx.fillStyle = muted;
     ctx.font = `400 ${layout.footerSize}px ${FONT}`;
-    if (source.scientificNote) {
-      const [note] = textLines(
-        ctx,
-        source.scientificNote,
-        width - padding * 2,
-        1,
-      );
-      ctx.fillText(note, padding, layout.footerY - layout.footerSize * 1.5);
-    }
+    scientificNotes.forEach((note, index) =>
+      ctx.fillText(
+        note,
+        padding,
+        layout.footerY -
+          layout.footerSize *
+            (1.5 + (scientificNotes.length - index - 1) * 1.3),
+      ),
+    );
     ctx.fillText(project.name, padding, layout.footerY);
     ctx.textAlign = "right";
     ctx.fillText(

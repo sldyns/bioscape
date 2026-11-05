@@ -300,7 +300,7 @@ export default {
       labels[4].active = p > 0.64 && p < 0.88;
       labels[5].active = p > 0.6 && p < 0.88;
       labels[6].active = p > 0.74 && p < 0.9;
-      labels[7].active = p > 0.94;
+      labels[7].active = p >= 0.93;
       labels[8].active = blocked && raw > 0.43;
       labels[0].position.splice(0, 3, 0.6, 0, 0);
       labels[1].position.splice(

@@ -2,6 +2,20 @@ import { bilayer, pore } from "./structural.js";
 import { anchorObject } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, phase, bilingual as b } from "../../kit.js";
 
+const sodiumCaptions = {
+  closed: b("Na⁺ 通道 · 关闭", "Na⁺ channel · closed"),
+  open: b("Na⁺ 通道 · 开放内流", "Na⁺ channel · open, influx"),
+  inactivated: b("Na⁺ 通道 · 失活", "Na⁺ channel · inactivated"),
+  recovered: b(
+    "Na⁺ 通道 · 关闭，恢复可激活",
+    "Na⁺ channel · closed, excitable again",
+  ),
+};
+const potassiumCaptions = {
+  closed: b("K⁺ 通道 · 关闭", "K⁺ channel · closed"),
+  open: b("K⁺ 通道 · 开放外流", "K⁺ channel · open, efflux"),
+};
+
 const stages = [
   [
     0,
@@ -21,8 +35,8 @@ const stages = [
     0.24,
     "钠通道开放",
     "Sodium channels open",
-    "电压门控 Na⁺ 通道短暂开放，Na⁺ 在局部跨膜内流。青绿色膜区表示去极化。",
-    "Voltage-gated Na⁺ channels briefly open and Na⁺ enters locally across the membrane. Teal membrane marks depolarization.",
+    "电压门控 Na⁺ 通道短暂开放，Na⁺ 在局部跨膜内流。青绿色膜区表示去极化。放大窗固定观察金色圈出的膜段；波到达该段之前，放大通道仍关闭。",
+    "Voltage-gated Na⁺ channels briefly open and Na⁺ enters locally across the membrane. Teal membrane marks depolarization. The enlarged window follows the fixed gold-circled region; its channels remain closed until the wave reaches it.",
   ],
   [
     0.42,
@@ -266,18 +280,8 @@ export default {
         "Enlarged view · the same membrane region",
         2,
       ),
-      k.label(
-        [-3.57, 1.52, 0.3],
-        "Na⁺ 通道 · 局部内流",
-        "Na⁺ channel · local influx",
-        2,
-      ),
-      k.label(
-        [-1.33, 1.52, 0.3],
-        "K⁺ 通道 · 局部外流",
-        "K⁺ channel · local efflux",
-        2,
-      ),
+      k.label([-3.57, 1.52, 0.3], "Na⁺ 通道 · 关闭", "Na⁺ channel · closed", 2),
+      k.label([-1.33, 1.52, 0.3], "K⁺ 通道 · 关闭", "K⁺ channel · closed", 2),
       k.label(
         [-2.45, -1.53, 0.3],
         "细胞质侧 · 通道出口",
@@ -337,6 +341,18 @@ export default {
         }
       }
       const localT = enabled ? (p - (0.14 + selectedIndex * 0.105)) / 0.21 : -1;
+      labels[1].text =
+        localT < 0
+          ? sodiumCaptions.closed
+          : localT < 0.25
+            ? sodiumCaptions.open
+            : localT < 0.9
+              ? sodiumCaptions.inactivated
+              : sodiumCaptions.recovered;
+      labels[2].text =
+        localT >= 0.22 && localT < 0.69
+          ? potassiumCaptions.open
+          : potassiumCaptions.closed;
       for (const d of detailChannels) {
         const isNa = d.type === "na",
           opened = isNa

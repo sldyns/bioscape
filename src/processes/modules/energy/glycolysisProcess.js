@@ -179,6 +179,8 @@ function create() {
     label([-2.55, 1.13, 0.2], "NAD⁺ → NADH", "NAD⁺ → NADH", 1),
     label([2.55, 1.13, 0.2], "NAD⁺ → NADH", "NAD⁺ → NADH", 1),
   ];
+  labels[0].annotationKind = "context";
+  labels[11].annotationKind = "context";
   details.anchor(labels[1], carbons[2]);
   for (let i = 0; i < 2; i++) {
     details.anchor(labels[2 + i], investedTargets[i]);

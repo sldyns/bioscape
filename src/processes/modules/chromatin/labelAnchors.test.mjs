@@ -38,6 +38,10 @@ function duplexPoint(scene, prefix) {
 function check(scene, id, parameters) {
   const groups = scene.group.children.filter((o) => o.type === "Group");
   if (id === "chromatinAccess") {
+    assert.equal(scene.labels[4].annotationKind, "context");
+    assert.notEqual(scene.labels[4].active, false);
+    for (const label of scene.labels.slice(0, 4))
+      assert.notEqual(label.annotationKind, "context");
     const [core, remodeler, factor] = groups;
     anchor(
       scene,
@@ -64,6 +68,12 @@ function check(scene, id, parameters) {
       "chromatinAccess factor label follows the factor during binding",
     );
   } else if (id === "tad") {
+    for (const index of [0, 5]) {
+      assert.equal(scene.labels[index].annotationKind, "context");
+      assert.notEqual(scene.labels[index].active, false);
+    }
+    for (const index of [1, 2, 3, 4])
+      assert.notEqual(scene.labels[index].annotationKind, "context");
     const proteins = groups.filter(
       (o) => o.name === "oriented-CTCF-zinc-finger-chain",
     );
@@ -74,11 +84,15 @@ function check(scene, id, parameters) {
       "tad left CTCF label points to the green boundary protein, not a gold locus",
     );
     const deleted = parameters.condition === "boundaryDeleted";
-    const deletedSite = scene.group.children.find(
-      (o) =>
-        o.geometry?.type === "TorusGeometry" &&
-        o.geometry.parameters.radius === 0.2,
+    const deletedSiteMarkers = scene.group.children.filter(
+      (o) => o.geometry?.type === "TorusGeometry",
     );
+    assert.equal(
+      deletedSiteMarkers.length,
+      1,
+      "tad keeps one standalone deleted-site marker",
+    );
+    const [deletedSite] = deletedSiteMarkers;
     anchor(
       scene,
       3,

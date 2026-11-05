@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { labelMatrixSync } from "./modules/energy/labelMatrixSync.js";
 import {
   helix,
   domain,
@@ -925,11 +926,20 @@ function create() {
     },
   );
   const labelPoint = new THREE.Vector3();
-  const anchorObject = (index, object) =>
-    object.getWorldPosition(labelPoint).toArray(labels[index].position);
+  const labelMatrices = labelMatrixSync();
+  const anchorObject = (index, object) => {
+    labelMatrices.update(object);
+    labelPoint
+      .setFromMatrixPosition(object.matrixWorld)
+      .toArray(labels[index].position);
+  };
+  const anchorLocal = (index, object) => {
+    labelMatrices.update(object);
+    labelPoint.applyMatrix4(object.matrixWorld).toArray(labels[index].position);
+  };
   const anchorFlow = (index, route, at) => {
     flows[route].curve.getPoint(at, labelPoint);
-    group.localToWorld(labelPoint).toArray(labels[index].position);
+    anchorLocal(index, group);
   };
   const update = (progress) => {
     const p = clamp(progress);
@@ -967,21 +977,20 @@ function create() {
     }
     // Leader endpoints identify the actual structure or explanatory route;
     // the shared annotation layer independently chooses each text position.
+    labelMatrices.begin();
     anchorFlow(0, 0, 0.25);
     const labelledMembrane = thylakoids.children[0].children[2].children[0];
     labelPoint.fromBufferAttribute(
       labelledMembrane.geometry.attributes.position,
       20,
     );
-    labelledMembrane.localToWorld(labelPoint).toArray(labels[1].position);
-    thylakoids.children[0].children[2]
-      .localToWorld(labelPoint.set(0, 0, 0.1))
-      .toArray(labels[2].position);
+    anchorLocal(1, labelledMembrane);
+    labelPoint.set(0, 0, 0.1);
+    anchorLocal(2, thylakoids.children[0].children[2]);
     anchorObject(3, psii.children[12].children[0]);
     anchorFlow(4, 6, 0);
-    group
-      .localToWorld(labelPoint.fromArray(cycleCenter))
-      .toArray(labels[5].position);
+    labelPoint.fromArray(cycleCenter);
+    anchorLocal(5, group);
     anchorFlow(6, 7, 0.15);
     anchorFlow(7, 9, 0.84);
     anchorFlow(8, 10, 0.55);

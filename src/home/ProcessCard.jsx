@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Play } from "lucide-react";
 import { assetUrl } from "../assetUrl.js";
+import { exploreSceneHash } from "./routes.js";
 
 export const processMotionIds = ["transcription", "mitosis", "photosynthesis"];
 
@@ -39,6 +40,7 @@ export default function ProcessCard({
   onDeactivate,
   onFollow,
 }) {
+  const href = exploreSceneHash(entry.href, lang);
   const video = useRef(null);
   const card = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -76,8 +78,8 @@ export default function ProcessCard({
     <a
       ref={card}
       className={`home-process-card${playing ? " is-playing" : ""}`}
-      href={entry.href}
-      onClick={(event) => onFollow(event, entry.href)}
+      href={href}
+      onClick={(event) => onFollow(event, href)}
       onPointerEnter={(event) => {
         if (event.pointerType !== "touch" && hasMotion) onActivate(entry.id);
       }}

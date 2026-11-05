@@ -201,6 +201,10 @@ export default {
       degradable = [];
     const poreGeometry = new THREE.TorusGeometry(0.026, 0.009, 6, 14);
     const surfaceMaterial = k.material("#adc0a7");
+    // Cell surface geometry is immutable; each cell keeps its own meshes and transforms.
+    const ridgeGeometries = [],
+      glycanGeometries = [];
+    let flagellumGeometry;
     positions.forEach((pos, i) => {
       const g = new THREE.Group();
       g.name = `biofilm-cell-${i}`;
@@ -215,29 +219,41 @@ export default {
       );
       // Membrane ridges, protein pores and short surface glycans are schematic.
       for (let face = 0; face < 4; face++) {
-        const theta = (face * Math.PI) / 2 + 0.35;
-        const ridge = Array.from({ length: 18 }, (_, j) => {
-          const x = -0.33 + (j * 0.66) / 17,
-            r = 0.152 * Math.sqrt(Math.max(0, 1 - (x / 0.38) ** 2));
-          return [x, r * Math.sin(theta), r * Math.cos(theta)];
-        });
-        k.tube(ridge, 0.007, surfaceMaterial, g, 32);
+        if (i === 0) {
+          const theta = (face * Math.PI) / 2 + 0.35;
+          const ridge = Array.from({ length: 18 }, (_, j) => {
+            const x = -0.33 + (j * 0.66) / 17,
+              r = 0.152 * Math.sqrt(Math.max(0, 1 - (x / 0.38) ** 2));
+            return [x, r * Math.sin(theta), r * Math.cos(theta)];
+          });
+          ridgeGeometries.push(
+            k.tube(ridge, 0.007, surfaceMaterial, g, 32).geometry,
+          );
+        } else {
+          k.mesh(ridgeGeometries[face], surfaceMaterial, [0, 0, 0], g);
+        }
       }
       for (let n = 0; n < 5; n++) {
         const x = -0.24 + n * 0.12,
           r = 0.155 * Math.sqrt(1 - (x / 0.38) ** 2);
         k.mesh(poreGeometry, protein, [x, 0.04, r], g);
-        k.tube(
-          [
-            [x, -0.045, r],
-            [x + 0.018, -0.066, r + 0.04],
-            [x + 0.008, -0.055, r + 0.075],
-          ],
-          0.007,
-          surfaceMaterial,
-          g,
-          12,
-        );
+        if (i === 0) {
+          glycanGeometries.push(
+            k.tube(
+              [
+                [x, -0.045, r],
+                [x + 0.018, -0.066, r + 0.04],
+                [x + 0.008, -0.055, r + 0.075],
+              ],
+              0.007,
+              surfaceMaterial,
+              g,
+              12,
+            ).geometry,
+          );
+        } else {
+          k.mesh(glycanGeometries[n], surfaceMaterial, [0, 0, 0], g);
+        }
       }
       const headPositions = [];
       for (let n = 0; n < 52; n++) {
@@ -255,17 +271,20 @@ export default {
         "bacterial-envelope-headgroup-motifs",
       );
       cells.push(g);
-      const flag = k.tube(
-        [
-          [-0.3, 0, 0],
-          [-0.48, 0.12, 0],
-          [-0.65, -0.05, 0.05],
-          [-0.86, 0.12, 0.04],
-        ],
-        0.018,
-        cellMat,
-        g,
-      );
+      const flag = flagellumGeometry
+        ? k.mesh(flagellumGeometry, cellMat, [0, 0, 0], g)
+        : k.tube(
+            [
+              [-0.3, 0, 0],
+              [-0.48, 0.12, 0],
+              [-0.65, -0.05, 0.05],
+              [-0.86, 0.12, 0.04],
+            ],
+            0.018,
+            cellMat,
+            g,
+          );
+      flagellumGeometry = flag.geometry;
       flagella.push(flag);
       const stem = k.segment(pos, [pos[0], -1.72, pos[2]], 0.018, psl);
       stem.name = `Psl-adhesion-tether-${i}`;

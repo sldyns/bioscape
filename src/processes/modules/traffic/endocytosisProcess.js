@@ -33,6 +33,9 @@ function create() {
   neck.rotation.x = Math.PI / 2;
   neck.material.transparent = true;
   const neckRest = neck.geometry.attributes.position.array.slice();
+  let neckShapeInitialized = false,
+    lastNeckRadius,
+    lastRecruitment;
   const coat = clathrinLattice(k, coatMat);
   const receptors = [],
     cargo = [],
@@ -68,7 +71,7 @@ function create() {
     k.label([-2.9, 0.4, 0.6], "胞质侧网格蛋白", "Cytosolic clathrin", 2),
     k.label([2.35, -1.25, 0], "早期内体腔", "Early endosome lumen", 2),
     k.label([3.7, -0.5, 0.4], "受体回收分选", "Receptor recycling domain", 1),
-    k.label([-1.4, 1.9, 0.3], "动力蛋白颈环", "Dynamin neck collar", 1),
+    k.label([-1.4, 1.9, 0.3], "Dynamin 颈环", "Dynamin neck collar", 1),
   ];
   const labelPoint = new THREE.Vector3(),
     coatAnchorMatrix = new THREE.Matrix4(),
@@ -149,23 +152,34 @@ function create() {
     neck.visible = recruitment > 0 && !detached;
     neck.material.opacity = recruitment;
     neck.position.y = neckBase + neckHeight * 0.5;
-    const neckVertices = neck.geometry.attributes.position;
-    for (let i = 0; i < neckVertices.count; i++) {
-      const x = neckRest[i * 3],
-        y = neckRest[i * 3 + 1],
-        radial = Math.hypot(x, y),
-        next = neckRadius + 0.085 + (radial - 0.22) * recruitment;
-      neckVertices.setXYZ(
-        i,
-        (next * x) / radial,
-        (next * y) / radial,
-        neckRest[i * 3 + 2] * recruitment,
-      );
+    // These are the complete local-shape inputs. Keep transforms and visibility
+    // current even when a repeated seek or a plateau reuses the same geometry.
+    if (
+      !neckShapeInitialized ||
+      !Object.is(neckRadius, lastNeckRadius) ||
+      !Object.is(recruitment, lastRecruitment)
+    ) {
+      const neckVertices = neck.geometry.attributes.position;
+      for (let i = 0; i < neckVertices.count; i++) {
+        const x = neckRest[i * 3],
+          y = neckRest[i * 3 + 1],
+          radial = Math.hypot(x, y),
+          next = neckRadius + 0.085 + (radial - 0.22) * recruitment;
+        neckVertices.setXYZ(
+          i,
+          (next * x) / radial,
+          (next * y) / radial,
+          neckRest[i * 3 + 2] * recruitment,
+        );
+      }
+      neckVertices.needsUpdate = true;
+      neck.geometry.computeVertexNormals();
+      neck.geometry.computeBoundingBox();
+      neck.geometry.computeBoundingSphere();
+      neckShapeInitialized = true;
+      lastNeckRadius = neckRadius;
+      lastRecruitment = recruitment;
     }
-    neckVertices.needsUpdate = true;
-    neck.geometry.computeVertexNormals();
-    neck.geometry.computeBoundingBox();
-    neck.geometry.computeBoundingSphere();
     dynamin.visible = neck.visible;
     dynamin.position.copy(neck.position);
     for (let i = 0; i < dynamin.children.length; i++) {
@@ -371,7 +385,7 @@ export default {
       at: 0.34,
       title: b("颈部收缩与断裂", "Neck constriction and scission"),
       description: b(
-        "动力蛋白参与颈部断裂，形成封闭的单膜囊泡。LDL 留在囊泡腔内。",
+        "Dynamin（GTP 酶）参与颈部断裂，形成封闭的单膜囊泡。LDL 留在囊泡腔内。",
         "Dynamin contributes to neck scission, forming a sealed single-membrane vesicle with LDL in its lumen.",
       ),
     },

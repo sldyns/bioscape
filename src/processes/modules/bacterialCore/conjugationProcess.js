@@ -278,6 +278,7 @@ const process = {
         8,
       ),
     ];
+    const plasmidPairStates = [undefined, undefined];
     function update(raw, parameters = {}) {
       const p = clamp(raw),
         blocked = parameters.oriT === "blocked",
@@ -312,6 +313,10 @@ const process = {
         );
       }
       for (let side = 0; side < 2; side++) {
+        // Base-pair matrices are cell-local. Moving the cells does not change
+        // them; only recipient complementary-strand synthesis changes radii.
+        const pairState = side ? recipientSynthesis : 1;
+        if (pairState === plasmidPairStates[side]) continue;
         for (let i = 0; i < 72; i++) {
           const t = (i / 72) * Math.PI * 2 + (side ? Math.PI : 0);
           plasmidPairs[side].line(
@@ -322,6 +327,7 @@ const process = {
           );
         }
         plasmidPairs[side].flush();
+        plasmidPairStates[side] = pairState;
       }
       const pilusReach = ease(p, 0.03, 0.18);
       for (let i = 0; i < 30; i++) {

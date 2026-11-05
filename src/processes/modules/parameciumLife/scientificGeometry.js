@@ -185,8 +185,10 @@ export function egestionOutlet(k, parent, vacuole, center, angle) {
     startCenter = new THREE.Vector3(),
     c = Math.cos(angle),
     s = Math.sin(angle);
+  const corticalShapeChanged = shapeState();
   function update(p) {
-    const opening = egestionOpening(p);
+    const opening = egestionOpening(p),
+      updateCortical = corticalShapeChanged(opening, ...center);
     group.visible = opening > 1e-6;
     [vacuole.outer, vacuole.inner].forEach((recipient, index) => {
       recipient.updateWorldMatrix(true, false);
@@ -207,25 +209,29 @@ export function egestionOutlet(k, parent, vacuole, center, angle) {
           startCenter.add(point).multiplyScalar(0.5);
         for (let row = 0; row <= portRows; row++) {
           const t = row / portRows,
-            q = row * (portColumns + 1) + col,
-            rimRadius = endRadius + (0.32 - endRadius) * t,
-            rimAcross = rimRadius * Math.cos(phase);
+            q = row * (portColumns + 1) + col;
           attr.setXYZ(
             q,
             point.x + (endX - point.x) * t,
             point.y + (endY - point.y) * t,
             point.z + (endZ - point.z) * t,
           );
-          surfaceAttr.setXYZ(
-            q,
-            center[0] - s * rimAcross,
-            center[1] + c * rimAcross,
-            center[2] + rimRadius * Math.sin(phase),
-          );
+          // These local cortical patches depend only on the pore opening.
+          // The passage still follows the vacuole's current world transform.
+          if (updateCortical) {
+            const rimRadius = endRadius + (0.32 - endRadius) * t,
+              rimAcross = rimRadius * Math.cos(phase);
+            surfaceAttr.setXYZ(
+              q,
+              center[0] - s * rimAcross,
+              center[1] + c * rimAcross,
+              center[2] + rimRadius * Math.sin(phase),
+            );
+          }
         }
       }
       finishGeometry(layers[index].geometry);
-      finishGeometry(cortical[index].geometry);
+      if (updateCortical) finishGeometry(cortical[index].geometry);
     });
   }
   return { group, update, startCenter };

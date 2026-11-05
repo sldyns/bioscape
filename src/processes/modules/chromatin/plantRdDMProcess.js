@@ -271,12 +271,14 @@ function create() {
     polGrowth = 0,
     dsGrowth = 0,
     handoff = 0,
-    delivery = 0;
+    delivery = 0,
+    cut = 0,
+    load = 0,
+    dock = 0,
+    dockCos = 1,
+    dockSin = 0;
   const productionPort = new THREE.Vector3();
   const fragmentSample = (s, out, fragment, strand) => {
-    const cut = ease(p, 0.34, 0.43),
-      load = ease(p, 0.43, 0.56),
-      dock = ease(p, 0.57, 0.76);
     const start = fragment === 0 ? -2.4 : -0.78;
     let x = start + 1.62 * s + (fragment === 0 ? -0.18 : 0.2) * cut,
       y = 1.15 + (strand === 0 ? 0.11 : -0.11),
@@ -286,11 +288,9 @@ function create() {
       const centerY =
         (1.15 + (strand === 0 ? 0.11 : -0.11)) * (1 - dock) +
         (strand === 0 ? -0.68 : 0.2) * dock;
-      x = centerX + 1.62 * (s - 0.5) * Math.cos(Math.PI * dock);
+      x = centerX + 1.62 * (s - 0.5) * dockCos;
       y =
-        centerY +
-        1.62 * (s - 0.5) * Math.sin(Math.PI * dock) +
-        (strand === 1 ? 0.65 * load : 0);
+        centerY + 1.62 * (s - 0.5) * dockSin + (strand === 1 ? 0.65 * load : 0);
     }
     out.set(x, y, z + 0.12);
     if (delivery < 1) {
@@ -303,7 +303,6 @@ function create() {
         const attachedCoordinate = p < 0.16 ? polGrowth : 1 - dsGrowth;
         const angle = Math.PI * (q - attachedCoordinate);
         const radius = 3.24 / Math.PI;
-        productionPort.copy(polExit).lerp(templateEntry, handoff);
         out.set(
           productionPort.x + (radius - strand * 0.22) * Math.sin(angle),
           productionPort.y +
@@ -345,6 +344,13 @@ function create() {
   const a = new THREE.Vector3(),
     b = new THREE.Vector3(),
     scratch = new THREE.Vector3();
+  // Pairing markers keep fixed endpoints; only pairing visibility is animated.
+  for (let i = 0; i < matchBars.length; i++) {
+    const x = 1.2 + (1.62 * i) / 23;
+    a.set(x, -0.68, 0.17);
+    b.set(x, -0.96, 0.17);
+    moveSegment(matchBars[i], a, b, 0.012, scratch);
+  }
   const labels = [
     k.label(
       [-3.38, 2.75, 0.1],
@@ -376,6 +382,7 @@ function create() {
     ),
     k.label([2.5, -0.08, 0.2], "DRM2", "DRM2", 7),
   ];
+  labels[7].annotationKind = "context";
   function update(value, parameters = {}) {
     p = clamp(value);
     const active = parameters.drm2 !== "inactive";
@@ -383,11 +390,15 @@ function create() {
     handoff = ease(p, 0.12, 0.16);
     dsGrowth = ease(p, 0.16, 0.28);
     delivery = ease(p, 0.28, 0.34);
+    // All fragment samplers share these exact current-frame phase values.
+    cut = ease(p, 0.34, 0.43);
+    load = ease(p, 0.43, 0.56);
+    dock = ease(p, 0.57, 0.76);
+    dockCos = Math.cos(Math.PI * dock);
+    dockSin = Math.sin(Math.PI * dock);
+    productionPort.copy(polExit).lerp(templateEntry, handoff);
     const pol = polGrowth,
       ds = dsGrowth,
-      cut = ease(p, 0.34, 0.43),
-      load = ease(p, 0.43, 0.56),
-      dock = ease(p, 0.57, 0.76),
       recruit = ease(p, 0.74, 0.84);
     jaws[0].rotation.z = 0.35 * (1 - cut);
     jaws[1].rotation.z = -0.35 * (1 - cut);
@@ -434,13 +445,7 @@ function create() {
     scaffold.update(sampleScaffold);
     scaffoldDetails.root.visible = scaffoldGrowth > 0;
     scaffoldDetails.update(sampleScaffold, 1, false, 1);
-    for (let i = 0; i < 24; i++) {
-      const x = 1.2 + (1.62 * i) / 23;
-      a.set(x, -0.68, 0.17);
-      b.set(x, -0.96, 0.17);
-      moveSegment(matchBars[i], a, b, 0.012, scratch);
-      matchBars[i].visible = dock > 0.98;
-    }
+    for (const bar of matchBars) bar.visible = dock > 0.98;
     drm.position.set(2.65, -0.25, 0.26).lerp(dockedDRM, recruit);
     drm.visible = p > 0.72;
     const baseFlip = ease(p, 0.77, 0.86) * (1 - ease(p, 0.93, 1));
@@ -474,7 +479,15 @@ function create() {
       ? B("DRM2 · 写入甲基标记", "DRM2 · deposits methyl marks")
       : B("DRM2 催化失活", "DRM2 catalytically inactive");
     labels[5].text = active
-      ? B("靶 DNA · 新增胞嘧啶甲基化", "Target DNA · new cytosine methylation")
+      ? markCount
+        ? B(
+            "靶 DNA · 新增胞嘧啶甲基化",
+            "Target DNA · new cytosine methylation",
+          )
+        : B(
+            "靶 DNA · 胞嘧啶尚无新甲基",
+            "Target DNA · cytosine, no new methyl marks",
+          )
       : B("靶 DNA · 未写入新的甲基标记", "Target DNA · no new methyl marks");
     Object.assign(group.userData, {
       process: "plantRdDM",

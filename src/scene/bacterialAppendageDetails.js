@@ -90,6 +90,15 @@ export function typeOnePilus() {
   tip.position.y = 1.53;
   tip.scale.setScalar(0.75);
   g.add(rod, tip);
+  tip.updateMatrix();
+  // Keep markers clear of the tip's binding and adaptor sites.
+  g.annotationTargets = {
+    pilusTip: tip.userData.landmarks.map(({ position }) =>
+      V(...position)
+        .applyMatrix4(tip.matrix)
+        .toArray(),
+    ),
+  };
   g.userData.partAnchors = {
     pilusRod: [0.14, -0.1, 0.1],
     pilusTip: [0.07, 1.8, 0.08],
@@ -282,6 +291,8 @@ export function motorAssembly({ context = true } = {}) {
     motorBushing: [0, 0.43, 0.08],
     motorStator: [0.4, -0.18, 0.08],
   };
+  // Same physical opening annotated in the enlarged rod/bushing view.
+  g.annotationTargets = { motorBushing: [[0, 0.665, 0]] };
   g.userData.landmarks = [
     { zh: "外膜", en: "Outer membrane", position: [-0.65, 0.51, 0.48] },
     { zh: "肽聚糖", en: "Peptidoglycan", position: [-0.65, 0.18, 0.48] },

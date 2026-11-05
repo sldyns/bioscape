@@ -53,8 +53,8 @@ export default {
       at: 0.55,
       title: b("双向交换迁移原核", "Reciprocal pronuclear exchange"),
       description: b(
-        "每个配偶把迁移原核送给对方，自己的留居原核保留。通路内两种颜色分别表示两个亲本来源。",
-        "Each partner transfers its migratory pronucleus while retaining its stationary one. The two colors in the passage represent the two parental origins.",
+        "每个配偶把迁移原核送给对方，自己的留居原核保留。迁移原核通过接合区时可伸长、变形；图中具体形状和时序为示意。通路内两种颜色分别表示两个亲本来源。",
+        "Each partner transfers its migratory pronucleus while retaining its stationary one. Migratory pronuclei can elongate and deform as they pass through the conjugation region; the exact shapes and timing shown are illustrative. The two colors in the passage represent the two parental origins.",
       ),
     },
     {
@@ -358,8 +358,11 @@ export default {
           }
         });
         c.stationary.visible = p >= 0.445 && p < 0.75;
+        // Let the resident move away as its sister forms toward the passage.
+        // Separate the completed pronuclei and preserve the fusion endpoint.
+        const stationaryX = 0.36 - 0.14 * ease(p, 0.445, 0.53);
         c.stationary.position.set(
-          0.36 - 0.06 * fusion,
+          stationaryX + (0.3 - stationaryX) * fusion,
           -0.13 * (1 - fusion),
           0.54,
         );
@@ -417,16 +420,55 @@ export default {
         g.position.x = side * passageHalfLength;
         g.scale.setScalar(passageOpening);
       });
+      // Illustrative C2 deformation shared by the complete nuclear subtree.
+      const shapeEntering = p < 0.588,
+        shapeT = shapeEntering
+          ? clamp((p - 0.58) / (0.588 - 0.58))
+          : clamp((p - 0.613) / (0.621 - 0.613)),
+        shapeBlend =
+          shapeT * shapeT * shapeT * (shapeT * (shapeT * 6 - 15) + 10),
+        shapeWeight = shapeEntering ? shapeBlend : 1 - shapeBlend,
+        shapeQ = 1 - 0.4 * shapeWeight,
+        migrantScale = 0.18 * ease(p, 0.445, 0.53) * (1 - fusion),
+        arrivalStartX = 0.2877130092592592,
+        arrivalStartExchange = 0.6359594907407407,
+        arrivalDockX = 0.46,
+        arrivalSlope = (0.71 - arrivalStartX) / (arrivalDockX - arrivalStartX),
+        arrivalU = clamp(
+          (exchange - arrivalStartExchange) / (1 - arrivalStartExchange),
+        ),
+        arrivalBlend =
+          arrivalSlope * arrivalU +
+          (10 - 6 * arrivalSlope) * arrivalU ** 3 +
+          (-15 + 8 * arrivalSlope) * arrivalU ** 4 +
+          (6 - 3 * arrivalSlope) * arrivalU ** 5,
+        arrivalX =
+          p < 0.67
+            ? arrivalStartX + (arrivalDockX - arrivalStartX) * arrivalBlend
+            : arrivalDockX;
       migrants.forEach((o, i) => {
         const sign = i ? 1 : -1,
           source = sign * (cx - (0.36 + 0.26 * pronuclear)),
           dest = -sign * (cx - 0.36);
-        o.position.set(
-          source + (dest - source) * exchange,
-          (-0.13 * (1 - pronuclear) + sign * 0.12 * pronuclear) * (1 - fusion),
-          0.54 + 0.03 * pronuclear,
-        );
-        o.scale.setScalar(0.18 * ease(p, 0.445, 0.53) * (1 - fusion));
+        if (p < 0.68) {
+          o.position.set(
+            p <= 0.621 ? source + (dest - source) * exchange : -sign * arrivalX,
+            -0.13 * (1 - pronuclear) + sign * 0.12 * pronuclear * shapeWeight,
+            0.54 + 0.03 * pronuclear,
+          );
+        } else {
+          // The receiving resident was updated above from this same progress.
+          const target = cells[1 - i].stationary.position,
+            targetSign = -sign,
+            remaining = 1 - fusion,
+            offsetWeight = remaining * remaining;
+          o.position.set(
+            targetSign * (cx - target.x) - targetSign * 0.39 * offsetWeight,
+            target.y + 0.13 * offsetWeight,
+            target.z + 0.03 * offsetWeight,
+          );
+        }
+        o.scale.set(migrantScale / shapeQ, migrantScale * shapeQ, migrantScale);
         o.visible = p >= 0.445 && p < 0.75;
       });
       partnerAnchors.forEach((anchor) => anchor());
@@ -444,13 +486,15 @@ export default {
             ? b("小核 · 减数分裂中", "Micronucleus · meiosis in progress")
             : p < 0.44
               ? b("减数产物 · 单倍体", "Meiotic products · haploid")
-              : p < 0.68
-                ? b("原核 · 单倍体", "Pronuclei · haploid")
-                : p < 0.72
-                  ? b("原核融合中", "Pronuclei fusing")
-                  : p < 0.78
-                    ? b("合核 · 二倍体", "Synkaryon · diploid")
-                    : b("合核后代", "Synkaryon descendants");
+              : p < 0.53
+                ? b("原核形成中 · 单倍体", "Pronuclei forming · haploid")
+                : p < 0.68
+                  ? b("原核 · 单倍体", "Pronuclei · haploid")
+                  : p < 0.72
+                    ? b("原核融合中", "Pronuclei fusing")
+                    : p < 0.78
+                      ? b("合核 · 二倍体", "Synkaryon · diploid")
+                      : b("合核后代", "Synkaryon descendants");
       labels[4].active = p >= 0.09 && p < 0.8;
       passageAnchor();
       labels[5].active = p >= 0.94;

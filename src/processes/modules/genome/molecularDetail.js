@@ -31,8 +31,10 @@ export function molecularKit(group) {
   const segment = (mesh, i, a, b, r = 0.035, width = r) => {
     d.subVectors(b, a);
     dummy.position.copy(a).add(b).multiplyScalar(0.5);
-    dummy.quaternion.setFromUnitVectors(up, d.normalize());
-    dummy.scale.set(width, Math.max(a.distanceTo(b), 1e-6), r);
+    // Normalization and segment scale use the same exact Euclidean length.
+    const length = d.length();
+    dummy.quaternion.setFromUnitVectors(up, d.divideScalar(length || 1));
+    dummy.scale.set(width, Math.max(length, 1e-6), r);
     dummy.updateMatrix();
     mesh.setMatrixAt(i, dummy.matrix);
   };

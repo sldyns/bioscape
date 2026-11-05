@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { Euler, Object3D, Quaternion, TorusGeometry } from "three";
 import { processCacheSnapshot } from "./process-cache-snapshot.mjs";
 import manifest from "./process-refinement-20261015-manifest.mjs";
 export const refinementIDs = Object.keys(manifest);
@@ -18,6 +19,25 @@ const movedLabels = {
   dnaRepair: [],
   osmoticBalance: [],
 };
+const reviewedRepairLabelText = {
+  5: {
+    before: {
+      zh: "完整模板与暴露碱基",
+      en: "Intact template and exposed bases",
+    },
+    after: { zh: "完整模板链", en: "Intact template strand" },
+  },
+  8: {
+    before: {
+      zh: "从 3′ 端填补 · 5′ → 3′",
+      en: "Fill from 3′ end · 5′ → 3′",
+    },
+    after: {
+      zh: "DNA 聚合酶 · 5′ → 3′",
+      en: "DNA polymerase · 5′ → 3′",
+    },
+  },
+};
 const repairBases = new Set([
   "damaged-strand-attached-bases",
   "intact-template-attached-bases",
@@ -25,6 +45,127 @@ const repairBases = new Set([
 ]);
 function subtree(group) {
   return processCacheSnapshot({ group, labels: [] });
+}
+function tadSiteGeometrySnapshot(geometry) {
+  // Reuse the existing byte-level geometry digest without the mesh transform.
+  const probe = new Object3D();
+  probe.geometry = geometry;
+  return subtree(probe).geometry;
+}
+function assertTadSiteGeometry(geometry, radius, context) {
+  assert.equal(geometry?.type, "TorusGeometry", `${context}: site torus`);
+  const expected = new TorusGeometry(radius, 0.032, 10, 56);
+  try {
+    assert.deepEqual(
+      geometry.parameters,
+      expected.parameters,
+      `${context}: exact reviewed torus parameters`,
+    );
+    // A renderer may have lazily populated bounds. Validate their values too.
+    if (geometry.boundingBox !== null) expected.computeBoundingBox();
+    if (geometry.boundingSphere !== null) expected.computeBoundingSphere();
+    const attributeShape = (attribute) => ({
+      buffer: attribute?.isBufferAttribute === true,
+      interleaved: attribute?.isInterleavedBufferAttribute === true,
+      count: attribute?.count,
+      itemSize: attribute?.itemSize,
+      normalized: attribute?.normalized,
+      usage: attribute?.usage,
+      gpuType: attribute?.gpuType,
+      name: attribute?.name,
+    });
+    assert.deepEqual(
+      attributeShape(geometry.index),
+      attributeShape(expected.index),
+      `${context}: exact reviewed index metadata`,
+    );
+    assert.deepEqual(
+      Object.keys(geometry.attributes).sort(),
+      Object.keys(expected.attributes).sort(),
+      `${context}: exact reviewed attribute set`,
+    );
+    for (const name of Object.keys(expected.attributes))
+      assert.deepEqual(
+        attributeShape(geometry.attributes[name]),
+        attributeShape(expected.attributes[name]),
+        `${context}: exact reviewed ${name} metadata`,
+      );
+    assert.deepEqual(geometry.morphAttributes, expected.morphAttributes);
+    assert.equal(geometry.morphTargetsRelative, expected.morphTargetsRelative);
+    assert.deepEqual(geometry.userData, expected.userData);
+    assert.equal(
+      tadSiteGeometrySnapshot(geometry),
+      tadSiteGeometrySnapshot(expected),
+      `${context}: exact reviewed torus attributes, indices and bounds`,
+    );
+  } finally {
+    expected.dispose();
+  }
+}
+function tadDeletedSiteSnapshot(object, reference, context) {
+  for (const [side, node, radius, angle] of [
+    ["current", object, 0.36, -Math.PI / 3],
+    ["reference", reference, 0.2, 0],
+  ]) {
+    assert(
+      node.isMesh && node.type === "Mesh",
+      `${context}: ${side} TAD site mesh`,
+    );
+    assertTadSiteGeometry(node.geometry, radius, `${context}: ${side}`);
+    const expectedRotation = new Euler(angle, 0, 0, "XYZ");
+    assert.deepEqual(
+      node.rotation.toArray(),
+      expectedRotation.toArray(),
+      `${context}: ${side} exact reviewed site rotation`,
+    );
+    assert.deepEqual(
+      node.quaternion.toArray(),
+      new Quaternion().setFromEuler(expectedRotation).toArray(),
+      `${context}: ${side} exact reviewed site quaternion`,
+    );
+    assert(
+      !Array.isArray(node.material) && node.material?.isMaterial,
+      `${context}: ${side} TAD site has one material`,
+    );
+    assert(node.material.color?.isColor, `${context}: ${side} TAD site color`);
+    assert.equal(
+      node.material.depthTest,
+      true,
+      `${context}: ${side} depth test`,
+    );
+    assert.equal(
+      node.material.depthWrite,
+      true,
+      `${context}: ${side} depth write`,
+    );
+  }
+  assert.equal(
+    reference.material.color.getHex(),
+    0xbdada1,
+    `${context}: historical site color`,
+  );
+  assert.equal(
+    object.material.color.getHex(),
+    0x71527d,
+    `${context}: reviewed site color`,
+  );
+  // Normalize only the exact reviewed marker shape, rotation and earlier color.
+  // Position, scale, visibility, material/depth and semantic state remain exact.
+  const geometry = object.geometry,
+    rotation = object.rotation.clone(),
+    color = object.material.color,
+    savedColor = color.clone();
+  try {
+    object.geometry = reference.geometry;
+    object.rotation.copy(reference.rotation);
+    color.copy(reference.material.color);
+    return subtree(object);
+  } finally {
+    object.geometry = geometry;
+    object.rotation.copy(rotation);
+    color.copy(savedColor);
+    object.updateMatrixWorld(true);
+  }
 }
 function repairBaseSnapshot(object, reference, root, context) {
   assert(object.isInstancedMesh && reference.isInstancedMesh);
@@ -188,10 +329,41 @@ export function createRefinementComparison(id, model, reference) {
       assert.equal(model.labels.length, reference.labels.length);
       model.labels.forEach((l, i) => {
         const old = reference.labels[i];
-        assert.deepEqual(Object.keys(l).sort(), Object.keys(old).sort());
-        for (const key of Object.keys(l))
-          if (!(key === "position" && movedLabels[id].includes(i)))
+        const isContextLabel =
+          (id === "chromatinAccess" && i === 4) ||
+          (id === "tad" && [0, 5].includes(i));
+        assert.deepEqual(
+          Object.keys(l).sort(),
+          isContextLabel
+            ? [...Object.keys(old), "annotationKind"].sort()
+            : Object.keys(old).sort(),
+          `${context}: label ${i} exact field set`,
+        );
+        if (isContextLabel)
+          assert.equal(
+            l.annotationKind,
+            "context",
+            `${context}: label ${i} has the reviewed context classification`,
+          );
+        for (const key of Object.keys(old)) {
+          const reviewedText =
+            id === "dnaRepair" && key === "text"
+              ? reviewedRepairLabelText[i]
+              : null;
+          if (reviewedText) {
+            assert.deepEqual(
+              old[key],
+              reviewedText.before,
+              `${context}: exact frozen label ${i} wording`,
+            );
+            assert.deepEqual(
+              l[key],
+              reviewedText.after,
+              `${context}: exact reviewed label ${i} wording`,
+            );
+          } else if (!(key === "position" && movedLabels[id].includes(i)))
             assert.deepEqual(l[key], old[key], `${context}: label ${i}/${key}`);
+        }
         assert(l.position.every(Number.isFinite));
       });
       model.group.children.forEach((o, i) => {
@@ -203,7 +375,9 @@ export function createRefinementComparison(id, model, reference) {
             ? repairBases.has(o.name)
               ? repairBaseSnapshot(o, old, model.group, context)
               : historicalUserDataSnapshot(o, old)
-            : subtree(o),
+            : id === "tad" && i === 8
+              ? tadDeletedSiteSnapshot(o, old, context)
+              : subtree(o),
           subtree(old),
           `${context}: unchanged root ordinal ${i}`,
         );

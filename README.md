@@ -110,7 +110,7 @@ https://github.com/user-attachments/assets/aef051f6-ff7b-4f08-ac92-f0a5da6f4082
 <details>
 <summary>Export and sharing details</summary>
 
-Images support 1920 or 2560 pixel long edges. Videos use MP4 or WebM according to browser support. Titles and labels are optional; exports retain the BioScape project mark and teaching context, without an author-name watermark.
+Images support 1920 or 2560 pixel long edges. Videos use MP4 or WebM according to browser support. Video generation preserves the selected resolution; complex scenes can take longer to process than the video's playback duration. Keep the tab visible until generation finishes. Titles and labels are optional; exports retain the BioScape project mark and teaching context, without an author-name watermark.
 
 Shared links use the current site address. A link made on a local server requires access to that server.
 

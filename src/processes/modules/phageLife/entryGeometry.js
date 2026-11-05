@@ -97,6 +97,8 @@ export function entryGenome(k, parent, headY) {
     matrices.push(temp.matrix.clone());
   }
   const unused = new THREE.Matrix4();
+  let previousFirstBase = -1,
+    previousLastBase = -1;
   function update(fraction) {
     const start = (clamp(fraction) * travel) / length;
     const end = start + initialLength / length;
@@ -107,6 +109,12 @@ export function entryGenome(k, parent, headY) {
     );
     const firstBase = Math.ceil(start * (count - 1));
     const lastBase = Math.floor(end * (count - 1));
+    // The visible molecular interval can move without changing its sampled
+    // base-pair window. Keep the complete matrix buffer until that window moves.
+    if (firstBase === previousFirstBase && lastBase === previousLastBase)
+      return;
+    previousFirstBase = firstBase;
+    previousLastBase = lastBase;
     bases.count = lastBase - firstBase + 1;
     for (let i = 0; i < count; i++)
       bases.setMatrixAt(i, i < bases.count ? matrices[firstBase + i] : unused);

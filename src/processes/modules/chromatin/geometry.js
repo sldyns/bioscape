@@ -72,9 +72,10 @@ const UP = new THREE.Vector3(0, 1, 0);
 // sin(theta)*binormal gives positive (right-handed) twist along the centerline.
 // All arrays and scratch objects are owned by this construction, never a frame.
 export function rightHandedDuplex(centerline, radius, twist, count = 1600) {
-  const points = Array.from({ length: count + 1 }, () => new THREE.Vector3());
-  const tangents = points.map(() => new THREE.Vector3());
-  const normals = points.map(() => new THREE.Vector3());
+  // Only the transported frame is retained. Strand samples evaluate their own
+  // centerline position, so a second array of centerline points was never read.
+  const tangents = Array.from({ length: count + 1 }, () => new THREE.Vector3());
+  const normals = Array.from({ length: count + 1 }, () => new THREE.Vector3());
   const before = new THREE.Vector3(),
     after = new THREE.Vector3();
   const tangent = new THREE.Vector3(),
@@ -85,7 +86,6 @@ export function rightHandedDuplex(centerline, radius, twist, count = 1600) {
   function update() {
     for (let i = 0; i <= count; i++) {
       const s = i / count;
-      centerline(s, points[i]);
       centerline(Math.max(0, s - 0.00001), before);
       centerline(Math.min(1, s + 0.00001), after);
       tangents[i].subVectors(after, before).normalize();

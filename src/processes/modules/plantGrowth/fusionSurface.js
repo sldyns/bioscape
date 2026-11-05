@@ -20,6 +20,10 @@ export function gameteFusionSurface(k, materials, center, radii, pole, name) {
     neckRings = 6,
     spermRings = 20;
   const rings = hostRings + neckRings + spermRings + 1;
+  const circle = Array.from({ length: radial + 1 }, (_, i) => {
+    const phi = (i / radial) * Math.PI * 2;
+    return { sine: Math.sin(phi), cosine: Math.cos(phi) };
+  });
   const positions = new Float32Array(rings * (radial + 1) * 3);
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute(
@@ -50,47 +54,61 @@ export function gameteFusionSurface(k, materials, center, radii, pole, name) {
   const h = new THREE.Vector3(),
     s = new THREE.Vector3(),
     point = new THREE.Vector3();
-  function host(theta, phi, result) {
+  function host(cosTheta, sinTheta, cosPhi, sinPhi, result) {
     return result
       .copy(q)
-      .multiplyScalar(Math.cos(theta))
-      .addScaledVector(u, Math.sin(theta) * Math.cos(phi))
-      .addScaledVector(v, Math.sin(theta) * Math.sin(phi))
+      .multiplyScalar(cosTheta)
+      .addScaledVector(u, sinTheta * cosPhi)
+      .addScaledVector(v, sinTheta * sinPhi)
       .multiply(axes)
       .add(c);
   }
-  function sperm(theta, phi, radius, result) {
+  function sperm(cosTheta, sinTheta, cosPhi, sinPhi, radius, result) {
     return result
       .copy(contact)
-      .addScaledVector(normal, radius * (1 + Math.cos(theta)))
-      .addScaledVector(tangent, radius * Math.sin(theta) * Math.cos(phi))
-      .addScaledVector(bitangent, radius * Math.sin(theta) * Math.sin(phi));
+      .addScaledVector(normal, radius * (1 + cosTheta))
+      .addScaledVector(tangent, radius * sinTheta * cosPhi)
+      .addScaledVector(bitangent, radius * sinTheta * sinPhi);
   }
   function update(opening, absorption, present) {
     const size = present ? 0.12 * (1 - absorption) : 0;
     const hole = present ? 0.34 * opening * (1 - absorption) : 0;
     const spermEnd = Math.PI - 1.35 * opening;
     let cursor = 0;
-    for (let j = 0; j < rings; j++)
+    for (let j = 0; j < rings; j++) {
+      // Latitude is constant around a ring; longitude samples never change.
+      // Preserve the original arithmetic order after evaluating each angle.
+      let hostCosine = 0,
+        hostSine = 0,
+        spermCosine = 0,
+        spermSine = 0;
+      if (j <= hostRings + neckRings) {
+        const theta =
+          j <= hostRings ? Math.PI - ((Math.PI - hole) * j) / hostRings : hole;
+        hostCosine = Math.cos(theta);
+        hostSine = Math.sin(theta);
+      }
+      if (j > hostRings) {
+        const theta =
+          j <= hostRings + neckRings
+            ? spermEnd
+            : spermEnd * (1 - (j - hostRings - neckRings) / spermRings);
+        spermCosine = Math.cos(theta);
+        spermSine = Math.sin(theta);
+      }
       for (let i = 0; i <= radial; i++) {
-        const phi = (i / radial) * Math.PI * 2;
-        if (j <= hostRings)
-          host(Math.PI - ((Math.PI - hole) * j) / hostRings, phi, point);
+        const { cosine, sine } = circle[i];
+        if (j <= hostRings) host(hostCosine, hostSine, cosine, sine, point);
         else if (j <= hostRings + neckRings) {
-          host(hole, phi, h);
-          sperm(spermEnd, phi, size, s);
+          host(hostCosine, hostSine, cosine, sine, h);
+          sperm(spermCosine, spermSine, cosine, sine, size, s);
           point.lerpVectors(h, s, (j - hostRings) / neckRings);
-        } else
-          sperm(
-            spermEnd * (1 - (j - hostRings - neckRings) / spermRings),
-            phi,
-            size,
-            point,
-          );
+        } else sperm(spermCosine, spermSine, cosine, sine, size, point);
         positions[cursor++] = point.x;
         positions[cursor++] = point.y;
         positions[cursor++] = point.z;
       }
+    }
     geometry.attributes.position.needsUpdate = true;
     geometry.computeVertexNormals();
     geometry.computeBoundingBox();

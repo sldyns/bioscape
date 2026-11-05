@@ -190,7 +190,11 @@ export function lambdaChromosome(k, parent) {
     hostRight = mainDNA.meshes.map((mesh) => endpoint(mesh, 0)),
     viralLeft = [new THREE.Vector3(), new THREE.Vector3()],
     viralRight = [new THREE.Vector3(), new THREE.Vector3()];
+  let previousWidth,
+    hasPreviousWidth = false;
   function update(width) {
+    // Width is the only animated input to the two chromosome-arm buffers.
+    if (hasPreviousWidth && Object.is(width, previousWidth)) return;
     for (let s = 0; s < 2; s++) {
       viralLeft[s].set(-width, 0.61, 0.08 + (s ? -0.018 : 0.018));
       viralRight[s].set(width, 0.61, 0.08 + (s ? -0.018 : 0.018));
@@ -217,6 +221,8 @@ export function lambdaChromosome(k, parent) {
       },
       { turns: 5, endpoints: { start: viralRight, end: hostRight } },
     );
+    previousWidth = width;
+    hasPreviousWidth = true;
   }
   return { group, update, left, right, viralLeft, viralRight };
 }
@@ -300,14 +306,24 @@ export function lambdaGenome(
     }
     return (low + high) / 2;
   }
+  let previousEntry, previousCircularize, previousWidth, previousExcised;
   function update({
     entry = 1,
     circularize = 1,
     junction = 0,
     excised = 0,
   } = {}) {
-    const width = 0.16 * clamp(junction),
-      r = radiusAt(width),
+    const width = 0.16 * clamp(junction);
+    // Every geometric dependency is explicit. Host transforms, lineage
+    // visibility and labels still update in the owning process each frame.
+    if (
+      Object.is(entry, previousEntry) &&
+      Object.is(circularize, previousCircularize) &&
+      Object.is(width, previousWidth) &&
+      Object.is(excised, previousExcised)
+    )
+      return width;
+    const r = radiusAt(width),
       theta = Math.asin(width / r),
       cy = 0.61 + Math.sqrt(r * r - width * width) - 0.28 * excised;
     const pointAt = (t, out) => {
@@ -350,6 +366,10 @@ export function lambdaGenome(
       closed: planar && width === 0,
       endpoints: planar ? { start: startRails, end: endRails } : undefined,
     });
+    previousEntry = entry;
+    previousCircularize = circularize;
+    previousWidth = width;
+    previousExcised = excised;
     return width;
   }
   return { ...molecule, update, genomeLength, circleRadius };

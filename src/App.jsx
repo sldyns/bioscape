@@ -3,6 +3,7 @@ import { lockPageScroll } from "./scrollLock.js";
 import { project } from "./project";
 import AboutModel from "./components/AboutModel";
 import ProcessDirectory from "./processes/ProcessDirectory";
+import ProcessRenderingHost from "./processes/ProcessRenderingHost.jsx";
 import React, {
   useState,
   useEffect,
@@ -30,6 +31,10 @@ import SceneActions from "./exploration/SceneActions.jsx";
 import ViewerHeading from "./exploration/ViewerHeading.jsx";
 import ShareDialog from "./exploration/ShareDialog.jsx";
 import { createSceneHistorySession } from "./exploration/historySession.js";
+import {
+  clearSceneReloadCheckpoint,
+  saveSceneReloadCheckpoint,
+} from "./exploration/reloadCheckpoint.js";
 import { isHomeHash } from "./home/routes.js";
 import { readSceneState, sceneHash, sceneUrl } from "./exploration/state.js";
 import { getProcessesForStructure } from "./exploration/relationships.js";
@@ -75,6 +80,7 @@ function moveControlFocus(event, vertical = false) {
   }
 }
 export default function App({ historySession, onHome, onSceneLeave }) {
+  const initialHash = useRef(location.hash).current;
   const [sharedState] = useState(
     () =>
       historySession?.recall(location.hash, history.state) ||
@@ -134,6 +140,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
   const entrySession = useRef(historySession || createSceneHistorySession()),
     studioFocus = useRef(null),
     sceneActive = useRef(true),
+    sceneExiting = useRef(false),
     sceneUrlTimer = useRef(null);
   const sceneApi = useRef(null),
     comparisonState = useRef(comparison),
@@ -151,10 +158,25 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     sceneApi.current = api;
     setSceneReady(Boolean(api?.ready));
   }, []);
+  const currentScene = useCallback(() => {
+    if (
+      !sceneActive.current ||
+      isHomeHash(location.hash) ||
+      !entrySession.current.isCurrent(location.hash, history.state)
+    )
+      return null;
+    const current = navigation.current;
+    return current &&
+      current.path.join("/") === readPath().join("/") &&
+      current.experience === parseExperience(location.hash) &&
+      current.processId === parseProcess(location.hash)
+      ? current
+      : null;
+  }, []);
   const flushSceneUrl = useCallback(() => {
     clearTimeout(sceneUrlTimer.current);
-    if (!sceneActive.current || isHomeHash(location.hash)) return;
-    const current = navigation.current;
+    if (sceneExiting.current) return;
+    const current = currentScene();
     if (!current) return;
     const state = current.snapshot();
     const hash = sceneHash(
@@ -164,10 +186,10 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     entrySession.current.remember(state);
     if (location.hash !== hash)
       history.replaceState(entrySession.current.updateHash(hash), "", hash);
-  }, []);
+  }, [currentScene]);
   const scheduleSceneUrl = useCallback(() => {
     clearTimeout(sceneUrlTimer.current);
-    if (!sceneActive.current) return;
+    if (!sceneActive.current || sceneExiting.current) return;
     sceneUrlTimer.current = setTimeout(flushSceneUrl, 200);
   }, [flushSceneUrl]);
   const receiveView = useCallback(
@@ -196,17 +218,62 @@ export default function App({ historySession, onHome, onSceneLeave }) {
   );
   useEffect(() => {
     sceneActive.current = true;
-    // Reload must keep the latest view even while the debounce is still pending.
-    window.addEventListener("pagehide", flushSceneUrl);
+    const checkpoint = () => {
+      if (sceneExiting.current) return;
+      clearTimeout(sceneUrlTimer.current);
+      const current = currentScene();
+      if (!current) return;
+      sceneExiting.current = true;
+      try {
+        saveSceneReloadCheckpoint({
+          storage: window.sessionStorage,
+          href: location.href,
+          historyState: history.state,
+          hash: sceneHash(location.hash, current.snapshot()),
+        });
+      } catch {}
+    };
+    const resume = () => {
+      if (!sceneExiting.current) return;
+      sceneExiting.current = false;
+      try {
+        clearSceneReloadCheckpoint(window.sessionStorage);
+      } catch {}
+      flushSceneUrl();
+    };
+    const visibility = () => {
+      if (document.hidden) checkpoint();
+      else resume();
+    };
+    // Capture before the player's hidden-tab pause publishes its state, so the
+    // checkpoint remains bound to the URL the browser selected for the reload.
+    document.addEventListener("visibilitychange", visibility, true);
+    window.addEventListener("pagehide", checkpoint);
+    window.addEventListener("pageshow", resume);
     return () => {
       sceneActive.current = false;
       clearTimeout(sceneUrlTimer.current);
-      window.removeEventListener("pagehide", flushSceneUrl);
+      document.removeEventListener("visibilitychange", visibility, true);
+      window.removeEventListener("pagehide", checkpoint);
+      window.removeEventListener("pageshow", resume);
     };
-  }, [flushSceneUrl]);
+  }, [currentScene, flushSceneUrl]);
   useEffect(() => {
+    // Restoring a route can leave settings unchanged and setView stays silent.
+    // Readiness also publishes the fitted camera after asynchronous scene setup.
     scheduleSceneUrl();
-  }, [lang, mode, explode, labels, contracted, scheduleSceneUrl]);
+  }, [
+    path,
+    experience,
+    processId,
+    sceneReady,
+    lang,
+    mode,
+    explode,
+    labels,
+    contracted,
+    scheduleSceneUrl,
+  ]);
   const closeShare = useCallback(() => setShare(null), []);
   const aboutRef = useRef(),
     selectedType = useRef(),
@@ -278,7 +345,11 @@ export default function App({ historySession, onHome, onSceneLeave }) {
             origin: viewStates.current.get(path.join("/")) || structure,
           }
         : {}),
-      ...(comparison ? { compare: comparisonState.current } : {}),
+      ...(comparison
+        ? {
+            compare: sceneApi.current?.getSnapshot() || comparisonState.current,
+          }
+        : {}),
     };
   }
   function saveCurrent() {
@@ -488,7 +559,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
         ),
         state,
       );
-    const pop = () => {
+    const pop = (force = false) => {
       const originalHash = location.hash;
       clearTimeout(sceneUrlTimer.current);
       if (isHomeHash(originalHash)) {
@@ -504,7 +575,11 @@ export default function App({ historySession, onHome, onSceneLeave }) {
         return;
       }
       sceneActive.current = true;
-      if (entrySession.current.isCurrent(originalHash, history.state)) return;
+      if (
+        force !== true &&
+        entrySession.current.isCurrent(originalHash, history.state)
+      )
+        return;
       navigation.current.saveCurrent();
       const state =
         entrySession.current.recall(originalHash, history.state) ||
@@ -533,12 +608,6 @@ export default function App({ historySession, onHome, onSceneLeave }) {
         true,
       );
     };
-    const hash = canonical(sharedState);
-    history.replaceState(
-      entrySession.current.activate(hash, history.state),
-      "",
-      hash,
-    );
     const key = (e) => {
       if (
         e.key === "Escape" &&
@@ -573,6 +642,17 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     window.addEventListener("popstate", pop);
     window.addEventListener("hashchange", pop);
     window.addEventListener("keydown", key);
+    // A fragment can change between the first render and listener setup. Read
+    // that destination before publishing the first render's captured snapshot.
+    if (location.hash !== initialHash) pop(true);
+    else {
+      const hash = canonical(sharedState);
+      history.replaceState(
+        entrySession.current.activate(hash, history.state),
+        "",
+        hash,
+      );
+    }
     return () => {
       window.removeEventListener("popstate", pop);
       window.removeEventListener("hashchange", pop);
@@ -818,29 +898,34 @@ export default function App({ historySession, onHome, onSceneLeave }) {
               </div>
             }
           >
-            <ProcessView
-              key={`${path[0]}:${processId}:${sessionKey}`}
-              processId={processId}
-              rootId={path[0]}
-              lang={lang}
-              initialFilters={directoryFilters.current.get(path[0])}
-              onFiltersChange={(filters) =>
-                directoryFilters.current.set(path[0], filters)
-              }
-              suspended={modalOpen}
-              onSelect={(key) => navigate(path, true, "process", key)}
-              onBack={() => navigate(path, true, "process", null)}
-              onStructure={() => navigate(path, true, "structure")}
-              originPath={path}
-              onExploreStructure={(next) => navigate(next)}
-              initialState={processState.current}
-              onStateChange={receiveProcessState}
-              onSceneReady={receiveScene}
-              onStudio={openStudio}
-              onShare={shareScene}
-              titleRef={catalogTitle}
-              restoreFocus={restoreCatalogFocus}
-            />
+            <ProcessRenderingHost>
+              {(renderingOwner) => (
+                <ProcessView
+                  key={`${path[0]}:${processId}:${sessionKey}`}
+                  processId={processId}
+                  rootId={path[0]}
+                  lang={lang}
+                  initialFilters={directoryFilters.current.get(path[0])}
+                  onFiltersChange={(filters) =>
+                    directoryFilters.current.set(path[0], filters)
+                  }
+                  suspended={modalOpen}
+                  onSelect={(key) => navigate(path, true, "process", key)}
+                  onBack={() => navigate(path, true, "process", null)}
+                  onStructure={() => navigate(path, true, "structure")}
+                  originPath={path}
+                  onExploreStructure={(next) => navigate(next)}
+                  initialState={processState.current}
+                  onStateChange={receiveProcessState}
+                  onSceneReady={receiveScene}
+                  onStudio={openStudio}
+                  onShare={shareScene}
+                  titleRef={catalogTitle}
+                  restoreFocus={restoreCatalogFocus}
+                  renderingOwner={renderingOwner}
+                />
+              )}
+            </ProcessRenderingHost>
           </Suspense>
         </div>
       ) : (

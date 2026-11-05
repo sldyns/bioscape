@@ -200,7 +200,11 @@ function create() {
       reduction = ease(p, 0.64, 0.79),
       exit = ease(p, 0.8, 0.92),
       recycle = ease(p, 0.78, 1);
-    const aerobic = parameters.condition === "aerobic";
+    const aerobic = parameters.condition === "aerobic",
+      firstTrioseTurn = Math.PI * glycolysis,
+      firstTrioseCosine = Math.cos(firstTrioseTurn),
+      firstTrioseSine = Math.sin(firstTrioseTurn),
+      toAdh = ease(p, 0.29, 0.63);
     for (let lane = 0; lane < 2; lane++)
       for (let j = 0; j < 3; j++) {
         const i = pyruvateCarbons[lane][j];
@@ -215,18 +219,17 @@ function create() {
         const py =
           (lane === 0 ? 0.62 : -0.62) +
           (j === 0 ? decarb * (lane === 0 ? 0.88 : -0.88) : 0);
-        const firstTrioseTurn = Math.PI * glycolysis;
         const x =
           lane === 0
             ? THREE.MathUtils.lerp(-2.93, px - (j - 1) * 0.36, glycolysis) +
               (1 - j) *
                 THREE.MathUtils.lerp(0.25, 0.36, glycolysis) *
-                Math.cos(firstTrioseTurn)
+                firstTrioseCosine
             : THREE.MathUtils.lerp(gx, px, glycolysis);
         pts[i].set(
           x,
           THREE.MathUtils.lerp(gy, py, glycolysis),
-          0.12 + (lane === 0 ? (1 - j) * 0.32 * Math.sin(firstTrioseTurn) : 0),
+          0.12 + (lane === 0 ? (1 - j) * 0.32 * firstTrioseSine : 0),
         );
         carbons[i].position.copy(pts[i]);
         carbons[i].material = carbon;
@@ -273,7 +276,6 @@ function create() {
       setBond(hydroxylBonds[lane], b.position, hydroxylH[lane].position);
       const h = nad[lane];
       h.g.visible = p > 0.2;
-      const toAdh = ease(p, 0.29, 0.63);
       h.g.position.set(
         THREE.MathUtils.lerp(-2.2, 2.08, toAdh) - 4.55 * recycle,
         (lane === 0 ? 1.15 : -1.15) * (1 - recycle) +

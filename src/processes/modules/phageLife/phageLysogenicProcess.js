@@ -8,6 +8,7 @@ import { duplex, pocketDomain, hollowCylinder } from "./refinedGeometry.js";
 import { lambdaChromosome, lambdaGenome } from "./lambdaTopology.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 import { hostCutaway, phage } from "./geometry.js";
+import { lysogenFissionEnvelope } from "./fissionEnvelope.js";
 export default {
   id: "phageLysogenic",
   title: b("λ 噬菌体溶原与诱导", "Lambda lysogeny and induction"),
@@ -120,6 +121,7 @@ export default {
       { group } = k,
       host0 = hostCutaway(k, group),
       host1 = hostCutaway(k, group);
+    const dividingEnvelope = lysogenFissionEnvelope(k, group);
     const chr0 = lambdaChromosome(k, group),
       chr1 = lambdaChromosome(k, group);
     host0.group.name = "lambda-left-host";
@@ -307,12 +309,17 @@ export default {
         induce = parameters.fate !== "maintain",
         integration = ease(p, 0.18, 0.32),
         division = ease(p, 0.49, 0.65),
+        segregation = ease(p, 0.49, 0.56),
+        constriction = ease(p, 0.49, 0.63),
         loss = induce ? ease(p, 0.68, 0.76) : 0,
         excision = induce ? ease(p, 0.78, 0.83) : 0,
         release = induce ? ease(p, 0.92, 1) : 0;
       host0.group.position.x = -1.7 * division;
       host0.group.scale.set(1 - 0.49 * division, 1, 1);
-      host1.group.visible = p >= 0.51;
+      host0.group.visible = p <= 0.49 || p >= 0.65;
+      host1.group.visible = p >= 0.65;
+      dividingEnvelope.group.visible = p > 0.49 && p < 0.65;
+      dividingEnvelope.update(constriction, ease(p, 0.63, 0.65));
       host1.group.position.x = 1.7 * division;
       host1.group.scale.set(
         0.51,
@@ -322,8 +329,8 @@ export default {
       host0.rupture(release);
       host1.rupture(0);
       [chr0, chr1].forEach((chr, i) => {
-        chr.group.position.x = (i === 0 ? -1 : 1) * 1.7 * division;
-        chr.group.scale.set(1 - 0.48 * division, 1, 1);
+        chr.group.position.x = (i === 0 ? -1 : 1) * 1.7 * segregation;
+        chr.group.scale.set(1 - 0.48 * segregation, 1, 1);
         chr.group.visible = i === 0 ? !induce || p < 0.97 : p >= 0.5;
       });
       // Both inherited chromosomes include the integrated prophage before induction.
@@ -349,7 +356,7 @@ export default {
       repressors.forEach((r, i) => {
         r.visible = p > 0.33 && (i === 0 ? loss < 1 : p >= 0.5);
         r.position.set(
-          (i === 0 ? -1 : 1) * 1.7 * division,
+          (i === 0 ? -1 : 1) * 1.7 * segregation,
           1.09 + (i === 0 ? loss * 0.22 : 0),
           0.27,
         );
@@ -363,7 +370,9 @@ export default {
       });
       offspring.forEach((v, i) => {
         const [x, y] = sites[i],
-          a = (2 * Math.PI * i) / sites.length;
+          // Release the rightward particle away from the intact sibling.
+          // Other particles keep their existing paths and all release timing.
+          a = i === 0 ? Math.PI : (2 * Math.PI * i) / sites.length;
         v.group.visible = induce && p >= 0.86 + i * 0.005;
         v.head.scale.setScalar(Math.max(0.03, ease(p, 0.855, 0.889)));
         v.tail.visible = p >= 0.895;
@@ -376,8 +385,8 @@ export default {
         );
         v.group.rotation.z = release * (i % 2 ? -0.5 : 0.5);
       });
-      septum.visible = p > 0.49 && p < 0.65;
-      septum.scale.setScalar(Math.max(0.02, 1 - division));
+      septum.visible = p > 0.49 && p < 0.625;
+      septum.scale.setScalar(1 - constriction);
       labels[0].active = p < 0.5;
       labels[1].active = p < 0.2;
       labels[2].active = p >= 0.16 && attP.visible;

@@ -167,8 +167,8 @@ for (const glyk of ["active", "absent"])
       salvage.group.updateMatrixWorld(true);
       const caption = salvage.labels[7];
       assert.equal(caption.active, p >= 0.6);
-      assert.equal(caption.text.zh, "4C = 3C 回收 + 1C 释放");
-      assert.equal(caption.text.en, "4C = 3C recovered + 1C released");
+      assert.equal(caption.text.zh, "4C = 3C 保留 + 1C 释放");
+      assert.equal(caption.text.en, "4C = 3C retained + 1C released");
       if (!caption.active) continue;
       const anchor = new THREE.Vector3().fromArray(caption.position);
       assert(

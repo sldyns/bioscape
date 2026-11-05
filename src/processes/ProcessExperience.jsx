@@ -5,6 +5,7 @@ import React, {
   lazy,
   Suspense,
   useMemo,
+  useId,
 } from "react";
 import {
   Play,
@@ -75,11 +76,14 @@ function ProcessPlayer({
   onExploreStructure,
   onStudio,
   onShare,
+  renderingOwner,
 }) {
   const definition = useMemo(
     () => ({ ...baseDefinition, ...baseDefinition.contexts?.[rootId] }),
     [baseDefinition, rootId],
   );
+  const conditionId = useId();
+  const explanationId = `${conditionId}-explanation`;
   const [initial] = useState(() =>
     restoreProcessSession(definition, initialState),
   );
@@ -93,6 +97,10 @@ function ProcessPlayer({
   const [zoom, setZoom] = useState({ direction: null, key: 0 });
   const progressRef = useRef(initial.progress);
   const sceneApi = useRef(null);
+  const modelSection = useRef(null);
+  const explanationSection = useRef(null);
+  const explanationTitle = useRef(null);
+  const readingButton = useRef(null);
   const stopPlayback = useRef(() => {});
   const cameraRef = useRef(initial.camera);
   const stateCallback = useRef(onStateChange);
@@ -234,17 +242,40 @@ function ProcessPlayer({
 
   useEffect(() => {
     const button = selectedStep.current,
-      rail = button?.parentElement;
-    if (rail && rail.scrollWidth > rail.clientWidth) {
-      rail.scrollTo({
-        left:
-          button.offsetLeft -
-          rail.offsetLeft -
-          (rail.clientWidth - button.offsetWidth) / 2,
-        behavior: "instant",
-      });
-    } else {
-      const catalog = rail?.closest(".process-catalog");
+      rail = button?.parentElement,
+      catalog = rail?.closest(".process-catalog");
+    if (!button || !rail) return;
+    const reveal = () => {
+      if (
+        !button.isConnected ||
+        !rail.isConnected ||
+        selectedStep.current !== button
+      )
+        return;
+      if (rail.scrollWidth > rail.clientWidth) {
+        const bounds = rail.getBoundingClientRect(),
+          selected = button.getBoundingClientRect();
+        rail.scrollTo({
+          left:
+            rail.scrollLeft +
+            selected.left -
+            bounds.left -
+            (rail.clientWidth - selected.width) / 2,
+          behavior: "instant",
+        });
+        return;
+      }
+      if (rail.scrollHeight > rail.clientHeight) {
+        const bounds = rail.getBoundingClientRect(),
+          selected = button.getBoundingClientRect(),
+          above = selected.top - (bounds.top + 2),
+          below = selected.bottom - (bounds.bottom - 2);
+        if (above < 0 || below > 0)
+          rail.scrollBy({
+            top: above < 0 ? above : below,
+            behavior: "instant",
+          });
+      }
       if (!catalog || catalog.scrollHeight <= catalog.clientHeight) return;
       const bounds = catalog.getBoundingClientRect(),
         visibleTop = Math.max(0, bounds.top) + 8,
@@ -258,15 +289,38 @@ function ProcessPlayer({
           top: above < 0 ? above : below,
           behavior: "instant",
         });
-    }
+    };
+    reveal();
+    const resizeObserver = new ResizeObserver(reveal);
+    resizeObserver.observe(rail);
+    resizeObserver.observe(button);
+    if (catalog) resizeObserver.observe(catalog);
+    // Scroll locking can clamp a rail during a transient body-width change.
+    // Recheck after the complete style update, even when its final size matches.
+    const styleObserver =
+      typeof MutationObserver === "function"
+        ? new MutationObserver(reveal)
+        : null;
+    styleObserver?.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+    return () => {
+      resizeObserver.disconnect();
+      styleObserver?.disconnect();
+    };
   }, [stageIndex, lang]);
 
+  function revealExplanation() {
+    if (explanationSection.current) explanationSection.current.scrollTop = 0;
+  }
   function seek(value) {
     stopPlayback.current();
     setPlaying(false);
     progressRef.current = value;
     setProgress(value);
     publishState({ progress: value }, true);
+    revealExplanation();
     sceneApi.current?.requestRender();
   }
   function togglePlayback() {
@@ -366,6 +420,7 @@ function ProcessPlayer({
         </nav>
       </aside>
       <section
+        ref={modelSection}
         className="process-stage"
         aria-label={t("交互过程模型", "Interactive process model")}
       >
@@ -380,6 +435,20 @@ function ProcessPlayer({
               }}
               onShare={onShare}
             />
+            <button
+              ref={readingButton}
+              className="process-reading-link"
+              aria-controls={explanationId}
+              onClick={() => {
+                pausePlayback();
+                revealExplanation();
+                explanationTitle.current?.focus({ preventScroll: true });
+                explanationSection.current?.scrollIntoView({ block: "start" });
+              }}
+            >
+              {t("本步讲解", "Step explanation")}
+              <ChevronRight size={15} aria-hidden="true" />
+            </button>
             {definition.legend && (
               <div
                 className="process-legend"
@@ -409,6 +478,7 @@ function ProcessPlayer({
               <button
                 className="icon-button"
                 aria-label={t("放大", "Zoom in")}
+                disabled={!ready}
                 onClick={() =>
                   setZoom((v) => ({ direction: "in", key: v.key + 1 }))
                 }
@@ -418,6 +488,7 @@ function ProcessPlayer({
               <button
                 className="icon-button"
                 aria-label={t("缩小", "Zoom out")}
+                disabled={!ready}
                 onClick={() =>
                   setZoom((v) => ({ direction: "out", key: v.key + 1 }))
                 }
@@ -427,6 +498,7 @@ function ProcessPlayer({
               <button
                 className="icon-button"
                 aria-label={t("重置视角", "Reset view")}
+                disabled={!ready}
                 onClick={() => setResetKey((v) => v + 1)}
               >
                 <RotateCcw size={17} />
@@ -446,6 +518,7 @@ function ProcessPlayer({
             initialView={initial.camera}
             onViewChange={viewChanged}
             onSceneReady={sceneReady}
+            renderingOwner={renderingOwner}
           />
         </div>
         <div className="process-transport">
@@ -512,8 +585,8 @@ function ProcessPlayer({
             </button>
             <span>
               {t(
-                "拖动旋转 · 拖动时间线查看",
-                "Drag to rotate · Scrub to explore",
+                "拖动旋转 · 右键或双指平移",
+                "Drag to rotate · Right-drag or two fingers to pan",
               )}
             </span>
             <button
@@ -527,9 +600,21 @@ function ProcessPlayer({
         </div>
       </section>
       <aside
+        id={explanationId}
+        ref={explanationSection}
         className="process-explanation"
         aria-label={t("过程说明", "Process explanation")}
       >
+        <button
+          className="process-reading-return"
+          onClick={() => {
+            readingButton.current?.focus({ preventScroll: true });
+            modelSection.current?.scrollIntoView({ block: "start" });
+          }}
+        >
+          <ArrowLeft size={14} aria-hidden="true" />
+          {t("返回模型", "Back to model")}
+        </button>
         {conditionNote && (
           <section className="process-condition-note" aria-live="polite">
             <span>{t("当前条件的响应", "Response to this condition")}</span>
@@ -545,38 +630,61 @@ function ProcessPlayer({
             {String(stageIndex + 1).padStart(2, "0")} /{" "}
             {String(definition.stages.length).padStart(2, "0")}
           </p>
-          <h2>{stage.title[lang]}</h2>
+          <h2 ref={explanationTitle} tabIndex={-1}>
+            {stage.title[lang]}
+          </h2>
           <p className="process-stage-description">{stage.description[lang]}</p>
         </div>
         {definition.controls?.length > 0 && (
           <fieldset className="process-conditions">
             <legend>{t("改变条件", "Change a condition")}</legend>
-            {definition.controls.map((control) => (
-              <label key={control.id}>
-                <span>{control.label[lang]}</span>
-                <select
-                  value={parameters[control.id]}
-                  onChange={(event) => {
-                    const next = {
-                      ...latest.current.parameters,
-                      [control.id]: event.target.value,
-                    };
-                    stopPlayback.current();
-                    setPlaying(false);
-                    progressRef.current = 0;
-                    setProgress(0);
-                    setParameters(next);
-                    publishState({ progress: 0, parameters: next }, true);
-                  }}
-                >
-                  {control.options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label[lang]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
+            {definition.controls.map((control) => {
+              const selectedOption = control.options.find(
+                (option) => option.value === parameters[control.id],
+              );
+              const description = selectedOption?.shortLabel?.[lang]
+                ? selectedOption.label[lang]
+                : null;
+              const labelId = `${conditionId}-${control.id}-label`;
+              const descriptionId = `${conditionId}-${control.id}-description`;
+              return (
+                <label key={control.id}>
+                  <span id={labelId}>{control.label[lang]}</span>
+                  <select
+                    aria-labelledby={labelId}
+                    aria-describedby={description ? descriptionId : undefined}
+                    value={parameters[control.id]}
+                    onChange={(event) => {
+                      const next = {
+                        ...latest.current.parameters,
+                        [control.id]: event.target.value,
+                      };
+                      stopPlayback.current();
+                      setPlaying(false);
+                      progressRef.current = 0;
+                      setProgress(0);
+                      setParameters(next);
+                      publishState({ progress: 0, parameters: next }, true);
+                      revealExplanation();
+                    }}
+                  >
+                    {control.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.shortLabel?.[lang] ?? option.label[lang]}
+                      </option>
+                    ))}
+                  </select>
+                  {description && (
+                    <span
+                      id={descriptionId}
+                      className="process-condition-detail"
+                    >
+                      {description}
+                    </span>
+                  )}
+                </label>
+              );
+            })}
           </fieldset>
         )}
         <nav

@@ -24,17 +24,24 @@ function surface(kit, material, rings = 40) {
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   geometry.setIndex(indices);
   const mesh = kit.mesh(geometry, material);
+  // The azimuth grid is fixed; retain double precision until the vertex write.
+  const cosines = new Float64Array(sides + 1),
+    sines = new Float64Array(sides + 1);
+  for (let j = 0; j <= sides; j++) {
+    const angle = (2 * Math.PI * j) / sides;
+    cosines[j] = Math.cos(angle);
+    sines[j] = Math.sin(angle);
+  }
   return {
     mesh,
     shape(profile) {
       for (let i = 0; i <= rings; i++) {
         const [x, r] = profile(i / rings);
         for (let j = 0; j <= sides; j++) {
-          const a = (2 * Math.PI * j) / sides,
-            n = (i * (sides + 1) + j) * 3;
+          const n = (i * (sides + 1) + j) * 3;
           positions[n] = x;
-          positions[n + 1] = r * Math.cos(a);
-          positions[n + 2] = r * Math.sin(a);
+          positions[n + 1] = r * cosines[j];
+          positions[n + 2] = r * sines[j];
         }
       }
       geometry.attributes.position.needsUpdate = true;
@@ -163,6 +170,7 @@ function create() {
       8,
     ),
   ];
+  labels[4].annotationKind = "context";
   const anchor = labelAnchors(labels);
   function update(raw) {
     const p = clamp(raw),

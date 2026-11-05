@@ -13,7 +13,14 @@ export function annotationNumbers(labels, lang) {
   });
 }
 
-export function placeLabel(anchor, size, viewport, occupied, numbered) {
+export function placeLabel(
+  anchor,
+  size,
+  viewport,
+  occupied,
+  numbered,
+  protectedAnchors = [],
+) {
   const signX = anchor.x < viewport.width / 2 ? -1 : 1;
   const signY = anchor.y < viewport.height / 2 ? -1 : 1;
   const candidates = numbered
@@ -33,6 +40,7 @@ export function placeLabel(anchor, size, viewport, occupied, numbered) {
         [-28, 0],
         [28, 0],
       ];
+  let fallback = null;
   for (const [dx, dy] of candidates) {
     const x = anchor.x + dx,
       y = anchor.y + dy;
@@ -59,7 +67,25 @@ export function placeLabel(anchor, size, viewport, occupied, numbered) {
       )
     )
       continue;
-    return { x, y, rect };
+    const placement = { x, y, rect };
+    // Keep a valid position when every existing candidate covers a target.
+    // This preserves the old local fallback, not a global visibility guarantee.
+    fallback ??= placement;
+    // Short notation keeps its existing placement. Numbered markers leave a
+    // small gap around other active targets so their leader ends stay legible.
+    if (
+      numbered &&
+      protectedAnchors.some(
+        (other) =>
+          other !== anchor &&
+          other.x >= rect.left - 3 &&
+          other.x <= rect.right + 3 &&
+          other.y >= rect.top - 3 &&
+          other.y <= rect.bottom + 3,
+      )
+    )
+      continue;
+    return placement;
   }
-  return null;
+  return fallback;
 }

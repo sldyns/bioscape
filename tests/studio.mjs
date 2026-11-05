@@ -5,6 +5,115 @@ import * as config from "../src/studio/config.js";
 import * as video from "../src/studio/recordVideo.js";
 import * as composition from "../src/studio/composition.js";
 
+test("scientific export notes retain complete bilingual context without touching the model or credit", async () => {
+  const { build } = await import("esbuild");
+  const { fileURLToPath } = await import("node:url");
+  const bundled = await build({
+    stdin: {
+      contents:
+        "export { groupProcessStructures } from './src/exploration/relationships.js';",
+      resolveDir: fileURLToPath(new URL("../", import.meta.url)),
+    },
+    bundle: true,
+    write: false,
+    format: "esm",
+    platform: "node",
+    logLevel: "silent",
+  });
+  const { groupProcessStructures } = await import(
+    `data:text/javascript;base64,${Buffer.from(bundled.outputFiles[0].text).toString("base64")}`
+  );
+  const { getConditionNote } = await import(
+    "../src/exploration/conditionNotes.js"
+  );
+  const notes = [];
+  for (const lang of ["en", "zh"])
+    for (const [id, parameters] of [
+      ["actionPotential", { stimulus: "on" }],
+      ["synapse", { calcium: "blocked" }],
+    ]) {
+      const note = [
+        groupProcessStructures("neuron", id, []).scope?.label?.[lang],
+        getConditionNote(id, parameters, lang)?.title,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+      assert.ok(
+        note.length > 10,
+        `${id}/${lang}: use actual scientific context`,
+      );
+      notes.push({ note, lang });
+    }
+  for (const { note, lang } of notes)
+    for (const format of ["landscape", "portrait", "square"])
+      for (const resolution of [1920, 2560])
+        for (const title of [true, false]) {
+          const text = [];
+          const ctx = {
+            setTransform() {},
+            clearRect() {},
+            fillRect() {},
+            drawImage() {},
+            save() {},
+            restore() {},
+            measureText: (value) => ({
+              width: Array.from(value).reduce(
+                (width, char) => width + (/[^\x00-\x7f]/.test(char) ? 24 : 12),
+                0,
+              ),
+            }),
+            fillText: (value, x, y) => text.push({ value, x, y }),
+          };
+          const prefs = config.normalizePreferences({
+            composition: format,
+            resolution,
+            title,
+          });
+          const layout = composition.drawComposition(
+            { getContext: () => ctx },
+            {
+              title: "Biological process",
+              scientificNote: note,
+              api: { captureFrame: () => ({ width: 100, height: 100 }) },
+            },
+            prefs,
+            { lang },
+          );
+          const footer = text.filter(
+            (line) => line.y > layout.model.y + layout.model.height,
+          );
+          const scientific = footer.slice(0, -2);
+          assert.equal(
+            scientific
+              .map((line) => line.value)
+              .join("")
+              .replace(/\s+/g, ""),
+            note.replace(/\s+/g, ""),
+            `${format}/${resolution}/${lang}: scientific context must not be truncated`,
+          );
+          assert.ok(
+            scientific.every(
+              (line) =>
+                ctx.measureText(line.value).width <=
+                layout.width - 2 * layout.padding,
+            ),
+          );
+          assert.ok(
+            scientific.every(
+              (line) => line.y + layout.footerSize <= layout.footerY,
+            ),
+          );
+          assert.ok(layout.model.height > 300);
+          assert.equal(footer.at(-2).value, "BioScape");
+          assert.equal(
+            footer.at(-1).value,
+            lang === "en"
+              ? "Teaching model · not to scale"
+              : "教学示意 · 非真实比例",
+          );
+        }
+});
+
 test("reselecting a Studio option preserves the existing export session", () => {
   const current = config.normalizePreferences({ background: "transparent" });
   for (const [key, value] of Object.entries(current))
@@ -393,6 +502,64 @@ test("exports retain project and scale context without an author-name watermark"
   }
 });
 
+test("portrait export descriptions wrap English words while retaining CJK and long tokens", () => {
+  const text = [];
+  const ctx = {
+    setTransform() {},
+    clearRect() {},
+    fillRect() {},
+    drawImage() {},
+    save() {},
+    restore() {},
+    measureText: (value) => ({ width: Array.from(value).length * 12 }),
+    fillText: (value) => text.push(value),
+  };
+  const prefs = config.normalizePreferences({ composition: "portrait" });
+  for (const [description, separator, measure] of [
+    [
+      "Follow continuous leading-strand synthesis and Okazaki-fragment maturation on antiparallel templates.",
+      " ",
+    ],
+    ["观察亲本链与新生链的方向关系。".repeat(12), ""],
+    ["X".repeat(200), ""],
+    [
+      "i WWWW",
+      "",
+      (value) =>
+        Array.from(value).reduce(
+          (width, character) => width + (character === "W" ? 300 : 1),
+          0,
+        ),
+    ],
+  ]) {
+    text.length = 0;
+    ctx.measureText = (value) => ({
+      width: measure ? measure(value) : Array.from(value).length * 12,
+    });
+    const layout = composition.drawComposition(
+      { getContext: () => ctx },
+      {
+        kind: "process",
+        title: "DNA replication fork",
+        subtitle: description,
+        getFrameCaption: () => "Step 4 / 6 · Repeated priming",
+        api: { captureFrame: () => ({ width: 100, height: 100 }) },
+      },
+      prefs,
+      { lang: separator ? "en" : "zh" },
+    );
+    const lines = text.slice(2, -2);
+    assert.equal(lines.join(separator), description);
+    assert.ok(lines.length > 1 && lines.length <= 3);
+    assert.ok(
+      lines.every(
+        (line) =>
+          ctx.measureText(line).width <= layout.width - layout.padding * 2,
+      ),
+    );
+  }
+});
+
 test("preview scales pixels but preserves export framing and typography", () => {
   const draws = [],
     captures = [],
@@ -511,4 +678,357 @@ test("AVC is preferred over ambiguous MP4 and VP9 is kept in WebM", () => {
     }).extension,
     "webm",
   );
+});
+
+function visibilityRecordingFixture() {
+  class TrackedTarget extends EventTarget {
+    listeners = new Map();
+    addEventListener(type, fn, options) {
+      if (!this.listeners.has(type)) this.listeners.set(type, new Set());
+      this.listeners.get(type).add(fn);
+      super.addEventListener(type, fn, options);
+    }
+    removeEventListener(type, fn, options) {
+      this.listeners.get(type)?.delete(fn);
+      super.removeEventListener(type, fn, options);
+    }
+    count() {
+      return [...this.listeners.values()].reduce(
+        (sum, set) => sum + set.size,
+        0,
+      );
+    }
+  }
+  const owner = new TrackedTarget();
+  owner.hidden = false;
+  owner.defaultView = new TrackedTarget();
+  let time = 0,
+    next = 0,
+    captures = 0,
+    trackStops = 0;
+  const rafs = new Map(),
+    timers = new Map(),
+    recorders = [],
+    frames = [];
+  class Recorder {
+    static isTypeSupported(type) {
+      return type.startsWith("video/webm");
+    }
+    constructor(stream, options) {
+      this.state = "inactive";
+      this.mimeType = options.mimeType;
+      this.stopCalls = 0;
+      recorders.push(this);
+    }
+    start() {
+      this.state = "recording";
+    }
+    stop() {
+      this.stopCalls++;
+      this.state = "inactive";
+      queueMicrotask(() => {
+        this.ondataavailable?.({ data: new Blob(["complete-recording"]) });
+        this.onstop?.();
+      });
+    }
+  }
+  const track = {
+    stop() {
+      trackStops++;
+    },
+    requestFrame() {},
+  };
+  const canvas = {
+    ownerDocument: owner,
+    captureStream() {
+      captures++;
+      return { getTracks: () => [track], getVideoTracks: () => [track] };
+    },
+  };
+  const runtime = {
+    MediaRecorder: Recorder,
+    now: () => time,
+    requestAnimationFrame(fn) {
+      const id = ++next;
+      rafs.set(id, fn);
+      return id;
+    },
+    cancelAnimationFrame(id) {
+      rafs.delete(id);
+    },
+    setTimeout(fn, delay) {
+      const id = ++next;
+      timers.set(id, { fn, due: time + delay });
+      return id;
+    },
+    clearTimeout(id) {
+      timers.delete(id);
+    },
+  };
+  const advance = (value, paint = true) => {
+    time = value;
+    if (paint) {
+      const pending = [...rafs.values()];
+      rafs.clear();
+      pending.forEach((fn) => fn(time));
+    }
+    const due = [...timers].filter(([, timer]) => timer.due <= time);
+    due.forEach(([id, timer]) => {
+      timers.delete(id);
+      timer.fn();
+    });
+  };
+  return {
+    owner,
+    canvas,
+    frames,
+    recorders,
+    advance,
+    hide() {
+      owner.hidden = true;
+      owner.dispatchEvent(new Event("visibilitychange"));
+    },
+    show() {
+      owner.hidden = false;
+      owner.dispatchEvent(new Event("visibilitychange"));
+    },
+    leave() {
+      owner.defaultView.dispatchEvent(new Event("pagehide"));
+    },
+    snapshot: () => ({
+      captures,
+      trackStops,
+      jobs: rafs.size + timers.size,
+      listeners: owner.count() + owner.defaultView.count(),
+    }),
+    options: {
+      canvas,
+      runtime,
+      duration: 6,
+      drawFrame: (fraction) => frames.push(fraction),
+    },
+  };
+}
+function observeRecording(promise) {
+  const state = { status: "pending" };
+  promise.then(
+    (value) => Object.assign(state, { status: "fulfilled", value }),
+    (error) => Object.assign(state, { status: "rejected", error }),
+  );
+  return state;
+}
+const recordingMicrotasks = async () => {
+  await Promise.resolve();
+  await Promise.resolve();
+};
+
+for (const trigger of ["hide", "leave"]) {
+  test(`recording ${trigger} stops tracks without waiting for another animation frame`, async () => {
+    const f = visibilityRecordingFixture(),
+      controller = new AbortController();
+    const state = observeRecording(
+      video.recordVideo({ ...f.options, signal: controller.signal }),
+    );
+    try {
+      f.advance(1000);
+      f[trigger]();
+      await recordingMicrotasks();
+      assert.equal(
+        state.status,
+        "rejected",
+        "leaving the page must settle recording before RAF resumes",
+      );
+      assert.equal(state.error.message, "VIDEO_PAGE_HIDDEN");
+      assert.equal(f.recorders[0].stopCalls, 1);
+      assert.deepEqual(f.snapshot(), {
+        captures: 1,
+        trackStops: 1,
+        jobs: 0,
+        listeners: 0,
+      });
+    } finally {
+      controller.abort();
+      await recordingMicrotasks();
+    }
+  });
+}
+test("starting a hidden recording rejects before drawing or allocating media resources", async () => {
+  const f = visibilityRecordingFixture(),
+    controller = new AbortController();
+  f.owner.hidden = true;
+  const state = observeRecording(
+    video.recordVideo({ ...f.options, signal: controller.signal }),
+  );
+  try {
+    await recordingMicrotasks();
+    assert.equal(state.status, "rejected");
+    assert.equal(state.error.message, "VIDEO_PAGE_HIDDEN");
+    assert.equal(f.frames.length, 0);
+    assert.deepEqual(f.snapshot(), {
+      captures: 0,
+      trackStops: 0,
+      jobs: 0,
+      listeners: 0,
+    });
+  } finally {
+    controller.abort();
+    await recordingMicrotasks();
+  }
+});
+test("visible visibility changes preserve a complete video and release lifecycle listeners", async () => {
+  const f = visibilityRecordingFixture();
+  const done = video.recordVideo(f.options);
+  f.show();
+  f.advance(3000);
+  f.advance(6000);
+  f.advance(6120, false);
+  const result = await done;
+  assert.ok(result.blob.size);
+  assert.equal(f.frames.at(-1), 1);
+  assert.deepEqual(f.snapshot(), {
+    captures: 1,
+    trackStops: 1,
+    jobs: 0,
+    listeners: 0,
+  });
+  f.hide();
+  f.leave();
+  assert.equal(f.recorders[0].stopCalls, 1);
+});
+test("hiding while the encoder finalizes discards the partial result", async () => {
+  const f = visibilityRecordingFixture(),
+    controller = new AbortController();
+  const state = observeRecording(
+    video.recordVideo({ ...f.options, signal: controller.signal }),
+  );
+  try {
+    f.advance(6000);
+    f.advance(6120, false);
+    f.hide();
+    await recordingMicrotasks();
+    assert.equal(state.status, "rejected");
+    assert.equal(state.error.message, "VIDEO_PAGE_HIDDEN");
+    assert.equal(f.recorders[0].stopCalls, 1);
+    assert.deepEqual(f.snapshot(), {
+      captures: 1,
+      trackStops: 1,
+      jobs: 0,
+      listeners: 0,
+    });
+  } finally {
+    controller.abort();
+    await recordingMicrotasks();
+  }
+});
+test("manual recording cancellation releases visibility listeners and keeps AbortError", async () => {
+  const f = visibilityRecordingFixture(),
+    controller = new AbortController();
+  const done = video.recordVideo({ ...f.options, signal: controller.signal });
+  const rejected = assert.rejects(done, { name: "AbortError" });
+  controller.abort();
+  await rejected;
+  assert.deepEqual(f.snapshot(), {
+    captures: 1,
+    trackStops: 1,
+    jobs: 0,
+    listeners: 0,
+  });
+});
+test("render failure releases recording visibility listeners", async () => {
+  const f = visibilityRecordingFixture();
+  const done = video.recordVideo({
+    ...f.options,
+    drawFrame() {
+      throw new Error("capture failed");
+    },
+  });
+  await assert.rejects(done, /capture failed/);
+  assert.deepEqual(f.snapshot(), {
+    captures: 0,
+    trackStops: 0,
+    jobs: 0,
+    listeners: 0,
+  });
+});
+test("visibility loss during the initial draw does not allocate a recorder afterward", async () => {
+  const f = visibilityRecordingFixture(),
+    controller = new AbortController();
+  const state = observeRecording(
+    video.recordVideo({
+      ...f.options,
+      signal: controller.signal,
+      drawFrame() {
+        f.hide();
+      },
+    }),
+  );
+  try {
+    await recordingMicrotasks();
+    assert.equal(state.status, "rejected");
+    assert.equal(state.error.message, "VIDEO_PAGE_HIDDEN");
+    assert.deepEqual(f.snapshot(), {
+      captures: 0,
+      trackStops: 0,
+      jobs: 0,
+      listeners: 0,
+    });
+  } finally {
+    controller.abort();
+    await recordingMicrotasks();
+  }
+});
+test("visibility loss during initial progress publication cannot leave an orphan frame", async () => {
+  const f = visibilityRecordingFixture(),
+    controller = new AbortController();
+  const state = observeRecording(
+    video.recordVideo({
+      ...f.options,
+      signal: controller.signal,
+      onProgress() {
+        f.hide();
+      },
+    }),
+  );
+  try {
+    await recordingMicrotasks();
+    assert.equal(state.status, "rejected");
+    assert.equal(state.error.message, "VIDEO_PAGE_HIDDEN");
+    assert.deepEqual(f.snapshot(), {
+      captures: 1,
+      trackStops: 1,
+      jobs: 0,
+      listeners: 0,
+    });
+  } finally {
+    controller.abort();
+    await recordingMicrotasks();
+  }
+});
+test("a cancelled background recording can be retried visibly with a new recorder", async () => {
+  const f = visibilityRecordingFixture(),
+    controller = new AbortController();
+  const state = observeRecording(
+    video.recordVideo({ ...f.options, signal: controller.signal }),
+  );
+  try {
+    f.hide();
+    await recordingMicrotasks();
+    assert.equal(state.status, "rejected");
+    f.show();
+    const next = video.recordVideo(f.options);
+    f.advance(3000);
+    f.advance(6000);
+    f.advance(6120, false);
+    assert.ok((await next).blob.size);
+    assert.equal(f.recorders.length, 2);
+    assert.deepEqual(f.snapshot(), {
+      captures: 2,
+      trackStops: 2,
+      jobs: 0,
+      listeners: 0,
+    });
+  } finally {
+    controller.abort();
+    await recordingMicrotasks();
+  }
 });

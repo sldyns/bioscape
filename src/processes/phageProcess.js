@@ -2,6 +2,7 @@ import * as T from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { phageDetail } from "../scene/phageDetails.js";
 import { splitSection } from "../scene/implicitMembrane.js";
+import { disposeScene } from "./disposeScene.js";
 
 const TAU = Math.PI * 2;
 const clamp = (v) => Math.max(0, Math.min(1, v));
@@ -36,7 +37,9 @@ function detail(id, cut = false) {
       m.side,
     ].join(":");
     if (!bins.has(key)) bins.set(key, { material: m.clone(), geometry: [] });
-    let geometry = o.geometry.clone().applyMatrix4(o.matrixWorld);
+    let geometry = new T.BufferGeometry()
+      .copy(o.geometry)
+      .applyMatrix4(o.matrixWorld);
     if (cut && id === "phageTube") {
       const [back, front] = splitSection(geometry, (p) => p[2] - 0.025);
       geometry.dispose();
@@ -49,12 +52,8 @@ function detail(id, cut = false) {
     result.add(new T.Mesh(mergeGeometries(b.geometry), b.material));
     b.geometry.forEach((g) => g.dispose());
   }
-  source.traverse((o) => {
-    if (o.isMesh) {
-      o.geometry.dispose();
-      o.material.dispose();
-    }
-  });
+  // Factory parts can share static geometry; release each owned resource once.
+  disposeScene(source);
   return result;
 }
 function cylinderBetween(a, b, radius, mat) {
@@ -148,6 +147,22 @@ function materialDuplex(curve, packedEndParameter) {
   bases.boundingBox = new T.Box3();
   bases.boundingSphere = new T.Sphere();
   group.add(bases);
+  // These phases are material/sample coordinates, independent of transfer.
+  // Float64 storage retains the original Number values and arithmetic order.
+  const helixCos = new Float64Array(segments + 1),
+    helixSin = new Float64Array(segments + 1),
+    ringCos = new Float64Array(radialSegments + 1),
+    ringSin = new Float64Array(radialSegments + 1);
+  for (let i = 0; i <= segments; i++) {
+    const phase = (i / segments) * TAU * 85;
+    helixCos[i] = Math.cos(phase);
+    helixSin[i] = Math.sin(phase);
+  }
+  for (let j = 0; j <= radialSegments; j++) {
+    const phase = (j / radialSegments) * TAU;
+    ringCos[j] = Math.cos(phase);
+    ringSin[j] = Math.sin(phase);
+  }
   let lastOffset = -1;
   group.setTransfer = (transfer) => {
     const start = transfer * (totalLength - genomeLength);
@@ -157,8 +172,7 @@ function materialDuplex(curve, packedEndParameter) {
       const s = start + (i / segments) * genomeLength,
         sample = Math.min(routeSamples, (s / totalLength) * routeSamples),
         lo = Math.min(routeSamples - 1, Math.floor(sample)),
-        t = sample - lo,
-        phase = (i / segments) * TAU * 85;
+        t = sample - lo;
       for (let axis = 0; axis < 3; axis++) {
         point.setComponent(
           axis,
@@ -180,8 +194,8 @@ function materialDuplex(curve, packedEndParameter) {
       normal.crossVectors(binormal, tangent).normalize();
       offset
         .copy(normal)
-        .multiplyScalar(Math.cos(phase))
-        .addScaledVector(binormal, Math.sin(phase));
+        .multiplyScalar(helixCos[i])
+        .addScaledVector(binormal, helixSin[i]);
       offset.toArray(radial, i * 3);
       a.copy(point)
         .addScaledVector(offset, 0.018)
@@ -205,12 +219,11 @@ function materialDuplex(curve, packedEndParameter) {
         normal.addScaledVector(tangent, -normal.dot(tangent)).normalize();
         binormal.crossVectors(tangent, normal).normalize();
         for (let j = 0; j <= radialSegments; j++) {
-          const phase = (j / radialSegments) * TAU,
-            index = i * (radialSegments + 1) + j;
+          const index = i * (radialSegments + 1) + j;
           offset
             .copy(normal)
-            .multiplyScalar(Math.cos(phase))
-            .addScaledVector(binormal, Math.sin(phase));
+            .multiplyScalar(ringCos[j])
+            .addScaledVector(binormal, ringSin[j]);
           positions.setXYZ(
             index,
             point.x + 0.013 * offset.x,

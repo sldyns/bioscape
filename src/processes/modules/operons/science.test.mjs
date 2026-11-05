@@ -50,7 +50,9 @@ export function verifyLac(model) {
     ]) {
       s.update(t, params);
       s.group.updateMatrixWorld(true);
-      for (const pol of polymerases.filter((o) => o.visible)) {
+      for (const pol of polymerases.filter(
+        (o) => o.visible && Math.abs(o.position.y + 0.33) < 1e-9,
+      )) {
         let index = 0,
           distance = Infinity;
         for (let j = 0; j < p0.count; j++) {

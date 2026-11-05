@@ -162,6 +162,14 @@ for (const definition of definitions) {
         );
         rnaEnd(model, labels[5], context);
       } else {
+        for (const index of [5, 6])
+          assert.equal(labels[index].annotationKind, "context");
+        const impairedContext =
+          parameters.coactivator === "impaired" && p > 0.49;
+        assert.equal(labels[6].active, impairedContext);
+        assert.equal(labels[5].active, !impairedContext);
+        for (const index of [0, 1, 2, 3, 4, 7, 8])
+          assert.notEqual(labels[index].annotationKind, "context");
         onSurface(
           labels[0],
           model.group.getObjectByName("Sequence-specific activator 1 domain 2"),
@@ -185,6 +193,12 @@ for (const definition of definitions) {
             labels[3],
             model.group.getObjectByName("Mediator Middle scaffold"),
             `${context} Mediator`,
+          );
+        if (labels[6].active)
+          onSurface(
+            labels[6],
+            model.group.getObjectByName("Mediator Middle scaffold"),
+            `${context} impaired-recruitment coactivator`,
           );
         rnaEnd(model, labels[4], context);
       }

@@ -123,12 +123,15 @@ function create() {
   const plate = k.mesh(box, plateMat);
   plate.name = "Wall matrix inside the cell-plate lumen";
   const arrays = [],
-    vesicles = [];
+    vesicles = [],
+    margins = [];
   for (let i = 0; i < 24; i++) {
-    const angle = (i / 24) * Math.PI * 2;
+    const angle = (i / 24) * Math.PI * 2,
+      margin = [0, 0];
+    margins.push({ angle, point: margin });
     for (const side of [-1, 1]) {
       const m = microtubule(k, micro);
-      arrays.push({ m, angle, side });
+      arrays.push({ m, margin, side });
       const v = k.ball(
         [0, 0, 0],
         0.095,
@@ -139,7 +142,7 @@ function create() {
         }),
       );
       v.name = "Closed incoming cell-plate vesicle";
-      vesicles.push({ m: v, angle, side, offset: i / 24 });
+      vesicles.push({ m: v, margin, side, offset: i / 24 });
     }
   }
   const a = new THREE.Vector3(),
@@ -228,17 +231,21 @@ function create() {
       0.075,
       Math.max(0.02, depth * 2 - 0.12),
     );
-    arrays.forEach(({ m, angle, side }) => {
+    // Both microtubule arrays and vesicle cohorts meet the same plate margin.
+    // Solve each angle once, retaining the exact bisection and coordinates.
+    for (const { angle, point } of margins)
+      plateMargin(angle, radius, depth, point);
+    arrays.forEach(({ m, margin, side }) => {
       m.visible = p >= 0.3 && p < 0.93;
-      const [x, z] = plateMargin(angle, radius, depth);
+      const [x, z] = margin;
       m.position.set(x, side * 0.6, z);
       m.scale.set(1, 1 - 0.7 * ease(p, 0.87, 0.93), 1);
     });
     let fusionCount = 0;
-    vesicles.forEach(({ m, angle, side, offset }) => {
+    vesicles.forEach(({ m, margin, side, offset }) => {
       const cycle = (phase(Math.min(p, 0.82), 0.3, 0.9) * 3 + offset) % 1;
       const t = p < 0.82 ? cycle : cycle + (1 - cycle) * ease(p, 0.82, 0.9);
-      const [x, z] = plateMargin(angle, radius, depth);
+      const [x, z] = margin;
       const y = side * (1.1 - 1.1 * t);
       m.position.set(x, y, z);
       m.visible = p >= 0.3 && p < 0.9 && t < 0.72;
@@ -324,7 +331,9 @@ function create() {
     labels[4].active = p >= 0.48;
     labels[0].position.splice(0, 3, -2.5, 2, 0.9);
     anchorLabel(labels[1], sisters[5].m.children[0], group);
-    anchorLabel(labels[2], arrays[1].m.children[0], group);
+    // Front margin: angle pi/2, upper array. The rightmost array enters the
+    // parental wall as the plate joins it, hiding its tubulin anchor.
+    anchorLabel(labels[2], arrays[13].m.children[0], group);
     labels[3].position.splice(0, 3, 0, 0.095, 0);
     anchorLabel(labels[4], nuclei[0].m, group);
     group.userData = {

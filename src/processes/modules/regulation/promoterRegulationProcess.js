@@ -217,6 +217,7 @@ function create() {
       4,
     ),
   ];
+  labels[8].annotationKind = "context";
   // Annotation positions are leader endpoints, not desired text locations.
   // Cache a front-facing surface vertex and follow its complete object transform.
   const labelPoint = new THREE.Vector3();
@@ -264,6 +265,7 @@ function create() {
         sign * radius * Math.sin(angle),
     );
   };
+  let paintedBindingSite;
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       altered = parameters.bindingSite === "altered";
@@ -318,11 +320,15 @@ function create() {
       );
     };
     rna.update(rnaPoint, length, (t, out) => out.set(0, -0.065, 0));
-    siteColor.set(altered ? "#bf837c" : "#d4b66c");
-    for (const bases of dna.bases) {
-      for (let i = 0; i < 96; i++)
-        bases.setColorAt(i, i >= 23 && i <= 33 ? siteColor : baseWhite);
-      bases.instanceColor.needsUpdate = true;
+    // Site colors depend on the condition, never on animation progress.
+    if (paintedBindingSite !== altered) {
+      siteColor.set(altered ? "#bf837c" : "#d4b66c");
+      for (const bases of dna.bases) {
+        for (let i = 0; i < 96; i++)
+          bases.setColorAt(i, i >= 23 && i <= 33 ? siteColor : baseWhite);
+        bases.instanceColor.needsUpdate = true;
+      }
+      paintedBindingSite = altered;
     }
     for (const { index, object, local } of surfaceAnchors) {
       object.updateWorldMatrix(true, false);

@@ -630,7 +630,16 @@ function deterministicLabels(scene, parameters) {
       for (const label of [2, 3])
         atLabelTarget(s, label, "sporulation-centromere-0");
       atLabelTarget(s, 4, "sporulation-centromere-1");
-      atLabelTarget(s, 5, "sporulation-outer-prospore-membrane-1", 24 * 37);
+      // The full front cap is retained for topology, but no longer drawn
+      // after the viewing cut. The label follows the displayed membrane rim.
+      const membraneRimVertex =
+        nutrients === "starved" && p >= 0.84 ? 14 * 37 : 24 * 37;
+      atLabelTarget(
+        s,
+        5,
+        "sporulation-outer-prospore-membrane-1",
+        membraneRimVertex,
+      );
       if (s.labels[6].active) {
         const wall = ["dityrosine", "chitosan", "glucan", "mannan"].find(
           (name) => get(s, `sporulation-wall-0-${name}`).visible,

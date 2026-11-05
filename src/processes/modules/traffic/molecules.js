@@ -54,6 +54,12 @@ export function clathrinLattice(k, material) {
     outward = new THREE.Vector3(),
     start = new THREE.Vector3(),
     end = new THREE.Vector3();
+  let initialized = false,
+    lastBend,
+    lastDetached,
+    lastCx,
+    lastCy,
+    lastUncoat;
   return {
     edges: edges.length,
     vertices: points.length,
@@ -61,6 +67,17 @@ export function clathrinLattice(k, material) {
       rods.visible = visible;
       hubs.visible = visible;
       contacts.visible = visible;
+      // A hidden cage still follows every changed shape input. Only identical
+      // inputs reuse the exact local matrices and bounds from the previous call.
+      if (
+        initialized &&
+        Object.is(bend, lastBend) &&
+        Object.is(detached, lastDetached) &&
+        Object.is(cx, lastCx) &&
+        Object.is(cy, lastCy) &&
+        Object.is(uncoat, lastUncoat)
+      )
+        return;
       for (let i = 0; i < points.length; i++) {
         const n = points[i],
           theta = Math.acos(-n.y),
@@ -140,6 +157,12 @@ export function clathrinLattice(k, material) {
         m.computeBoundingBox();
         m.computeBoundingSphere();
       }
+      initialized = true;
+      lastBend = bend;
+      lastDetached = detached;
+      lastCx = cx;
+      lastCy = cy;
+      lastUncoat = uncoat;
     },
   };
 }

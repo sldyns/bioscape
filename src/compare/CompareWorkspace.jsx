@@ -99,6 +99,20 @@ export default function CompareWorkspace({
       get ready() {
         return Boolean(apis.current.left?.ready && apis.current.right?.ready);
       },
+      getSnapshot() {
+        const current = stateRef.current;
+        return normalizeComparisonState(
+          Object.fromEntries(
+            sides.map((side) => [
+              side,
+              {
+                ...current[side],
+                view: apis.current[side]?.getView() || current[side].view,
+              },
+            ]),
+          ),
+        );
+      },
       captureFrame(options) {
         return captureComparisonFrame(
           apis.current,

@@ -344,6 +344,9 @@ function create({ rootId = "cell" } = {}) {
       1,
     ),
   );
+  // Palette and enlargement captions describe the complete illustration.
+  labels[9].annotationKind = "context";
+  labels[10].annotationKind = "context";
   const updateLabelAnchors = labelAnchors([
     [labels[0], ribosome],
     [labels[1], chain.beads[75]],

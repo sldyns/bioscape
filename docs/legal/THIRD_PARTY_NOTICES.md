@@ -10,6 +10,17 @@
 
 以下许可证文本取自本次锁定依赖的 LICENSE 文件；更改依赖版本时同步复核。
 
+### mediabunny 1.62.1
+
+Copyright (c) 2026-present, Vanilagy and contributors.
+
+视频生成使用未经修改的 Mediabunny 1.62.1，采用 Mozilla Public License 2.0。
+完整许可随网站分发于 [MEDIABUNNY-MPL-2.0.txt](./MEDIABUNNY-MPL-2.0.txt)。
+对应版本的完整源代码可免费获取：
+[原始源代码 v1.62.1](https://github.com/Vanilagy/mediabunny/tree/v1.62.1)，
+[npm 原始发布包](https://registry.npmjs.org/mediabunny/-/mediabunny-1.62.1.tgz)。
+本项目对原创部分的许可不限制这些第三方源代码在 MPL-2.0 下的权利。
+
 ### react 19.3.0
 
 ```text

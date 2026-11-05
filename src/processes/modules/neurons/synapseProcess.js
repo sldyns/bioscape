@@ -2,6 +2,11 @@ import { bilayer, pore, ampaReceptor } from "./structural.js";
 import { anchorObject, anchorVertex } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, phase, bilingual as b } from "../../kit.js";
 
+const vesicleCaptions = {
+  docked: b("已停靠囊泡 · 未融合", "Docked vesicle · not fused"),
+  fused: b("融合孔 · 连通细胞外", "Fusion pore · open to extracellular space"),
+};
+
 export default {
   id: "synapse",
   title: b("谷氨酸突触传递", "Glutamatergic synaptic transmission"),
@@ -41,8 +46,8 @@ export default {
       0.14,
       "动作电位到达",
       "Action potential arrives",
-      "末梢去极化可打开电压门控 Ca²⁺ 通道。阻断通道时，电信号仍到达，但不触发此图中的释放。",
-      "Terminal depolarization can open voltage-gated Ca²⁺ channels. With channels blocked, the electrical signal arrives but does not trigger release in this scene.",
+      "末梢去极化可打开电压门控 Ca²⁺ 通道。阻断通道时，电信号仍到达，但不触发此图中的释放；已停靠囊泡和待触发的融合装置保留。",
+      "Terminal depolarization can open voltage-gated Ca²⁺ channels. With channels blocked, the electrical signal arrives but does not trigger release in this scene; the docked vesicle and primed fusion machinery remain.",
     ],
     [
       0.26,
@@ -78,6 +83,11 @@ export default {
     description: b(dz, de),
   })),
   sources: [
+    {
+      title:
+        "Nature (2017) — The primed SNARE–complexin–synaptotagmin complex for neuronal exocytosis",
+      url: "https://www.nature.com/articles/nature23484",
+    },
     {
       title:
         "Nature Communications (2026) — GluA1/A2 AMPA receptor core structure",
@@ -251,6 +261,7 @@ export default {
     }
     // Vesicle and target membrane are visibly connected by zipper-like SNARE bundles.
     const fusionMachinery = new THREE.Group();
+    fusionMachinery.name = "primed vesicle fusion machinery";
     group.add(fusionMachinery);
     for (const sign of [-1, 1])
       for (let h = 0; h < 4; h++) {
@@ -364,8 +375,8 @@ export default {
       ),
       k.label(
         [0.85, 1.3, 0.4],
-        "已停靠囊泡 → 融合孔",
-        "Docked vesicle → fusion pore",
+        "已停靠囊泡 · 未融合",
+        "Docked vesicle · not fused",
         1,
       ),
       k.label(
@@ -395,7 +406,8 @@ export default {
       let receptorOpen = false;
       signal.visible = p >= 0.14 && p < 0.25;
       caChannel.setOpen(caOpen);
-      fusionMachinery.visible = p < 0.65;
+      fusionMachinery.visible = !fusion || p < 0.65;
+      labels[2].text = fusion ? vesicleCaptions.fused : vesicleCaptions.docked;
       calciumIons.forEach((m, i) => {
         const f = phase(p, 0.22 + i * 0.015, 0.32 + i * 0.015);
         m.visible = allowed && p >= 0.22 + i * 0.015 && p < 0.4;

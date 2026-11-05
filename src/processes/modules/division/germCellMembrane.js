@@ -1,3 +1,12 @@
+import { grid, tets, edges, triangles } from "./germMembraneTopology.js";
+import {
+  createGermMembraneKernel,
+  registerGermMembraneKernelGeometry,
+} from "./germMembraneKernel.js";
+import {
+  invalidateVertexCandidates,
+  publishVertexCandidates,
+} from "../../vertexCandidates.js";
 import { THREE } from "../../kit.js";
 
 // A single level set joins the cell lobes and their retained channels. Unlike
@@ -7,18 +16,27 @@ export function germCellMembrane(k) {
   const group = new THREE.Group();
   group.name = "continuous-germ-cell-membrane";
   k.group.add(group);
-  const nx = 64,
-    ny = 56,
-    nz = 18;
+  const { nx, ny, nz, capacity } = grid;
   const dx = 8 / nx,
     dy = 6.6 / ny,
     dz = 1.65 / nz;
   const row = nx + 1,
     plane = row * (ny + 1),
     count = plane * (nz + 1);
-  const field = new Float32Array(count);
-  const gradients = new Float32Array(count * 3);
-  const coordinates = new Float32Array(count * 3);
+  const kernel = createGermMembraneKernel({ nx, ny, nz, capacity });
+  if (typeof document !== "undefined")
+    document?.documentElement?.setAttribute?.(
+      "data-bioscape-germ-kernel",
+      kernel ? "wasm" : "javascript",
+    );
+  if (typeof document !== "undefined")
+    document?.documentElement?.setAttribute?.(
+      "data-bioscape-germ-normalization",
+      kernel ? "local-compensated-3" : "javascript",
+    );
+  const field = kernel?.field ?? new Float32Array(count);
+  const gradients = kernel?.gradients ?? new Float32Array(count * 3);
+  const coordinates = kernel?.coordinates ?? new Float32Array(count * 3);
   const index = (i, j, l) => i + j * row + l * plane;
   for (let l = 0; l <= nz; l++)
     for (let j = 0; j <= ny; j++)
@@ -28,7 +46,7 @@ export function germCellMembrane(k) {
           index(i, j, l) * 3,
         );
       }
-  const layers = [0, -0.035].map((level, i) => {
+  const layers = grid.levels.map((level, i) => {
     const material = k.material(i ? "#dce7dd" : "#b8d0c6", {
       side: THREE.DoubleSide,
       roughness: 0.7,
@@ -40,55 +58,30 @@ export function germCellMembrane(k) {
     // Fixed resource and buffer identities while the division topology evolves.
     geometry.setAttribute(
       "position",
-      new THREE.BufferAttribute(new Float32Array(90000 * 3), 3).setUsage(
-        THREE.DynamicDrawUsage,
-      ),
+      new THREE.BufferAttribute(
+        kernel?.positions[i] ?? new Float32Array(capacity * 3),
+        3,
+      ).setUsage(THREE.DynamicDrawUsage),
     );
     geometry.setAttribute(
       "normal",
-      new THREE.BufferAttribute(new Float32Array(90000 * 3), 3).setUsage(
-        THREE.DynamicDrawUsage,
-      ),
+      new THREE.BufferAttribute(
+        kernel?.normals[i] ?? new Float32Array(capacity * 3),
+        3,
+      ).setUsage(THREE.DynamicDrawUsage),
     );
     const mesh = new THREE.Mesh(geometry, material);
     mesh.name = i ? "germ-cell-inner-leaflet" : "germ-cell-outer-leaflet";
+    registerGermMembraneKernelGeometry(geometry, kernel);
     group.add(mesh);
-    return { level, geometry };
+    return {
+      level,
+      kernelIndex: i,
+      geometry,
+      written: 0,
+      vertexCandidates: kernel?.candidates[i] ?? new Uint32Array(capacity),
+    };
   });
-  const tets = [
-    [0, 5, 1, 6],
-    [0, 1, 2, 6],
-    [0, 2, 3, 6],
-    [0, 3, 7, 6],
-    [0, 7, 4, 6],
-    [0, 4, 5, 6],
-  ];
-  const edges = [
-    [0, 1],
-    [1, 2],
-    [2, 0],
-    [0, 3],
-    [1, 3],
-    [2, 3],
-  ];
-  const triangles = [
-    [],
-    [0, 3, 2],
-    [0, 1, 4],
-    [1, 4, 2, 2, 4, 3],
-    [1, 2, 5],
-    [0, 3, 5, 0, 5, 1],
-    [0, 2, 5, 0, 5, 4],
-    [5, 4, 3],
-    [3, 4, 5],
-    [4, 5, 0, 5, 2, 0],
-    [1, 5, 0, 5, 3, 0],
-    [5, 2, 1],
-    [3, 4, 2, 2, 4, 1],
-    [4, 1, 0],
-    [2, 3, 0],
-    [],
-  ];
   const cornerOffsets = [
     0,
     1,
@@ -101,9 +94,9 @@ export function germCellMembrane(k) {
   ];
   const tetraOffsets = tets.map((tet) => tet.map((c) => cornerOffsets[c]));
   const crossingEdges = triangles.map((tri) => [...new Set(tri)]);
-  const activeCells = new Int32Array(nx * ny * nz);
-  const activeMin = new Float32Array(activeCells.length);
-  const activeMax = new Float32Array(activeCells.length);
+  const activeCells = kernel?.activeCells ?? new Int32Array(nx * ny * nz);
+  const activeMin = kernel?.activeMin ?? new Float32Array(activeCells.length);
+  const activeMax = kernel?.activeMax ?? new Float32Array(activeCells.length);
   const ids = new Int32Array(4);
   // Adjacent tetrahedra share these seven grid-edge directions. Cache the first
   // emitted intersection, retaining the same nonindexed triangles and normals.
@@ -114,7 +107,7 @@ export function germCellMembrane(k) {
       edgeKinds[offset] = kind;
     },
   );
-  const edgeCache = new Int32Array(count * 7),
+  const edgeCache = kernel?.edgeCache ?? new Int32Array(count * 7),
     edgeKeys = new Int32Array(6);
   const v = new Float64Array(4),
     ep = new Float64Array(18),
@@ -136,91 +129,121 @@ export function germCellMembrane(k) {
     yVertical = new Float64Array(ny + 1);
   const rowMin = new Float32Array(nx / 2),
     rowMax = new Float32Array(nx / 2);
-  function extractLayer(level, geometry, activeCount) {
+  function extractLayer(layer, activeCount) {
+    const { level, geometry } = layer;
     const positions = geometry.attributes.position.array,
       normals = geometry.attributes.normal.array;
-    positions.fill(0);
-    normals.fill(0);
     edgeCache.fill(0);
-    let cursor = 0;
+    let cursor = 0,
+      candidateCount = 0;
+    const vertexCandidates = layer.vertexCandidates;
+    invalidateVertexCandidates(geometry);
     const box = geometry.boundingBox;
     box.makeEmpty();
-    for (let cell = 0; cell < activeCount; cell++) {
-      if (activeMin[cell] > level || activeMax[cell] < level) continue;
-      const n = activeCells[cell];
-      for (let tetIndex = 0; tetIndex < tetraOffsets.length; tetIndex++) {
-        const tet = tetraOffsets[tetIndex];
-        let mask = 0;
-        ids[0] = n + tet[0];
-        v[0] = field[ids[0]];
-        if (v[0] < level) mask |= 1;
-        ids[1] = n + tet[1];
-        v[1] = field[ids[1]];
-        if (v[1] < level) mask |= 2;
-        ids[2] = n + tet[2];
-        v[2] = field[ids[2]];
-        if (v[2] < level) mask |= 4;
-        ids[3] = n + tet[3];
-        v[3] = field[ids[3]];
-        if (v[3] < level) mask |= 8;
-        const tri = triangles[mask];
-        if (!tri.length) continue;
-        const crossings = crossingEdges[mask];
-        for (let edgeIndex = 0; edgeIndex < crossings.length; edgeIndex++) {
-          const e = crossings[edgeIndex],
-            edge = edges[e],
-            a = edge[0],
-            b = edge[1];
-          const low = Math.min(ids[a], ids[b]),
-            high = Math.max(ids[a], ids[b]),
-            key = low * 7 + edgeKinds[high - low],
-            cached = edgeCache[key] - 1;
-          edgeKeys[e] = key;
-          const e3 = e * 3;
-          if (cached >= 0) {
-            ep[e3] = positions[cached];
-            en[e3] = normals[cached];
-            ep[e3 + 1] = positions[cached + 1];
-            en[e3 + 1] = normals[cached + 1];
-            ep[e3 + 2] = positions[cached + 2];
-            en[e3 + 2] = normals[cached + 2];
-            continue;
+    if (kernel) {
+      cursor = kernel.extract(level, activeCount, layer.kernelIndex);
+      if (cursor < 0) {
+        layer.written = -cursor - 1;
+        throw new Error("Germ-cell surface capacity exceeded");
+      }
+      candidateCount = kernel.meta[1];
+      const bounds = kernel.bounds;
+      box.min.set(bounds[0], bounds[1], bounds[2]);
+      box.max.set(bounds[3], bounds[4], bounds[5]);
+    } else {
+      for (let cell = 0; cell < activeCount; cell++) {
+        if (activeMin[cell] > level || activeMax[cell] < level) continue;
+        const n = activeCells[cell];
+        for (let tetIndex = 0; tetIndex < tetraOffsets.length; tetIndex++) {
+          const tet = tetraOffsets[tetIndex];
+          let mask = 0;
+          ids[0] = n + tet[0];
+          v[0] = field[ids[0]];
+          if (v[0] < level) mask |= 1;
+          ids[1] = n + tet[1];
+          v[1] = field[ids[1]];
+          if (v[1] < level) mask |= 2;
+          ids[2] = n + tet[2];
+          v[2] = field[ids[2]];
+          if (v[2] < level) mask |= 4;
+          ids[3] = n + tet[3];
+          v[3] = field[ids[3]];
+          if (v[3] < level) mask |= 8;
+          const tri = triangles[mask];
+          if (!tri.length) continue;
+          const crossings = crossingEdges[mask];
+          for (let edgeIndex = 0; edgeIndex < crossings.length; edgeIndex++) {
+            const e = crossings[edgeIndex],
+              edge = edges[e],
+              a = edge[0],
+              b = edge[1];
+            const low = Math.min(ids[a], ids[b]),
+              high = Math.max(ids[a], ids[b]),
+              key = low * 7 + edgeKinds[high - low],
+              cached = edgeCache[key] - 1;
+            edgeKeys[e] = key;
+            const e3 = e * 3;
+            if (cached >= 0) {
+              ep[e3] = positions[cached];
+              en[e3] = normals[cached];
+              ep[e3 + 1] = positions[cached + 1];
+              en[e3 + 1] = normals[cached + 1];
+              ep[e3 + 2] = positions[cached + 2];
+              en[e3 + 2] = normals[cached + 2];
+              continue;
+            }
+            const t = (level - v[a]) / (v[b] - v[a]);
+            const a3 = ids[a] * 3,
+              b3 = ids[b] * 3;
+            ep[e3] = coordinates[a3] * (1 - t) + coordinates[b3] * t;
+            en[e3] = gradients[a3] * (1 - t) + gradients[b3] * t;
+            ep[e3 + 1] =
+              coordinates[a3 + 1] * (1 - t) + coordinates[b3 + 1] * t;
+            en[e3 + 1] = gradients[a3 + 1] * (1 - t) + gradients[b3 + 1] * t;
+            ep[e3 + 2] =
+              coordinates[a3 + 2] * (1 - t) + coordinates[b3 + 2] * t;
+            en[e3 + 2] = gradients[a3 + 2] * (1 - t) + gradients[b3 + 2] * t;
+            const norm = Math.hypot(en[e3], en[e3 + 1], en[e3 + 2]) || 1;
+            en[e3] /= norm;
+            en[e3 + 1] /= norm;
+            en[e3 + 2] /= norm;
           }
-          const t = (level - v[a]) / (v[b] - v[a]);
-          const a3 = ids[a] * 3,
-            b3 = ids[b] * 3;
-          ep[e3] = coordinates[a3] * (1 - t) + coordinates[b3] * t;
-          en[e3] = gradients[a3] * (1 - t) + gradients[b3] * t;
-          ep[e3 + 1] = coordinates[a3 + 1] * (1 - t) + coordinates[b3 + 1] * t;
-          en[e3 + 1] = gradients[a3 + 1] * (1 - t) + gradients[b3 + 1] * t;
-          ep[e3 + 2] = coordinates[a3 + 2] * (1 - t) + coordinates[b3 + 2] * t;
-          en[e3 + 2] = gradients[a3 + 2] * (1 - t) + gradients[b3 + 2] * t;
-          const norm = Math.hypot(en[e3], en[e3 + 1], en[e3 + 2]) || 1;
-          en[e3] /= norm;
-          en[e3 + 1] /= norm;
-          en[e3 + 2] /= norm;
-        }
-        for (let triIndex = 0; triIndex < tri.length; triIndex++) {
-          const e = tri[triIndex];
-          if (cursor + 3 > positions.length)
-            throw new Error("Germ-cell surface capacity exceeded");
-          if (!edgeCache[edgeKeys[e]]) edgeCache[edgeKeys[e]] = cursor + 1;
-          const e3 = e * 3;
-          positions[cursor] = ep[e3];
-          normals[cursor++] = en[e3];
-          positions[cursor] = ep[e3 + 1];
-          normals[cursor++] = en[e3 + 1];
-          positions[cursor] = ep[e3 + 2];
-          normals[cursor++] = en[e3 + 2];
-          box.min.x = Math.min(box.min.x, ep[e * 3]);
-          box.min.y = Math.min(box.min.y, ep[e * 3 + 1]);
-          box.min.z = Math.min(box.min.z, ep[e * 3 + 2]);
-          box.max.x = Math.max(box.max.x, ep[e * 3]);
-          box.max.y = Math.max(box.max.y, ep[e * 3 + 1]);
-          box.max.z = Math.max(box.max.z, ep[e * 3 + 2]);
+          for (let triIndex = 0; triIndex < tri.length; triIndex++) {
+            const e = tri[triIndex];
+            if (cursor + 3 > positions.length) {
+              layer.written = cursor;
+              throw new Error("Germ-cell surface capacity exceeded");
+            }
+            if (!edgeCache[edgeKeys[e]]) {
+              edgeCache[edgeKeys[e]] = cursor + 1;
+              // Preserve the first emitted occurrence and its original order.
+              // Later triangles reuse exactly the same Float32 xyz coordinate.
+              vertexCandidates[candidateCount++] = cursor / 3;
+            }
+            const e3 = e * 3;
+            positions[cursor] = ep[e3];
+            normals[cursor++] = en[e3];
+            positions[cursor] = ep[e3 + 1];
+            normals[cursor++] = en[e3 + 1];
+            positions[cursor] = ep[e3 + 2];
+            normals[cursor++] = en[e3 + 2];
+            box.min.x = Math.min(box.min.x, ep[e * 3]);
+            box.min.y = Math.min(box.min.y, ep[e * 3 + 1]);
+            box.min.z = Math.min(box.min.z, ep[e * 3 + 2]);
+            box.max.x = Math.max(box.max.x, ep[e * 3]);
+            box.max.y = Math.max(box.max.y, ep[e * 3 + 1]);
+            box.max.z = Math.max(box.max.z, ep[e * 3 + 2]);
+          }
         }
       }
     }
+    // The emitted head is fully overwritten. Beyond the previous written head
+    // the fixed buffers are already zero; clear only vertices removed by a seek.
+    if (cursor < layer.written) {
+      positions.fill(0, cursor, layer.written);
+      normals.fill(0, cursor, layer.written);
+    }
+    layer.written = cursor;
     geometry.setDrawRange(0, cursor / 3);
     geometry.attributes.position.needsUpdate = true;
     geometry.attributes.normal.needsUpdate = true;
@@ -231,6 +254,7 @@ export function germCellMembrane(k) {
     // A conservative sphere avoids rescanning the unused fixed-capacity tail.
     box.getCenter(geometry.boundingSphere.center);
     geometry.boundingSphere.radius = box.min.distanceTo(box.max) * 0.5;
+    publishVertexCandidates(geometry, vertexCandidates, candidateCount);
   }
   function update(first, second) {
     if (first === lastFirst && second === lastSecond) return;
@@ -324,7 +348,7 @@ export function germCellMembrane(k) {
         }
     for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
       const layer = layers[layerIndex];
-      extractLayer(layer.level, layer.geometry, activeCount);
+      extractLayer(layer, activeCount);
     }
   }
   // Piecewise-linear interpolation in the same tetrahedra as the rendered

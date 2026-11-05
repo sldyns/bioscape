@@ -123,7 +123,11 @@ export function chromatinFiber(kit) {
     function phase(t) {
       return phase0 + winding * t;
     }
+    let reactionBasisT;
     function prepare() {
+      // Curve controls change once per frame; reaction axes are shared by all
+      // open-strand samples until the controls or reaction position change.
+      reactionBasisT = undefined;
       const c0 = centerCurve.v0,
         c1 = centerCurve.v1,
         c2 = centerCurve.v2,
@@ -178,7 +182,10 @@ export function chromatinFiber(kit) {
       const opening = aperture(t);
       basis(t, bx, bn, bz);
       if (opening > 0) {
-        basis(reaction.t, ax, an, az);
+        if (reactionBasisT !== reaction.t) {
+          basis(reaction.t, ax, an, az);
+          reactionBasisT = reaction.t;
+        }
         bx.lerp(ax, opening).normalize();
         bn.lerp(an, opening).addScaledVector(bx, -bn.dot(bx)).normalize();
         bz.crossVectors(bx, bn).normalize();

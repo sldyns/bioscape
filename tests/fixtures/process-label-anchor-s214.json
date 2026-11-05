@@ -1,0 +1,1240 @@
+{
+  "schema": "s214-existing-projection-fixtures-v1",
+  "method": "Existing S209 saved line coordinates; full currently visible source set, recorded marker size, source-defined priorities; no product execution.",
+  "cases": [
+    {
+      "caseId": "glycolysis--cell--0",
+      "state": "last-zh",
+      "progress": 0.93,
+      "sourceLayoutPath": "/Users/kun/Documents/Codex/2026-10-23/bioscape-all-process-native-s209/repairs/r2/cases/glycolysis--cell--0/B/last-zh.after-screenshot.layout.json",
+      "sourceLayoutSha256": "385ee313f33d402ecbbb54bda3304579b4f6c1d8146ccc40b5cfe95717a12f21",
+      "viewport": {
+        "width": 756,
+        "height": 246
+      },
+      "blockerSourceIndex": 6,
+      "targetSourceIndex": 13,
+      "labels": [
+        {
+          "sourceIndex": 0,
+          "markerNumber": "1",
+          "priority": 2,
+          "anchor": {
+            "x": 378.0,
+            "y": 21.720843649841648
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 387.5,
+            "right": 408.5,
+            "top": 29.220843649841648,
+            "bottom": 50.22084364984165
+          }
+        },
+        {
+          "sourceIndex": 2,
+          "markerNumber": "2",
+          "priority": 1,
+          "anchor": {
+            "x": 252.31575472541155,
+            "y": 43.196576654274935
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 221.81575472541155,
+            "right": 242.81575472541155,
+            "top": 14.696576654274935,
+            "bottom": 35.696576654274935
+          }
+        },
+        {
+          "sourceIndex": 3,
+          "markerNumber": "3",
+          "priority": 1,
+          "anchor": {
+            "x": 515.2221956049252,
+            "y": 43.196576654274935
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 524.7221956049252,
+            "right": 545.7221956049252,
+            "top": 14.696576654274935,
+            "bottom": 35.696576654274935
+          }
+        },
+        {
+          "sourceIndex": 4,
+          "markerNumber": "4",
+          "priority": 2,
+          "anchor": {
+            "x": 318.7413264436968,
+            "y": 173.70533642862685
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 288.2413264436968,
+            "right": 309.2413264436968,
+            "top": 181.20533642862685,
+            "bottom": 202.20533642862685
+          }
+        },
+        {
+          "sourceIndex": 5,
+          "markerNumber": "5",
+          "priority": 2,
+          "anchor": {
+            "x": 437.2586735563032,
+            "y": 173.70533642862685
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 446.7586735563032,
+            "right": 467.7586735563032,
+            "top": 181.20533642862685,
+            "bottom": 202.20533642862685
+          }
+        },
+        {
+          "sourceIndex": 6,
+          "markerNumber": "6",
+          "priority": 1,
+          "anchor": {
+            "x": 448.82084203905754,
+            "y": 106.55626515851317
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 458.32084203905754,
+            "right": 479.32084203905754,
+            "top": 78.05626515851317,
+            "bottom": 99.05626515851317
+          }
+        },
+        {
+          "sourceIndex": 7,
+          "markerNumber": "7",
+          "priority": 2,
+          "anchor": {
+            "x": 262.78216022216264,
+            "y": 127.28977904546302
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 232.28216022216264,
+            "right": 253.28216022216264,
+            "top": 134.78977904546304,
+            "bottom": 155.78977904546304
+          }
+        },
+        {
+          "sourceIndex": 8,
+          "markerNumber": "8",
+          "priority": 2,
+          "anchor": {
+            "x": 503.91604119756835,
+            "y": 123.47793107155442
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 513.4160411975683,
+            "right": 534.4160411975683,
+            "top": 130.97793107155442,
+            "bottom": 151.97793107155442
+          }
+        },
+        {
+          "sourceIndex": 9,
+          "markerNumber": "9",
+          "priority": 1,
+          "anchor": {
+            "x": 264.7591857311068,
+            "y": 177.01603944747072
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 234.2591857311068,
+            "right": 255.2591857311068,
+            "top": 184.51603944747072,
+            "bottom": 205.51603944747072
+          }
+        },
+        {
+          "sourceIndex": 10,
+          "markerNumber": "10",
+          "priority": 1,
+          "anchor": {
+            "x": 501.7526518908138,
+            "y": 173.33396741888282
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 511.2526518908138,
+            "right": 532.2526518908138,
+            "top": 180.83396741888282,
+            "bottom": 201.83396741888282
+          }
+        },
+        {
+          "sourceIndex": 11,
+          "markerNumber": "11",
+          "priority": 2,
+          "anchor": {
+            "x": 378.0,
+            "y": 226.02363116195855
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 387.5,
+            "right": 408.5,
+            "top": 197.52363116195855,
+            "bottom": 218.52363116195855
+          }
+        },
+        {
+          "sourceIndex": 12,
+          "markerNumber": "12",
+          "priority": 1,
+          "anchor": {
+            "x": 281.80357765872424,
+            "y": 83.1671193380933
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 251.30357765872424,
+            "right": 272.30357765872424,
+            "top": 54.6671193380933,
+            "bottom": 75.6671193380933
+          }
+        },
+        {
+          "sourceIndex": 13,
+          "markerNumber": "13",
+          "priority": 1,
+          "anchor": {
+            "x": 467.90177363058933,
+            "y": 83.1671193380933
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 457.40177363058933,
+            "right": 478.40177363058933,
+            "top": 40.6671193380933,
+            "bottom": 61.6671193380933
+          }
+        }
+      ]
+    },
+    {
+      "caseId": "glycolysis--plant--0",
+      "state": "last-zh",
+      "progress": 0.93,
+      "sourceLayoutPath": "/Users/kun/Documents/Codex/2026-10-23/bioscape-all-process-native-s209/repairs/r2/cases/glycolysis--plant--0/B/last-zh.after-screenshot.layout.json",
+      "sourceLayoutSha256": "37793d9ad30ede42619df04e2979c5c7e65bbd7d6180c388c07c4256862df5bc",
+      "viewport": {
+        "width": 756,
+        "height": 246
+      },
+      "blockerSourceIndex": 6,
+      "targetSourceIndex": 13,
+      "labels": [
+        {
+          "sourceIndex": 0,
+          "markerNumber": "1",
+          "priority": 2,
+          "anchor": {
+            "x": 378.0,
+            "y": 21.720843649841648
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 387.5,
+            "right": 408.5,
+            "top": 29.220843649841648,
+            "bottom": 50.22084364984165
+          }
+        },
+        {
+          "sourceIndex": 2,
+          "markerNumber": "2",
+          "priority": 1,
+          "anchor": {
+            "x": 252.31575472541155,
+            "y": 43.196576654274935
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 221.81575472541155,
+            "right": 242.81575472541155,
+            "top": 14.696576654274935,
+            "bottom": 35.696576654274935
+          }
+        },
+        {
+          "sourceIndex": 3,
+          "markerNumber": "3",
+          "priority": 1,
+          "anchor": {
+            "x": 515.2221956049252,
+            "y": 43.196576654274935
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 524.7221956049252,
+            "right": 545.7221956049252,
+            "top": 14.696576654274935,
+            "bottom": 35.696576654274935
+          }
+        },
+        {
+          "sourceIndex": 4,
+          "markerNumber": "4",
+          "priority": 2,
+          "anchor": {
+            "x": 318.7413264436968,
+            "y": 173.70533642862685
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 288.2413264436968,
+            "right": 309.2413264436968,
+            "top": 181.20533642862685,
+            "bottom": 202.20533642862685
+          }
+        },
+        {
+          "sourceIndex": 5,
+          "markerNumber": "5",
+          "priority": 2,
+          "anchor": {
+            "x": 437.2586735563032,
+            "y": 173.70533642862685
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 446.7586735563032,
+            "right": 467.7586735563032,
+            "top": 181.20533642862685,
+            "bottom": 202.20533642862685
+          }
+        },
+        {
+          "sourceIndex": 6,
+          "markerNumber": "6",
+          "priority": 1,
+          "anchor": {
+            "x": 448.82084203905754,
+            "y": 106.55626515851317
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 458.32084203905754,
+            "right": 479.32084203905754,
+            "top": 78.05626515851317,
+            "bottom": 99.05626515851317
+          }
+        },
+        {
+          "sourceIndex": 7,
+          "markerNumber": "7",
+          "priority": 2,
+          "anchor": {
+            "x": 262.78216022216264,
+            "y": 127.28977904546302
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 232.28216022216264,
+            "right": 253.28216022216264,
+            "top": 134.78977904546304,
+            "bottom": 155.78977904546304
+          }
+        },
+        {
+          "sourceIndex": 8,
+          "markerNumber": "8",
+          "priority": 2,
+          "anchor": {
+            "x": 503.91604119756835,
+            "y": 123.47793107155442
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 513.4160411975683,
+            "right": 534.4160411975683,
+            "top": 130.97793107155442,
+            "bottom": 151.97793107155442
+          }
+        },
+        {
+          "sourceIndex": 9,
+          "markerNumber": "9",
+          "priority": 1,
+          "anchor": {
+            "x": 264.7591857311068,
+            "y": 177.01603944747072
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 234.2591857311068,
+            "right": 255.2591857311068,
+            "top": 184.51603944747072,
+            "bottom": 205.51603944747072
+          }
+        },
+        {
+          "sourceIndex": 10,
+          "markerNumber": "10",
+          "priority": 1,
+          "anchor": {
+            "x": 501.7526518908138,
+            "y": 173.33396741888282
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 511.2526518908138,
+            "right": 532.2526518908138,
+            "top": 180.83396741888282,
+            "bottom": 201.83396741888282
+          }
+        },
+        {
+          "sourceIndex": 11,
+          "markerNumber": "11",
+          "priority": 2,
+          "anchor": {
+            "x": 378.0,
+            "y": 226.02363116195855
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 387.5,
+            "right": 408.5,
+            "top": 197.52363116195855,
+            "bottom": 218.52363116195855
+          }
+        },
+        {
+          "sourceIndex": 12,
+          "markerNumber": "12",
+          "priority": 1,
+          "anchor": {
+            "x": 281.80357765872424,
+            "y": 83.1671193380933
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 251.30357765872424,
+            "right": 272.30357765872424,
+            "top": 54.6671193380933,
+            "bottom": 75.6671193380933
+          }
+        },
+        {
+          "sourceIndex": 13,
+          "markerNumber": "13",
+          "priority": 1,
+          "anchor": {
+            "x": 467.90177363058933,
+            "y": 83.1671193380933
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 457.40177363058933,
+            "right": 478.40177363058933,
+            "top": 40.6671193380933,
+            "bottom": 61.6671193380933
+          }
+        }
+      ]
+    },
+    {
+      "caseId": "glycolysis--yeast--0",
+      "state": "last-zh",
+      "progress": 0.93,
+      "sourceLayoutPath": "/Users/kun/Documents/Codex/2026-10-23/bioscape-all-process-native-s209/repairs/r2/cases/glycolysis--yeast--0/B/last-zh.after-screenshot.layout.json",
+      "sourceLayoutSha256": "6eb7b57e487100626628828cf25e7365d926406075cec132482b73533d848757",
+      "viewport": {
+        "width": 756,
+        "height": 246
+      },
+      "blockerSourceIndex": 6,
+      "targetSourceIndex": 13,
+      "labels": [
+        {
+          "sourceIndex": 0,
+          "markerNumber": "1",
+          "priority": 2,
+          "anchor": {
+            "x": 378.0,
+            "y": 21.720843649841648
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 387.5,
+            "right": 408.5,
+            "top": 29.220843649841648,
+            "bottom": 50.22084364984165
+          }
+        },
+        {
+          "sourceIndex": 2,
+          "markerNumber": "2",
+          "priority": 1,
+          "anchor": {
+            "x": 252.31575472541155,
+            "y": 43.196576654274935
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 221.81575472541155,
+            "right": 242.81575472541155,
+            "top": 14.696576654274935,
+            "bottom": 35.696576654274935
+          }
+        },
+        {
+          "sourceIndex": 3,
+          "markerNumber": "3",
+          "priority": 1,
+          "anchor": {
+            "x": 515.2221956049252,
+            "y": 43.196576654274935
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 524.7221956049252,
+            "right": 545.7221956049252,
+            "top": 14.696576654274935,
+            "bottom": 35.696576654274935
+          }
+        },
+        {
+          "sourceIndex": 4,
+          "markerNumber": "4",
+          "priority": 2,
+          "anchor": {
+            "x": 318.7413264436968,
+            "y": 173.70533642862685
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 288.2413264436968,
+            "right": 309.2413264436968,
+            "top": 181.20533642862685,
+            "bottom": 202.20533642862685
+          }
+        },
+        {
+          "sourceIndex": 5,
+          "markerNumber": "5",
+          "priority": 2,
+          "anchor": {
+            "x": 437.2586735563032,
+            "y": 173.70533642862685
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 446.7586735563032,
+            "right": 467.7586735563032,
+            "top": 181.20533642862685,
+            "bottom": 202.20533642862685
+          }
+        },
+        {
+          "sourceIndex": 6,
+          "markerNumber": "6",
+          "priority": 1,
+          "anchor": {
+            "x": 448.82084203905754,
+            "y": 106.55626515851317
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 458.32084203905754,
+            "right": 479.32084203905754,
+            "top": 78.05626515851317,
+            "bottom": 99.05626515851317
+          }
+        },
+        {
+          "sourceIndex": 7,
+          "markerNumber": "7",
+          "priority": 2,
+          "anchor": {
+            "x": 262.78216022216264,
+            "y": 127.28977904546302
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 232.28216022216264,
+            "right": 253.28216022216264,
+            "top": 134.78977904546304,
+            "bottom": 155.78977904546304
+          }
+        },
+        {
+          "sourceIndex": 8,
+          "markerNumber": "8",
+          "priority": 2,
+          "anchor": {
+            "x": 503.91604119756835,
+            "y": 123.47793107155442
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 513.4160411975683,
+            "right": 534.4160411975683,
+            "top": 130.97793107155442,
+            "bottom": 151.97793107155442
+          }
+        },
+        {
+          "sourceIndex": 9,
+          "markerNumber": "9",
+          "priority": 1,
+          "anchor": {
+            "x": 264.7591857311068,
+            "y": 177.01603944747072
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 234.2591857311068,
+            "right": 255.2591857311068,
+            "top": 184.51603944747072,
+            "bottom": 205.51603944747072
+          }
+        },
+        {
+          "sourceIndex": 10,
+          "markerNumber": "10",
+          "priority": 1,
+          "anchor": {
+            "x": 501.7526518908138,
+            "y": 173.33396741888282
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 511.2526518908138,
+            "right": 532.2526518908138,
+            "top": 180.83396741888282,
+            "bottom": 201.83396741888282
+          }
+        },
+        {
+          "sourceIndex": 11,
+          "markerNumber": "11",
+          "priority": 2,
+          "anchor": {
+            "x": 378.0,
+            "y": 226.02363116195855
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 387.5,
+            "right": 408.5,
+            "top": 197.52363116195855,
+            "bottom": 218.52363116195855
+          }
+        },
+        {
+          "sourceIndex": 12,
+          "markerNumber": "12",
+          "priority": 1,
+          "anchor": {
+            "x": 281.80357765872424,
+            "y": 83.1671193380933
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 251.30357765872424,
+            "right": 272.30357765872424,
+            "top": 54.6671193380933,
+            "bottom": 75.6671193380933
+          }
+        },
+        {
+          "sourceIndex": 13,
+          "markerNumber": "13",
+          "priority": 1,
+          "anchor": {
+            "x": 467.90177363058933,
+            "y": 83.1671193380933
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 457.40177363058933,
+            "right": 478.40177363058933,
+            "top": 40.6671193380933,
+            "bottom": 61.6671193380933
+          }
+        }
+      ]
+    },
+    {
+      "caseId": "bacterialEnergetics--bacterium--0",
+      "state": "middle-en",
+      "progress": 0.5,
+      "sourceLayoutPath": "/Users/kun/Documents/Codex/2026-10-23/bioscape-all-process-native-s209/repairs/r2/cases/bacterialEnergetics--bacterium--0/B/middle-en.after-screenshot.layout.json",
+      "sourceLayoutSha256": "5796cd278f6fcac7ee09ead096a46513c3ac92ad157330fe2a86fa79ecee03f8",
+      "viewport": {
+        "width": 756,
+        "height": 248.5
+      },
+      "blockerSourceIndex": 0,
+      "targetSourceIndex": 10,
+      "labels": [
+        {
+          "sourceIndex": 0,
+          "markerNumber": "1",
+          "priority": 2,
+          "anchor": {
+            "x": 359.5664204297933,
+            "y": 35.36037740759595
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 329.0664204297933,
+            "right": 350.0664204297933,
+            "top": 42.86037740759595,
+            "bottom": 63.86037740759595
+          }
+        },
+        {
+          "sourceIndex": 1,
+          "markerNumber": "2",
+          "priority": 2,
+          "anchor": {
+            "x": 319.20129655316936,
+            "y": 206.49412020364122
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 288.70129655316936,
+            "right": 309.70129655316936,
+            "top": 213.99412020364122,
+            "bottom": 234.99412020364122
+          }
+        },
+        {
+          "sourceIndex": 2,
+          "markerNumber": "3",
+          "priority": 2,
+          "anchor": {
+            "x": 197.20034518922398,
+            "y": 153.63509177837776
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 166.70034518922398,
+            "right": 187.70034518922398,
+            "top": 161.13509177837776,
+            "bottom": 182.13509177837776
+          }
+        },
+        {
+          "sourceIndex": 3,
+          "markerNumber": "4",
+          "priority": 2,
+          "anchor": {
+            "x": 250.68958690792704,
+            "y": 158.46367526934057
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 220.18958690792704,
+            "right": 241.18958690792704,
+            "top": 165.96367526934057,
+            "bottom": 186.96367526934057
+          }
+        },
+        {
+          "sourceIndex": 4,
+          "markerNumber": "5",
+          "priority": 2,
+          "anchor": {
+            "x": 415.0466858383136,
+            "y": 134.19627882674988
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 424.5466858383136,
+            "right": 445.5466858383136,
+            "top": 141.69627882674988,
+            "bottom": 162.69627882674988
+          }
+        },
+        {
+          "sourceIndex": 5,
+          "markerNumber": "6",
+          "priority": 2,
+          "anchor": {
+            "x": 519.1972771564914,
+            "y": 182.72194269145268
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 528.6972771564914,
+            "right": 549.6972771564914,
+            "top": 190.22194269145268,
+            "bottom": 211.22194269145268
+          }
+        },
+        {
+          "sourceIndex": 6,
+          "markerNumber": "7",
+          "priority": 1,
+          "anchor": {
+            "x": 303.14735346896424,
+            "y": 116.53906528484043
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 272.64735346896424,
+            "right": 293.64735346896424,
+            "top": 88.03906528484043,
+            "bottom": 109.03906528484043
+          }
+        },
+        {
+          "sourceIndex": 7,
+          "markerNumber": "8",
+          "priority": 1,
+          "anchor": {
+            "x": 409.23065491750003,
+            "y": 81.32595625497957
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 418.73065491750003,
+            "right": 439.73065491750003,
+            "top": 52.82595625497957,
+            "bottom": 73.82595625497957
+          }
+        },
+        {
+          "sourceIndex": 8,
+          "markerNumber": "9",
+          "priority": 1,
+          "anchor": {
+            "x": 416.13072104149325,
+            "y": 130.52396652723354
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 385.63072104149325,
+            "right": 406.63072104149325,
+            "top": 138.02396652723354,
+            "bottom": 159.02396652723354
+          }
+        },
+        {
+          "sourceIndex": 9,
+          "markerNumber": "10",
+          "priority": 1,
+          "anchor": {
+            "x": 541.6842902681647,
+            "y": 154.88313845780243
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 551.1842902681647,
+            "right": 572.1842902681647,
+            "top": 162.38313845780243,
+            "bottom": 183.38313845780243
+          }
+        },
+        {
+          "sourceIndex": 10,
+          "markerNumber": "11",
+          "priority": 0,
+          "anchor": {
+            "x": 341.2722403572003,
+            "y": 51.684799252847355
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 330.7722403572003,
+            "right": 351.7722403572003,
+            "top": 9.184799252847355,
+            "bottom": 30.184799252847355
+          }
+        }
+      ]
+    },
+    {
+      "caseId": "bacterialEnergetics--bacterium--1",
+      "state": "middle-en",
+      "progress": 0.5,
+      "sourceLayoutPath": "/Users/kun/Documents/Codex/2026-10-23/bioscape-all-process-native-s209/repairs/r2/cases/bacterialEnergetics--bacterium--1/B/middle-en.after-screenshot.layout.json",
+      "sourceLayoutSha256": "52cd3bb15d55b47fbc8e05afe1787c6f23e85c79fd80df35a86a1e9667c2b9f0",
+      "viewport": {
+        "width": 756,
+        "height": 248.5
+      },
+      "blockerSourceIndex": 0,
+      "targetSourceIndex": 10,
+      "labels": [
+        {
+          "sourceIndex": 0,
+          "markerNumber": "1",
+          "priority": 2,
+          "anchor": {
+            "x": 359.6395240470779,
+            "y": 35.71289455847349
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 329.1395240470779,
+            "right": 350.1395240470779,
+            "top": 43.21289455847349,
+            "bottom": 64.2128945584735
+          }
+        },
+        {
+          "sourceIndex": 1,
+          "markerNumber": "2",
+          "priority": 2,
+          "anchor": {
+            "x": 319.4138850000569,
+            "y": 206.1967641608242
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 288.9138850000569,
+            "right": 309.9138850000569,
+            "top": 213.6967641608242,
+            "bottom": 234.6967641608242
+          }
+        },
+        {
+          "sourceIndex": 2,
+          "markerNumber": "3",
+          "priority": 2,
+          "anchor": {
+            "x": 197.9019096048733,
+            "y": 153.52106758533452
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 167.4019096048733,
+            "right": 188.4019096048733,
+            "top": 161.02106758533452,
+            "bottom": 182.02106758533452
+          }
+        },
+        {
+          "sourceIndex": 3,
+          "markerNumber": "4",
+          "priority": 2,
+          "anchor": {
+            "x": 265.8801681857546,
+            "y": 130.14301419323434
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 235.3801681857546,
+            "right": 256.3801681857546,
+            "top": 137.64301419323434,
+            "bottom": 158.64301419323434
+          }
+        },
+        {
+          "sourceIndex": 4,
+          "markerNumber": "5",
+          "priority": 2,
+          "anchor": {
+            "x": 404.4650201686055,
+            "y": 134.70810141468488
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 413.9650201686055,
+            "right": 434.9650201686055,
+            "top": 142.20810141468488,
+            "bottom": 163.20810141468488
+          }
+        },
+        {
+          "sourceIndex": 5,
+          "markerNumber": "6",
+          "priority": 2,
+          "anchor": {
+            "x": 518.6696516077736,
+            "y": 182.50344491678965
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 528.1696516077736,
+            "right": 549.1696516077736,
+            "top": 190.00344491678965,
+            "bottom": 211.00344491678965
+          }
+        },
+        {
+          "sourceIndex": 6,
+          "markerNumber": "7",
+          "priority": 1,
+          "anchor": {
+            "x": 303.448687178829,
+            "y": 116.57010713401914
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 272.948687178829,
+            "right": 293.948687178829,
+            "top": 88.07010713401914,
+            "bottom": 109.07010713401914
+          }
+        },
+        {
+          "sourceIndex": 7,
+          "markerNumber": "8",
+          "priority": 1,
+          "anchor": {
+            "x": 418.2834518851759,
+            "y": 80.04115354842465
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 427.7834518851759,
+            "right": 448.7834518851759,
+            "top": 51.541153548424646,
+            "bottom": 72.54115354842465
+          }
+        },
+        {
+          "sourceIndex": 8,
+          "markerNumber": "9",
+          "priority": 1,
+          "anchor": {
+            "x": 406.32704137993665,
+            "y": 130.61327594495546
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 375.82704137993665,
+            "right": 396.82704137993665,
+            "top": 138.11327594495546,
+            "bottom": 159.11327594495546
+          }
+        },
+        {
+          "sourceIndex": 9,
+          "markerNumber": "10",
+          "priority": 1,
+          "anchor": {
+            "x": 541.0768070162674,
+            "y": 154.7694493643917
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 550.5768070162674,
+            "right": 571.5768070162674,
+            "top": 162.2694493643917,
+            "bottom": 183.2694493643917
+          }
+        },
+        {
+          "sourceIndex": 10,
+          "markerNumber": "11",
+          "priority": 0,
+          "anchor": {
+            "x": 341.4155617614982,
+            "y": 51.9679678037035
+          },
+          "size": {
+            "width": 21,
+            "height": 21
+          },
+          "recordedRect": {
+            "left": 330.9155617614982,
+            "right": 351.9155617614982,
+            "top": 9.467967803703502,
+            "bottom": 30.4679678037035
+          }
+        }
+      ]
+    }
+  ]
+}

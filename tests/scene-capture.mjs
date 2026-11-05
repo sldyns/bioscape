@@ -536,3 +536,191 @@ test("export draws every leader beneath every caption background and text", asyn
     );
   }
 });
+
+function contextDrawing(sources, width = 960, height = 640, occupied) {
+  const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
+  camera.position.set(0, 0, 10);
+  camera.lookAt(0, 0, 0);
+  camera.updateMatrixWorld();
+  const events = [];
+  const context = {
+    measureText: (text) => ({ width: text.length * 7 }),
+    beginPath() {},
+    moveTo: (x, y) => events.push({ kind: "leader-start", x, y }),
+    lineTo: (x, y) => events.push({ kind: "leader-end", x, y }),
+    roundRect: (...bounds) => events.push({ kind: "caption", bounds }),
+    stroke() {},
+    fill() {},
+    fillText: (text, x, y) => events.push({ kind: "text", text, x, y }),
+  };
+  drawCaptureLabels(
+    context,
+    sources,
+    camera,
+    width,
+    height,
+    "#f5f5f7",
+    occupied,
+  );
+  return events;
+}
+
+test("context capture ignores geometry and preserves complete bilingual text without leaders", () => {
+  for (const text of [
+    "细胞核内 · 滑移示意",
+    "Nucleus · sliding schematic",
+    "空间靠近 ≠ 即时转录",
+    "Proximity ≠ immediate transcription",
+    "招募受限：本窗口无转录脉冲",
+    "Recruitment impaired: no burst in this window",
+  ]) {
+    const source = {
+      text,
+      annotationKind: "context",
+      get position() {
+        throw new Error("Context capture must not read or project a position");
+      },
+    };
+    let queries = 0;
+    const events = contextDrawing([source], 960, 640, () => {
+      queries++;
+      return 0;
+    });
+    assert(queries > 0, "Context reuses the existing occupied-mask layout");
+    assert.equal(
+      events.filter((event) => event.kind === "leader-start").length,
+      0,
+    );
+    assert.equal(
+      events.filter((event) => event.kind === "leader-end").length,
+      0,
+    );
+    assert.equal(events.filter((event) => event.kind === "caption").length, 1);
+    assert.equal(
+      events
+        .filter((event) => event.kind === "text")
+        .map((event) => event.text)
+        .join("")
+        .replace(/\s/g, ""),
+      text.replace(/\s/g, ""),
+      "Every non-whitespace character, including scientific qualifiers, survives wrapping",
+    );
+    assert.deepEqual(
+      contextDrawing([
+        {
+          text,
+          annotationKind: "context",
+          active: false,
+          get position() {
+            throw new Error("Inactive context must not read a position");
+          },
+        },
+      ]),
+      [],
+    );
+  }
+});
+
+test("only context expands the three-line limit and insufficient capacity fails explicitly", () => {
+  const text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".repeat(4);
+  const context = {
+    text,
+    annotationKind: "context",
+    x: 300,
+    y: 60,
+    priority: -100,
+  };
+  const ordinary = { text, x: 300, y: 60, priority: 100 };
+  const placed = layoutCaptureLabels(
+    [ordinary, context],
+    320,
+    800,
+    (value) => value.length * 7,
+  );
+  assert.equal(
+    placed.length,
+    1,
+    "The ordinary overlong label retains its existing omission rule",
+  );
+  assert.equal(placed[0].annotationKind, "context");
+  assert(placed[0].lines.length > 3);
+  assert.equal(placed[0].lines.join(""), text);
+  assert.deepEqual(
+    layoutCaptureLabels([ordinary], 320, 800, (value) => value.length * 7),
+    [],
+  );
+  assert.throws(
+    () => layoutCaptureLabels([context], 63, 800, (value) => value.length * 7),
+    /too small for context annotations/,
+  );
+  assert.throws(
+    () => layoutCaptureLabels([context], 320, 64, (value) => value.length * 7),
+    /Context annotations do not fit/,
+  );
+  assert.deepEqual(
+    layoutCaptureLabels([ordinary], 63, 800, (value) => value.length * 7),
+    [],
+  );
+  const crowded = Array.from({ length: 30 }, (_, index) => ({
+    text: `Physical ${index}`,
+    x: 300,
+    y: 60,
+    priority: 1000 - index,
+  }));
+  const required = layoutCaptureLabels(
+    [...crowded, context],
+    320,
+    800,
+    (value) => value.length * 7,
+  );
+  assert(
+    required.some(
+      (item) =>
+        item.annotationKind === "context" && item.lines.join("") === text,
+    ),
+  );
+  layoutConstraints(required, 320, 800);
+});
+
+test("context does not claim zero overlap when the existing mask has no clear space", () => {
+  const source = {
+    text: "Proximity is not transcription",
+    annotationKind: "context",
+  };
+  let queries = 0;
+  const events = contextDrawing([source], 960, 640, () => {
+    queries++;
+    return 1;
+  });
+  assert(queries > 0);
+  assert.equal(events.filter((event) => event.kind === "caption").length, 1);
+  assert.equal(
+    events.filter((event) => event.kind === "leader-start").length,
+    0,
+  );
+  assert.equal(
+    events
+      .filter((event) => event.kind === "text")
+      .map((event) => event.text)
+      .join(" "),
+    source.text,
+    "A fully occupied mask preserves text and keeps its existing least-occlusion behavior",
+  );
+});
+
+test("capture applies context behavior only to the exact kind", () => {
+  const ordinary = {
+    text: "Molecular structure",
+    position: new THREE.Vector3(0, 0, 0),
+  };
+  const expected = contextDrawing([ordinary]);
+  assert.equal(
+    expected.filter((event) => event.kind === "leader-start").length,
+    1,
+  );
+  for (const annotationKind of ["region", "state", "unknown", "Context"])
+    assert.deepEqual(
+      contextDrawing([{ ...ordinary, annotationKind }]),
+      expected,
+    );
+});

@@ -2,6 +2,13 @@ import { THREE, sceneKit } from "../../kit.js";
 import { computeIndexedFloat32VertexNormals } from "./indexedFloat32Normals.js";
 
 const TAU = Math.PI * 2;
+// Fixed 12-segment bundle samples retain the original double-precision values.
+const bundleSamples = new Float64Array(26);
+for (let j = 0; j <= 12; j++) {
+  const t = j / 12;
+  bundleSamples[j * 2] = t;
+  bundleSamples[j * 2 + 1] = Math.sin(t * Math.PI);
+}
 // Shared per module, doubles retain the exact original Math.sin/cos results.
 const ringCenterTrig = new Float64Array(202);
 for (let i = 0; i <= 100; i++) {
@@ -157,26 +164,29 @@ export function divisionKit() {
     state.radius = radius;
     state.bowY = bowY;
     const count = state.strands;
-    for (let s = 0; s < count; s++)
+    for (let s = 0; s < count; s++) {
+      const a = (s * TAU) / count,
+        offset = 0.04,
+        bendY = Math.cos(a) * offset + bowY,
+        bendZ = 0.14 + Math.sin(a) * offset;
       for (let j = 0; j < 12; j++) {
-        const t = j / 12,
-          u = (j + 1) / 12,
-          a = (s * TAU) / count,
-          offset = 0.04;
-        const wave = Math.sin(t * Math.PI),
-          next = Math.sin(u * Math.PI);
+        const t = bundleSamples[j * 2],
+          u = bundleSamples[j * 2 + 2],
+          wave = bundleSamples[j * 2 + 1],
+          next = bundleSamples[j * 2 + 3];
         setInstance(
           m,
           s * 12 + j,
           ax + (bx - ax) * t,
-          ay + (by - ay) * t + (Math.cos(a) * offset + bowY) * wave,
-          az + (bz - az) * t + (0.14 + Math.sin(a) * offset) * wave,
+          ay + (by - ay) * t + bendY * wave,
+          az + (bz - az) * t + bendZ * wave,
           ax + (bx - ax) * u,
-          ay + (by - ay) * u + (Math.cos(a) * offset + bowY) * next,
-          az + (bz - az) * u + (0.14 + Math.sin(a) * offset) * next,
+          ay + (by - ay) * u + bendY * next,
+          az + (bz - az) * u + bendZ * next,
           radius,
         );
       }
+    }
     finish(m);
   }
   function chromatid(side, length, mat, parent = k.group, options = {}) {

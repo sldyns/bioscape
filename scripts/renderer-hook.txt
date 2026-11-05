@@ -1,0 +1,38 @@
+        // Isolated pinned-r180 experiment. Reuse renderer-owned original caches.
+        let bioscapeStagingVAO = null;
+        let bioscapePreparationDisposed = false;
+        const bioscapeResetStaging = () => { bioscapeStagingVAO = null; };
+        canvas.addEventListener( 'webglcontextlost', bioscapeResetStaging, false );
+        this.__bioscapePrepareObject = function ( object ) {
+            if ( bioscapePreparationDisposed || _isContextLost ) return false;
+            if ( ! object.geometry || object.isSkinnedMesh ) return false;
+            const previousVAO = _gl.getParameter( _gl.VERTEX_ARRAY_BINDING );
+            const previousArray = _gl.getParameter( _gl.ARRAY_BUFFER_BINDING );
+            let indexStage = false;
+            try {
+                // Registers geometry/instance disposal and uses native attribute
+                // versions, types, usages and callbacks, without a second cache.
+                const geometry = objects.update( object );
+                // A pre-render task does not advance renderer.info.render.frame.
+                // Refresh original version caches even on same-frame revisits.
+                geometries.update( geometry );
+                if ( object.isInstancedMesh ) {
+                    attributes.update( object.instanceMatrix, _gl.ARRAY_BUFFER );
+                    if ( object.instanceColor !== null ) attributes.update( object.instanceColor, _gl.ARRAY_BUFFER );
+                }
+                if ( geometry.index !== null ) {
+                    bioscapeStagingVAO ??= _gl.createVertexArray();
+                    if ( bioscapeStagingVAO === null ) throw new Error( "Staging VAO unavailable" );
+                    _gl.bindVertexArray( bioscapeStagingVAO );
+                    indexStage = true;
+                    attributes.update( geometry.index, _gl.ELEMENT_ARRAY_BUFFER );
+                }
+                return true;
+            } finally {
+                if ( indexStage ) {
+                    _gl.bindBuffer( _gl.ELEMENT_ARRAY_BUFFER, null );
+                    _gl.bindVertexArray( previousVAO );
+                }
+                _gl.bindBuffer( _gl.ARRAY_BUFFER, previousArray );
+            }
+        };

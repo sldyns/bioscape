@@ -176,7 +176,9 @@ function create() {
       1.78,
       (t, out) => out.copy(f.y).multiplyScalar(-0.065),
     );
-    return { end, molecule };
+    // The released chain keeps this free 5′ end in its own geometry space.
+    const fivePrimeEnd = transcriptPoint(f, 1, 1.78, new THREE.Vector3());
+    return { end, molecule, fivePrimeEnd };
   });
   const enhancerPos = new THREE.Vector3(),
     promoterPos = new THREE.Vector3();
@@ -210,7 +212,17 @@ function create() {
       "Recruitment impaired: no burst in this window",
       4,
     ),
+    ...products.map((_, i) =>
+      k.label(
+        [0, 0, 0],
+        `已释放 RNA ${i + 1} · 5′ 端`,
+        `Released RNA ${i + 1} · 5′ end`,
+        3,
+      ),
+    ),
   ];
+  labels[5].annotationKind = "context";
+  labels[6].annotationKind = "context";
   // Cache real surface vertices; label placement owns text spacing separately.
   const labelPoint = new THREE.Vector3();
   const surfaceAnchors = [
@@ -295,10 +307,18 @@ function create() {
       rnaLength,
       (t, out) => out.copy(activeFrame.y).multiplyScalar(-0.065),
     );
-    for (const { end, molecule } of products) {
+    for (let i = 0; i < products.length; i++) {
+      const { end, molecule, fivePrimeEnd } = products[i];
       molecule.group.visible = !impaired && p >= end;
       const release = ease(p, end, Math.min(1, end + 0.1));
       molecule.group.position.set(0, -0.85 * release, 0.45 * release);
+      const productLabel = labels[7 + i];
+      productLabel.active = molecule.group.visible;
+      molecule.group.updateWorldMatrix(true, false);
+      labelPoint
+        .copy(fivePrimeEnd)
+        .applyMatrix4(molecule.group.matrixWorld)
+        .toArray(productLabel.position);
     }
     for (const { index, object, local } of surfaceAnchors) {
       object.updateWorldMatrix(true, false);
@@ -312,6 +332,8 @@ function create() {
     transcriptPoint(activeFrame, 1, rnaLength, offset);
     offset.toArray(labels[4].position);
     labels[6].active = impaired && p > 0.49;
+    for (let axis = 0; axis < 3; axis++)
+      labels[6].position[axis] = labels[3].position[axis];
     labels[5].active = !labels[6].active;
     group.userData = {
       species: "mammal",

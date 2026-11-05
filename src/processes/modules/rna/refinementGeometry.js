@@ -30,28 +30,41 @@ export function bindLabelToSurface(
   };
 }
 
+// Each scene owns its immutable domain geometry. Repeated domains with the same
+// phase differ only in mesh transforms/materials, and disposal deduplicates it.
+const domainGeometryByKit = new WeakMap();
+
 // Functional molecular surfaces and secondary-structure traces, not atomic fits.
 export function proteinDomain(k, parent, position, scale, material, phase = 0) {
-  const geometry = new THREE.SphereGeometry(1, 32, 22);
-  const a = geometry.attributes.position;
-  for (let i = 0; i < a.count; i++) {
-    const x = a.getX(i),
-      y = a.getY(i),
-      z = a.getZ(i);
-    // An asymmetric cleft and shoulder form a domain, rather than a bead.
-    const cleft =
-      0.17 *
-      Math.exp(-((x - 0.25) ** 2 * 10 + (y + 0.05) ** 2 * 6)) *
-      Math.max(0, z);
-    const shoulder = 1 + 0.07 * Math.sin(y * 4 + phase) + 0.05 * x * y;
-    a.setXYZ(
-      i,
-      x * shoulder,
-      y * (1 + 0.06 * Math.cos(x * 5 + phase)),
-      z * shoulder - cleft,
-    );
+  let geometries = domainGeometryByKit.get(k);
+  if (!geometries) {
+    geometries = new Map();
+    domainGeometryByKit.set(k, geometries);
   }
-  geometry.computeVertexNormals();
+  let geometry = geometries.get(phase);
+  if (!geometry) {
+    geometry = new THREE.SphereGeometry(1, 32, 22);
+    const a = geometry.attributes.position;
+    for (let i = 0; i < a.count; i++) {
+      const x = a.getX(i),
+        y = a.getY(i),
+        z = a.getZ(i);
+      // An asymmetric cleft and shoulder form a domain, rather than a bead.
+      const cleft =
+        0.17 *
+        Math.exp(-((x - 0.25) ** 2 * 10 + (y + 0.05) ** 2 * 6)) *
+        Math.max(0, z);
+      const shoulder = 1 + 0.07 * Math.sin(y * 4 + phase) + 0.05 * x * y;
+      a.setXYZ(
+        i,
+        x * shoulder,
+        y * (1 + 0.06 * Math.cos(x * 5 + phase)),
+        z * shoulder - cleft,
+      );
+    }
+    geometry.computeVertexNormals();
+    geometries.set(phase, geometry);
+  }
   const mesh = k.mesh(geometry, material, position, parent);
   mesh.scale.set(...scale);
   return mesh;

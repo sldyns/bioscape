@@ -156,6 +156,11 @@ export default {
       write.finish(heads);
       write.finish(tails);
     }
+    // The initialized slots are open. Only a changed BAK1 footprint changes
+    // these instance transforms; retain exact matrices for every other slot.
+    const blockedSlots = new Uint8Array(slots.length);
+    let lastLipidX = NaN,
+      lastLipidZ = NaN;
     // FLS2 presents a continuous concave LRR face to ligand and coreceptor.
     const fls = new THREE.Group();
     fls.name = "fls2";
@@ -412,10 +417,10 @@ export default {
     const labels = [
       k.label([-3.3, 2.8, 0], "质外体", "Apoplast", 2),
       k.label([-3.3, -2.1, 0], "胞质", "Cytosol", 2),
-      k.label([-2.15, 2.93, 0], "FLS2", "FLS2", 2),
-      k.label([-0.6, 1.55, 0], "BAK1", "BAK1", 2),
-      k.label([-1.05, -1.65, 0.2], "BIK1", "BIK1", 2),
-      k.label([2.2, -1.76, 0.1], "RBOHD", "RBOHD", 2),
+      k.label([-2.15, 2.93, 0], "FLS2 受体", "FLS2 receptor", 2),
+      k.label([-0.6, 1.55, 0], "BAK1 共受体", "BAK1 coreceptor", 2),
+      k.label([-1.05, -1.65, 0.2], "BIK1 激酶", "BIK1 kinase", 2),
+      k.label([2.2, -1.76, 0.1], "RBOHD 氧化酶", "RBOHD oxidase", 2),
       k.label([-1.5, 2.16, 0.3], "flg22", "flg22", 2),
       k.label([3.24, 1.75, 0], "质外体活性氧", "Apoplastic ROS", 2),
       k.label([3.3, -0.91, 0.1], "NADPH → NADP⁺", "NADPH → NADP⁺", 1),
@@ -471,35 +476,47 @@ export default {
           [bakKinase.position.x, -0.45, bakKinase.position.z - 0.04],
         );
         // Refill every vacated BAK1 site; only its CURRENT footprint excludes lipids.
-        for (const { sign, heads, tails } of lipidLayers) {
-          slots.forEach(([x, z], i) => {
+        if (bak.position.x !== lastLipidX || bak.position.z !== lastLipidZ) {
+          let changed = false;
+          for (let i = 0; i < slots.length; i++) {
+            const [x, z] = slots[i];
             const blocked =
-              Math.hypot(x - bak.position.x, z - bak.position.z) < 0.2;
-            write.bead(heads, i, [x, sign * 0.24, z], blocked ? 0 : 0.07);
-            for (let chain = 0; chain < 2; chain++) {
-              const dx = (chain - 0.5) * 0.055,
-                kink = chain ? 0.028 : 0,
-                a = [x + dx, sign * 0.18, z],
-                b = [x + dx + kink, sign * 0.095, z + 0.018],
-                c = [x + dx + kink, sign * 0.016, z + 0.01];
-              write.segment(
-                tails,
-                i * 4 + chain * 2,
-                a,
-                b,
-                blocked ? 0 : 0.018,
-              );
-              write.segment(
-                tails,
-                i * 4 + chain * 2 + 1,
-                b,
-                c,
-                blocked ? 0 : 0.018,
-              );
+              Math.hypot(x - bak.position.x, z - bak.position.z) < 0.2 ? 1 : 0;
+            if (blocked === blockedSlots[i]) continue;
+            blockedSlots[i] = blocked;
+            changed = true;
+            for (const { sign, heads, tails } of lipidLayers) {
+              write.bead(heads, i, [x, sign * 0.24, z], blocked ? 0 : 0.07);
+              for (let chain = 0; chain < 2; chain++) {
+                const dx = (chain - 0.5) * 0.055,
+                  kink = chain ? 0.028 : 0,
+                  a = [x + dx, sign * 0.18, z],
+                  b = [x + dx + kink, sign * 0.095, z + 0.018],
+                  c = [x + dx + kink, sign * 0.016, z + 0.01];
+                write.segment(
+                  tails,
+                  i * 4 + chain * 2,
+                  a,
+                  b,
+                  blocked ? 0 : 0.018,
+                );
+                write.segment(
+                  tails,
+                  i * 4 + chain * 2 + 1,
+                  b,
+                  c,
+                  blocked ? 0 : 0.018,
+                );
+              }
             }
-          });
-          write.finish(heads);
-          write.finish(tails);
+          }
+          if (changed)
+            for (const { heads, tails } of lipidLayers) {
+              write.finish(heads);
+              write.finish(tails);
+            }
+          lastLipidX = bak.position.x;
+          lastLipidZ = bak.position.z;
         }
 
         peptide.visible = on;

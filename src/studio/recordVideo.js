@@ -44,11 +44,15 @@ export function recordVideo({
       finalFrameDrawn = false,
       finished = false;
     const chunks = [];
+    const owner = canvas.ownerDocument ?? globalThis.document;
+    const ownerWindow = owner?.defaultView;
     const cleanup = () => {
       runtime.cancelAnimationFrame(frameId);
       runtime.clearTimeout(stopTimer);
       runtime.clearTimeout(watchdog);
       signal?.removeEventListener("abort", abort);
+      owner?.removeEventListener("visibilitychange", visibilityChanged);
+      ownerWindow?.removeEventListener("pagehide", pageHidden);
       if (recorder) {
         recorder.ondataavailable = null;
         recorder.onstop = null;
@@ -71,13 +75,24 @@ export function recordVideo({
     };
     const abort = () =>
       fail(new DOMException("Recording cancelled", "AbortError"));
+    const pageHidden = () => fail(new Error("VIDEO_PAGE_HIDDEN"));
+    const visibilityChanged = () => {
+      if (owner.hidden) pageHidden();
+    };
     if (signal?.aborted) {
       abort();
       return;
     }
+    if (owner?.hidden) {
+      pageHidden();
+      return;
+    }
     signal?.addEventListener("abort", abort, { once: true });
+    owner?.addEventListener("visibilitychange", visibilityChanged);
+    ownerWindow?.addEventListener("pagehide", pageHidden);
     try {
       drawFrame(0);
+      if (finished) return;
       stream = canvas.captureStream(30);
       recorder = new runtime.MediaRecorder(stream, {
         mimeType: format.mimeType,
@@ -112,6 +127,7 @@ export function recordVideo({
       const started = runtime.now();
       let nextPaint = started + 1000 / 30;
       onProgress(0);
+      if (finished) return;
       const tick = () => {
         if (finished) return;
         try {
@@ -119,10 +135,12 @@ export function recordVideo({
           const progress = Math.min(1, (now - started) / (duration * 1000));
           if (now >= nextPaint - 1 || progress === 1) {
             drawFrame(progress);
+            if (finished) return;
             nextPaint = now + 1000 / 30;
             if (progress === 1) finalFrameDrawn = true;
             stream.getVideoTracks()[0]?.requestFrame?.();
             onProgress(progress);
+            if (finished) return;
           }
           if (progress < 1) {
             frameId = runtime.requestAnimationFrame(tick);

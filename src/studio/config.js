@@ -87,8 +87,13 @@ export function compositionLayout(preferences) {
       )
     : 0;
   // Scientific context belongs to every teaching export, independent of credit.
+  const noteLines = Number.isFinite(preferences.scientificNoteLines)
+    ? Math.max(1, Math.ceil(preferences.scientificNoteLines))
+    : 1;
   const footer =
-    padding * 2 + footerSize * (preferences.scientificNote ? 2.5 : 1);
+    padding * 2 +
+    footerSize *
+      (preferences.scientificNote ? 2.5 + Math.max(0, noteLines - 2) * 1.3 : 1);
   const inset = preferences.framing === "airy" ? Math.round(short * 0.07) : 0;
   return {
     width,

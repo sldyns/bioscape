@@ -15,7 +15,9 @@ const [diffusion, pump, osmosis, wall] = await Promise.all(
     load,
   ),
 );
-const { seeded } = await import(new URL("membraneGeometry.js", moduleBase));
+const { seeded, bindSurfaceLabel } = await import(
+  new URL("membraneGeometry.js", moduleBase)
+);
 const near = (a, b, eps = 1e-7) =>
   assert(Math.abs(a - b) <= eps, `${a} != ${b}`);
 const named = (s, name) => {
@@ -516,4 +518,149 @@ test("11: mDAP branches retain peptide identities with clear bonds and separated
     minimumSphereClearance > 0,
     `unrelated D-Ala residue-sphere clearance ${minimumSphereClearance}`,
   );
+});
+
+// Measure the rendered triangles, independently of the production binder's
+// nearest-vertex and instance selection. Respect both instance count and drawRange.
+function closestRenderedInstanceSurface(mesh, point) {
+  assert(mesh.isInstancedMesh);
+  for (let object = mesh; object; object = object.parent)
+    assert(object.visible, "membrane target has a hidden ancestor");
+  const geometry = mesh.geometry,
+    positions = geometry.attributes.position,
+    index = geometry.index;
+  if (!geometry.boundingSphere) geometry.computeBoundingSphere();
+  const start = geometry.drawRange.start,
+    end = Math.min(
+      index?.count ?? positions.count,
+      start + geometry.drawRange.count,
+    ),
+    instance = new THREE.Matrix4(),
+    transform = new THREE.Matrix4(),
+    inverse = new THREE.Matrix4(),
+    local = new THREE.Vector3(),
+    triangle = new THREE.Triangle(),
+    closest = new THREE.Vector3();
+  let distance = Infinity,
+    instanceIndex = -1;
+  for (let i = 0; i < mesh.count; i++) {
+    mesh.getMatrixAt(i, instance);
+    transform.multiplyMatrices(mesh.matrixWorld, instance);
+    inverse.copy(transform).invert();
+    local.copy(point).applyMatrix4(inverse);
+    if (
+      local.distanceTo(geometry.boundingSphere.center) >
+      geometry.boundingSphere.radius + 1e-6
+    )
+      continue;
+    for (let j = start; j < end; j += 3) {
+      [triangle.a, triangle.b, triangle.c].forEach((v, k) =>
+        v
+          .fromBufferAttribute(positions, index ? index.getX(j + k) : j + k)
+          .applyMatrix4(transform),
+      );
+      triangle.closestPointToPoint(point, closest);
+      const current = point.distanceTo(closest);
+      if (current < distance) {
+        distance = current;
+        instanceIndex = i;
+      }
+    }
+  }
+  return { distance, instanceIndex };
+}
+
+test("12: inner-membrane callout touches a real rendered leaflet in both antibiotic branches", () => {
+  const s = wall.create(),
+    heads = named(s, "phospholipid-heads--1"),
+    label = s.labels[6],
+    position = label.position;
+  for (const antibiotic of ["none", "betaLactam"])
+    for (const p of [0, 0.17, 0.319999, 0.32, 0.35, 0.64, 0.77, 0.9, 1, 0.43]) {
+      s.update(p, { antibiotic });
+      s.group.updateMatrixWorld(true);
+      assert.equal(s.labels[6], label);
+      assert.equal(label.position, position);
+      assert.notEqual(label.active, false);
+      assert.notEqual(label.annotationKind, "context");
+      assert.equal(label.text.en, "Inner membrane · outer membrane omitted");
+      assert(
+        closestRenderedInstanceSurface(heads, labelPoint(s, 6)).distance < 1e-7,
+        "inner-membrane label does not touch an actual rendered lipid head",
+      );
+    }
+
+  // Challenge complete ancestor transforms, then movement of the bound instance.
+  s.group.position.set(0.7, -0.3, 0.2);
+  s.group.rotation.set(0.13, -0.21, 0.17);
+  s.group.scale.set(0.9, 1.1, 1.2);
+  heads.position.set(-0.16, 0.22, 0.11);
+  heads.rotation.set(0.17, 0.28, -0.13);
+  heads.scale.set(1.1, 0.9, 0.85);
+  s.update(0.64);
+  s.group.updateMatrixWorld(true);
+  const before = labelPoint(s, 6),
+    match = closestRenderedInstanceSurface(heads, before);
+  assert(match.distance < 1e-7 && match.instanceIndex >= 0);
+  const matrix = new THREE.Matrix4(),
+    translation = new THREE.Vector3(),
+    rotation = new THREE.Quaternion(),
+    scale = new THREE.Vector3();
+  heads.getMatrixAt(match.instanceIndex, matrix);
+  matrix.decompose(translation, rotation, scale);
+  translation.add(new THREE.Vector3(0.31, 0.13, 0.16));
+  rotation.setFromEuler(new THREE.Euler(0.15, -0.22, 0.19));
+  matrix.compose(translation, rotation, scale);
+  heads.setMatrixAt(match.instanceIndex, matrix);
+  heads.instanceMatrix.needsUpdate = true;
+  s.update(0.64);
+  s.group.updateMatrixWorld(true);
+  const after = labelPoint(s, 6),
+    moved = closestRenderedInstanceSurface(heads, after);
+  assert(moved.distance < 1e-7);
+  assert.equal(moved.instanceIndex, match.instanceIndex);
+  assert(after.distanceTo(before) > 0.1);
+});
+
+test("13: surface binding includes instance zero and follows its changing matrix", () => {
+  const root = new THREE.Group(),
+    parent = new THREE.Group(),
+    mesh = new THREE.InstancedMesh(
+      new THREE.SphereGeometry(1, 12, 8),
+      new THREE.MeshBasicMaterial(),
+      2,
+    );
+  root.position.set(1, -0.3, 0.4);
+  root.rotation.set(0.13, -0.29, 0.17);
+  parent.position.set(-0.2, 0.3, 0.1);
+  parent.rotation.set(-0.15, 0.2, 0.3);
+  mesh.position.set(0.4, -0.1, 0.2);
+  parent.add(mesh);
+  root.add(parent);
+  mesh.setMatrixAt(1, new THREE.Matrix4().makeTranslation(-6, -5, -4));
+  const label = { position: [0, 0, 0] },
+    position = label.position,
+    anchor = bindSurfaceLabel(label, mesh, root, [0, 0, 1], 0),
+    transform = new THREE.Matrix4();
+  for (const x of [2, 2.4, 1.7]) {
+    transform.compose(
+      new THREE.Vector3(x, -0.6, 0.8),
+      new THREE.Quaternion().setFromEuler(new THREE.Euler(0.2, -0.3, 0.1)),
+      new THREE.Vector3(0.2, 0.3, 0.4),
+    );
+    mesh.setMatrixAt(0, transform);
+    mesh.instanceMatrix.needsUpdate = true;
+    anchor();
+    root.updateMatrixWorld(true);
+    assert.equal(label.position, position);
+    const match = closestRenderedInstanceSurface(
+      mesh,
+      root.localToWorld(new THREE.Vector3(...label.position)),
+    );
+    assert(
+      match.distance < 1e-7,
+      "label misses the actual instance-zero surface",
+    );
+    assert.equal(match.instanceIndex, 0);
+  }
 });

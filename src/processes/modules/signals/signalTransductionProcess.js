@@ -284,9 +284,9 @@ function create() {
     k.label([-3.2, 1.1, 0], "胞质侧", "Cytosolic side", 2),
     k.label([-1.8, 2.35, 0], "PDGF 受体", "PDGF receptor", 2),
     k.label([-0.32, 1.02, 0.3], "膜锚定 Ras", "Membrane-anchored Ras", 2),
-    k.label([-0.1, -0.48, 0.15], "Raf", "Raf"),
-    k.label([1.05, -0.9, 0.15], "MEK", "MEK"),
-    k.label([0.6, -2.05, 0.15], "ERK", "ERK"),
+    k.label([-0.1, -0.48, 0.15], "Raf 激酶", "Raf kinase"),
+    k.label([1.05, -0.9, 0.15], "MEK 激酶", "MEK kinase"),
+    k.label([0.6, -2.05, 0.15], "ERK 激酶", "ERK kinase"),
     k.label([2.67, -2.91, 0], "细胞核", "Nucleus", 2),
     k.label([-1.65, -0.1, 0.2], "Grb2–SOS", "Grb2–SOS"),
   ];

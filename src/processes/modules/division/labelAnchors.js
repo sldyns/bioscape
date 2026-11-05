@@ -1,3 +1,4 @@
+import { readVertexCandidates } from "../../vertexCandidates.js";
 import { THREE } from "../../kit.js";
 
 // Labels are projected directly in world space by ProcessScene. Keep their
@@ -15,14 +16,43 @@ export function surfaceAnchor(label, mesh, preferred) {
         geometry.index?.count ?? position.count,
         geometry.drawRange.start + geometry.drawRange.count,
       );
-      for (let i = geometry.drawRange.start; i < end; i++) {
-        const index = geometry.index ? geometry.index.getX(i) : i;
-        const distance = point
-          .fromBufferAttribute(position, index)
-          .distanceToSquared(target);
-        if (distance < nearest) {
-          nearest = distance;
-          vertex = index;
+      if (
+        !geometry.index &&
+        !position.isInterleavedBufferAttribute &&
+        !position.normalized &&
+        position.itemSize === 3 &&
+        position.array instanceof Float32Array
+      ) {
+        const values = position.array,
+          targetX = target.x,
+          targetY = target.y,
+          targetZ = target.z;
+        const candidates = readVertexCandidates(geometry),
+          indices = candidates?.indices,
+          start = indices ? 0 : geometry.drawRange.start,
+          stop = indices ? candidates.count : end;
+        for (let sample = start; sample < stop; sample++) {
+          const i = indices ? indices[sample] : sample;
+          const offset = i * 3,
+            dx = values[offset] - targetX,
+            dy = values[offset + 1] - targetY,
+            dz = values[offset + 2] - targetZ;
+          const distance = dx * dx + dy * dy + dz * dz;
+          if (distance < nearest) {
+            nearest = distance;
+            vertex = i;
+          }
+        }
+      } else {
+        for (let i = geometry.drawRange.start; i < end; i++) {
+          const index = geometry.index ? geometry.index.getX(i) : i;
+          const distance = point
+            .fromBufferAttribute(position, index)
+            .distanceToSquared(target);
+          if (distance < nearest) {
+            nearest = distance;
+            vertex = index;
+          }
         }
       }
     }

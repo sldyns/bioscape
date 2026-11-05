@@ -864,9 +864,9 @@ const relationships = {
   },
   contractileVacuole: {
     paramecium: links("paramecium", [
-      ["paraContractile/paraRadial", 0.18],
-      ["paraContractile", 0.42],
-      ["paraSurface", 0.8],
+      ["paraContractile/paraRadial", 0.127],
+      ["paraContractile", 0.296],
+      ["paraSurface", 0.535],
     ]),
   },
   parameciumDivision: {

@@ -311,6 +311,7 @@ function create() {
     [labels[6], atp.children[0]],
     [labels[7], pump.getObjectByName("H-ATPase-M1")],
   ]);
+  let lastLinkerUptake = NaN;
   function update(progress, parameters = {}) {
     const p = clamp(progress),
       active = parameters.energy !== "depleted";
@@ -348,7 +349,10 @@ function create() {
     // Alternating access: the two bundles tilt; substrate does not cross bare lipid.
     lobes[0].rotation.z = 0.18 - 0.36 * uptake;
     lobes[1].rotation.z = -0.18 + 0.36 * uptake;
-    updateLinker();
+    if (uptake !== lastLinkerUptake) {
+      updateLinker();
+      lastLinkerUptake = uptake;
+    }
     labels[4].active = active && p >= 0.26;
     labels[6].active = active;
     updateLabelAnchors();

@@ -395,17 +395,20 @@ export default {
         ligands[i].position.x =
           2.15 + (i % 3) * 0.43 - 0.3 * ease(p, 0.1, 0.25);
       }
-      for (let f = 0; f < flagella.length; f++)
+      for (let f = 0; f < flagella.length; f++) {
+        const phase = -32 * p + (f === 0 ? 64 * reversedTime : 0);
+        point(f, 0, deformation, phase, a);
         for (let j = 0; j < 84; j++) {
-          const phase = -32 * p + (f === 0 ? 64 * reversedTime : 0);
-          point(f, j / 84, deformation, phase, a);
           point(f, (j + 1) / 84, deformation, phase, z);
           d.copy(z).sub(a);
           const m = flagella[f][j];
           m.position.copy(a).add(z).multiplyScalar(0.5);
           m.scale.set(0.025, d.length(), 0.025);
           m.quaternion.setFromUnitVectors(axis, d.normalize());
+          // Adjacent segments share this exact endpoint, including during tumbles.
+          a.copy(z);
         }
+      }
       traces[0].visible = gradient;
       traces[1].visible = !gradient;
       const path = paths[gradient ? 0 : 1],

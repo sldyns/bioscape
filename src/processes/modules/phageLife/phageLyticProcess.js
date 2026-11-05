@@ -284,6 +284,21 @@ export default {
       labels[3].active = expression.visible;
       labels[4].active = amplifications[0].visible && p < 0.64;
       labels[5].active = p >= 0.52 && p < 0.85;
+      // Keep the annotation aligned with the actual head/tail assembly state.
+      // Mutate the existing bilingual object so native/export labels agree.
+      if (!progeny[1].tail.visible) {
+        labels[5].text.zh = "前头装配中";
+        labels[5].text.en = "Proheads assembling";
+      } else if (join === 0) {
+        labels[5].text.zh = "前头 · 独立装配的尾";
+        labels[5].text.en = "Proheads · separate tails";
+      } else if (join < 1) {
+        labels[5].text.zh = "头尾结合中";
+        labels[5].text.en = "Head–tail joining";
+      } else {
+        labels[5].text.zh = "成熟子代 · 待释放";
+        labels[5].text.en = "Mature progeny · awaiting release";
+      }
       labels[6].active = p >= 0.85;
       vertexAnchor(labels[0], host.group.children[0].children[0], 175);
       objectAnchor(labels[1], group, 1.4, -0.55, 0.2);

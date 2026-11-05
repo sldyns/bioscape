@@ -1,4 +1,5 @@
 import { THREE } from "../../kit.js";
+import { computeIndexedFloat32VertexNormals } from "../division/indexedFloat32Normals.js";
 
 // Each membrane is one bilayer: two polar surfaces, a bounded hydrophobic
 // cut edge, and paired lipid heads/tails along that edge. The front viewing
@@ -85,7 +86,7 @@ export function membraneSurface(
       : out.set(u, r * sin, -r * cos);
   const finish = (g) => {
     g.attributes.position.needsUpdate = true;
-    g.computeVertexNormals();
+    computeIndexedFloat32VertexNormals(g);
     g.computeBoundingSphere();
     g.computeBoundingBox();
   };

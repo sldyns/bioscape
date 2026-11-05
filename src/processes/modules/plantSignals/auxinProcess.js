@@ -452,7 +452,7 @@ export default {
         "Nucleus · Arabidopsis shoot",
         1,
       ),
-      k.label([-3.1, 2.85, 0.1], "生长素", "Auxin", 1),
+      k.label([-3.1, 2.85, 0.1], "生长素", "Auxin (IAA)", 1),
     ];
     const atomMatrix = new THREE.Matrix4();
     const frontAtom = (mesh) => {
@@ -493,6 +493,10 @@ export default {
       bindSurfaceLabel(labels[7], auxinAtoms, [0, 0, 1], frontAtom(auxinAtoms)),
     ];
     // Label 6 describes the open nuclear region/specimen, not a molecule.
+    let lastDNACenter = NaN,
+      lastDNAOpening = NaN,
+      lastRNACenter = NaN,
+      lastRNATranscription = NaN;
     return {
       group,
       camera: { position: [0, 1.1, 12.4], target: [-0.15, 0, 0] },
@@ -596,71 +600,81 @@ export default {
           opening = on ? ease(p, 0.695, 0.748) : 0;
         pol.position.x = center;
         pol.visible = tx > 0.005;
-        for (let strand = 0; strand < 2; strand++) {
-          for (let i = 0; i < dnaSegments; i++)
-            writer.segment(
-              dnaRails[strand],
-              i,
-              dnaPoint(
-                -3.6 + (i / dnaSegments) * 5.3,
-                strand,
-                center,
-                opening * 0.96,
-              ),
-              dnaPoint(
-                -3.6 + ((i + 1) / dnaSegments) * 5.3,
-                strand,
-                center,
-                opening * 0.96,
-              ),
-              0.035,
-            );
-          for (let i = 0; i < pairCount; i++) {
-            const x = -3.55 + (i / (pairCount - 1)) * 5.2,
-              a = dnaPoint(x, strand, center, opening * 0.96),
-              b = dnaPoint(x, 1 - strand, center, opening * 0.96),
-              local = Math.max(0, 1 - Math.abs(x - center) / 0.45),
-              baseOpening = opening * local * local * (3 - 2 * local),
-              baseExtension = 0.48 * (1 - baseOpening) + 0.17 * baseOpening;
-            writer.bead(phosphates[strand], i, a, 0.044);
-            writer.segment(
-              bases[strand],
-              i,
-              a,
-              [
-                a[0] + (strand ? 0.065 : -0.065) * baseOpening,
-                a[1] + (b[1] - a[1]) * baseExtension,
-                a[2] + (b[2] - a[2]) * baseExtension,
-              ],
-              0.032,
-            );
+        // The complete DNA state depends on these two derived scalars. Reuse
+        // exact instance buffers while other stages advance or controls change.
+        if (center !== lastDNACenter || opening !== lastDNAOpening) {
+          for (let strand = 0; strand < 2; strand++) {
+            for (let i = 0; i < dnaSegments; i++)
+              writer.segment(
+                dnaRails[strand],
+                i,
+                dnaPoint(
+                  -3.6 + (i / dnaSegments) * 5.3,
+                  strand,
+                  center,
+                  opening * 0.96,
+                ),
+                dnaPoint(
+                  -3.6 + ((i + 1) / dnaSegments) * 5.3,
+                  strand,
+                  center,
+                  opening * 0.96,
+                ),
+                0.035,
+              );
+            for (let i = 0; i < pairCount; i++) {
+              const x = -3.55 + (i / (pairCount - 1)) * 5.2,
+                a = dnaPoint(x, strand, center, opening * 0.96),
+                b = dnaPoint(x, 1 - strand, center, opening * 0.96),
+                local = Math.max(0, 1 - Math.abs(x - center) / 0.45),
+                baseOpening = opening * local * local * (3 - 2 * local),
+                baseExtension = 0.48 * (1 - baseOpening) + 0.17 * baseOpening;
+              writer.bead(phosphates[strand], i, a, 0.044);
+              writer.segment(
+                bases[strand],
+                i,
+                a,
+                [
+                  a[0] + (strand ? 0.065 : -0.065) * baseOpening,
+                  a[1] + (b[1] - a[1]) * baseExtension,
+                  a[2] + (b[2] - a[2]) * baseExtension,
+                ],
+                0.032,
+              );
+            }
+            writer.finish(dnaRails[strand]);
+            writer.finish(phosphates[strand]);
+            writer.finish(bases[strand]);
           }
-          writer.finish(dnaRails[strand]);
-          writer.finish(phosphates[strand]);
-          writer.finish(bases[strand]);
+          lastDNACenter = center;
+          lastDNAOpening = opening;
         }
-        const rnaPoint = (t) => {
-          const d = t * tx * 1.46;
-          return [
-            center - d * 0.42,
-            -1.91 + d * 0.83,
-            0.21 + Math.sin(d * 5) * 0.09,
-          ];
-        };
         rnaRails.visible = rnaNucleotides.visible = tx > 0.005;
-        for (let i = 0; i <= 55; i++) {
-          writer.bead(rnaNucleotides, i, rnaPoint(i / 55), 0.037);
-          if (i < 55)
-            writer.segment(
-              rnaRails,
-              i,
-              rnaPoint(i / 55),
-              rnaPoint((i + 1) / 55),
-              0.026,
-            );
+        if (center !== lastRNACenter || tx !== lastRNATranscription) {
+          const rnaPoint = (t) => {
+            const d = t * tx * 1.46;
+            return [
+              center - d * 0.42,
+              -1.91 + d * 0.83,
+              0.21 + Math.sin(d * 5) * 0.09,
+            ];
+          };
+          for (let i = 0; i <= 55; i++) {
+            writer.bead(rnaNucleotides, i, rnaPoint(i / 55), 0.037);
+            if (i < 55)
+              writer.segment(
+                rnaRails,
+                i,
+                rnaPoint(i / 55),
+                rnaPoint((i + 1) / 55),
+                0.026,
+              );
+          }
+          writer.finish(rnaRails);
+          writer.finish(rnaNucleotides);
+          lastRNACenter = center;
+          lastRNATranscription = tx;
         }
-        writer.finish(rnaRails);
-        writer.finish(rnaNucleotides);
         for (const { g, c, r } of cells) {
           const stretch = 1 + growth * (c ? 0.36 : 0.08);
           g.scale.y = stretch;

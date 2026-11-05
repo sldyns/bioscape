@@ -769,6 +769,7 @@ export default {
             "CAM · 伽蓝菜 · 昼夜分隔",
             "CAM · Kalanchoë · day/night separation",
           ),
+          shortLabel: b("CAM · 伽蓝菜", "CAM · Kalanchoë"),
         },
       ],
     },

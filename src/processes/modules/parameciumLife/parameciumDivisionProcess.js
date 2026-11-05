@@ -186,7 +186,13 @@ export default {
       k.label([-1.15, 0, 0.4], "横向分裂沟", "Transverse cleavage furrow", 3),
       k.label([-0.9, -1.8, 0.5], "后部子细胞", "Posterior daughter", 2),
     ];
-    const bridgeAnchor = [0, 0, 0],
+    const micronuclearTargets = chromatids.map(() => [0, 0, 0]),
+      oralTargets = [
+        [0, 0, 0],
+        [0, 0, 0],
+      ],
+      annotationTargets = [],
+      bridgeAnchor = [0, 0, 0],
       posteriorAnchor = [0, -1.62, 0];
     const microAnchors = [micro, micros[1]].map((o) =>
         labelAnchor(group, labels[0], o),
@@ -197,6 +203,14 @@ export default {
         labelAnchor(group, labels[1], macroDaughters[1]),
       ],
       oralAnchor = labelAnchor(group, labels[2], oral[0], [0.53, 0, 0.58]),
+      oralTargetAnchors = oral.map((object, index) =>
+        labelAnchor(
+          group,
+          { position: oralTargets[index] },
+          object,
+          [0.72, 0.48, 0.53],
+        ),
+      ),
       furrowAnchor = labelAnchor(group, labels[3], furrow, [-1.05, 0, 0]),
       posteriorLabel = labelAnchor(
         group,
@@ -270,6 +284,12 @@ export default {
           );
         }
       });
+      // The mother envelope elongates into two chromatin regions before the
+      // label switches to a daughter. Protect every chromatid, including edges.
+      if (p >= 0.3)
+        micronuclearTargets.forEach((point, index) => {
+          chromatids[index].o.position.toArray(point);
+        });
       const macroDistance =
         0.54 + 0.96 * ease(p, 0.76, 0.9) + separation * 0.55;
       macroLineage.update({
@@ -305,6 +325,12 @@ export default {
       microAnchors[p < 0.54 ? 0 : 1]();
       macroAnchors[p < 0.59 ? 0 : p < 0.76 ? 1 : 2]();
       oralAnchor();
+      // Both visible oral entrances belong to the same annotation.
+      oralTargetAnchors.forEach((anchor) => anchor());
+      annotationTargets.length = 0;
+      if (p >= 0.3) annotationTargets.push(...micronuclearTargets);
+      annotationTargets.push(oralTargets[0]);
+      if (oral[1].scale.x > 0) annotationTargets.push(oralTargets[1]);
       furrowAnchor();
       posteriorLabel();
       labels[3].active = p >= 0.7 && p < 0.91;
@@ -327,6 +353,7 @@ export default {
       group,
       update,
       labels,
+      annotationTargets,
       camera: { position: [0, 1, 12], target: [0, 0, 0] },
     };
   },

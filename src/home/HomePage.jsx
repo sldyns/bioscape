@@ -28,6 +28,7 @@ import {
 import HeroScene from "./HeroScene.jsx";
 import ProcessCard from "./ProcessCard.jsx";
 import { normalizeHomeSearch } from "./search.js";
+import { exploreSceneHash } from "./routes.js";
 import "./home.css";
 
 const ProjectDialog = lazy(() => import("../components/ProjectDialog.jsx"));
@@ -230,7 +231,7 @@ export default function HomePage({
               <div className="home-hero-actions">
                 <a
                   className="home-primary"
-                  href="#/cell"
+                  href={exploreSceneHash("#/cell", lang)}
                   onClick={(event) => follow(event, "#/cell")}
                 >
                   {t("开始探索", "Start exploring")}
@@ -318,7 +319,7 @@ export default function HomePage({
             {homeModels.map((model) => (
               <a
                 className={`home-model-card is-${model.id}`}
-                href={model.href}
+                href={exploreSceneHash(model.href, lang)}
                 key={model.id}
                 onClick={(event) => follow(event, model.href)}
                 style={{ "--model-accent": model.accent }}
@@ -490,7 +491,7 @@ export default function HomePage({
           <div className="home-ways-grid">
             <a
               className="home-way"
-              href="#/cell"
+              href={exploreSceneHash("#/cell", lang)}
               onClick={(event) => follow(event, "#/cell")}
             >
               <div className="home-way-icon">
@@ -518,7 +519,7 @@ export default function HomePage({
             </button>
             <a
               className="home-way"
-              href="#/neuron"
+              href={exploreSceneHash("#/neuron", lang)}
               onClick={(event) => follow(event, "#/neuron")}
             >
               <div className="home-way-icon">

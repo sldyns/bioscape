@@ -695,30 +695,27 @@ function create() {
       membraneScore = score;
     }
   }
-  // Both ER boundary rings are fixed in world space. Build every original
-  // vertex once; visibility and all carrier motion still update independently.
+  // The donor rim stays fixed while the new carrier grows out of its mouth.
+  // Keep the complete detailed meshes and weld the moving carrier rim to it.
   const mouthWidth = Math.sin(2.76) ** 0.48;
-  erConnection.set(
-    (phi, out) =>
-      out.set(
-        -2.92 - 0.95 * Math.cos(2.76),
-        0.68 + 0.14 * mouthWidth * Math.cos(phi),
-        0.55 * mouthWidth * Math.sin(phi),
-      ),
-    (phi, out) =>
-      out.set(
-        -1.68 + 0.31 * Math.cos(2.4),
-        0.68 + 0.31 * Math.sin(2.4) * Math.cos(phi),
-        0.31 * Math.sin(2.4) * Math.sin(phi),
-      ),
-  );
-  let golgiActiveX = NaN,
+  const erMouthX = -2.92 - 0.95 * Math.cos(2.76);
+  let erBuddingX = NaN,
+    erBuddingScale = NaN,
+    golgiActiveX = NaN,
     golgiBridgeScale = NaN,
+    golgiBridgeY = NaN,
     lipidMode = null,
     lipidPoreOpening = NaN,
     lipidFlatten = NaN;
   function update(progress) {
     const p = Number.isFinite(progress) ? clamp(progress) : 0;
+    const erBudScale =
+      p >= 0.12 && p < 0.15 ? Math.max(0.001, ease(phase(p, 0.12, 0.15))) : 1;
+    const erBudX = erBudScale === 1 ? -1.68 : mix(erMouthX, -1.68, erBudScale);
+    const transBudScale =
+      p >= 0.67 && p < 0.7 ? Math.max(0.001, ease(phase(p, 0.67, 0.7))) : 1;
+    const transBudY =
+      transBudScale === 1 ? -1.42 : mix(active.mouthY, -1.42, transBudScale);
     const maturation = ease(phase(p, 0.42, 0.67));
     const activeX = mix(cisX, transX, maturation);
     for (let i = 0; i < golgi.length; i++) {
@@ -749,8 +746,8 @@ function create() {
     active.cap.visible = !((p >= 0.34 && p < 0.42) || (p >= 0.67 && p < 0.78));
     golgiNeck.visible = (p >= 0.34 && p < 0.42) || (p >= 0.67 && p < 0.78);
 
-    incoming.root.position.set(-1.68, 0.68, 0);
-    outgoing.root.position.set(transX + openingX, -1.42, 0);
+    incoming.root.position.set(erBudX, 0.68, 0);
+    outgoing.root.position.set(transX + openingX, transBudY, 0);
     incoming.root.visible = p >= 0.12 && p < 0.42;
     incoming.setOpen(p < 0.2 || p >= 0.34);
     incoming.root.rotation.z = mix(
@@ -759,19 +756,47 @@ function create() {
       ease(phase(p, 0.2, 0.32)),
     );
     incoming.root.scale.setScalar(
-      p >= 0.39 ? mix(1, 0.01, phase(p, 0.39, 0.42)) : 1,
+      p >= 0.39 ? mix(1, 0.01, phase(p, 0.39, 0.42)) : erBudScale,
     );
     outgoing.root.visible = p >= 0.67 && p < 0.9;
     outgoing.setOpen(p < 0.78);
     outgoing.root.rotation.z = Math.PI;
-    outgoing.root.scale.setScalar(1);
+    outgoing.root.scale.setScalar(transBudScale);
+    if (erBudX !== erBuddingX || erBudScale !== erBuddingScale) {
+      erConnection.set(
+        (phi, out) =>
+          out.set(
+            erMouthX,
+            0.68 + 0.14 * mouthWidth * Math.cos(phi),
+            0.55 * mouthWidth * Math.sin(phi),
+          ),
+        (phi, out) =>
+          out.set(
+            erBudX + erBudScale * 0.31 * Math.cos(2.4),
+            0.68 + erBudScale * 0.31 * Math.sin(2.4) * Math.cos(phi),
+            erBudScale * 0.31 * Math.sin(2.4) * Math.sin(phi),
+          ),
+      );
+      erBuddingX = erBudX;
+      erBuddingScale = erBudScale;
+    }
     // Weld each connection to the exact cisterna ellipse and transformed
     // carrier circle; donor/carrier boundary coordinates are shared.
     const incomingDock = p >= 0.34 && p < 0.42;
-    const bridgeScale = incomingDock ? incoming.root.scale.x : 1;
+    const outgoingDock = p >= 0.67 && p < 0.78;
+    const bridgeScale = incomingDock
+      ? incoming.root.scale.x
+      : outgoingDock
+        ? outgoing.root.scale.x
+        : 1;
+    const bridgeY = outgoingDock ? outgoing.root.position.y : -1.42;
     // Position and docked-carrier scale are the complete shape inputs, including
     // maturation while the bridge is hidden and reverse seeks across docking.
-    if (activeX !== golgiActiveX || bridgeScale !== golgiBridgeScale) {
+    if (
+      activeX !== golgiActiveX ||
+      bridgeScale !== golgiBridgeScale ||
+      bridgeY !== golgiBridgeY
+    ) {
       golgiConnection.set(
         (phi, out) =>
           out.set(
@@ -784,12 +809,13 @@ function create() {
             activeX +
               openingX +
               bridgeScale * 0.31 * Math.sin(2.4) * Math.cos(phi),
-            -1.42 - bridgeScale * 0.31 * Math.cos(2.4),
+            bridgeY - bridgeScale * 0.31 * Math.cos(2.4),
             bridgeScale * 0.31 * Math.sin(2.4) * Math.sin(phi),
           ),
       );
       golgiActiveX = activeX;
       golgiBridgeScale = bridgeScale;
+      golgiBridgeY = bridgeY;
     }
 
     fusion.visible = p >= 0.9 && p < 0.992;
@@ -806,7 +832,7 @@ function create() {
     if (p < 0.12) {
       cargo.position.set(mix(-3.35, -2.47, ease(phase(p, 0, 0.12))), 0.68, 0);
     } else if (p < 0.2) {
-      incoming.root.position.set(-1.68, 0.68, 0);
+      incoming.root.position.set(erBudX, 0.68, 0);
       cargo.position.set(mix(-2.47, -1.68, ease(phase(p, 0.12, 0.2))), 0.68, 0);
     } else if (p < 0.34) {
       inPath.getPoint(ease(phase(p, 0.2, 0.34)), incoming.root.position);
@@ -845,6 +871,7 @@ function create() {
     if (p < 0.9) {
       outgoing.lipidGroup.position.copy(outgoing.root.position);
       outgoing.lipidGroup.rotation.copy(outgoing.root.rotation);
+      outgoing.lipidGroup.scale.copy(outgoing.root.scale);
       if (lipidMode !== "carrier") {
         outgoing.lipids.update(outgoing.sites);
         lipidMode = "carrier";
@@ -852,6 +879,7 @@ function create() {
     } else {
       outgoing.lipidGroup.position.set(carrierContactX, 0, 0);
       outgoing.lipidGroup.rotation.set(0, 0, Math.PI);
+      outgoing.lipidGroup.scale.setScalar(1);
       // Carrier-local instance matrices only change when the fusion surface
       // changes. Group transforms above remain absolute on every update.
       if (

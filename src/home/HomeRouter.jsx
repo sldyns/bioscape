@@ -11,6 +11,7 @@ import {
   isHomeHash,
   RESUME_STORAGE_KEY,
   safeSceneHash,
+  exploreSceneHash,
   resumeSceneHash,
 } from "./routes.js";
 import { createSceneHistorySession } from "../exploration/historySession.js";
@@ -54,8 +55,10 @@ function describeResume(hash) {
 
 export default function HomeRouter() {
   const [home, setHome] = useState(() => isHomeHash(location.hash));
-  const [lang, setLang] = useState(() =>
-    stored("localStorage", "cell-atlas-language") === "en" ? "en" : "zh",
+  const [lang, setLang] = useState(
+    () =>
+      readSceneState(location.hash)?.lang ||
+      (stored("localStorage", "cell-atlas-language") === "en" ? "en" : "zh"),
   );
   const [resumeHash, setResumeHash] = useState(() =>
     safeSceneHash(stored("sessionStorage", RESUME_STORAGE_KEY)),
@@ -65,6 +68,8 @@ export default function HomeRouter() {
     const safe = safeSceneHash(hash);
     if (!safe) return;
     setResumeHash(safe);
+    const sceneLanguage = readSceneState(safe)?.lang;
+    if (sceneLanguage) setLang(sceneLanguage);
     try {
       sessionStorage.setItem(RESUME_STORAGE_KEY, safe);
     } catch {}
@@ -73,13 +78,10 @@ export default function HomeRouter() {
     const route = () => {
       const nextHome = isHomeHash(location.hash);
       setHome(nextHome);
-      if (nextHome)
-        setLang(
-          stored("localStorage", "cell-atlas-language") === "en" ? "en" : "zh",
-        );
     };
     window.addEventListener("popstate", route);
     window.addEventListener("hashchange", route);
+    route();
     return () => {
       window.removeEventListener("popstate", route);
       window.removeEventListener("hashchange", route);
@@ -101,17 +103,14 @@ export default function HomeRouter() {
     } catch {}
   };
   const explore = (hash) => {
-    const safe = safeSceneHash(hash);
-    if (!safe) return;
-    history.pushState(null, "", safe);
+    const destination = exploreSceneHash(hash, lang);
+    if (!destination) return;
+    history.pushState(null, "", destination);
     setHome(false);
     window.scrollTo({ top: 0, behavior: "instant" });
   };
   const goHome = (hash) => {
     remember(hash);
-    setLang(
-      stored("localStorage", "cell-atlas-language") === "en" ? "en" : "zh",
-    );
     history.pushState(null, "", "#/");
     setHome(true);
     window.scrollTo({ top: 0, behavior: "instant" });

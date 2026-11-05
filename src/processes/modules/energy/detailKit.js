@@ -1,4 +1,5 @@
 import { THREE } from "../../kit.js";
+import { labelMatrixSync } from "./labelMatrixSync.js";
 
 // A carrier remains the same molecule on the return leg. Flow glyphs instead
 // represent repeated reaction events and become zero-sized at their recycle cut.
@@ -17,6 +18,7 @@ export function flowScale(t) {
 export function energyDetails(k) {
   const { group, material, mesh, ball, segment, tube } = k;
   const catalyticHeads = [];
+  const labelMatrices = labelMatrixSync();
   const labelAnchors = [],
     labelPoint = new THREE.Vector3();
   // Label positions are leader endpoints. Bind object labels to real geometry;
@@ -58,9 +60,10 @@ export function energyDetails(k) {
       domain.scale.z = 0.6 * (1 + 0.08 * closure);
       domain.rotation.z = 0.07 * Math.sin(rotor.rotation.y - angle);
     }
+    labelMatrices.begin();
     for (const binding of labelAnchors) {
       const { label, target, local } = binding;
-      target.updateWorldMatrix(true, false);
+      labelMatrices.update(target);
       if (local) labelPoint.copy(local);
       else if (target.geometry)
         labelPoint.fromBufferAttribute(target.geometry.attributes.position, 0);

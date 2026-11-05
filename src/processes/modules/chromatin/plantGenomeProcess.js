@@ -307,6 +307,16 @@ function create() {
     dynamicTube(group, k.material("#5d8b70"), 70, 0.035),
     dynamicTube(group, k.material("#937267"), 70, 0.035),
   ];
+  // Local ribosomes and their message paths do not move in this process.
+  // Build these complete tubes once; playback only changes their visibility.
+  for (let i = 0; i < 2; i++) {
+    mrnas[i].mesh.name = `exported-mRNA-${i}`;
+    localRNA[i].mesh.name = `local-mRNA-${i}`;
+    localRNA[i].update((s, out) =>
+      localPorts[i].sampleMessage(s, out).add(localRibosomes[i].position),
+    );
+    localProducts[i].mesh.name = `local-nascent-peptide-${i}`;
+  }
   const tags = [
     k.ball([0, 0, 0], 0.083, tagMat),
     k.ball([0, 0, 0], 0.083, tagMat),
@@ -363,13 +373,16 @@ function create() {
       7,
     ),
   ];
+  labels[8].annotationKind = "context";
   let progress = 0,
-    importEnabled = true;
+    importEnabled = true,
+    grow = 0,
+    importP = 0,
+    fold = 0,
+    attached = 1,
+    engage = 0;
   const chainSample = (s, out, index) => {
-    const y = index === 0 ? 1.65 : -1.65,
-      grow = ease(progress, 0.34, 0.55),
-      importP = importEnabled ? ease(progress, 0.59, 0.87) : 0,
-      fold = importEnabled ? ease(progress, 0.86, 0.99) : 0;
+    const y = index === 0 ? 1.65 : -1.65;
     const lead = -0.25 + 0.82 * grow + 2.12 * importP;
     const x = lead - 0.84 * grow * (1 - s),
       wave = (1 - fold) * 0.07 * Math.sin(s * 18);
@@ -382,7 +395,6 @@ function create() {
       0.08 * (1 - fold) + foldedZ * fold,
     );
     // C-terminal end (s=0) remains on the cytosolic ribosome until release.
-    const attached = 1 - ease(progress, 0.55, 0.59);
     out.x += (0.03 + 0.02 * grow) * attached;
     out.y += 0.1 * attached;
     out.z += 0.13 * attached;
@@ -401,7 +413,6 @@ function create() {
       sign * 0.68 * intoPore + (sign * 1.65 + 0.03 - sign * 0.68) * outOfPore,
       0.02 + 0.23 * outOfPore,
     );
-    const engage = ease(exportP, 0.8, 1);
     cytosolicPorts[i].sampleMessage(s, routeScratch).add(ribosomes[i].position);
     return out.lerp(routeScratch, engage);
   }
@@ -410,11 +421,17 @@ function create() {
     importEnabled = parameters.targeting !== "removed";
     const tx = ease(progress, 0.03, 0.22),
       exportP = ease(progress, 0.2, 0.34),
-      local = ease(progress, 0.5, 0.88);
+      local = ease(progress, 0.5, 0.88),
+      release = ease(progress, 0.89, 0.97);
+    // These values are identical for every sample in the current update.
+    // Recompute them for every seek/parameter change, without quantization.
+    grow = ease(progress, 0.34, 0.55);
+    importP = importEnabled ? ease(progress, 0.59, 0.87) : 0;
+    fold = importEnabled ? ease(progress, 0.86, 0.99) : 0;
+    attached = 1 - ease(progress, 0.55, 0.59);
+    engage = ease(exportP, 0.8, 1);
     for (let i = 0; i < 2; i++) {
-      const y = i === 0 ? 1.65 : -1.65;
       mrnas[i].mesh.visible = progress > 0.035;
-      mrnas[i].mesh.name = `exported-mRNA-${i}`;
       mrnas[i].update((s, out) => messageSample(s, out, i, tx, exportP));
       messageDetails[i].root.visible = progress > 0.035;
       messageDetails[i].update((s, out) =>
@@ -427,14 +444,8 @@ function create() {
       chainSample(1, tags[i].position, i);
       tags[i].visible = importEnabled && progress > 0.345 && progress < 0.91;
       tags[i].position.y -= 0.35 * ease(progress, 0.87, 0.91);
-      localRNA[i].mesh.name = `local-mRNA-${i}`;
       localRNA[i].mesh.visible = progress > 0.39;
-      localRNA[i].update((s, out) =>
-        localPorts[i].sampleMessage(s, out).add(localRibosomes[i].position),
-      );
-      localProducts[i].mesh.name = `local-nascent-peptide-${i}`;
       localProducts[i].mesh.visible = progress > 0.51;
-      const release = ease(progress, 0.89, 0.97);
       localProducts[i].update((s, out) => {
         // s=1 is the growing C terminus: attached at the exit until termination.
         const contour = (1 - s) * local;

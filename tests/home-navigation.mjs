@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   isHomeHash,
   safeSceneHash,
+  exploreSceneHash,
   resumeSceneHash,
 } from "../src/home/routes.js";
 import { createSceneHistorySession } from "../src/exploration/historySession.js";
@@ -63,7 +64,58 @@ const snapshot = {
   },
 };
 const hash = sceneHash("#/plant?view=process&process=photosynthesis", snapshot);
+
+for (const source of [
+  "#/cell",
+  "#cell/nucleus",
+  "#/neuron",
+  "#/plant?view=process&process=photosynthesis&custom=%E7%BB%86%E8%83%9E%20%26%20ATP",
+]) {
+  for (const lang of ["zh", "en"]) {
+    const href = exploreSceneHash(source, lang);
+    assert.equal(readSceneState(href).lang, lang);
+    assert.equal(href.split("?")[0], source.split("?")[0]);
+    const originalParams = new URLSearchParams(source.split("?")[1] || "");
+    const linkParams = new URLSearchParams(href.split("?")[1] || "");
+    for (const [key, value] of originalParams) {
+      assert.equal(
+        linkParams.get(key),
+        value,
+        `${key} keeps its decoded value`,
+      );
+    }
+    assert.equal(
+      exploreSceneHash(href, lang),
+      href,
+      "the native href is also the same-tab destination without re-encoding",
+    );
+  }
+}
+assert.equal(
+  exploreSceneHash(hash, "zh"),
+  hash,
+  "an existing shared snapshot retains its language and all scene state verbatim",
+);
+assert.equal(
+  readSceneState(exploreSceneHash("#/cell?s=invalid&custom=keep", "en")).lang,
+  "en",
+  "an unreadable snapshot cannot suppress the selected homepage language",
+);
+for (const source of [
+  null,
+  "#/",
+  "https://example.org/",
+  "javascript:alert(1)",
+]) {
+  assert.equal(exploreSceneHash(source, "en"), null);
+}
+
 const chineseResume = resumeSceneHash(hash, "zh");
+assert.equal(
+  exploreSceneHash(chineseResume, "en"),
+  chineseResume,
+  "the explicit Resume language is preserved when following its native href",
+);
 assert.equal(
   readSceneState(chineseResume).lang,
   "zh",

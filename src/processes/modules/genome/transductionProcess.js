@@ -306,11 +306,19 @@ export default {
       normal = new THREE.Vector3(),
       binormal = new THREE.Vector3(),
       offset = new THREE.Vector3();
+    // Adjacent segments share literal sample parameters. Keep both strands'
+    // complete endpoint grids, plus independent scratch endpoints for bases.
+    const cargoSamples = Array.from({ length: 2 }, () =>
+      Array.from({ length: cargo.length + 1 }, () => [0, 0, 0]),
+    );
+    const baseFrom = [0, 0, 0],
+      baseTo = [0, 0, 0];
     const pose = (m, a, z, r) => {
       d.set(z[0] - a[0], z[1] - a[1], z[2] - a[2]);
       m.position.set((a[0] + z[0]) / 2, (a[1] + z[1]) / 2, (a[2] + z[2]) / 2);
-      m.scale.set(r, Math.max(0.0001, d.length()), r);
-      m.quaternion.setFromUnitVectors(up, d.normalize());
+      const length = d.length();
+      m.scale.set(r, Math.max(0.0001, length), r);
+      m.quaternion.setFromUnitVectors(up, d.divideScalar(length || 1));
     };
     const labels = [
       k.label([-2.65, -1.3, 0], "供体 · 大肠杆菌", "Donor · E. coli", 2),
@@ -421,7 +429,7 @@ export default {
       recognitionMarkers.forEach((marker) => {
         marker.material = special ? viral : gold;
       });
-      const cargoCenter = (s) => {
+      const cargoCenter = (s, out) => {
         // The final material point must pass the cytoplasmic leaflet of the
         // inner membrane, not stop in the newly resolved periplasm.
         const u = s - 1.5 * inject;
@@ -429,20 +437,21 @@ export default {
           const intoCell = -u - 0.22;
           // Keep the duplex axial throughout the whole trans-envelope lumen.
           const bend = Math.max(0, intoCell - 0.32);
-          return [
+          return out.set(
             0.42 * Math.sin((5 * bend * bend) / (bend + 0.04)),
             -1.2 - intoCell,
             0,
-          ];
+          );
         }
-        if (pack === 1 && u < 0) return [0, -0.43 + (u / 0.22) * 0.77, 0];
+        if (pack === 1 && u < 0)
+          return out.set(0, -0.43 + (u / 0.22) * 0.77, 0);
         // Rotate a monotone helix axis while its coil radius grows. Cartesian
         // blending of a horizontal line and a vertical coil folds the contour
         // through itself midway through packaging.
         const axis = (pack * Math.PI) / 2;
         const along = (u - 0.5) * (0.84 - 0.19 * pack);
         const r = 0.22 * pack * ease(u, 0, 0.15);
-        return [
+        return out.set(
           Math.cos(axis) * along +
             Math.sin(axis) * r * Math.cos(u * Math.PI * 6),
           0.15 -
@@ -450,14 +459,14 @@ export default {
             Math.sin(axis) * along -
             Math.cos(axis) * r * Math.cos(u * Math.PI * 6),
           0.18 * (1 - pack) + r * Math.sin(u * Math.PI * 6),
-        ];
+        );
       };
-      const cargoPath = (s, strand = 0) => {
+      const cargoPath = (s, strand, out) => {
         const start = special ? lambdaExcisionStart : hostLocusStart;
         const locusT = (hostLocusEnd - (hostLocusEnd - start) * s) / locusCount;
         const twist = locusT * Math.PI * 24 + strand * Math.PI;
         const helixRadius = 0.035;
-        destinationPoint.set(...cargoCenter(s)).applyMatrix4(phage.matrix);
+        cargoCenter(s, destinationPoint).applyMatrix4(phage.matrix);
         const sourceAngle = locusT * Math.PI * 2;
         sourcePoint.set(
           -2.65 + 1.08 * Math.cos(sourceAngle),
@@ -475,8 +484,8 @@ export default {
           sourcePoint.z += radius * Math.sin(twist);
         } else {
           const frame = (pack * Math.PI) / 2;
-          tangent.set(...cargoCenter(s + 1e-5));
-          offset.set(...cargoCenter(s - 1e-5));
+          cargoCenter(s + 1e-5, tangent);
+          cargoCenter(s - 1e-5, offset);
           tangent.sub(offset).normalize();
           normal.set(-Math.sin(frame), Math.cos(frame), 0);
           normal.addScaledVector(tangent, -normal.dot(tangent)).normalize();
@@ -488,13 +497,16 @@ export default {
             .applyQuaternion(phage.quaternion);
           sourcePoint.add(offset);
         }
-        return sourcePoint.toArray();
+        return sourcePoint.toArray(out);
       };
+      for (let strand = 0; strand < 2; strand++)
+        for (let i = 0; i <= cargo.length; i++)
+          cargoPath(i / cargo.length, strand, cargoSamples[strand][i]);
       cargo.forEach((m, i) => {
         pose(
           m,
-          cargoPath(i / cargo.length),
-          cargoPath((i + 1) / cargo.length),
+          cargoSamples[0][i],
+          cargoSamples[0][i + 1],
           0.019 - 0.005 * pack,
         );
         const hostCargoCount =
@@ -504,15 +516,15 @@ export default {
         m.visible = true;
         pose(
           cargoPartner[i],
-          cargoPath(i / cargo.length, 1),
-          cargoPath((i + 1) / cargo.length, 1),
+          cargoSamples[1][i],
+          cargoSamples[1][i + 1],
           0.019 - 0.005 * pack,
         );
         cargoPartner[i].material = m.material;
       });
       cargoBases.forEach((m, i) => {
         const s = (i + 0.5) / cargoBases.length;
-        pose(m, cargoPath(s, 0), cargoPath(s, 1), 0.012);
+        pose(m, cargoPath(s, 0, baseFrom), cargoPath(s, 1, baseTo), 0.012);
       });
       debris.forEach((m, i) => {
         m.visible = p >= 0.54 && p < 0.83;
@@ -535,7 +547,7 @@ export default {
       labels[3].active = special && p < 0.5;
       labels[4].active = p > 0.48 && p < 0.74;
       phage.position.toArray(labels[4].position);
-      labels[5].position.splice(0, 3, ...cargoPath(0));
+      labels[5].position.splice(0, 3, ...cargoSamples[0][0]);
       labels[5].active =
         inject > 0 && labels[5].position[1] < 0.9 * eColiEnvelope.inner[1];
       cargo[48].position.toArray(labels[6].position);

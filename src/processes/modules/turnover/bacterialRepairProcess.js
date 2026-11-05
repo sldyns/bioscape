@@ -318,7 +318,14 @@ export default {
     const ra = new THREE.Vector3(),
       rb = new THREE.Vector3(),
       rd = new THREE.Vector3(),
+      targetTip = new THREE.Vector3(),
       up = new THREE.Vector3(0, 1, 0);
+    const baseOffsets = [
+      new THREE.Vector3(0, -0.08, 0),
+      new THREE.Vector3(0, 0.08, 0),
+    ];
+    const phases = new Float64Array(61),
+      locusOpen = new Float64Array(61);
     const ssP = detail.instances(
         detail.sphere,
         dna,
@@ -456,11 +463,11 @@ export default {
         bubble * (1 - ease(Math.abs(x - polX + 0.25), 0.46, 0.86));
       // A common positive-radius cross section, with integrated local unwinding.
       // The two strand identities always occupy opposite sides of this frame.
-      const phases = new Float64Array(61);
+      for (let i = 0; i <= 60; i++) locusOpen[i] = opening(-3.75 + i * 0.125);
       phases[0] = Math.PI / 2;
       for (let i = 1; i <= 60; i++) {
-        const left = opening(-3.75 + (i - 1) * 0.125),
-          right = opening(-3.75 + i * 0.125);
+        const left = locusOpen[i - 1],
+          right = locusOpen[i];
         phases[i] = phases[i - 1] + 0.47 * (1 - (left + right) / 2);
       }
       const phaseAt = (x) => {
@@ -472,33 +479,33 @@ export default {
       // Register the open template with RNAP using the nearby right-handed
       // phase, avoiding extra full rotations while the bubble first opens.
       const rotation = bubble * (4 * Math.PI - phaseAt(polX));
-      const dnaAt = (strand, x, out) => {
-        const amount = opening(x),
+      // Both strands use the same cross section; evaluate it once per locus site.
+      for (let i = 0; i <= 60; i++) {
+        const x = -3.75 + i * 0.125,
+          amount = locusOpen[i],
           angle = phaseAt(x) + rotation;
         const radius = 0.16 * (1 - amount) + 0.325 * amount,
-          sign = strand ? -1 : 1;
-        out.set(
-          x,
-          -1.25 + 0.075 * amount + sign * radius * Math.cos(angle),
-          0.08 * amount + sign * radius * Math.sin(angle),
-        );
-        return out;
-      };
+          cosine = Math.cos(angle),
+          sine = Math.sin(angle);
+        for (let strand = 0; strand < 2; strand++) {
+          const sign = strand ? -1 : 1;
+          locusPoints[strand][i].set(
+            x,
+            -1.25 + 0.075 * amount + sign * radius * cosine,
+            0.08 * amount + sign * radius * sine,
+          );
+        }
+      }
       pol.position.set(polX, -1.14, -0.02);
       for (let strand = 0; strand < 2; strand++) {
         const { ps, su, ba } = locusDetail[strand];
         for (let i = 0; i <= 60; i++) {
-          const x = -3.75 + i * 0.125,
-            amount = opening(x);
-          const a = dnaAt(strand, x, locusPoints[strand][i]);
+          const amount = locusOpen[i],
+            a = locusPoints[strand][i];
           detail.bead(ps, i, a, 0.054);
           detail.bead(su, i, a, [0.048, 0.05, 0.046]);
-          dnaAt(1 - strand, x, rb);
-          rb.lerp(a, 0.7);
-          rb.lerp(
-            ra.copy(a).add(new THREE.Vector3(0, strand ? 0.08 : -0.08, 0)),
-            amount,
-          );
+          rb.copy(locusPoints[1 - strand][i]).lerp(a, 0.7);
+          rb.lerp(ra.copy(a).add(baseOffsets[strand]), amount);
           detail.bar(ba, i, a, rb, 0.059, 0.053);
         }
         locusLinks[strand].forEach((m, i) =>
@@ -510,7 +517,7 @@ export default {
         ra.copy(locusPoints[0][i]).lerp(locusPoints[1][i], 0.3);
         rb.copy(locusPoints[1][i]).lerp(locusPoints[0][i], 0.3);
         join(m, ra, rb, 0.021);
-        m.visible = opening(-3.75 + i * 0.125) === 0;
+        m.visible = locusOpen[i] === 0;
       });
       const length = transcribe * 28;
       for (let i = 0; i <= 28; i++) {
@@ -545,11 +552,11 @@ export default {
         ra.copy(rnaNodes[i]);
         detail.bead(rnaP, i, ra, 0.055 * show);
         detail.bead(rnaS, i, ra, [0.05 * show, 0.046 * show, 0.042 * show]);
-        rb.copy(ra).add(new THREE.Vector3(0, -0.08, 0));
+        rb.copy(ra).add(baseOffsets[0]);
         detail.bar(rnaB, i, ra, rb, 0.062 * show, 0.05 * show);
         const partner = locusPoints[1][24 + i];
         const hybrid = rnaHybrid[i];
-        const targetTip = partner.clone().add(new THREE.Vector3(0, 0.08, 0));
+        targetTip.copy(partner).add(baseOffsets[1]);
         join(hybrid, rb, targetTip, 0.018);
         hybrid.visible =
           visible &&

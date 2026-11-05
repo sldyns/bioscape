@@ -116,6 +116,15 @@ export function detailModel(id, reference = null) {
       new THREE.Vector3(...p).applyMatrix4(g.matrixWorld).toArray(),
     ]),
   );
+  if (g.annotationTargets)
+    result.userData.partAnnotationTargets = Object.fromEntries(
+      Object.entries(g.annotationTargets).map(([key, points]) => [
+        key,
+        points.map((point) =>
+          new THREE.Vector3(...point).applyMatrix4(g.matrixWorld).toArray(),
+        ),
+      ]),
+    );
   for (const {
     hit,
     cap,

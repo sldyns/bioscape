@@ -160,6 +160,22 @@ export default {
     }
     for (const item of intronBases) item.mesh.name = `intron-base-${item.i}`;
     const pts = Array.from({ length: n + 1 }, () => new THREE.Vector3());
+    const branchIndex = 38;
+    // These material-coordinate shapes are fixed. Keep their full-precision
+    // samples and interpolate the same coordinates on every timeline seek.
+    const intronShape = Array.from({ length: n + 1 }, (_, i) => {
+      const t = i / n,
+        angle = (i / branchIndex) * 2 * Math.PI;
+      return {
+        x0: -1.1 + 2.2 * t,
+        y0: 1.6 * Math.sin(Math.PI * t),
+        z0: 0.16 * Math.sin(2 * Math.PI * t),
+        loopX: 0.65 * Math.sin(angle),
+        loopY: 0.58 * (1 - Math.cos(angle)),
+        loopZ: 0.1 * Math.sin(angle * 2),
+        q: (i - branchIndex) / (n - branchIndex),
+      };
+    });
     // Cap base, ribose and three linked phosphates show the unusual end connection.
     k.mesh(baseGeometry, gold, [-0.18, 0.17, 0], cap);
     const purine = k.mesh(sugarGeometry, gold, [-0.06, 0.17, 0], cap);
@@ -317,26 +333,20 @@ export default {
       splice.visible = p >= 0.25 && p < 0.75;
       splice.scale.setScalar(0.72 + 0.28 * ease(p, 0.25, 0.38));
       splice.position.set(0, release * 0.6, release * -0.8);
+      const anchorX = -1.1 + 1.1 * branchMove,
+        anchorY = 0.6 * branchMove,
+        exon2Start = 1.1 - 2.2 * join;
       for (let i = 0; i <= n; i++) {
-        const t = i / n;
-        const x0 = -1.1 + 2.2 * t,
-          y0 = 1.6 * Math.sin(Math.PI * t),
-          z0 = 0.16 * Math.sin(2 * Math.PI * t);
+        const { x0, y0, z0, loopX, loopY, loopZ, q } = intronShape[i];
         let lx, ly, lz;
-        const branchIndex = 38,
-          anchorX = -1.1 + 1.1 * branchMove,
-          anchorY = 0.6 * branchMove;
         if (i <= branchIndex) {
           // The branch nucleotide is a real backbone vertex. Before branching,
           // the 5′ splice junction stays at exon 1 while the branch approaches it.
-          const angle = (i / branchIndex) * 2 * Math.PI;
-          lx = anchorX + 0.65 * Math.sin(angle);
-          ly = anchorY + 0.58 * (1 - Math.cos(angle));
-          lz = 0.1 * Math.sin(angle * 2);
+          lx = anchorX + loopX;
+          ly = anchorY + loopY;
+          lz = loopZ;
         } else {
-          const q = (i - branchIndex) / (n - branchIndex);
           // Until exon ligation, this endpoint is exactly exon 2's 5′ end.
-          const exon2Start = 1.1 - 2.2 * join;
           lx = anchorX * (1 - q) + q * (exon2Start + release * 1.8);
           ly = anchorY * (1 - q) + q * release * 0.5;
           lz = 0;
@@ -370,8 +380,9 @@ export default {
       cleaver.position.set(1.1, 0.65 * (1 - cut), 0.35);
       cleaver.visible = p >= 0.68 && p < 0.89;
       tail.position.set(1, 0, 0);
+      const tailCount = 20 * ease(p, 0.77, 0.92);
       tailPieces.forEach((m, i) => {
-        m.visible = p >= 0.77 && i < 20 * ease(p, 0.77, 0.92);
+        m.visible = p >= 0.77 && i < tailCount;
         tailNucleotides[i].visible = m.visible;
       });
       labels[0].active = p >= 0.2;

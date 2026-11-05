@@ -13,6 +13,26 @@ export function createDetailLoader({ cache = preparedModelCache } = {}) {
     );
   };
   const pending = new Map();
+  function stopWorker() {
+    if (!worker) return;
+    const retired = worker;
+    worker = null;
+    retired.onmessage = null;
+    retired.onerror = null;
+    retired.terminate();
+  }
+  function retireObsolete() {
+    let retired = false;
+    for (const [request, task] of pending) {
+      if (task.isCurrent()) continue;
+      pending.delete(request);
+      task.resolve(null);
+      retired = true;
+    }
+    // An idle worker stays warm. Only stop one whose outstanding work has all
+    // become obsolete; other still-current requests must keep running.
+    if (retired && pending.size === 0) stopWorker();
+  }
   function ensureWorker() {
     if (worker || workerUnavailable) return;
     try {
@@ -23,7 +43,9 @@ export function createDetailLoader({ cache = preparedModelCache } = {}) {
       workerUnavailable = true;
       return;
     }
+    const instance = worker;
     worker.onmessage = ({ data }) => {
+      if (worker !== instance || disposed) return;
       const task = pending.get(data.request);
       pending.delete(data.request);
       if (!task) return;
@@ -41,8 +63,8 @@ export function createDetailLoader({ cache = preparedModelCache } = {}) {
       }
     };
     worker.onerror = () => {
-      worker?.terminate();
-      worker = null;
+      if (worker !== instance || disposed) return;
+      stopWorker();
       workerUnavailable = true;
       for (const task of pending.values())
         task.reject(new Error("Detail worker unavailable"));
@@ -50,11 +72,13 @@ export function createDetailLoader({ cache = preparedModelCache } = {}) {
     };
   }
   return {
+    cancelObsolete: retireObsolete,
     sourceFor(id) {
       return sources.get(id) ?? "build";
     },
     load(id, isCurrent = () => true) {
       if (disposed || !isCurrent()) return Promise.resolve(null);
+      retireObsolete();
       // These views use the base cell; do not load an entire detail worker just
       // to discover that it has no standalone model for them.
       if (id === "cell" || id === "cytoplasm") return Promise.resolve(null);
@@ -81,8 +105,7 @@ export function createDetailLoader({ cache = preparedModelCache } = {}) {
     },
     dispose() {
       disposed = true;
-      worker?.terminate();
-      worker = null;
+      stopWorker();
       for (const task of pending.values()) task.resolve(null);
       pending.clear();
     },

@@ -28,12 +28,24 @@ for (const axis of ["x", "y"])
         object.geometry.attributes.normal?.version,
         object.instanceMatrix?.version,
       ]);
-    const counts = { normals: 0, boxes: 0, spheres: 0, instances: 0 };
+    const counts = {
+      // Observe normal-buffer updates so both the Three fallback and the
+      // exact scalar kernel must satisfy the same rebuild/skip assertions.
+      get normals() {
+        return actual.mesh.children.reduce(
+          (sum, object) =>
+            sum + (object.geometry.attributes.normal?.version ?? 0),
+          0,
+        );
+      },
+      boxes: 0,
+      spheres: 0,
+      instances: 0,
+    };
     for (const object of actual.mesh.children) {
       const targets = object.isInstancedMesh ? [object] : [object.geometry];
       for (const target of targets)
         for (const [method, counter] of [
-          ["computeVertexNormals", "normals"],
           ["computeBoundingBox", "boxes"],
           ["computeBoundingSphere", "spheres"],
           ["setMatrixAt", "instances"],

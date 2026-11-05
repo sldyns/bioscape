@@ -94,10 +94,17 @@ export function membraneScene(gap = 0.95, centre = 0, extraHoles = []) {
 export const mix = (a, b, p) => a + (b - a) * p;
 // Callout endpoints use a real mesh vertex; text placement belongs to the
 // overlay. Cache the selected vertex and reuse one vector as the object moves.
-export function bindSurfaceLabel(label, mesh, root, target = [0, 0, 1]) {
+export function bindSurfaceLabel(
+  label,
+  mesh,
+  root,
+  target = [0, 0, 1],
+  instanceIndex = null,
+) {
   const positions = mesh.geometry.attributes.position;
   const vertex = new THREE.Vector3(),
     point = new THREE.Vector3();
+  const instanceMatrix = instanceIndex === null ? null : new THREE.Matrix4();
   let nearest = Infinity;
   for (let i = 0; i < positions.count; i++) {
     point.fromBufferAttribute(positions, i);
@@ -112,6 +119,11 @@ export function bindSurfaceLabel(label, mesh, root, target = [0, 0, 1]) {
   }
   return () => {
     point.copy(vertex);
+    // Instanced vertices pass through their selected instance before ancestors.
+    if (instanceMatrix) {
+      mesh.getMatrixAt(instanceIndex, instanceMatrix);
+      point.applyMatrix4(instanceMatrix);
+    }
     for (let object = mesh; object && object !== root; object = object.parent) {
       object.updateMatrix();
       point.applyMatrix4(object.matrix);

@@ -224,8 +224,8 @@ function create() {
       // Carbon balance describes the mitochondrial split reaction region,
       // rather than a fifth tracked atom or a point above the visible pathway.
       [2.55, 0.58, 0.35],
-      "4C = 3C 回收 + 1C 释放",
-      "4C = 3C recovered + 1C released",
+      "4C = 3C 保留 + 1C 释放",
+      "4C = 3C retained + 1C released",
       3,
     ),
   ];

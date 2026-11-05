@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import definition from "../src/processes/secretionProcess.js";
 import baselineDefinition from "./fixtures/secretion-performance-ae697be/secretionProcess.mjs";
+import { secretionBuddingDelta } from "./helpers/secretion-budding-20261029-delta.mjs";
 import {
   secretionRefinementDelta,
   secretionStructuralNodes,
@@ -25,6 +26,7 @@ const delta = secretionRefinementDelta(candidate, baseline);
 const candidateResources = secretionResourceIdentity(candidate);
 const candidateSnapshots = new Map();
 let reverseStates = 0;
+let boundedBuddingStates = 0;
 const geometryPairs = new Map(),
   materialPairs = new Map();
 let comparedBytes = 0,
@@ -140,6 +142,7 @@ function compare(progress, reverse = false) {
   baseline.group.updateMatrixWorld(true);
   candidate.group.updateMatrixWorld(true);
   const context = `progress ${String(progress)}${reverse ? " reverse replay" : ""}`;
+  const budding = secretionBuddingDelta(candidate, progress);
   const currentPaths = secretionStructuralNodes(candidate.group);
   assert.deepEqual(
     [...currentPaths.keys()],
@@ -158,12 +161,17 @@ function compare(progress, reverse = false) {
     context,
   );
   for (const { path, actual: a, expected: b, replaced } of delta.pairs) {
+    const reference = nodeState(b, delta.referencePaths);
     equalValue(
-      nodeState(a, delta.canonical, {
-        replacedName: replaced ? b.name : undefined,
-        omitAdded: true,
-      }),
-      nodeState(b, delta.referencePaths),
+      budding.baselineComparableState(
+        a,
+        nodeState(a, delta.canonical, {
+          replacedName: replaced ? b.name : undefined,
+          omitAdded: true,
+        }),
+        reference,
+      ),
+      reference,
       `${context} original node ${path}`,
     );
     if (b.geometry && !replaced)
@@ -181,7 +189,17 @@ function compare(progress, reverse = false) {
     );
   }
   for (const [expected, actual] of geometryPairs)
-    compareGeometry(actual, expected, context);
+    if (
+      !budding.compareGeometry(
+        actual,
+        expected,
+        context,
+        equalValue,
+        equalAttribute,
+        bounds,
+      )
+    )
+      compareGeometry(actual, expected, context);
   for (const [expected, actual] of materialPairs)
     equalValue(materialState(actual), materialState(expected), context);
   for (const [path, detail] of delta.expectedDetails) {
@@ -231,11 +249,14 @@ function compare(progress, reverse = false) {
     candidateSnapshots.set(key, snapshot);
   }
   if (reverse) reverseStates++;
-  else comparedStates++;
+  else {
+    comparedStates++;
+    if (budding.kind) boundedBuddingStates++;
+  }
 }
 
 const boundaries = [
-  0, 0.12, 0.2, 0.32, 0.34, 0.39, 0.42, 0.56, 0.67, 0.7, 0.78, 0.9, 0.925,
+  0, 0.12, 0.15, 0.2, 0.32, 0.34, 0.39, 0.42, 0.56, 0.67, 0.7, 0.78, 0.9, 0.925,
   0.963, 0.992, 1,
 ];
 const sequence = [
@@ -309,7 +330,29 @@ for (const index of [4, 5])
     versions()[index] > rewoundVersions[index],
     "lipid mode invalidates",
   );
-assert.equal(versions()[0], staticVersions[0], "ER bridge is built only once");
+assert.equal(
+  versions()[0],
+  staticVersions[0],
+  "ER bridge stays static outside budding",
+);
+for (const [p, next, index] of [
+  [0.13, 0.135, 0],
+  [0.68, 0.685, 1],
+]) {
+  candidate.update(p);
+  const growthVersions = versions();
+  candidate.update(p);
+  equalValue(
+    versions(),
+    growthVersions,
+    "repeated growing state does not upload",
+  );
+  candidate.update(next);
+  assert(
+    versions()[index] > growthVersions[index],
+    "changing bud updates its welded neck",
+  );
+}
 
 const fixtureUrl = new URL(
   "./fixtures/secretion-performance-ae697be/secretionProcess.mjs",
@@ -348,9 +391,15 @@ const report = {
   baselineSha256,
   baselineHelperSha256,
   result:
-    "retained original state bitwise equal; exact reviewed cisternal detail delta",
+    "original state bitwise equal outside two budding windows; bounded prescribed pose/welded-neck delta within; exact reviewed cisternal detail delta retained",
   originalNodes: baselineNodes.length,
-  byteExactRetainedNodes: 334,
+  retainedNodesCompared: 334,
+  byteExactOutsideBuddingIntervals: true,
+  boundedBuddingStates,
+  boundedBuddingIntervals: [
+    [0.12, 0.15],
+    [0.67, 0.7],
+  ],
   prescribedOriginalReplacements: 16,
   classifiedAdditionalNodes: 32,
   reverseStates,
@@ -376,6 +425,7 @@ const report = {
     "candidate object/geometry/material/attribute/typed-array/buffer identity",
     "dense playback, boundary epsilon, reverse/random seeks, non-finite progress",
     "dependency cache invalidation and unchanged-state upload suppression",
+    "within two budding intervals only: prescribed root/lipid pose, exact descendant composition, actual donor/carrier polygon seams, interior interpolation, derived normals/bounds; all other fields stay exact",
   ],
 };
 const reportFlag = process.argv.indexOf("--report");
@@ -387,5 +437,5 @@ if (reportFlag !== -1) {
   );
 }
 console.log(
-  `Secretion reviewed-delta equivalence passed: ${comparedStates} original states + ${reverseStates} reverse replays; 334 retained nodes exact, 16 prescribed edge replacements, 32 additions; all 382 candidate nodes checked.`,
+  `Secretion reviewed-delta equivalence passed: ${comparedStates} states + ${reverseStates} reverse replays; ${boundedBuddingStates} bounded budding states, all other baseline fields exact; 16 prescribed edge replacements, 32 additions; all 382 candidate nodes checked.`,
 );

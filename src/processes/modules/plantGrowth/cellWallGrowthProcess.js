@@ -98,7 +98,9 @@ function create() {
         patch,
         16,
       );
-  const machines = [];
+  const machines = [],
+    synthaseHelices = [],
+    synthaseOutlets = [];
   for (let i = 0; i < 6; i++) {
     const machine = new THREE.Group();
     patch.add(machine);
@@ -126,28 +128,45 @@ function create() {
           cesa,
           machine,
         );
-        const helix = [];
-        for (let j = 0; j <= 24; j++) {
-          const t = j / 24;
-          helix.push([
-            cx + 0.025 * Math.cos(t * Math.PI * 8 + n),
-            cy + 0.025 * Math.sin(t * Math.PI * 8 + n),
-            -0.1 + t * 0.24,
-          ]);
+        // All six rosettes use the same local helix and outlet geometry.
+        // Share their static buffers; each machine still owns its mesh nodes.
+        const helixIndex = lobe * 3 + n;
+        if (!synthaseHelices[helixIndex]) {
+          const helix = [];
+          for (let j = 0; j <= 24; j++) {
+            const t = j / 24;
+            helix.push([
+              cx + 0.025 * Math.cos(t * Math.PI * 8 + n),
+              cy + 0.025 * Math.sin(t * Math.PI * 8 + n),
+              -0.1 + t * 0.24,
+            ]);
+          }
+          synthaseHelices[helixIndex] = k.tube(
+            helix,
+            0.012,
+            cesa,
+            machine,
+            32,
+          ).geometry;
+        } else {
+          k.mesh(synthaseHelices[helixIndex], cesa, [0, 0, 0], machine);
         }
-        k.tube(helix, 0.012, cesa, machine, 32);
       }
-      k.tube(
-        [
-          [cx, cy, 0.12],
-          [cx * 0.5, cy * 0.5, 0.31],
-          [0, 0, 0.51],
-        ],
-        0.018,
-        newCellulose,
-        machine,
-        24,
-      );
+      if (!synthaseOutlets[lobe]) {
+        synthaseOutlets[lobe] = k.tube(
+          [
+            [cx, cy, 0.12],
+            [cx * 0.5, cy * 0.5, 0.31],
+            [0, 0, 0.51],
+          ],
+          0.018,
+          newCellulose,
+          machine,
+          24,
+        ).geometry;
+      } else {
+        k.mesh(synthaseOutlets[lobe], newCellulose, [0, 0, 0], machine);
+      }
     }
     const fibers = [];
     for (let j = 0; j < 3; j++) {

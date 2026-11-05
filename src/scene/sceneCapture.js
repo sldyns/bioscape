@@ -272,26 +272,80 @@ export function layoutCaptureLabels(
     !Number.isFinite(height) ||
     width < 64 ||
     height < 64
-  )
+  ) {
+    if (labels.some((label) => label.annotationKind === "context"))
+      throw new RangeError("Capture is too small for context annotations.");
     return [];
+  }
   const fontSize = Math.max(12, width / (width < height ? 40 : 65));
   const margin = fontSize * 0.65;
   const padding = fontSize * 0.45;
   const gap = fontSize * 0.45;
   const maxWidth = width * 0.36 - padding * 2;
+  // Scope notes have no molecular side. Balance them against the physical
+  // callouts already on each edge, so they do not crowd one edge and hide targets.
+  const contextSides = new Map();
+  const notes = labels.filter((label) => label.annotationKind === "context");
+  if (notes.length) {
+    const loads = new Map([
+      [-1, 0],
+      [1, 0],
+    ]);
+    const heightFor = (label) => {
+      const lines = wrapText(label.text, maxWidth, (text) =>
+        measure(text, fontSize),
+      );
+      return {
+        lines,
+        height: lines.length * fontSize * 1.3 + padding * 2 + gap,
+      };
+    };
+    for (const label of labels) {
+      if (label.annotationKind === "context") continue;
+      const { lines, height: itemHeight } = heightFor(label);
+      if (!lines.length || lines.length > 3) continue;
+      const side = label.x < width / 2 ? -1 : 1;
+      loads.set(side, loads.get(side) + itemHeight);
+    }
+    for (const note of notes.sort(
+      (a, b) => (b.priority ?? 0) - (a.priority ?? 0),
+    )) {
+      const side = loads.get(-1) <= loads.get(1) ? -1 : 1;
+      contextSides.set(note, side);
+      loads.set(side, loads.get(side) + heightFor(note).height);
+    }
+  }
   const result = [];
   for (const side of [-1, 1]) {
     let usedHeight = margin;
     const chosen = [];
     for (const label of labels
-      .filter((label) => (label.x < width / 2 ? -1 : 1) === side)
-      .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))) {
+      .filter(
+        (label) =>
+          (contextSides.get(label) ?? (label.x < width / 2 ? -1 : 1)) === side,
+      )
+      .sort(
+        (a, b) =>
+          Number(b.annotationKind === "context") -
+            Number(a.annotationKind === "context") ||
+          (b.priority ?? 0) - (a.priority ?? 0),
+      )) {
+      const isContext = label.annotationKind === "context";
       const lines = wrapText(label.text, maxWidth, (text) =>
         measure(text, fontSize),
       );
-      if (!lines.length || lines.length > 3) continue;
+      if (!lines.length) {
+        if (isContext)
+          throw new RangeError("Context annotation has no drawable text.");
+        continue;
+      }
+      if (!isContext && lines.length > 3) continue;
       const itemHeight = lines.length * fontSize * 1.3 + padding * 2;
-      if (usedHeight + itemHeight > height - margin) continue;
+      if (usedHeight + itemHeight > height - margin) {
+        if (isContext)
+          throw new RangeError("Context annotations do not fit in capture.");
+        continue;
+      }
       const itemWidth =
         Math.min(
           maxWidth,
@@ -347,7 +401,19 @@ export function drawCaptureLabels(
 ) {
   const projected = [];
   for (const label of sources) {
-    if (!label.text || !label.position || label.active === false) continue;
+    if (!label.text || label.active === false) continue;
+    if (label.annotationKind === "context") {
+      // This is a screen-space layout preference, never a molecular target.
+      projected.push({
+        text: label.text,
+        priority: label.priority,
+        annotationKind: "context",
+        x: width * 0.75,
+        y: height * 0.15,
+      });
+      continue;
+    }
+    if (!label.position) continue;
     const point = label.position.clone().project(camera);
     if (
       point.z < -1 ||
@@ -379,6 +445,7 @@ export function drawCaptureLabels(
   const lineWidth = Math.max(1, width / 1100);
   context.lineWidth = lineWidth;
   for (const label of labels) {
+    if (label.annotationKind === "context") continue;
     const endpoint = label.side < 0 ? label.left + label.width : label.left;
     context.strokeStyle = palette.line;
     context.beginPath();

@@ -35,7 +35,7 @@ export default {
       ),
     },
     {
-      at: 0.18,
+      at: 0.127,
       title: b("集水管与壶腹", "Collecting canals and ampullae"),
       description: b(
         "海绵体管网围绕集水管；各放射臂通过近端壶腹将液体送入中央泡。",
@@ -43,7 +43,7 @@ export default {
       ),
     },
     {
-      at: 0.42,
+      at: 0.296,
       title: b("中央泡充盈", "Central bladder fills"),
       description: b(
         "中央泡增大。较弱低渗下，进入细胞的净水量减少，模型中的充盈和排水循环相应减慢。",
@@ -51,19 +51,22 @@ export default {
       ),
     },
     {
-      at: 0.63,
+      at: 0.493,
       title: b("排水前的隔离", "Isolation before discharge"),
       description: b(
-        "中央泡变圆，放射臂与它暂时分离；中央泡膜在固定排水孔处与质膜接通。不同条件下，这一步出现时间不同。",
-        "The bladder rounds and temporarily separates from radial arms. Its membrane connects to the plasma membrane at the dedicated pore. The timing differs between conditions.",
+        "中央泡变圆，放射臂与它暂时分离，为经固定排水孔排水做准备。章节按较强低渗条件的首轮循环排列；较弱低渗的隔离更晚发生。",
+        "The bladder rounds and temporarily separates from radial arms before discharge through the dedicated pore. Chapters follow the first cycle in the more hypotonic condition; isolation occurs later in the less hypotonic comparison.",
       ),
     },
     {
-      at: 0.8,
-      title: b("排水与重新连接", "Discharge and reconnection"),
+      at: 0.535,
+      title: b(
+        "排水、重连与下一轮",
+        "Discharge, reconnection and the next cycle",
+      ),
       description: b(
-        "液体经孔排出细胞，中央泡缩小，随后孔关闭、放射臂重新连接。较强低渗时更早开始下一轮。",
-        "Fluid exits through the pore and the bladder shrinks; the pore closes and radial arms reconnect. A more hypotonic condition starts the next round sooner.",
+        "液体经固定孔排出，中央泡缩小；随后孔关闭、放射臂重新连接，并开始下一轮集水。本章包含排水后的重连与重新充盈，较强低渗时更早进入下一轮。",
+        "Fluid exits through the dedicated pore and the bladder shrinks. The pore then closes, radial arms reconnect and filling starts again. This chapter includes discharge, reconnection and the next filling phase, reached sooner in the more hypotonic condition.",
       ),
     },
   ],

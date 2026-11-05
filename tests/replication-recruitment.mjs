@@ -52,8 +52,13 @@ for (const rootId of ["cell", "plant", "yeast"])
       );
       model.update(boundary + 0.02, { ligase });
       assert(
+        !lag.visible || level() < 1e-6,
+        "DNA polymerase waits while the short RNA primer is still growing",
+      );
+      model.update(boundary + 0.04, { ligase });
+      assert(
         lag.visible && level() > 0.99,
-        "enzyme must be fully present during synthesis",
+        "enzyme must be fully present after RNA-to-DNA handoff",
       );
       assert([...leadMaterials].every((m) => m.opacity === 1));
     }

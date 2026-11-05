@@ -1,24 +1,62 @@
 import { THREE } from "../../kit.js";
 
+// Profiles are private derived data, weakly held with their source attributes.
+// A surface update marks its position attribute dirty before radius queries.
+const axialProfiles = new WeakMap();
+
 // Interpolate the actual axial rings, including their polygonal cross sections.
 // Callers leave a margin inside the innermost membrane layer.
 export function axialRadius(mesh, x, columns = 48) {
   const a = mesh.geometry.attributes.position;
+  let profile = axialProfiles.get(a);
+  if (
+    !profile ||
+    profile.columns !== columns ||
+    profile.count !== a.count ||
+    profile.array !== a.array
+  ) {
+    const spans = Math.max(0, Math.ceil(a.count / (columns + 1)) - 1);
+    profile = {
+      columns,
+      count: a.count,
+      array: a.array,
+      version: -1,
+      spans,
+      values: new Float64Array(spans * 6),
+      polygonFactor: Math.cos(Math.PI / columns),
+    };
+    axialProfiles.set(a, profile);
+  }
+  const values = profile.values;
+  if (profile.version !== a.version) {
+    let span = 0;
+    for (let row = 0; row < a.count - columns - 1; row += columns + 1) {
+      const next = row + columns + 1,
+        x0 = a.getX(row),
+        x1 = a.getX(next),
+        offset = span++ * 6;
+      values[offset] = x0;
+      values[offset + 1] = Math.min(x0, x1);
+      values[offset + 2] = Math.max(x0, x1);
+      values[offset + 3] = x1 - x0;
+      values[offset + 4] = Math.hypot(a.getY(row), a.getZ(row));
+      values[offset + 5] = Math.hypot(a.getY(next), a.getZ(next));
+    }
+    profile.version = a.version;
+  }
   let radius = 0;
-  for (let row = 0; row < a.count - columns - 1; row += columns + 1) {
-    const next = row + columns + 1,
-      x0 = a.getX(row),
-      x1 = a.getX(next);
-    if (x < Math.min(x0, x1) || x > Math.max(x0, x1)) continue;
-    if (Math.abs(x1 - x0) < 1e-9) continue;
-    const u = (x - x0) / (x1 - x0);
+  for (let i = 0; i < profile.spans; i++) {
+    const offset = i * 6,
+      width = values[offset + 3];
+    if (x < values[offset + 1] || x > values[offset + 2]) continue;
+    if (Math.abs(width) < 1e-9) continue;
+    const u = (x - values[offset]) / width;
     radius = Math.max(
       radius,
-      Math.hypot(a.getY(row), a.getZ(row)) * (1 - u) +
-        Math.hypot(a.getY(next), a.getZ(next)) * u,
+      values[offset + 4] * (1 - u) + values[offset + 5] * u,
     );
   }
-  return radius * Math.cos(Math.PI / columns);
+  return radius * profile.polygonFactor;
 }
 
 // A preallocated tube whose axial rings follow a changing intracellular route.
@@ -37,17 +75,23 @@ export function axialTube(k, material, name, segments = 64, sides = 8) {
   geometry.setIndex(indices);
   const mesh = k.mesh(geometry, material);
   mesh.name = name;
+  const cosines = new Float64Array(sides + 1),
+    sines = new Float64Array(sides + 1);
+  for (let j = 0; j <= sides; j++) {
+    const angle = (j / sides) * Math.PI * 2;
+    cosines[j] = Math.cos(angle);
+    sines[j] = Math.sin(angle);
+  }
   return {
     mesh,
     shape(route, thickness) {
       for (let i = 0; i <= segments; i++) {
         route(i / segments, center);
         for (let j = 0; j <= sides; j++) {
-          const a = (j / sides) * Math.PI * 2,
-            index = (i * (sides + 1) + j) * 3;
+          const index = (i * (sides + 1) + j) * 3;
           positions[index] = center.x;
-          positions[index + 1] = center.y + thickness * Math.cos(a);
-          positions[index + 2] = center.z + thickness * Math.sin(a);
+          positions[index + 1] = center.y + thickness * cosines[j];
+          positions[index + 2] = center.z + thickness * sines[j];
         }
       }
       geometry.attributes.position.needsUpdate = true;
@@ -117,17 +161,23 @@ export function longitudinalEnvelope(
   geometry.setIndex(indices);
   const mesh = k.mesh(geometry, material);
   mesh.name = name;
+  const cosines = new Float64Array(columns + 1),
+    sines = new Float64Array(columns + 1);
+  for (let j = 0; j <= columns; j++) {
+    const angle = (2 * Math.PI * j) / columns;
+    cosines[j] = Math.cos(angle);
+    sines[j] = Math.sin(angle);
+  }
   return {
     mesh,
     shape(profile) {
       for (let i = 0; i <= rows; i++) {
         const [x, r] = profile(i / rows);
         for (let j = 0; j <= columns; j++) {
-          const a = (2 * Math.PI * j) / columns,
-            n = (i * (columns + 1) + j) * 3;
+          const n = (i * (columns + 1) + j) * 3;
           positions[n] = x;
-          positions[n + 1] = r * Math.cos(a);
-          positions[n + 2] = r * Math.sin(a);
+          positions[n + 1] = r * cosines[j];
+          positions[n + 2] = r * sines[j];
         }
       }
       geometry.attributes.position.needsUpdate = true;
@@ -138,10 +188,13 @@ export function longitudinalEnvelope(
   };
 }
 
+const segmentDirection = new THREE.Vector3(),
+  segmentUp = new THREE.Vector3(0, 1, 0);
+
 export function placeSegment(mesh, a, b, radius = 0.025) {
-  const d = b.clone().sub(a),
+  const d = segmentDirection.copy(b).sub(a),
     length = d.length();
   mesh.position.copy(a).add(b).multiplyScalar(0.5);
   mesh.scale.set(radius, Math.max(0.00001, length), radius);
-  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+  mesh.quaternion.setFromUnitVectors(segmentUp, d.normalize());
 }

@@ -318,6 +318,18 @@ export default {
         "mRNA bases",
       );
     const point = new THREE.Vector3();
+    // The guide retains its local shape while its RISC parent moves.
+    for (let i = 0; i < 22; i++) {
+      const base = guides[i * 2 + 1];
+      point.set(guideX(i), 0.43, 0.28);
+      detail.bead(gp, i, point, 0.06);
+      point.x += 0.015;
+      detail.bead(gs, i, point, [0.055, 0.047, 0.045]);
+      point.copy(base.position);
+      point.z += 0.012;
+      detail.bead(gb, i, point, [0.065, 0.1, 0.055]);
+    }
+    detail.finish(gp, gs, gb);
     detail.fold(
       ccr,
       "deadenylase catalytic pocket",
@@ -447,17 +459,6 @@ export default {
       anchor[5](ccrAnchor);
       anchor[6](cut);
       anchor[7](guides[40]);
-      for (let i = 0; i < 22; i++) {
-        const backbone = guides[i * 2],
-          base = guides[i * 2 + 1];
-        point.set(guideX(i), 0.43, 0.28);
-        detail.bead(gp, i, point, 0.06);
-        point.x += 0.015;
-        detail.bead(gs, i, point, [0.055, 0.047, 0.045]);
-        point.copy(base.position);
-        point.z += 0.012;
-        detail.bead(gb, i, point, [0.065, 0.1, 0.055]);
-      }
       for (let i = 0; i < 28; i++) {
         const backbone = mrna[i],
           base = bases[i],
@@ -470,7 +471,7 @@ export default {
         point.z += 0.02;
         detail.bead(mb, i, point, [0.08 * show, 0.095 * show, 0.058 * show]);
       }
-      detail.finish(gp, gs, gb, mp, ms, mb);
+      detail.finish(mp, ms, mb);
       group.userData = {
         structuralDetail:
           "N PAZ MID PIWI domains, anchor pockets, sugar phosphate bases, schematic folds",

@@ -31,17 +31,24 @@ export function sporulationTopology(group) {
     mesh.name = name;
     group.add(mesh);
     const allIndices = indices.slice();
+    // Every row uses the same angular samples; retain their full precision.
+    const cosines = new Float64Array(cols + 1),
+      sines = new Float64Array(cols + 1);
+    for (let j = 0; j <= cols; j++) {
+      const phi = Math.PI + (j / cols) * Math.PI;
+      cosines[j] = Math.cos(phi);
+      sines[j] = Math.sin(phi);
+    }
     return {
       mesh,
       update(profile, holes = []) {
         for (let i = 0; i <= rows; i++) {
           const [x, r] = profile(i / rows);
           for (let j = 0; j <= cols; j++) {
-            const phi = Math.PI + (j / cols) * Math.PI,
-              n = (i * (cols + 1) + j) * 3;
+            const n = (i * (cols + 1) + j) * 3;
             arr[n] = x;
-            arr[n + 1] = r * Math.cos(phi);
-            arr[n + 2] = r * Math.sin(phi);
+            arr[n + 1] = r * cosines[j];
+            arr[n + 2] = r * sines[j];
           }
         }
         // Translocase apertures in the septal membranes, not DNA through lipid.

@@ -169,6 +169,7 @@ function create({ rootId = "cell" } = {}) {
     k.label([4.25, 0, 0.25], "3′", "3′", 2),
     k.label([0, 3.1, 0], "人类 SMN2 · 细胞核", "Human SMN2 · nucleus", 1),
   ];
+  labels[10].annotationKind = "context";
   const scaffold = splicers[0].getObjectByName("spliceosome-scaffold-0");
   const updateLabelAnchors = labelAnchors([
     [labels[0], chain.beads[7]],
@@ -411,6 +412,9 @@ export default {
   id: "alternativeSplicing",
   title: b("可变剪接：SMN2", "Alternative splicing: SMN2"),
   duration: 32,
+  // Keep one fit for both paths: the released skipping lariat extends above
+  // the inclusion path, including after an in-place condition change.
+  framingParameters: [{ isoform: "include" }, { isoform: "skip" }],
   intro: b(
     "以人类细胞核中的 SMN2 前体 RNA 为例，比较第 7 外显子的保留与跳跃。仅放大外显子 6–8，长度与装配时序作示意。输出为不同 RNA，不把每种剪接产物都视为功能正常的蛋白。",
     "Compare inclusion and skipping of exon 7 in human nuclear SMN2 pre-mRNA. Only exons 6–8 are enlarged; lengths and assembly timing are schematic. The outputs are different RNAs, not a promise that every isoform produces a functional protein.",
