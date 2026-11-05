@@ -10,6 +10,10 @@
 
 [![看见微观，理解生命——BioScape 主页实景](docs/media/readme/home-zh.png)](https://sldyns.github.io/bioscape/)
 
+[正式版本 v1.0.1](https://github.com/sldyns/bioscape/releases/tag/v1.0.1) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+
+本次更新加快原分辨率视频导出，保留模型细节、标签和教学说明。查看[版本说明](docs/releases/v1.0.1.md)和[实际测量结果](docs/performance/video-export-2026-11-05.md)。
+
 ## 从一个模型开始
 
 九类模型、182 个结构节点、84 个生命过程，中英文随时切换。从熟悉的细胞出发，进入细胞器，或跟随一个过程逐步观察。
@@ -111,6 +115,8 @@ https://github.com/user-attachments/assets/905f474c-2173-4c98-b542-b1d3c5a84258
 <summary>导出与分享说明</summary>
 
 图片支持 1920 或 2560 像素长边。视频根据浏览器能力保存为 MP4 或 WebM。视频生成保留所选分辨率；复杂画面的处理耗时可能超过成片时长，请在完成前保持标签页可见。标题与标签可选；画面保留 BioScape 项目标识和教学说明，不添加作者姓名水印。
+
+视频时长可选 6、10 或 15 秒。支持的浏览器会异步准备画面，保持帧顺序和输出质量；生成中可以取消并重新尝试。一次匹配的本机测试中，6 秒 1080p 视频的平均生成时间由 3.99 秒降至 2.55 秒。此结果限定于该测试场景与设备，详见[测量方法及验证范围](docs/performance/video-export-2026-11-05.md)。
 
 分享链接使用当前站点地址。在本地服务中生成的链接，需要接收方也能访问该服务。
 

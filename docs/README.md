@@ -2,6 +2,8 @@
 
 ## Maintainer guides
 
+- [Release v1.0.1](releases/v1.0.1.md) · [Changelog](../CHANGELOG.md): the current release and included validation.
+- [Video export performance](performance/video-export-2026-11-05.md): matched measurements, preserved quality and scope.
 - [Contributing](../.github/CONTRIBUTING.md): architecture, changes and validation.
 - [Release guide](RELEASING.md): production checks and GitHub Pages.
 - [Process implementation](PROCESS_IMPLEMENTATION_STANDARD.md): metadata, models, bilingual content and controls.

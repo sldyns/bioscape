@@ -10,6 +10,10 @@ An interactive atlas of biological structures and processes.
 
 [![See the unseen. Understand life. — the BioScape homepage](docs/media/readme/home-en.png)](https://sldyns.github.io/bioscape/)
 
+[Release v1.0.1](https://github.com/sldyns/bioscape/releases/tag/v1.0.1) · [What's new](CHANGELOG.md) · [Verification](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+
+The latest update accelerates full-resolution video export and preserves model detail, labels and teaching notes. Read the [release notes](docs/releases/v1.0.1.md) and [measured results](docs/performance/video-export-2026-11-05.md).
+
 ## A place to begin
 
 Nine model types, 182 structures and 84 processes, with Chinese and English throughout. Start with a familiar cell, look inside an organelle, or follow a process one step at a time.
@@ -111,6 +115,8 @@ https://github.com/user-attachments/assets/aef051f6-ff7b-4f08-ac92-f0a5da6f4082
 <summary>Export and sharing details</summary>
 
 Images support 1920 or 2560 pixel long edges. Videos use MP4 or WebM according to browser support. Video generation preserves the selected resolution; complex scenes can take longer to process than the video's playback duration. Keep the tab visible until generation finishes. Titles and labels are optional; exports retain the BioScape project mark and teaching context, without an author-name watermark.
+
+Videos offer 6, 10 or 15 second durations. Supported browsers prepare frames asynchronously while keeping their order and output quality. You can cancel generation and try again. In one matched local test, a six-second 1080p export fell from 3.99 to 2.55 seconds on average; this is a scoped measurement, not a guarantee for every scene or device. See the [method and validation limits](docs/performance/video-export-2026-11-05.md).
 
 Shared links use the current site address. A link made on a local server requires access to that server.
 

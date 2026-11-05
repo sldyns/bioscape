@@ -1,42 +1,68 @@
 # GitHub 发布指南
 
-## 本地准备
+仓库：[sldyns/bioscape](https://github.com/sldyns/bioscape) · 网站：[BioScape](https://sldyns.github.io/bioscape/) · [更新日志](../CHANGELOG.md)
+
+## 保持同一版本
+
+一次完整发布包括源码、版本与文档、自动检查、网站部署、正式标签和 GitHub Release。只推送 main 不能说明网站或 Release 已更新。
+
+版本号同时维护在 package.json、package-lock.json 顶层及根包、CITATION.cff；引用信息中的发布日期与正式版本对应。同步中英文 README、CHANGELOG.md 和 docs/releases/ 下的版本说明。保留既有科学边界、许可和第三方署名。
+
+| 项目        | 完成依据                                                 |
+| ----------- | -------------------------------------------------------- |
+| GitHub 源码 | origin/main 等于本轮已审查的提交，相关产品文件无遗漏     |
+| 自动检查    | 同一提交的 Verify 成功                                   |
+| 网站        | 同一提交的 Pages 部署成功，实际入口和关键资源匹配构建    |
+| 正式版本    | 标签指向已验证提交，Release 已公开，版本号和引用信息一致 |
+| 交付附件    | 实际产物可下载，校验和匹配；说明区分测试结果与适用范围   |
+
+## 准备与提交
 
 ```sh
+git status --short
+git fetch origin
 npm ci
 npm run check
 ```
 
-统一检查包括格式、结构与过程回归、生产构建、84 个过程的缩略图完整性及项目子路径资源检查。生产输出只有 `dist/`；`node_modules`、`dist`、环境文件及日志不提交。`package-lock.json` 必须提交。
+统一检查包括格式、模型与科学回归、生产构建、84 个过程的缩略图及项目子路径资源检查。生产输出只有 dist/。依赖、构建输出、环境文件和临时验收日志留在本地；package-lock.json 必须提交。
 
-本项目没有后端、密钥或数据库配置。坐标数据、图片与源码必须一起提交；只上传 HTML 会造成模型和图片丢失。
+只暂存本轮逐项审查过的文件，检查暂存差异后创建提交，正常推送 main。不要使用无差别暂存覆盖无关工作，也不对共享 main 强制推送。当前项目已有 origin 和历史，无需重新初始化或替换远端。
 
-## 创建或连接 GitHub 仓库
+本项目没有后端、部署密钥或数据库配置。坐标、公共图片与源码是项目的一部分，不能只上传 HTML。
 
-先确定仓库所属账号、名称和可见性。当前原创项目采用 BioScape Noncommercial License 1.0，作者为 Kun Qian，商业使用须另行书面授权。发布前复核 LICENSE、docs/legal/NOTICE、CITATION.cff 与第三方声明；这是源码公开项目，不标为 OSI 开源。不要覆盖已有远端历史。
+## 自动检查与网站
 
-本地已初始化时无需再次 `git init`。检查拟提交文件后建立初始提交，再使用实际仓库地址连接：
+普通 main 推送触发 Verify，PR 和手动运行同样可触发。GitHub runner 的结果必须独立核对，不能用本机通过代替。
+
+网站发布是显式动作。Pages 使用 GitHub Actions，手动运行 Publish GitHub Pages，选择 main：
 
 ```sh
-git status --short
-git add .
-git commit -m "Prepare BioScape for GitHub"
-git remote add origin <实际仓库地址>
-git push -u origin main
+gh run list --repo sldyns/bioscape --workflow ci.yml --branch main --limit 5
+gh workflow run pages.yml --repo sldyns/bioscape --ref main
+gh run list --repo sldyns/bioscape --workflow pages.yml --branch main --limit 5
 ```
 
-`<实际仓库地址>` 是待替换占位符。若已有 origin，先查看现有地址，不要直接改写。提交身份由本机 Git 配置提供，不要编造作者。
+Pages 工作流先完整检查并上传 dist/，再部署到 github-pages 环境。核对两条流程的 head SHA，确认其对应目标提交。默认相对资源路径支持项目子目录，浏览路径使用 hash。
 
-## GitHub Actions 与 Pages
+上线后检查实际公共入口、关键文件和 Worker；从结构进入过程，检查语言、时间轴、视角恢复以及本轮改动涉及的导出或交互。真实手机触控和 GPU 检查单独记录，窄视口不能代替。失败、未完成和旧基线材料保留，不能为了得到通过记录而改写历史。
 
-`.github/workflows/ci.yml` 在 main 推送、PR 和手动触发时运行 `npm ci` 与 `npm run check`。本地通过不代表 GitHub runner 已运行通过。
+## 标签与 GitHub Release
 
-需要发布网站时，在仓库 Settings → Pages 选择 GitHub Actions，然后在 Actions 手动运行 **Publish GitHub Pages**，选择 main。工作流先完整检查并上传 `dist/`，再部署到 `github-pages` 环境；普通推送只跑 CI，不直接发布。
+确认版本、验证及网站状态后，用明确的完整提交 SHA 创建 annotated tag，并只推送该标签。不要移动已有正式标签。Release 草稿可先准备，检查和网站通过后再公开；说明应包含变化、验证范围、网站入口和许可。
 
-默认相对资源路径支持 `https://账号.github.io/仓库名/`，也支持根域名。深层浏览使用 hash，不需要 SPA 重写规则。具体平台要求参考 [GitHub 官方自定义工作流文档](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。
+以下以已经存在于远端的 v1.0.1 标签为例：
 
-## 上线验收与回退
+```sh
+gh release create v1.0.1 --repo sldyns/bioscape --verify-tag --draft --title "BioScape v1.0.1" --notes-file docs/releases/v1.0.1.md
+gh release view v1.0.1 --repo sldyns/bioscape
+gh release edit v1.0.1 --repo sldyns/bioscape --draft=false --latest
+```
 
-打开 Actions 返回的实际 URL，检查目录图片、进入结构/过程、切换语言、时间轴、Worker 加载及刷新。还需真实手机验证触控与 GPU，浏览器窄视口不能替代。
+附件使用实际验收的产品输出，并提供 SHA-256。不要上传本机路径、私人截图、凭据、原始调试日志或未经许可的素材。源代码 ZIP/TAR 由 GitHub 按标签提供，无需把 node_modules 或临时构建提交到仓库。
 
-回退时通过新的 revert 提交恢复已知版本，再手动运行发布工作流；不对共享 main 强制推送。上线状态以成功的部署记录和实际网页为准。
+项目原创部分使用 BioScape Noncommercial License 1.0，作者为 Kun Qian；商业授权另行书面取得，不标为 OSI 开源。复核 LICENSE、docs/legal/NOTICE、CITATION.cff 和第三方声明，保留作者与数据来源。
+
+## 回退
+
+通过新的 revert 提交恢复已知版本，再手动发布 Pages。不要强推共享 main 或移动已公开版本标签。网站、源码和 Release 的回退状态分别记录，最终以实际部署与可访问内容为准。

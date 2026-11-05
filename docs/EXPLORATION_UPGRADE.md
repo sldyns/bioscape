@@ -1,6 +1,8 @@
 # Exploration, Studio and Comparison
 
-Approved direction: the user selected roadmap items 2, 3 and 4, explicitly requested full implementation in goal mode on 2026-10-03. Proceed with the complete implementation and verification in this task.
+This document describes exploration, comparison and Studio contracts. The implementation and acceptance records below include historical work from 2026-10-03; their local preview and publication statements refer to those dated checks.
+
+For the current release, see [v1.0.1](releases/v1.0.1.md), the [changelog](../CHANGELOG.md), and the [release guide](RELEASING.md).
 
 ## Product
 
@@ -15,9 +17,12 @@ CellScene and ProcessScene expose optional `onSceneReady(api | null)`, `initialV
 View: `{ direction: [x,y,z], target: [x,y,z], zoom: number }`. Direction is a unit vector from target to camera; zoom is distance / current fitted distance. Preserve fit across aspect changes. Set-view guards nonfinite/extreme inputs.
 
 API:
+
 - `getView()` returns the serializable View.
 - `setView(view)` restores it and requests a render.
 - `captureFrame({width,height,background,labels,turn,progress})` synchronously returns a detached HTMLCanvasElement containing the real rendered model. Background is a CSS color or `transparent`; turn is optional radians relative to present camera; progress applies only to processes. Capture preserves live renderer/camera/model settings after rendering and throws while not ready.
+- `prepareCaptureFrame(options)` optionally prepares an asynchronous capture and returns `{ ready, release }`. Await `ready` for its canvas, then call the idempotent `release()` when it has been consumed. Pass an AbortSignal as `options.signal` to cancel a pending capture. At most two prepared frames may be owned at once; each preserves its own pose, camera and label anchors.
+- `releaseCapture()` releases export targets and cancels pending readbacks. A released composition must never paint a late result.
 - `ready` boolean or accessor.
 
 Label capture must use actual visible label data, maintain readable placement, and exclude unrelated UI. WebGL/context loss, navigation disposal and export failure must release resources.
@@ -25,10 +30,10 @@ Label capture must use actual visible label data, maintain readable placement, a
 ## File ownership
 
 - Renderer bridge: src/CellScene.jsx, src/processes/ProcessScene.jsx, src/scene/sceneCapture.js and focused tests.
-- Studio: src/studio/** plus studio tests; consumes the renderer contract. Root integrates its launcher.
-- Comparison/specimens: src/compare/** plus specimen tests. Root integrates routing. No changes to shared renderers.
-- Structure/process mapping: src/exploration/relationships.js and tests; inspect all current definitions. Root integrates UI/navigation.
-- Root: App, ProcessExperience, navigation/session state, shared styles/integration and final checks.
+- Studio: src/studio/\*\* plus studio tests; consumes the renderer contract.
+- Comparison/specimens: src/compare/\*\* plus specimen tests. Consumes shared renderer APIs.
+- Structure/process mapping: src/exploration/relationships.js and tests; inspect all current definitions. Provides mappings for UI and navigation.
+- Integration: App, ProcessExperience, navigation/session state, shared styles, launchers and routes.
 
 ## Execution and acceptance
 
@@ -38,7 +43,7 @@ Label capture must use actual visible label data, maintain readable placement, a
 4. Review code and correct findings; run formatting, model/science and release checks.
 5. Browser review: structure to process and back, history, share/reload, both languages, both comparison panes and independent cameras, PNG and complete recorded video, cancellation and repeated open/close, narrow layout. Retain an evidence record distinguishing viewport emulation from real hardware.
 
-Use current React / Three.js / Vite dependencies. Preserve scientific source data, model fidelity, previous tests and full media. Do not publish remotely until the implementation has been reviewed in this task. Keep temporary exports outside the repository and remove regenerable test captures when no longer needed.
+Use current React / Three.js / Vite dependencies. Preserve scientific source data, model fidelity, previous tests and full media. Review implementation and validation before publishing. Keep temporary exports outside the repository; retain saved baselines, failures and acceptance evidence. Cleanup is limited to confirmed unused artifacts.
 
 ## Completion record
 
@@ -47,7 +52,6 @@ Implemented and locally verified on 2026-10-03. See [acceptance and limits](qa/e
 ## 逐项精修交付
 
 功能初版之后完成逐项精修，记录见 [精修验收索引](qa/polish/README.md)。新增 19 结构视图、既有 163 结构、84 过程的阶段与连续播放分别留存证据。该轮本地构建位于 4201，完整 check 与 22/22 科学回归通过；未部署。后续体验审查与当前预览见下节。
-
 
 ## Second usability audit · 2026-10-03
 

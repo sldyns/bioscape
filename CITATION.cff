@@ -4,7 +4,8 @@ title: "BioScape: Interactive 3D Biological Structures and Processes"
 type: software
 url: "https://sldyns.github.io/bioscape/"
 repository-code: "https://github.com/sldyns/bioscape"
-version: 1.0.0
+version: 1.0.1
+date-released: 2026-11-05
 authors:
   - family-names: Qian
     given-names: Kun
