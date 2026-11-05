@@ -4,6 +4,7 @@ const FRAME_RATE = 30;
 export async function exportVideoInWorker({
   canvas,
   drawFrame,
+  prepareFrame,
   duration,
   signal,
   onProgress = () => {},
@@ -15,6 +16,9 @@ export async function exportVideoInWorker({
   const ownerWindow = owner?.defaultView;
   const count = Math.max(2, Math.round(duration * FRAME_RATE));
   const pending = new Map();
+  const prepared = new Map();
+  let interrupt;
+  const interruption = new Promise((resolve) => (interrupt = resolve));
   let worker,
     failure,
     watchdog,
@@ -30,6 +34,9 @@ export async function exportVideoInWorker({
   const fail = (error) => {
     if (failure) return;
     failure = error;
+    interrupt(error);
+    for (const frame of prepared.values()) frame.release();
+    prepared.clear();
     const yielded = pendingYield;
     pendingYield = null;
     if (yielded) {
@@ -43,6 +50,36 @@ export async function exportVideoInWorker({
   };
   const check = () => {
     if (failure) throw failure;
+  };
+  const prefetch = (index) => {
+    if (!prepareFrame || index >= count) return;
+    check();
+    const frame = prepareFrame(index / (count - 1));
+    if (
+      !frame ||
+      typeof frame.draw !== "function" ||
+      typeof frame.release !== "function"
+    ) {
+      frame?.release?.();
+      throw new Error("VIDEO_INVALID_PREPARED_FRAME");
+    }
+    prepared.set(index, frame);
+  };
+  const drawPrepared = async (index) => {
+    check();
+    const frame = prepared.get(index);
+    try {
+      await Promise.race([
+        frame.draw(),
+        interruption.then((error) => {
+          throw error;
+        }),
+      ]);
+      check();
+    } finally {
+      frame.release();
+      prepared.delete(index);
+    }
   };
   const abort = () => fail(new DOMException("Export cancelled", "AbortError"));
   const pageHidden = () => fail(new Error("VIDEO_PAGE_HIDDEN"));
@@ -119,7 +156,11 @@ export async function exportVideoInWorker({
     );
     onProgress(0);
     check();
-    drawFrame(0);
+    if (prepareFrame) {
+      prefetch(0);
+      prefetch(1);
+      await drawPrepared(0);
+    } else drawFrame(0);
     check();
     worker = runtime.createWorker();
     check();
@@ -137,7 +178,13 @@ export async function exportVideoInWorker({
     if (ready.type === "unsupported") return null;
     for (let index = 0; index < count; index++) {
       check();
-      if (index) drawFrame(index / (count - 1));
+      if (index) {
+        if (prepareFrame) await drawPrepared(index);
+        else drawFrame(index / (count - 1));
+      }
+      // At most two GPU frames can be queued. Their independent snapshots are
+      // composed in order, and the encoder still accepts exactly one at a time.
+      prefetch(index + 2);
       check();
       let frame;
       try {
@@ -181,6 +228,8 @@ export async function exportVideoInWorker({
       extension: "mp4",
     };
   } finally {
+    for (const frame of prepared.values()) frame.release();
+    prepared.clear();
     terminate();
     runtime.clearTimeout(watchdog);
     if (pendingYield) {

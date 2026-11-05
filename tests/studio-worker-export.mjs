@@ -619,3 +619,114 @@ test("encoder refuses incomplete finalization and malformed frame timing or dime
   assert.equal(f.state.samples.length, 0);
   f.dispose();
 });
+
+test("prepared export queues at most two frames and encodes them in order", async () => {
+  const f = fixture(),
+    first = deferred(),
+    queued = [],
+    released = [];
+  const open = new Set();
+  let maximum = 0;
+  f.options.prepareFrame = (value) => {
+    queued.push(value);
+    open.add(value);
+    maximum = Math.max(maximum, open.size);
+    let closed = false;
+    return {
+      async draw() {
+        if (value === 0) await first.promise;
+        assert.equal(closed, false);
+        f.options.drawFrame(value);
+      },
+      release() {
+        if (closed) return;
+        closed = true;
+        open.delete(value);
+        released.push(value);
+      },
+    };
+  };
+  const job = exportVideoInWorker(f.options);
+  await turn();
+  assert.deepEqual(queued, [0, 0.5]);
+  first.resolve();
+  await bounded(job);
+  assert.equal(maximum, 2);
+  assert.deepEqual(f.state.draws, [0, 0.5, 1]);
+  assert.deepEqual(
+    f.state.frames.map((frame) => frame.pose),
+    [0, 0.5, 1],
+  );
+  assert.equal(open.size, 0);
+  assert.equal(released.length, 3);
+  f.clean();
+});
+
+test("cancellation interrupts a pending prepared draw before creating an encoder", async () => {
+  const f = fixture(),
+    blocked = deferred();
+  let released = 0;
+  f.options.prepareFrame = () => {
+    let closed = false;
+    return {
+      draw: () => blocked.promise,
+      release() {
+        if (!closed) released++;
+        closed = true;
+      },
+    };
+  };
+  const job = exportVideoInWorker(f.options);
+  await turn();
+  f.controller.abort();
+  await assert.rejects(bounded(job), { name: "AbortError" });
+  assert.equal(released, 2);
+  assert.equal(f.state.created, 0);
+  f.clean();
+});
+
+test("a prefetched read failure releases the other frame and worker", async () => {
+  const f = fixture();
+  let released = 0;
+  f.options.prepareFrame = (value) => {
+    let closed = false;
+    return {
+      async draw() {
+        if (value === 0.5) throw new Error("CAPTURE_CONTEXT_LOST");
+        f.options.drawFrame(value);
+      },
+      release() {
+        if (!closed) released++;
+        closed = true;
+      },
+    };
+  };
+  await assert.rejects(
+    bounded(exportVideoInWorker(f.options)),
+    /CAPTURE_CONTEXT_LOST/,
+  );
+  assert.equal(released, 3);
+  assert.equal(f.state.terminated, 1);
+  assert.equal(f.state.frames.length, 1);
+  f.clean();
+});
+
+test("unsupported worker encoding releases prefetched work and keeps frame zero", async () => {
+  const f = fixture({ unsupported: true });
+  let released = 0;
+  f.options.prepareFrame = (value) => {
+    let closed = false;
+    return {
+      draw: async () => f.options.drawFrame(value),
+      release() {
+        if (!closed) released++;
+        closed = true;
+      },
+    };
+  };
+  await bounded(exportVideo(f.options));
+  assert.deepEqual(f.state.draws, [0, 1]);
+  assert.equal(released, 2);
+  assert.equal(f.state.legacy, 1);
+  f.clean();
+});

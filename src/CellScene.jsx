@@ -1433,7 +1433,10 @@ export default function CellScene({
           getView: readView,
           setView,
           releaseCapture: () => capture.dispose(),
-          captureFrame(options = {}) {
+          prepareCaptureFrame(options = {}) {
+            return api.captureFrame(options, true);
+          },
+          captureFrame(options = {}, prepare = false) {
             if (!api.ready)
               throw new Error("The structure scene is not ready to capture.");
             const separation =
@@ -1482,7 +1485,9 @@ export default function CellScene({
               }
               if (matricesDirty || separation !== null || captureSettlesEntry)
                 scene.updateMatrixWorld();
-              return capture.captureFrame(options);
+              return prepare
+                ? capture.prepareFrame(options)
+                : capture.captureFrame(options);
             } finally {
               captureSeparation = null;
               transition = entryTransition;

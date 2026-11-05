@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { readCapturePixelsAsync } from "./asyncPixelReadback.js";
 
 export function normalizeSceneView(view) {
   if (!view || !Number.isFinite(view.zoom) || view.zoom <= 0) return null;
@@ -490,21 +491,29 @@ export function drawCaptureLabels(
 
 // Allocate only on export. Reuse the two targets during recording, and keep
 // renderer dimensions, orbit damping and live camera entirely out of capture.
-export function createSceneCapture({
-  renderer,
-  scene,
-  camera,
-  target,
-  getFittedDistance,
-  fitDistance,
-  getLabels,
-  canReuseLiveShadows = () => false,
-}) {
+function createCaptureSlot(
+  {
+    renderer,
+    scene,
+    camera,
+    target,
+    getFittedDistance,
+    fitDistance,
+    getLabels,
+    canReuseLiveShadows = () => false,
+  },
+  asyncReadback = false,
+) {
   let linearTarget, outputTarget, outputPass, pixelCanvas, pixelContext;
   let pixels, image, frameCanvas, exportCamera;
   let labelScratch;
+  let pendingReadback;
+  let generation = 0;
   const shadowCache = new Map();
   const dispose = () => {
+    generation++;
+    pendingReadback?.cancel();
+    pendingReadback = null;
     linearTarget?.dispose();
     outputTarget?.dispose();
     outputPass?.dispose();
@@ -530,7 +539,9 @@ export function createSceneCapture({
     turn = 0,
     reuseFrame = false,
     labelScale = 1,
+    signal,
   } = {}) {
+    if (pendingReadback) throw new Error("CAPTURE_SLOT_BUSY");
     width = Math.round(width);
     height = Math.round(height);
     const maxSize = Math.min(renderer.capabilities.maxTextureSize, 8192);
@@ -581,6 +592,39 @@ export function createSceneCapture({
       xr: renderer.xr.enabled,
     };
     const shadows = [];
+    let capturedLabels;
+    const finishFrame = () => {
+      if (renderer.getContext().isContextLost())
+        throw new Error("The graphics context was lost during capture.");
+      pixelContext.putImageData(image, 0, 0);
+      if (background !== "transparent") {
+        context.fillStyle = background;
+        context.fillRect(0, 0, width, height);
+      }
+      context.drawImage(pixelCanvas, 0, 0);
+      if (labels) {
+        const scale =
+          Number.isFinite(labelScale) && labelScale > 0 ? labelScale : 1;
+        const scratch = (labelScratch ??= {});
+        context.save();
+        try {
+          context.scale(scale, scale);
+          drawCaptureLabels(
+            context,
+            capturedLabels ?? getLabels?.() ?? [],
+            exportCamera,
+            width / scale,
+            height / scale,
+            background,
+            createCaptureLabelMask(pixels, width, height, scale, scratch),
+            scratch,
+          );
+        } finally {
+          context.restore();
+        }
+      }
+      return canvas;
+    };
     try {
       context.setTransform(1, 0, 0, 1, 0, 0);
       context.clearRect(0, 0, width, height);
@@ -691,6 +735,36 @@ export function createSceneCapture({
       renderer.setScissorTest(false);
       renderer.render(scene, exportCamera);
       outputPass.render(renderer, outputTarget, linearTarget);
+      if (asyncReadback) {
+        // The process/structure pose is restored as soon as this call returns.
+        // Keep each queued frame's anchors and camera with its own capture slot.
+        if (labels)
+          capturedLabels = (getLabels?.() ?? []).map((label) => ({
+            ...label,
+            position: label.position?.clone(),
+          }));
+        const ownedGeneration = generation;
+        const readback = readCapturePixelsAsync(
+          renderer,
+          outputTarget,
+          width,
+          height,
+          pixels,
+          { signal },
+        );
+        pendingReadback = readback;
+        return readback.ready
+          .then(() => {
+            if (ownedGeneration !== generation)
+              throw new DOMException("Capture cancelled", "AbortError");
+            pendingReadback = null;
+            return finishFrame();
+          })
+          .catch((error) => {
+            if (ownedGeneration === generation) dispose();
+            throw error;
+          });
+      }
       renderer.readRenderTargetPixels(
         outputTarget,
         0,
@@ -699,36 +773,7 @@ export function createSceneCapture({
         height,
         pixels,
       );
-      if (renderer.getContext().isContextLost())
-        throw new Error("The graphics context was lost during capture.");
-      pixelContext.putImageData(image, 0, 0);
-      if (background !== "transparent") {
-        context.fillStyle = background;
-        context.fillRect(0, 0, width, height);
-      }
-      context.drawImage(pixelCanvas, 0, 0);
-      if (labels) {
-        const scale =
-          Number.isFinite(labelScale) && labelScale > 0 ? labelScale : 1;
-        const scratch = (labelScratch ??= {});
-        context.save();
-        try {
-          context.scale(scale, scale);
-          drawCaptureLabels(
-            context,
-            getLabels?.() ?? [],
-            exportCamera,
-            width / scale,
-            height / scale,
-            background,
-            createCaptureLabelMask(pixels, width, height, scale, scratch),
-            scratch,
-          );
-        } finally {
-          context.restore();
-        }
-      }
-      return canvas;
+      return finishFrame();
     } catch (error) {
       dispose();
       throw error;
@@ -752,4 +797,57 @@ export function createSceneCapture({
     }
   }
   return { captureFrame, dispose };
+}
+
+export function createSceneCapture(options) {
+  const still = createCaptureSlot(options);
+  const slots = [];
+  const prepareFrame = (frameOptions = {}) => {
+    let slot = slots.find((entry) => !entry.busy);
+    if (!slot) {
+      if (slots.length === 2) throw new Error("CAPTURE_QUEUE_FULL");
+      slot = { capture: createCaptureSlot(options, true), busy: false };
+      slots.push(slot);
+    }
+    slot.busy = true;
+    let settled = false;
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      if (!settled) slot.capture.dispose();
+      slot.busy = false;
+    };
+    let ready;
+    try {
+      ready = Promise.resolve(
+        slot.capture.captureFrame({ ...frameOptions, reuseFrame: true }),
+      ).then(
+        (canvas) => {
+          settled = true;
+          return canvas;
+        },
+        (error) => {
+          settled = true;
+          release();
+          throw error;
+        },
+      );
+    } catch (error) {
+      settled = true;
+      release();
+      throw error;
+    }
+    ready.catch(() => {});
+    return { ready, release };
+  };
+  return {
+    captureFrame: still.captureFrame,
+    prepareFrame,
+    dispose() {
+      still.dispose();
+      for (const slot of slots) slot.capture.dispose();
+      slots.length = 0;
+    },
+  };
 }

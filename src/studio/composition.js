@@ -34,12 +34,7 @@ function textLines(ctx, value, width, maxLines) {
   return lines;
 }
 
-export function drawComposition(
-  canvas,
-  source,
-  preferences,
-  { fraction, lang = "zh", scale = 1, reuseFrame = false } = {},
-) {
+function compositionContext(canvas, source, preferences, { scale = 1 } = {}) {
   if (!source?.api?.captureFrame || source.api.ready === false)
     throw new Error("SCENE_NOT_READY");
   const description =
@@ -70,24 +65,94 @@ export function drawComposition(
       description: Boolean(description),
     });
   const { model } = layout;
-  ctx.setTransform(scale, 0, 0, scale, 0, 0);
-  const background = BACKGROUNDS[preferences.background];
-  ctx.clearRect(0, 0, width, height);
-  if (background !== "transparent") {
-    ctx.fillStyle = background;
-    ctx.fillRect(0, 0, width, height);
-  }
-  const frame = source.api.captureFrame({
+  return {
+    ctx,
+    layout,
+    model,
+    width,
+    height,
+    padding,
+    scientificNotes,
+    description,
+    background: BACKGROUNDS[preferences.background],
+  };
+}
+
+function frameOptions(model, background, preferences, options) {
+  const { fraction, scale = 1, reuseFrame = false, signal } = options;
+  return {
     width: Math.max(1, Math.round(model.width * scale)),
     height: Math.max(1, Math.round(model.height * scale)),
     background,
     labels: preferences.labels,
     reuseFrame,
     labelScale: scale,
+    ...(signal ? { signal } : {}),
     ...(fraction === undefined
       ? {}
       : motionFrame(preferences.motion, fraction)),
-  });
+  };
+}
+
+/** Queue GPU work now; the returned composition owns its frame until drawn. */
+export function prepareComposition(canvas, source, preferences, options = {}) {
+  const { model, background } = compositionContext(
+    canvas,
+    source,
+    preferences,
+    options,
+  );
+  const capture = source.api.prepareCaptureFrame(
+    frameOptions(model, background, preferences, options),
+  );
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    capture.release();
+  };
+  return {
+    release,
+    async draw() {
+      try {
+        const frame = await capture.ready;
+        if (released)
+          throw new DOMException("Composition cancelled", "AbortError");
+        return drawComposition(canvas, source, preferences, {
+          ...options,
+          preparedFrame: frame,
+        });
+      } finally {
+        release();
+      }
+    },
+  };
+}
+
+export function drawComposition(canvas, source, preferences, options = {}) {
+  const { fraction, lang = "zh", scale = 1, preparedFrame } = options;
+  const {
+    ctx,
+    layout,
+    model,
+    width,
+    height,
+    padding,
+    scientificNotes,
+    description,
+    background,
+  } = compositionContext(canvas, source, preferences, options);
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  if (background !== "transparent") {
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, width, height);
+  }
+  const frame =
+    preparedFrame ??
+    source.api.captureFrame(
+      frameOptions(model, background, preferences, options),
+    );
   if (!frame?.width || !frame?.height) throw new Error("EMPTY_CAPTURE");
   ctx.drawImage(frame, model.x, model.y, model.width, model.height);
   ctx.save();

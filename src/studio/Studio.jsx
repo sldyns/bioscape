@@ -20,7 +20,11 @@ import {
   outputDimensions,
   savePreferences,
 } from "./config.js";
-import { canvasBlob, drawComposition } from "./composition.js";
+import {
+  canvasBlob,
+  drawComposition,
+  prepareComposition,
+} from "./composition.js";
 import { exportVideo, preferredExportFormat } from "./exportVideo.js";
 import { createPreviewPlayback, previewScale } from "./previewPlayback.js";
 import "./studio.css";
@@ -360,6 +364,14 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
         canvas,
         duration: preferences.duration,
         signal: controller.signal,
+        prepareFrame: originalSource.api?.prepareCaptureFrame
+          ? (fraction) =>
+              prepareComposition(canvas, originalSource, effectivePreferences, {
+                fraction,
+                lang,
+                signal: controller.signal,
+              })
+          : undefined,
         drawFrame: (fraction) =>
           drawComposition(canvas, originalSource, effectivePreferences, {
             fraction,

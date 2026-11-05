@@ -470,6 +470,49 @@ test("composition captures model pixels with export settings and reserves the te
   assert.ok(text.some(([value]) => value === "A specimen"));
 });
 
+test("a released prepared composition never paints a late GPU result", async () => {
+  let resolve,
+    released = 0,
+    painted = 0;
+  const ready = new Promise((yes) => {
+    resolve = yes;
+  });
+  const ctx = {
+    measureText: (value) => ({ width: value.length * 12 }),
+    drawImage() {
+      painted++;
+    },
+  };
+  const source = {
+    title: "Specimen",
+    api: {
+      ready: true,
+      captureFrame() {
+        assert.fail("must not capture twice");
+      },
+      prepareCaptureFrame() {
+        return {
+          ready,
+          release() {
+            released++;
+          },
+        };
+      },
+    },
+  };
+  const job = composition.prepareComposition(
+    { getContext: () => ctx },
+    source,
+    config.normalizePreferences({}),
+  );
+  const draw = job.draw();
+  job.release();
+  resolve({ width: 100, height: 100 });
+  await assert.rejects(draw, { name: "AbortError" });
+  assert.equal(painted, 0);
+  assert.equal(released, 1);
+});
+
 test("exports retain project and scale context without an author-name watermark", () => {
   const text = [];
   const ctx = {

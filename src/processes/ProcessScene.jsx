@@ -823,7 +823,10 @@ export default function ProcessScene({
           requestRender,
           getProgress: () => pose.progress,
           releaseCapture: () => capture.dispose(),
-          captureFrame(options = {}) {
+          prepareCaptureFrame(options = {}) {
+            return api.captureFrame(options, true);
+          },
+          captureFrame(options = {}, prepare = false) {
             if (!api.ready)
               throw new Error("The process scene is not ready to capture.");
             if (pose.apply(readProgress(), live.current.parameters))
@@ -840,7 +843,9 @@ export default function ProcessScene({
                   appliedParameters,
                 );
               if (matricesDirty || seek) scene.updateMatrixWorld();
-              return capture.captureFrame(options);
+              return prepare
+                ? capture.prepareFrame(options)
+                : capture.captureFrame(options);
             } finally {
               if (seek) {
                 model.update(appliedProgress, appliedParameters);

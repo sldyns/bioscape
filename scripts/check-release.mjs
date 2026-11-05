@@ -7,7 +7,7 @@ import { build } from "esbuild";
 import { processCatalog } from "../src/processes/catalog.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const dist = path.join(root, "dist");
+const dist = path.resolve(root, process.env.BIOSCAPE_RELEASE_DIST || "dist");
 // Bundle metadata in memory because its shared source uses Vite-style imports.
 const homepageMetadata = await build({
   stdin: {

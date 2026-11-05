@@ -27,6 +27,7 @@ try {
     "tests/startup-navigation.mjs",
     "tests/exploration-relationships.mjs",
     "tests/scene-capture.mjs",
+    "tests/async-pixel-readback.mjs",
     "tests/scene-initialization.mjs",
     "tests/staged-scene-initialization.mjs",
     "tests/render-turn-queue.mjs",
