@@ -10,9 +10,9 @@ An interactive atlas of biological structures and processes.
 
 [![See the unseen. Understand life. — the BioScape homepage](docs/media/readme/home-en.png)](https://sldyns.github.io/bioscape/)
 
-[Release v1.1.1](https://github.com/sldyns/bioscape/releases/tag/v1.1.1) · [What's new](CHANGELOG.md) · [Verification](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+[Release v1.1.2](https://github.com/sldyns/bioscape/releases/tag/v1.1.2) · [What's new](CHANGELOG.md) · [Verification](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
 
-The latest update reduces curve-normal computation in lysogen division, bacterial division and ciliary motion while preserving the exact geometry, normals and rendered images. Shared rendering and full-resolution asynchronous export remain available. Read the [release notes](docs/releases/v1.1.1.md) and [paired measurements and validation scope](docs/performance/exact-normal-hotpaths-2026-11-06.md).
+The latest update removes repeated navigation tutorials and simplifies the structure, process, comparison and Studio interfaces in both languages. Model detail, rendering quality and full-resolution export are preserved. Read the [release notes](docs/releases/v1.1.2.md).
 
 ## A place to begin
 

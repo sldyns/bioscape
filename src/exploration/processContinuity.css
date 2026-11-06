@@ -28,11 +28,6 @@
   padding: 20px 0 0;
   border-top: 1px solid var(--line);
 }
-.continuity-heading > span {
-  font-size: 10px;
-  color: #767984;
-  letter-spacing: 0.5px;
-}
 .continuity-heading h3 {
   margin: 5px 0 14px;
   font-size: 14px;
@@ -81,12 +76,6 @@
   background: #f2f6f9;
   border-radius: 9px;
 }
-.continuity-current > p {
-  margin: 0 8px 3px;
-  color: #6d7782;
-  font-size: 10px;
-  line-height: 1.6;
-}
 .process-continuity .continuity-scope {
   padding: 11px 13px;
   border-left: 2px solid #b7c5d0;
@@ -131,10 +120,4 @@
   margin-top: 9px;
   padding-left: 0;
   font-size: 11px;
-}
-.process-continuity .continuity-return {
-  font-size: 10px;
-  line-height: 1.8;
-  color: #7b818b;
-  margin: 12px 0 0;
 }

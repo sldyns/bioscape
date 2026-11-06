@@ -666,8 +666,8 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
                 <p className="studio-format-note">
                   {canRecord
                     ? t(
-                        "无声视频。生成时请保持此标签页可见；处理耗时可能超过视频时长",
-                        "Silent video. Keep this tab visible while generating; processing may take longer than playback.",
+                        "生成期间保持此页面可见。",
+                        "Keep this tab visible while exporting.",
                       )
                     : errorText({ message: "VIDEO_UNSUPPORTED" }, en)}
                 </p>

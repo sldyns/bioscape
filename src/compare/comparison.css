@@ -590,14 +590,6 @@
 .compare-table-row h3 {
   font-size: 12px;
 }
-.compare-parts-note {
-  font-size: 12px;
-  color: #6c7870;
-  line-height: 1.8;
-  padding: 16px 18px;
-  background: #f5f7f5;
-  border-radius: 10px;
-}
 .compare-scope-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

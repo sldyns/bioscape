@@ -606,8 +606,8 @@ export const extraNotes = {
     en: "A magnified wall patch with real through-holes in the matrix. Layers clarify fibril orientations, not a universal three-layer primary wall. Plasmodesmata are enlarged and patch edges are illustrative cuts.",
   },
   cellulose: {
-    zh: "平行链束展示微纤丝的内部组织，链数、间距及扭转为教学调整，不指定固定链数。点击链束继续看β-葡聚糖。",
-    en: "Parallel chains reveal microfibril organization. Chain count, spacing, and twist are illustrative, not a fixed stoichiometry. Select the bundle to inspect beta-glucan.",
+    zh: "平行链束展示微纤丝的内部组织，链数、间距及扭转为教学调整，不指定固定链数。",
+    en: "Parallel chains reveal microfibril organization. Chain count, spacing, and twist are illustrative, not a fixed stoichiometry.",
   },
   glucanChain: {
     zh: "展示六个糖残基与连接关系，环上浅绿/赭色标记用于区别碳骨架与环氧/桥氧。氢、部分羟基及精确键角省略，不是完整原子模型。",
@@ -695,7 +695,7 @@ export const extraNotes = {
     en: "One closed duplex plasmid illustrates irregular coiling. Not every bacterium carries plasmids, and plasmids are not always circular or resistance-bearing. Replication state, sequence, and true scale are not reconstructed.",
   },
   bacterialEnvelope: {
-    zh: "组装时保留含水周质与外膜—细胞壁的连接示意。点击“拆解”才将各层拉开。膜厚、层间距和分子大小不按真实比例；边缘是人为截取。",
+    zh: "组装时保留含水周质与外膜—细胞壁的连接示意。拆解视图将各层分开展示。膜厚、层间距和分子大小不按真实比例；边缘是人为截取。",
     en: "Assembled view retains aqueous periplasm and selected outer-membrane–wall attachments. Exploded view pulls the layers apart. Thickness, spacing, and molecular sizes are not to scale; the edges are illustrative cuts.",
   },
   bacterialOuter: {

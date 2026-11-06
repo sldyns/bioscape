@@ -2,7 +2,9 @@
 
 ## Maintainer guides
 
-- [Release v1.0.1](releases/v1.0.1.md) · [Changelog](../CHANGELOG.md): the current release and included validation.
+- [Release v1.1.2](releases/v1.1.2.md) · [Changelog](../CHANGELOG.md): the current release and included validation.
+- [Shared renderer and export](performance/shared-renderer-2026-11-06.md): renderer ownership, re-entry and full-quality export validation.
+- [Normal-update CPU measurements](performance/exact-normal-hotpaths-2026-11-06.md): paired measurements, exact output and acceptance scope.
 - [Video export performance](performance/video-export-2026-11-05.md): matched measurements, preserved quality and scope.
 - [Contributing](../.github/CONTRIBUTING.md): architecture, changes and validation.
 - [Release guide](RELEASING.md): production checks and GitHub Pages.

@@ -10,9 +10,9 @@
 
 [![看见微观，理解生命——BioScape 主页实景](docs/media/readme/home-zh.png)](https://sldyns.github.io/bioscape/)
 
-[正式版本 v1.1.1](https://github.com/sldyns/bioscape/releases/tag/v1.1.1) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+[正式版本 v1.1.2](https://github.com/sldyns/bioscape/releases/tag/v1.1.2) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
 
-本次更新减少溶原细胞分裂、细菌分裂和纤毛运动中的曲面法线计算开销，几何、法线和输出画面保持一致。共享渲染与原分辨率异步导出继续保留。查看[版本说明](docs/releases/v1.1.1.md)和[配对测量及验证范围](docs/performance/exact-normal-hotpaths-2026-11-06.md)。
+本次更新清理结构、过程、对比和影像工作台中的重复导航教学与说明，中英文同步精简。模型细节、渲染画质和原分辨率导出保持不变。查看[版本说明](docs/releases/v1.1.2.md)。
 
 ## 从一个模型开始
 

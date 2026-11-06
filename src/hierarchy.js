@@ -341,8 +341,8 @@ const definitions = [
     "oxidativeEnzymes",
     "氧化酶与过氧化氢酶",
     "Oxidases and catalase",
-    "两种酶配合处理氧化代谢中的过氧化氢：ACOX1催化脂酰辅酶A氧化的第一步并产生H₂O₂，过氧化氢酶帮助分解H₂O₂。点击各自的主链结构继续观察。",
-    "These enzymes link oxidative metabolism with peroxide handling: ACOX1 catalyzes the first step of acyl-CoA oxidation and produces H₂O₂; catalase helps remove H₂O₂. Select either backbone to inspect it.",
+    "两种酶配合处理氧化代谢中的过氧化氢：ACOX1催化脂酰辅酶A氧化的第一步并产生H₂O₂，过氧化氢酶帮助分解H₂O₂。",
+    "These enzymes link oxidative metabolism with peroxide handling: ACOX1 catalyzes the first step of acyl-CoA oxidation and produces H₂O₂; catalase helps remove H₂O₂.",
     "#b5c296",
     ["catalase", "acylCoAOxidase"],
   ],
@@ -497,29 +497,9 @@ export function getNode(id, lang = "zh") {
       en: "Animal cell",
       color: "#9fb7a5",
       desc: en
-        ? "A generalized animal cell. Select a structure to open it, then explore the parts within."
-        : "一个一般化的动物细胞。点击模型或目录中的结构，可逐层查看它的内部。",
-      features: en
-        ? [
-            [
-              "Membrane compartments",
-              "The plasma membrane defines the cell boundary. Internal membranes create distinct spaces for different biochemical reactions.",
-            ],
-            [
-              "A selected example",
-              "Numbers and positions vary between cells. This model shows selected major structures, with colors and sizes adjusted for observation.",
-            ],
-          ]
-        : [
-            [
-              "膜与区室",
-              "细胞膜界定细胞边界，内部的膜系统把不同反应组织在各自的空间中。",
-            ],
-            [
-              "一个教学范例",
-              "不同细胞的结构数量和分布有所不同。这里选取主要结构，并调整颜色与尺寸，便于观察。",
-            ],
-          ],
+        ? "The plasma membrane defines the cell boundary. Internal membranes create distinct spaces for different biochemical reactions."
+        : "细胞膜界定细胞边界，内部的膜系统把不同反应组织在各自的空间中。",
+      features: [],
       children: children.cell,
     };
   const i = structureIndex.get(id) ?? -1;
@@ -591,8 +571,8 @@ export const modelNotes = {
     en: "Teal microtubules extend from a perinuclear organizing region; green actin emphasizes the cortex; violet intermediate filaments connect perinuclear and peripheral regions. These are selected schematic networks, not measured diameters, densities, or locations. Explosion separates networks only for observation.",
   },
   microtubules: {
-    zh: "13条原丝围成中空管，浅深色交替表示α/β微管蛋白，纵向错位提示微管晶格的排列；缝合区与真实亚基接触经过简化。正端暴露β，负端暴露α，正负不是电荷。点击管壁可进一步查看一个异源二聚体。",
-    en: "Thirteen protofilaments surround a hollow lumen. Alternating tones mark α/β-tubulin; staggered rows suggest lattice packing, with the seam and contacts simplified. β is exposed at the plus end and α at the minus end; these names do not refer to charge. Select the wall to inspect a heterodimer.",
+    zh: "13条原丝围成中空管，浅深色交替表示α/β微管蛋白，纵向错位提示微管晶格的排列；缝合区与真实亚基接触经过简化。正端暴露β，负端暴露α，正负不是电荷。",
+    en: "Thirteen protofilaments surround a hollow lumen. Alternating tones mark α/β-tubulin; staggered rows suggest lattice packing, with the seam and contacts simplified. β is exposed at the plus end and α at the minus end; these names do not refer to charge.",
   },
   tubulinDimer: {
     zh: "牛源α/β微管蛋白实验主链（PDB 1JFF），共838个已解析Cα位置；缺失的环和末端留空，不跨接。原结构来自锌诱导、紫杉醇稳定的片层，不代表所有微管中的唯一构象。此处省略侧链、GTP/GDP、离子和紫杉醇；不同颜色区分α与β，非完整原子模型。整根微管的亚基仍是定位轮廓示意。",
@@ -603,8 +583,8 @@ export const modelNotes = {
     en: "Subunits follow a helical relationship of about 2.75 nm axial rise and 166.7° rotation. Alternating colors help trace the two long-pitch strands; both are actin. Real twist varies with state. Shapes are non-atomic, with nucleotides and binding proteins omitted.",
   },
   intermediate: {
-    zh: "绳索样束用于展示中间丝与中空微管、肌动蛋白螺旋的差别；不指定某类中间丝的精确原丝数。可点击纤维查看反向平行四聚体的常见组装原理。不同中间丝蛋白家族及核纤层的结构不能完全用一个图形概括。",
-    en: "A rope-like bundle contrasts intermediate filaments with hollow microtubules and actin helices; it does not specify an exact protofilament count for a protein family. Select it to inspect a common antiparallel tetramer assembly. Intermediate-filament families and nuclear lamins cannot all be reduced to one architecture.",
+    zh: "绳索样束用于展示中间丝与中空微管、肌动蛋白螺旋的差别；不指定某类中间丝的精确原丝数。局部结构展示反向平行四聚体的常见组装原理。不同中间丝蛋白家族及核纤层的结构不能完全用一个图形概括。",
+    en: "A rope-like bundle contrasts intermediate filaments with hollow microtubules and actin helices; it does not specify an exact protofilament count for a protein family. The detail shows a common antiparallel tetramer assembly. Intermediate-filament families and nuclear lamins cannot all be reduced to one architecture.",
   },
   intermediateTetramer: {
     zh: "四条曲线表示两个卷曲螺旋二聚体，反向错位配对。端部颜色帮助辨认链方向；螺距、链长与头尾域形状为教学简化，并非原子级α螺旋。这里只展示常见细胞质中间丝组装原理，不声称所有家族的唯一组装方式。",
@@ -717,8 +697,8 @@ export const modelNotes = {
     en: "One mitochondrion is shown in cutaway. Distinct outer and inner membranes enclose it; cristae fold continuously into the matrix, with their lumen connected to the intermembrane space. Real mitochondria often form dynamic networks and diverse crista shapes.",
   },
   mitoInner: {
-    zh: "紫色小复合体示意 ATP 合酶，头部朝向基质，可点击放大。曲面是同一张折叠内膜，未逐一绘制全部呼吸链蛋白；前侧膜在剖面中被移除。",
-    en: "Small violet complexes represent ATP synthase with heads facing the matrix; select one to enlarge it. The surface is one folded inner membrane. Respiratory complexes are not all drawn, and the front membrane is removed in cutaway.",
+    zh: "紫色小复合体示意 ATP 合酶，头部朝向基质。曲面是同一张折叠内膜，未逐一绘制全部呼吸链蛋白；前侧膜在剖面中被移除。",
+    en: "Small violet complexes represent ATP synthase with heads facing the matrix. The surface is one folded inner membrane. Respiratory complexes are not all drawn, and the front membrane is removed in cutaway.",
   },
   mitoOuter: {
     zh: "环形部件示意孔蛋白。剖面边缘为人为切口，完整模式补齐膜。它与内膜是两张独立的脂质双层，而非一张膜的两面。",

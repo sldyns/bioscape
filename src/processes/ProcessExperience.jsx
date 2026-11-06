@@ -396,8 +396,7 @@ function ProcessPlayer({
             {originPath.map((id) => getNode(id, lang).name).join(" / ")}
           </strong>
           <span>
-            {t("返回，保留视角", "Return to saved view")}{" "}
-            <ChevronRight size={12} />
+            {t("返回结构", "Back to structure")} <ChevronRight size={12} />
           </span>
         </button>
         <nav
@@ -583,12 +582,6 @@ function ProcessPlayer({
               <ChevronLeft size={14} />
               {t("上一步", "Previous")}
             </button>
-            <span>
-              {t(
-                "拖动旋转 · 右键或双指平移",
-                "Drag to rotate · Right-drag or two fingers to pan",
-              )}
-            </span>
             <button
               disabled={stageIndex === definition.stages.length - 1}
               onClick={() => seek(definition.stages[stageIndex + 1].at)}
@@ -692,28 +685,21 @@ function ProcessPlayer({
           aria-label={t("相关结构", "Related structures")}
         >
           <div className="continuity-heading">
-            <span>{t("连接结构与过程", "Connect structure & process")}</span>
-            <h3>{t("在结构中观察", "Explore the structures")}</h3>
+            <h3>{t("相关结构", "Related structures")}</h3>
           </div>
           {related.scope?.label && (
             <p className="continuity-scope">{related.scope.label[lang]}</p>
           )}
           {related.current.length > 0 ? (
             <div className="continuity-current">
-              <p>{t("本步骤的结构入口", "Structure links for this step")}</p>
               {related.current.map(locationButton)}
             </div>
           ) : (
             <p className="continuity-empty">
-              {related.other.length
-                ? t(
-                    "本步骤暂无单独结构入口。可展开其他步骤的关联结构。",
-                    "No separate structure link for this step. Explore links from other steps below.",
-                  )
-                : t(
-                    "结构目录尚未单独呈现此过程的作用部位。",
-                    "The structure catalogue does not yet show a separate location for this mechanism.",
-                  )}
+              {t(
+                "本步骤暂无对应结构模型。",
+                "No corresponding structure model for this step.",
+              )}
             </p>
           )}
           {related.other.length > 0 && (
@@ -752,20 +738,8 @@ function ProcessPlayer({
               <ChevronRight size={13} aria-hidden="true" />
             </button>
           )}
-          <p className="continuity-return">
-            {t(
-              "查看结构后，可从「接着观察过程」回到此处。",
-              "After exploring, use “Resume process” to return here.",
-            )}
-          </p>
         </nav>
         <p className="process-context">{definition.intro[lang]}</p>
-        <p className="process-disclaimer">
-          {t(
-            "教学示意：尺寸、时间与分子数量不按真实比例。",
-            "Teaching schematic: sizes, timing and molecule counts are not to scale.",
-          )}
-        </p>
         <details className="process-references">
           <summary>{t("参考资料", "References")}</summary>
           {definition.sources.map((source) => (

@@ -102,17 +102,14 @@ export default function ProcessDirectory({
       >
         <p className="process-eyebrow">{name}</p>
         <h2>{t("生物学过程", "Biological processes")}</h2>
-        <p className="process-directory-intro">
-          {entries.length
-            ? t(
-                "选择一个过程，逐步观察细胞如何工作。",
-                "Choose a process and explore how the cell works, step by step.",
-              )
-            : t(
-                "此类生物的过程演示尚未收录。",
-                "Process demonstrations for this organism are not available yet.",
-              )}
-        </p>
+        {!entries.length && (
+          <p className="process-directory-intro">
+            {t(
+              "此类生物的过程演示尚未收录。",
+              "Process demonstrations for this organism are not available yet.",
+            )}
+          </p>
+        )}
         {entries.length > 6 && (
           <div className="process-directory-filter">
             <label className="sr-only" htmlFor="process-search">
@@ -198,27 +195,6 @@ export default function ProcessDirectory({
           </button>
         )}
       </section>
-      <aside
-        className="process-explanation"
-        aria-label={t("目录说明", "About this catalog")}
-      >
-        <p className="process-eyebrow">
-          {t("从结构，到活动", "From structure to function")}
-        </p>
-        <h2>{t("从过程到步骤", "From process to steps")}</h2>
-        <p className="process-stage-description">
-          {t(
-            "进入一个过程后，左侧目录会显示它的具体步骤，中间呈现对应的交互模型。",
-            "Open a process to see its steps in the catalog and explore the interactive model in the center.",
-          )}
-        </p>
-        <p className="process-context">
-          {t(
-            "可以逐步查看，也可以播放或拖动时间线。用返回按钮或顶部路径回到过程目录。",
-            "Explore one step at a time, play the sequence, or scrub the timeline. Return to this catalog using the back button or the path above.",
-          )}
-        </p>
-      </aside>
     </main>
   );
 }

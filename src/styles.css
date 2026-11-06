@@ -499,18 +499,6 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   height: 3px;
   cursor: pointer;
 }
-.viewer-footnote {
-  position: absolute;
-  bottom: 17px;
-  left: 25px;
-  right: 25px;
-  display: flex;
-  justify-content: space-between;
-  color: #a4a4ad;
-  font-size: 9px;
-  letter-spacing: 0.1px;
-  pointer-events: none;
-}
 .details {
   padding: 38px 28px 25px;
   border-left: 1px solid var(--line);
@@ -549,32 +537,17 @@ canvas:focus-visible ~ .scene-keyboard-hint {
 .feature-list section + section {
   margin-top: 25px;
 }
-.feature-list h3,
-.root-guide h3 {
+.feature-list h3 {
   font-size: 13px;
   font-weight: 500;
   line-height: 1.6;
   color: #454550;
 }
-.feature-list p,
-.root-guide p {
+.feature-list p {
   font-size: 11px;
   line-height: 1.9;
   color: #898992;
   margin-top: 8px;
-}
-.root-guide {
-  border-top: 1px solid var(--line);
-  padding-top: 26px;
-  margin-top: 30px;
-}
-.next-level-note {
-  font-size: 10px;
-  line-height: 1.8;
-  color: #a0a0a8;
-  margin-top: 30px;
-  border-top: 1px solid var(--line);
-  padding-top: 21px;
 }
 .source-link {
   display: flex;
@@ -804,11 +777,6 @@ canvas:focus-visible ~ .scene-keyboard-hint {
     left: 22px;
     top: 24px;
   }
-  .viewer-footnote {
-    left: 15px;
-    right: 15px;
-    font-size: 8px;
-  }
   .breadcrumbs {
     gap: 6px;
   }
@@ -835,12 +803,6 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   }
   .viewer-controls {
     bottom: 43px;
-  }
-  .viewer-footnote span:first-child {
-    display: none;
-  }
-  .viewer-footnote {
-    justify-content: center;
   }
   .zoom-tools {
     right: 10px;
@@ -983,12 +945,6 @@ canvas:focus-visible ~ .scene-keyboard-hint {
     width: 28px;
     height: 28px;
   }
-  .viewer-footnote {
-    left: 18px;
-    right: 18px;
-    bottom: 14px;
-    font-size: 8px;
-  }
   .details {
     border: 0;
     padding: 28px 24px 35px;
@@ -1009,8 +965,7 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   .feature-list {
     margin-top: 24px;
   }
-  .feature-list p,
-  .root-guide p {
+  .feature-list p {
     font-size: 12px;
   }
   .feature-list h3 {
@@ -1018,9 +973,6 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   }
   .feature-list section + section {
     margin-top: 20px;
-  }
-  .next-level-note {
-    margin-top: 24px;
   }
   .about-modal {
     padding: 30px 25px;
@@ -1459,9 +1411,6 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   }
   .zoom-tools {
     bottom: calc(108px + var(--label-rail, 0px));
-  }
-  .viewer-footnote {
-    display: none;
   }
   .details {
     grid-column: 1 / -1;

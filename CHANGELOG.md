@@ -1,5 +1,17 @@
 # Changelog · 更新日志
 
+## 1.1.2 — 2026-11-07
+
+[正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.2) · [在线体验 / Website](https://sldyns.github.io/bioscape/)
+
+- 删除结构页的常驻导航教学、重复进入/返回提示和泛化说明，保留生物学内容与模型范围。
+- 过程目录移除整栏使用说明，卡片区扩展到可用空间；过程页的近义标题合并为“相关结构”。
+- 精简对比页的重复提示和工作台的视频说明，中英文同步，保留必要状态、错误反馈及参考资料。
+- 保持几何、材质、阴影、抗锯齿、共享渲染和原分辨率导出实现不变。
+- 同步版本、引用信息、中英文 README、文档索引及发布记录。[版本说明](docs/releases/v1.1.2.md)。
+
+Repeated navigation tutorials and duplicate headings have been removed across structure exploration, biological processes, comparison and Studio. Both languages retain biological context and essential feedback; rendering detail and export quality remain unchanged.
+
 ## 1.1.1 — 2026-11-06
 
 [正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.1) · [在线体验 / Website](https://sldyns.github.io/bioscape/)

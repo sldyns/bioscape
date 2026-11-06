@@ -1192,17 +1192,6 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                     </div>
                   </div>
                 </div>
-                <div className="viewer-footnote">
-                  <span>
-                    {t(
-                      "拖动旋转 · 双指缩放",
-                      "Drag to rotate · Pinch or scroll to zoom",
-                    )}
-                  </span>
-                  <span>
-                    {t("教学示意，非真实比例", "Schematic · Not to scale")}
-                  </span>
-                </div>
               </section>
               <aside
                 className="details"
@@ -1235,12 +1224,12 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                 )}
                 {id === "phageTail" && (
                   <div className="mechanism-control">
-                    <h3>{t("观察尾鞘收缩", "Observe sheath contraction")}</h3>
+                    <h3>{t("尾鞘构型", "Sheath configuration")}</h3>
                     <p aria-live="polite">
                       {mode === "explode"
                         ? t(
-                            "拆解以伸展构型展示；返回整体模式可继续比较尾鞘收缩。",
-                            "The exploded view uses the extended configuration. Return to Whole mode to compare sheath contraction.",
+                            "拆解视图显示伸展构型。",
+                            "The exploded view shows the extended configuration.",
                           )
                         : contracted
                           ? t(
@@ -1248,8 +1237,8 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                               "The sheath shortens and widens, exposing the central tube. Proportions are schematic; the full infection process is not simulated.",
                             )
                           : t(
-                              "尾鞘包围尾管。在整体模式中，用模型下方的按钮对比伸展与收缩。",
-                              "The sheath surrounds the tube. In Whole mode, use the buttons beneath the model to compare extension and contraction.",
+                              "尾鞘包围尾管。",
+                              "The sheath surrounds the tube.",
                             )}
                     </p>
                   </div>
@@ -1286,35 +1275,6 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                       <ChevronRight size={12} />
                     </button>
                   </section>
-                )}
-                {rootIds.includes(id) && (
-                  <div className="root-guide">
-                    <h3>
-                      {t("从整体，到内部", "From the whole to its parts")}
-                    </h3>
-                    <p>
-                      {t(
-                        "点击结构即可进入。左侧目录会随层级更新；顶部路径可返回任意一级。",
-                        "Click a structure to open it. The catalog changes with each level; use the path above to return to any earlier level.",
-                      )}
-                    </p>
-                  </div>
-                )}
-                {node.children.length > 0 && (
-                  <p className="next-level-note">
-                    {t(
-                      "从左侧选择内部结构，继续查看。",
-                      "Choose an internal structure in the catalog to continue.",
-                    )}
-                  </p>
-                )}
-                {node.children.length === 0 && (
-                  <p className="next-level-note">
-                    {t(
-                      "可旋转查看此结构，或通过顶部路径返回。",
-                      "Rotate to inspect this structure, or return using the path above.",
-                    )}
-                  </p>
                 )}
                 {specializedSpecimens.find(
                   (specimen) => specimen.id === path[0],

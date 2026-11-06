@@ -382,10 +382,7 @@ export default function CompareWorkspace({
       </div>
 
       <p className="compare-scale-note">
-        {t(
-          "两侧独立旋转、缩放与复位。各自适配画面，非同一真实比例。",
-          "Rotate, zoom and reset each model independently. Each is fitted separately, not at a common physical scale.",
-        )}
+        {t("视图分别缩放，非同一比例。", "Views are scaled independently.")}
       </p>
 
       <div className="compare-panes">
@@ -561,16 +558,8 @@ export default function CompareWorkspace({
               ? t("同一结构，比较不同视图", "Same structure, different views")
               : t("结构与功能", "Structure & function")}
           </h2>
-          <span>{t("对应当前两个模型", "For the two selected models")}</span>
         </div>
-        {!left.facts || !right.facts ? (
-          <p className="compare-parts-note">
-            {t(
-              "当前包含局部结构；请结合各自的模型说明观察，不将其等同于整个细胞。",
-              "This selection includes a structural detail. Read each model in its own context; a part does not represent an entire cell.",
-            )}
-          </p>
-        ) : (
+        {left.facts && right.facts && (
           <div
             className="compare-table"
             role="table"
