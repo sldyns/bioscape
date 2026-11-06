@@ -1,3 +1,4 @@
+import { computeIndexedFloat32VertexNormals } from "../division/indexedFloat32Normals.js";
 import { THREE, sceneKit, clamp, phase, bilingual as b } from "../../kit.js";
 import { arcLengthTracks } from "./axonemeKinematics.js";
 import { anchorObject, anchorVertex, anchorInstance } from "./labelAnchors.js";
@@ -530,7 +531,7 @@ export default {
             }
           }
           pos.needsUpdate = true;
-          r.mesh.geometry.computeVertexNormals();
+          computeIndexedFloat32VertexNormals(r.mesh.geometry);
           r.mesh.geometry.computeBoundingSphere();
           r.mesh.geometry.computeBoundingBox();
         }

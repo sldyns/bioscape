@@ -1,5 +1,16 @@
 # Changelog · 更新日志
 
+## 1.1.1 — 2026-11-06
+
+[正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.1) · [在线体验 / Website](https://sldyns.github.io/bioscape/)
+
+- 溶原细胞分裂包膜、细菌分裂包膜和纤毛曲面复用已有的精确 Float32 法线计算器，保留每次累加和归一化的写入结果。
+- 同一自然 DPR2 浏览器的 A-B-B-A 对照中，受测活动条件的模型更新 P95 耗时减少约 45%–66%；这是对应模型和条件的 CPU 测量，不是全站帧率承诺。
+- 235 个根模型/条件组合、1,384 个章节条件通过 11,980 次正反向状态检查；候选与基线的 5,990 个状态一致，48 组全高清画面对照逐像素一致。
+- 同步版本、引用信息、中英文说明和发布记录。[测量、方法及边界](docs/performance/exact-normal-hotpaths-2026-11-06.md)。
+
+Three measured normal-update hotpaths reuse the existing exact Float32 implementation. A matched native-DPR2 ABBA trial reduced model-update p95 time by about 45%–66% in the declared active conditions, with exact geometry/normal snapshots and full-HD raster equivalence. This does not establish universal performance or physical 60 FPS.
+
 ## 1.1.0 — 2026-11-06
 
 [正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.0) · [在线体验 / Website](https://sldyns.github.io/bioscape/)

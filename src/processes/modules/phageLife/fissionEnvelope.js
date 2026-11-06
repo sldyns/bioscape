@@ -1,3 +1,4 @@
+import { computeIndexedFloat32VertexNormals } from "../division/indexedFloat32Normals.js";
 import { THREE, clamp } from "../../kit.js";
 
 // A cutaway of one connected envelope becomes two closed daughters. Each half
@@ -194,7 +195,7 @@ export function lysogenFissionEnvelope(k, parent) {
           );
       }
       position.needsUpdate = true;
-      geo.computeVertexNormals();
+      computeIndexedFloat32VertexNormals(geo);
       geo.computeBoundingBox();
       geo.computeBoundingSphere();
     }

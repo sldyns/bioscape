@@ -1,3 +1,4 @@
+import { computeIndexedFloat32VertexNormals } from "../division/indexedFloat32Normals.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 
 import { instances } from "./bacterialGeometry.js";
@@ -407,7 +408,7 @@ const process = {
             }
           }
           attr.needsUpdate = true;
-          geo.computeVertexNormals();
+          computeIndexedFloat32VertexNormals(geo);
           geo.computeBoundingBox();
           geo.computeBoundingSphere();
         }

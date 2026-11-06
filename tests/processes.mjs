@@ -5,6 +5,8 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { extensionEntries } from "../src/processes/extensions.js";
+import { visibleProcessBounds } from "../src/processes/sceneBounds.js";
+import { disposeScene } from "../src/processes/disposeScene.js";
 import infection from "../src/processes/phageProcess";
 import photosynthesis from "../src/processes/photosynthesisProcess";
 import secretion from "../src/processes/secretionProcess";
@@ -372,10 +374,167 @@ for (const roots of Object.values(relatedStructures))
   for (const [root, paths] of Object.entries(roots))
     for (const path of paths)
       assert.deepEqual(parsePath(pathHash([root, ...path])), [root, ...path]);
+
+// Exercise every registered root and Cartesian condition at every chapter,
+// then revisit conditions and poses in reverse on the same live model.
+const chapterMatrix = {
+  contexts: 0,
+  cases: 0,
+  stages: 0,
+  forward: 0,
+  reverse: 0,
+};
+const chapterFrame = (model) => {
+  const hash = snapshot(model.group);
+  const instances = [];
+  model.group.traverse((object) => {
+    if (object.isInstancedMesh) instances.push(object.count);
+  });
+  const labels = model.labels.map((label) => {
+    finite(label.position ?? [], "chapter label position");
+    const active = label.active !== false;
+    return {
+      active,
+      semantic: active
+        ? [
+            label.text.zh,
+            label.text.en,
+            label.annotationKind ?? null,
+            label.priority ?? null,
+          ]
+        : null,
+      // Inactive anchors and context-note positions are not projected.
+      position:
+        active && label.annotationKind !== "context"
+          ? [...label.position]
+          : null,
+    };
+  });
+  const box = visibleProcessBounds(model.group);
+  const bounds = box.isEmpty()
+    ? null
+    : [...box.min.toArray(), ...box.max.toArray()];
+  if (bounds) finite(bounds, "chapter visible bounds");
+  return { hash, instances, labels, bounds };
+};
+const closeCoordinates = (actual, expected) => {
+  assert.equal(actual === null, expected === null);
+  if (actual === null) return;
+  assert.equal(actual.length, expected.length);
+  for (let i = 0; i < actual.length; i++)
+    assert.ok(Math.abs(actual[i] - expected[i]) <= 1e-9);
+};
+for (const [rootId, ids] of Object.entries(processesByRoot)) {
+  for (const id of ids) {
+    const base = definitions.find((definition) => definition.id === id);
+    const definition = { ...base, ...base.contexts?.[rootId] };
+    const model = definition.create({ rootId });
+    const original = resources(model.group);
+    const owned = new Map();
+    const observe = (resource) => {
+      if (!resource || owned.has(resource)) return;
+      const record = { disposed: 0 };
+      owned.set(resource, record);
+      resource.addEventListener("dispose", () => record.disposed++);
+    };
+    const checkResources = () => {
+      const current = resources(model.group);
+      for (const kind of ["objects", "geometries"]) {
+        assert.equal(current[kind].size, original[kind].size);
+        for (const value of current[kind]) assert.ok(original[kind].has(value));
+      }
+      current.geometries.forEach(observe);
+      for (const material of [
+        ...current.materials,
+        ...(model.materials ?? []),
+      ]) {
+        observe(material);
+        for (const value of Object.values(material))
+          if (value?.isTexture) observe(value);
+      }
+      assert.ok([...owned.values()].every((record) => record.disposed === 0));
+    };
+    try {
+      checkResources();
+      let conditions = [
+        Object.fromEntries(
+          (definition.controls ?? []).map((control) => [
+            control.id,
+            control.default,
+          ]),
+        ),
+      ];
+      for (const control of definition.controls ?? [])
+        conditions = conditions.flatMap((parameters) =>
+          control.options.map((option) => ({
+            ...parameters,
+            [control.id]: option.value,
+          })),
+        );
+      const samples = [
+        ...new Set([
+          0,
+          0.1,
+          0.4,
+          1,
+          ...definition.stages.flatMap((stage, index) => [
+            stage.at,
+            Math.max(0, stage.at - 0.001),
+            Math.min(1, stage.at + 0.001),
+            (stage.at + (definition.stages[index + 1]?.at ?? 1)) / 2,
+          ]),
+        ]),
+      ].sort((a, b) => a - b);
+      const references = conditions.map((parameters) => ({
+        parameters,
+        frames: samples.map((progress) => {
+          model.update(progress, parameters);
+          checkResources();
+          chapterMatrix.forward++;
+          return chapterFrame(model);
+        }),
+      }));
+      for (const reference of references.toReversed()) {
+        for (let index = samples.length - 1; index >= 0; index--) {
+          model.update(samples[index], reference.parameters);
+          checkResources();
+          const actual = chapterFrame(model);
+          const expected = reference.frames[index];
+          assert.equal(actual.hash, expected.hash, `${id}/${rootId} chapter`);
+          assert.deepEqual(actual.instances, expected.instances);
+          assert.equal(actual.labels.length, expected.labels.length);
+          for (let label = 0; label < actual.labels.length; label++) {
+            assert.equal(
+              actual.labels[label].active,
+              expected.labels[label].active,
+            );
+            assert.deepEqual(
+              actual.labels[label].semantic,
+              expected.labels[label].semantic,
+            );
+            closeCoordinates(
+              actual.labels[label].position,
+              expected.labels[label].position,
+            );
+          }
+          closeCoordinates(actual.bounds, expected.bounds);
+          chapterMatrix.reverse++;
+        }
+      }
+      chapterMatrix.contexts++;
+      chapterMatrix.cases += conditions.length;
+      chapterMatrix.stages += conditions.length * definition.stages.length;
+    } finally {
+      disposeScene(model.group, model.materials ?? []);
+      assert.ok([...owned.values()].every((record) => record.disposed === 1));
+    }
+  }
+}
 console.log(
   JSON.stringify({
     processes: definitions.length,
     processSeeks: seeks,
     processErrors: 0,
+    chapterConditionMatrix: chapterMatrix,
   }),
 );
