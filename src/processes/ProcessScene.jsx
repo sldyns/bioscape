@@ -1,3 +1,4 @@
+import { resetSharedRenderingState } from "../scene/resetSharedRenderingState.js";
 import React, {
   useEffect,
   useLayoutEffect,
@@ -422,11 +423,10 @@ export default function ProcessScene({
     setupOwner.current = { dispose };
     const initialize = async () => {
       try {
+        renderingOwner?.resume?.();
         renderingLease = renderingOwner?.acquire() ?? null;
         if (renderingLease) {
           ({ renderer, environment } = renderingLease.resources);
-          renderer.setRenderTarget(null);
-          renderer.setScissorTest(false);
         } else {
           renderer = new THREE.WebGLRenderer({
             antialias: true,
@@ -434,6 +434,7 @@ export default function ProcessScene({
             powerPreference: "high-performance",
           });
         }
+        resetSharedRenderingState(renderer, THREE.PCFShadowMap);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setClearColor(0xf5f5f7, 1);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;

@@ -9,6 +9,13 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+/* Avoid GPU backdrop composition competing with full-resolution capture and
+   encoder flush. Restore the glass effect after export; output pixels are unchanged. */
+.studio-backdrop.studio-exporting {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .studio-dialog {
   width: min(1120px, 100%);
   max-height: calc(100svh - 48px);

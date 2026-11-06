@@ -118,6 +118,19 @@ class Element {
 class Renderer {
   constructor() {
     this.domElement = new Element("canvas");
+    this.shadowMap = {
+      enabled: false,
+      type: THREE.PCFShadowMap,
+      autoUpdate: true,
+      needsUpdate: false,
+    };
+    this.info = { autoReset: true };
+  }
+  setRenderTarget(value) {
+    this.renderTarget = value;
+  }
+  setScissorTest(value) {
+    this.scissorTest = value;
   }
   setPixelRatio() {}
   setClearColor() {}

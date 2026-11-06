@@ -51,12 +51,12 @@ Pages 工作流先完整检查并上传 dist/，再部署到 github-pages 环境
 
 确认版本、验证及网站状态后，用明确的完整提交 SHA 创建 annotated tag，并只推送该标签。不要移动已有正式标签。Release 草稿可先准备，检查和网站通过后再公开；说明应包含变化、验证范围、网站入口和许可。
 
-以下以已经存在于远端的 v1.0.1 标签为例：
+以下以目标 v1.1.0 标签为例：
 
 ```sh
-gh release create v1.0.1 --repo sldyns/bioscape --verify-tag --draft --title "BioScape v1.0.1" --notes-file docs/releases/v1.0.1.md
-gh release view v1.0.1 --repo sldyns/bioscape
-gh release edit v1.0.1 --repo sldyns/bioscape --draft=false --latest
+gh release create v1.1.0 --repo sldyns/bioscape --verify-tag --draft --title "BioScape v1.1.0" --notes-file docs/releases/v1.1.0.md
+gh release view v1.1.0 --repo sldyns/bioscape
+gh release edit v1.1.0 --repo sldyns/bioscape --draft=false --latest
 ```
 
 附件使用实际验收的产品输出，并提供 SHA-256。不要上传本机路径、私人截图、凭据、原始调试日志或未经许可的素材。源代码 ZIP/TAR 由 GitHub 按标签提供，无需把 node_modules 或临时构建提交到仓库。

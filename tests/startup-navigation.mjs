@@ -157,6 +157,9 @@ function fixture(Component, initialHash, api) {
     },
     useMemo: memo,
     useCallback: (fn, deps) => memo(() => fn, deps),
+    useLayoutEffect(fn, deps) {
+      f.hooks.useEffect(fn, deps);
+    },
     useEffect(fn, deps) {
       const slot = (f.slots[f.index++] ??= {});
       if (changed(slot, deps))
@@ -260,6 +263,7 @@ try {
                     "useRef",
                     "useState",
                     "useEffect",
+                    "useLayoutEffect",
                     "useMemo",
                     "useCallback",
                   ].map(

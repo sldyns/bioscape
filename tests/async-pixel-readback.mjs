@@ -12,7 +12,13 @@ function fixture() {
   const timers = new Map(),
     buffers = new Set(),
     fences = new Set();
-  const state = { complete: false, lost: false, copied: 0, deleted: 0 };
+  const state = {
+    complete: false,
+    lost: false,
+    copied: 0,
+    deleted: 0,
+    synchronousReads: 0,
+  };
   const gl = {
     PIXEL_PACK_BUFFER: 1,
     PIXEL_PACK_BUFFER_BINDING: 2,
@@ -23,6 +29,7 @@ function fixture() {
     ALREADY_SIGNALED: 7,
     CONDITION_SATISFIED: 8,
     TIMEOUT_EXPIRED: 9,
+    SYNC_FLUSH_COMMANDS_BIT: 10,
     getParameter: () => bound,
     createBuffer() {
       const buffer = {};
@@ -46,7 +53,11 @@ function fixture() {
     },
     flush() {},
     isContextLost: () => state.lost,
-    clientWaitSync: () => (state.complete ? 8 : 9),
+    clientWaitSync(_fence, flags, timeout) {
+      assert.equal(flags, gl.SYNC_FLUSH_COMMANDS_BIT);
+      assert.equal(timeout, 0);
+      return state.complete ? 8 : 9;
+    },
     getBufferSubData(_type, offset, pixels) {
       assert.equal(offset, 0);
       pixels.set(bound.data);
@@ -74,6 +85,12 @@ function fixture() {
     getContext: () => gl,
     setRenderTarget(value) {
       target = value;
+    },
+    readRenderTargetPixels(value, _x, _y, width, height, pixels) {
+      assert.equal(bound, null);
+      assert.equal(pixels.byteLength, width * height * 4);
+      pixels.fill(value.value);
+      state.synchronousReads++;
     },
   };
   return {
@@ -147,8 +164,8 @@ test("abort promptly releases pending GPU buffers and never copies late data", a
   f.checkBinding();
 });
 
-test("lost context and a stalled fence release every owned resource", async () => {
-  for (const scenario of ["context", "timeout"]) {
+test("lost context releases every owned resource", async () => {
+  for (const scenario of ["context"]) {
     const f = fixture();
     const job = readCapturePixelsAsync(
       f.renderer,
@@ -158,17 +175,56 @@ test("lost context and a stalled fence release every owned resource", async () =
       new Uint8Array(16),
       { runtime: f.runtime },
     );
-    if (scenario === "context") f.state.lost = true;
-    else f.setClock(15000);
+    f.state.lost = true;
     f.tick();
-    await assert.rejects(
-      job.ready,
-      new RegExp(scenario === "context" ? "CONTEXT_LOST" : "TIMEOUT"),
-    );
+    await assert.rejects(job.ready, /CONTEXT_LOST/);
     assert.equal(f.pending, 0);
     assert.equal(f.allocations, 0);
     assert.equal(f.state.copied, 0);
   }
+});
+
+test("a stalled fence reads the unchanged full-quality target and retires only that renderer's async path", async () => {
+  const f = fixture();
+  const pixels = new Uint8Array(16);
+  const first = readCapturePixelsAsync(
+    f.renderer,
+    { value: 37 },
+    2,
+    2,
+    pixels,
+    { runtime: f.runtime },
+  );
+  f.setClock(500);
+  f.tick();
+  await first.ready;
+  assert.ok(pixels.every((value) => value === 37));
+  assert.equal(f.state.synchronousReads, 1);
+  assert.equal(f.allocations, 0);
+  assert.equal(f.pending, 0);
+  f.checkBinding();
+
+  const next = new Uint8Array(16);
+  await readCapturePixelsAsync(f.renderer, { value: 93 }, 2, 2, next, {
+    runtime: f.runtime,
+  }).ready;
+  assert.ok(next.every((value) => value === 93));
+  assert.equal(f.state.synchronousReads, 2);
+  assert.equal(f.pending, 0);
+
+  const independent = fixture();
+  const other = readCapturePixelsAsync(
+    independent.renderer,
+    { value: 8 },
+    2,
+    2,
+    new Uint8Array(16),
+    { runtime: independent.runtime },
+  );
+  assert.equal(independent.pending, 1);
+  assert.equal(independent.state.synchronousReads, 0);
+  other.cancel();
+  await assert.rejects(other.ready, { name: "AbortError" });
 });
 
 test("unsupported async readback preserves the synchronous full-quality path", async () => {

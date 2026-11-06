@@ -1,3 +1,5 @@
+import { createRenderingResources } from "./scene/renderingOwner.js";
+import { resetSharedRenderingState } from "./scene/resetSharedRenderingState.js";
 import { deferStagedSceneInitialization } from "./scene/stagedSceneInitialization.js";
 import { createShaderPreparation } from "./scene/shaderPreparation.js";
 import { createDemandRenderLoop } from "./scene/demandRenderLoop.js";
@@ -59,6 +61,7 @@ export default function CellScene({
   onViewChange,
   allowZoom = true,
   autoRotateLimit = 0,
+  renderingOwner,
 }) {
   const keyboardHintId = useId();
   const host = useRef(),
@@ -104,21 +107,41 @@ export default function CellScene({
       pendingInitialization.current?.dispose();
       engine.current?.dispose();
     },
-    [attempt],
+    [attempt, renderingOwner],
   );
 
   useEffect(() => {
     const job = deferStagedSceneInitialization(
       () => {
-        let renderer;
+        let renderer,
+          environment = null,
+          renderingLease = null;
+        let graphicsReleased = false;
         try {
-          renderer = new THREE.WebGLRenderer({
-            antialias: true,
-            alpha: true,
-            powerPreference: "high-performance",
-          });
+          // A scene effect can run before its parent's reactivation effect.
+          // Re-enter only from this live initialization, never a loader callback.
+          renderingOwner?.resume?.();
+          renderingLease = renderingOwner?.acquire() ?? null;
+          if (renderingLease) {
+            ({ renderer, environment } = renderingLease.resources);
+          } else {
+            renderer = new THREE.WebGLRenderer({
+              antialias: true,
+              alpha: true,
+              powerPreference: "high-performance",
+            });
+          }
+          resetSharedRenderingState(renderer, THREE.PCFShadowMap);
         } catch {
-          setError("webgl");
+          try {
+            if (renderingLease) {
+              renderingLease.invalidate();
+              renderingLease.release();
+            } else renderer?.dispose();
+          } finally {
+            renderer?.domElement.remove();
+            setError("webgl");
+          }
           return null;
         }
         let lost = false,
@@ -127,6 +150,7 @@ export default function CellScene({
         const lose = (event) => {
           event.preventDefault();
           lost = true;
+          renderingLease?.invalidate();
           setError("context");
         };
         const restore = () => {
@@ -144,6 +168,39 @@ export default function CellScene({
         renderer.domElement.addEventListener("webglcontextrestored", restore);
         return {
           renderer,
+          get environment() {
+            return environment;
+          },
+          get environmentManaged() {
+            return Boolean(renderingLease) || graphicsReleased;
+          },
+          adoptEnvironment(value) {
+            if (renderingLease || !renderingOwner) return;
+            const resources = createRenderingResources(renderer, value);
+            try {
+              renderingLease = renderingOwner.adopt(resources);
+              environment = value;
+            } catch (cause) {
+              graphicsReleased = true;
+              resources.dispose();
+              throw cause;
+            }
+          },
+          invalidateRendering() {
+            renderingLease?.invalidate();
+          },
+          releaseRendering(invalidate = false) {
+            try {
+              if (graphicsReleased) return;
+              graphicsReleased = true;
+              if (renderingLease) {
+                if (invalidate || lost) renderingLease.invalidate();
+                renderingLease.release();
+              } else renderer.dispose();
+            } finally {
+              renderer.domElement.remove();
+            }
+          },
           // Until setup returns its full disposer, the staged resource also owns
           // controls, observers and GPU resources created after the renderer.
           ownSetup(cleanup) {
@@ -175,8 +232,7 @@ export default function CellScene({
                 console.error("Structure scene setup cleanup failed", cause);
               }
             }
-            renderer.dispose();
-            renderer.domElement.remove();
+            this.releaseRendering(true);
           },
         };
       },
@@ -206,6 +262,7 @@ export default function CellScene({
               view: readView(),
             };
           contextLost = true;
+          prepared.invalidateRendering();
           publishReady(null);
           capture?.dispose();
           setError("context");
@@ -258,16 +315,23 @@ export default function CellScene({
         controls.minDistance = 4;
         controls.maxDistance = 24;
         controls.autoRotateSpeed = 0.24;
-        const pmrem = new THREE.PMREMGenerator(renderer);
-        const disposePmrem = prepared.ownSetup(() => pmrem.dispose());
-        const room = new RoomEnvironment();
-        const disposeRoom = prepared.ownSetup(() => room.dispose());
-        const env = pmrem.fromScene(room, 0.04);
-        prepared.ownSetup(() => env.dispose());
+        let env = prepared.environment;
+        let disposeRoom, disposePmrem;
+        if (!env) {
+          const pmrem = new THREE.PMREMGenerator(renderer);
+          disposePmrem = prepared.ownSetup(() => pmrem.dispose());
+          const room = new RoomEnvironment();
+          disposeRoom = prepared.ownSetup(() => room.dispose());
+          env = pmrem.fromScene(room, 0.04);
+        }
+        prepared.ownSetup(() => {
+          if (!prepared.environmentManaged) env.dispose();
+        });
+        prepared.adoptEnvironment(env);
         scene.environment = env.texture;
         scene.environmentIntensity = 0.45;
-        disposeRoom();
-        disposePmrem();
+        disposeRoom?.();
+        disposePmrem?.();
         // A broad key with restrained fill retains membrane depth and pastel color.
         scene.add(new THREE.HemisphereLight("#ffffff", "#a0a6b2", 0.85));
         const key = new THREE.DirectionalLight("#fffaf5", 2.3);
@@ -353,7 +417,14 @@ export default function CellScene({
         const tempTarget = new THREE.Vector3(),
           tempProjected = new THREE.Vector3();
         const renderLoop = createDemandRenderLoop({
-          render: animate,
+          render(time) {
+            try {
+              animate(time);
+            } catch (cause) {
+              prepared.invalidateRendering();
+              throw cause;
+            }
+          },
           canRun: () => !destroyed && !contextLost && !document.hidden,
         });
         prepared.ownSetup(() => renderLoop.dispose());
@@ -1557,7 +1628,7 @@ export default function CellScene({
           floor.geometry.dispose();
           floor.material.dispose();
           shadowTexture.dispose();
-          env.dispose();
+          if (!prepared.environmentManaged) env.dispose();
           renderer.domElement.removeEventListener(
             "webglcontextlost",
             loseContext,
@@ -1566,8 +1637,7 @@ export default function CellScene({
             "webglcontextrestored",
             restoreContext,
           );
-          renderer.dispose();
-          renderer.domElement.remove();
+          prepared.releaseRendering(contextLost);
           labelElements.forEach((l) => {
             l.pin.remove();
             l.remove();
@@ -1588,7 +1658,7 @@ export default function CellScene({
       if (pendingInitialization.current === job)
         pendingInitialization.current = null;
     };
-  }, [attempt]);
+  }, [attempt, renderingOwner]);
   useEffect(() => {
     publishReady(engine.current?.api?.ready ? engine.current.api : null);
   }, [onSceneReady]);

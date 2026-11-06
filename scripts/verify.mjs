@@ -30,6 +30,8 @@ try {
     "tests/async-pixel-readback.mjs",
     "tests/scene-initialization.mjs",
     "tests/staged-scene-initialization.mjs",
+    "tests/staged-shared-rendering.mjs",
+    "tests/shared-rendering-state.mjs",
     "tests/render-turn-queue.mjs",
     "tests/demand-render-loop.mjs",
     "tests/scene-capture-scratch.mjs",

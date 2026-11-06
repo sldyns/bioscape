@@ -10,9 +10,9 @@
 
 [![看见微观，理解生命——BioScape 主页实景](docs/media/readme/home-zh.png)](https://sldyns.github.io/bioscape/)
 
-[正式版本 v1.0.1](https://github.com/sldyns/bioscape/releases/tag/v1.0.1) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+[正式版本 v1.1.0](https://github.com/sldyns/bioscape/releases/tag/v1.1.0) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
 
-本次更新加快原分辨率视频导出，保留模型细节、标签和教学说明。查看[版本说明](docs/releases/v1.0.1.md)和[实际测量结果](docs/performance/video-export-2026-11-05.md)。
+本次更新让结构和过程视图共用渲染器与环境，保留原分辨率异步导出，并处理场景重新进入时的资源状态。模型细节、标签和教学说明保持原样。查看[版本说明](docs/releases/v1.1.0.md)和[验证范围](docs/performance/shared-renderer-2026-11-06.md)。
 
 ## 从一个模型开始
 

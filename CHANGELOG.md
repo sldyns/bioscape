@@ -1,5 +1,17 @@
 # Changelog · 更新日志
 
+## 1.1.0 — 2026-11-06
+
+[正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.0) · [在线体验 / Website](https://sldyns.github.io/bioscape/)
+
+- 结构与过程视图共用一个空闲渲染器和环境资源；比较视图仍使用两个独立画布，离开工作区时退役资源。
+- 切换时恢复各场景原有绘制状态，保留抗锯齿、阴影、分辨率、模型和标签；已丢失的图形上下文重新创建。
+- 重新进入时恢复资源所有者的可用状态；保留异步双帧导出、取消释放和视角恢复接口。
+- 导出期间暂停工作台背景模糊合成，避免 GPU 读回和编码收尾卡住；完成后恢复，成片画质不变。
+- 补充当前组合版本的 120 组画面对照、入口回归以及两条 15 秒成片验证。[验证与边界](docs/performance/shared-renderer-2026-11-06.md)。
+
+Structure and process scenes now share one idle renderer/environment pair. Each scene restores its original drawing settings; comparison keeps independent canvases. Re-entry reactivates ownership, while the existing asynchronous export and cancellation paths remain intact. See the [release notes](docs/releases/v1.1.0.md) for validation scope.
+
 ## 1.0.1 — 2026-11-05
 
 [正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.0.1) · [在线体验 / Website](https://sldyns.github.io/bioscape/)

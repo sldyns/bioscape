@@ -396,7 +396,10 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
       if (mounted.current) {
         if (cause.name === "AbortError")
           setNotice(t("视频生成已取消", "Video generation cancelled."));
-        else setError(errorText(cause, en));
+        else {
+          console.error("BioScape video export failed", cause);
+          setError(errorText(cause, en));
+        }
       }
     } finally {
       canvas.width = canvas.height = 0;
@@ -450,7 +453,7 @@ export default function Studio({ source, onClose, lang = "zh", onShare }) {
   const extension = video?.extension;
   return createPortal(
     <div
-      className="studio-backdrop"
+      className={`studio-backdrop${exportBusy ? " studio-exporting" : ""}`}
       onPointerDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}

@@ -10,9 +10,9 @@ An interactive atlas of biological structures and processes.
 
 [![See the unseen. Understand life. — the BioScape homepage](docs/media/readme/home-en.png)](https://sldyns.github.io/bioscape/)
 
-[Release v1.0.1](https://github.com/sldyns/bioscape/releases/tag/v1.0.1) · [What's new](CHANGELOG.md) · [Verification](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+[Release v1.1.0](https://github.com/sldyns/bioscape/releases/tag/v1.1.0) · [What's new](CHANGELOG.md) · [Verification](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
 
-The latest update accelerates full-resolution video export and preserves model detail, labels and teaching notes. Read the [release notes](docs/releases/v1.0.1.md) and [measured results](docs/performance/video-export-2026-11-05.md).
+The latest update shares the renderer and environment between structure and process views, preserves full-resolution asynchronous export, and handles scene re-entry without reducing visual quality. Read the [release notes](docs/releases/v1.1.0.md) and [validation scope](docs/performance/shared-renderer-2026-11-06.md).
 
 ## A place to begin
 

@@ -3,7 +3,7 @@ import { lockPageScroll } from "./scrollLock.js";
 import { project } from "./project";
 import AboutModel from "./components/AboutModel";
 import ProcessDirectory from "./processes/ProcessDirectory";
-import ProcessRenderingHost from "./processes/ProcessRenderingHost.jsx";
+import SceneRenderingHost from "./scene/SceneRenderingHost.jsx";
 import React, {
   useState,
   useEffect,
@@ -864,42 +864,42 @@ export default function App({ historySession, onHome, onSceneLeave }) {
           </div>
         </div>
       )}
-      {comparison ? (
-        <div inert={modalOpen ? true : undefined}>
-          <Suspense
-            fallback={
-              <div className="process-loading" role="status">
-                {t("正在准备对比…", "Preparing comparison…")}
-              </div>
-            }
-          >
-            <CompareWorkspace
-              key={sessionKey}
-              lang={lang}
-              initialState={comparison}
-              onStateChange={receiveComparison}
-              onClose={() => navigate(path, true, experience, processId)}
-              onSceneReady={receiveScene}
-              suspended={modalOpen}
-              onShare={shareScene}
-              onStudio={openStudio}
-            />
-          </Suspense>
-        </div>
-      ) : experience === "process" ? (
-        <div inert={modalOpen ? true : undefined}>
-          <Suspense
-            fallback={
-              <div className="process-loading" role="status">
-                {t("正在准备", "Preparing ")}
-                {processCatalog[processId]?.title[lang] ??
-                  t("过程目录", "process catalog")}
-                …
-              </div>
-            }
-          >
-            <ProcessRenderingHost>
-              {(renderingOwner) => (
+      <SceneRenderingHost active={!comparison}>
+        {(renderingOwner) =>
+          comparison ? (
+            <div inert={modalOpen ? true : undefined}>
+              <Suspense
+                fallback={
+                  <div className="process-loading" role="status">
+                    {t("正在准备对比…", "Preparing comparison…")}
+                  </div>
+                }
+              >
+                <CompareWorkspace
+                  key={sessionKey}
+                  lang={lang}
+                  initialState={comparison}
+                  onStateChange={receiveComparison}
+                  onClose={() => navigate(path, true, experience, processId)}
+                  onSceneReady={receiveScene}
+                  suspended={modalOpen}
+                  onShare={shareScene}
+                  onStudio={openStudio}
+                />
+              </Suspense>
+            </div>
+          ) : experience === "process" ? (
+            <div inert={modalOpen ? true : undefined}>
+              <Suspense
+                fallback={
+                  <div className="process-loading" role="status">
+                    {t("正在准备", "Preparing ")}
+                    {processCatalog[processId]?.title[lang] ??
+                      t("过程目录", "process catalog")}
+                    …
+                  </div>
+                }
+              >
                 <ProcessView
                   key={`${path[0]}:${processId}:${sessionKey}`}
                   processId={processId}
@@ -924,411 +924,428 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                   restoreFocus={restoreCatalogFocus}
                   renderingOwner={renderingOwner}
                 />
-              )}
-            </ProcessRenderingHost>
-          </Suspense>
-        </div>
-      ) : (
-        <main
-          className="anatomy-workspace"
-          inert={modalOpen ? true : undefined}
-        >
-          <aside
-            className="catalog"
-            aria-label={t("结构目录", "Structure catalog")}
-          >
-            <div className="catalog-heading">
-              {path.length > 1 ? (
-                <button
-                  className="back-button"
-                  title={t("返回上一级（Esc）", "Go up one level (Esc)")}
-                  onClick={() => navigate(path.slice(0, -1))}
-                >
-                  <ArrowLeft size={16} />
-                  {path.length === 2
-                    ? t(
-                        `返回${getNode(path[0]).name}`,
-                        `Back to ${getNode(path[0], "en").name}`,
-                      )
-                    : t("返回", "Back")}
-                </button>
-              ) : (
-                <span className="catalog-caption">
-                  {t("结构目录", "Structures")}
-                </span>
-              )}
-              <h1 ref={catalogTitle} tabIndex={-1}>
-                {scope.name}
-              </h1>
+              </Suspense>
             </div>
-            <nav
-              className="catalog-list"
-              aria-label={t("当前层级结构", "Structures at this level")}
-              onKeyDown={(event) => moveControlFocus(event, true)}
+          ) : (
+            <main
+              className="anatomy-workspace"
+              inert={modalOpen ? true : undefined}
             >
-              <button
-                className={
-                  "catalog-item overview " + (id === scopeId ? "active" : "")
-                }
-                aria-current={id === scopeId ? "page" : undefined}
-                onClick={() =>
-                  navigate(scopePath.length ? scopePath : [path[0]])
-                }
+              <aside
+                className="catalog"
+                aria-label={t("结构目录", "Structure catalog")}
               >
-                {t("总览", "Overview")}
-              </button>
-              {scope.children.map((key) => {
-                const child = getNode(key, lang);
-                return (
-                  <button
-                    className={"catalog-item " + (id === key ? "active" : "")}
-                    key={key}
-                    onPointerEnter={() => setHighlight(key)}
-                    onPointerLeave={() => setHighlight(null)}
-                    onFocus={() => setHighlight(key)}
-                    onBlur={() => setHighlight(null)}
-                    aria-current={id === key ? "page" : undefined}
-                    onClick={() => navigate([...scopePath, key])}
-                  >
-                    <span
-                      className="structure-mark"
-                      style={{ background: child.color }}
-                    />
-                    <span>{child.name}</span>
-                    <ChevronRight size={15} />
-                  </button>
-                );
-              })}
-            </nav>
-          </aside>
-          <section
-            className={`viewer${id === "phageTail" ? " has-mechanism" : ""}${mode === "explode" ? " is-exploded" : ""}`}
-            aria-label={t("模型视图", "Model view")}
-          >
-            <Suspense
-              fallback={
-                <div className="model-loading" role="status">
-                  {t("正在准备模型…", "Preparing model…")}
+                <div className="catalog-heading">
+                  {path.length > 1 ? (
+                    <button
+                      className="back-button"
+                      title={t("返回上一级（Esc）", "Go up one level (Esc)")}
+                      onClick={() => navigate(path.slice(0, -1))}
+                    >
+                      <ArrowLeft size={16} />
+                      {path.length === 2
+                        ? t(
+                            `返回${getNode(path[0]).name}`,
+                            `Back to ${getNode(path[0], "en").name}`,
+                          )
+                        : t("返回", "Back")}
+                    </button>
+                  ) : (
+                    <span className="catalog-caption">
+                      {t("结构目录", "Structures")}
+                    </span>
+                  )}
+                  <h1 ref={catalogTitle} tabIndex={-1}>
+                    {scope.name}
+                  </h1>
                 </div>
-              }
-            >
-              <CellScene
-                key={sessionKey}
-                nodeId={id}
-                viewKey={path.join("/")}
-                highlight={highlight}
-                onEnter={enter}
-                mode={mode}
-                explode={explode}
-                labels={labels}
-                rotate={rotate && !modalOpen}
-                resetKey={resetKey}
-                zoom={zoom}
-                lang={lang}
-                contracted={contracted}
-                onCapabilities={receiveCapabilities}
-                onSceneReady={receiveScene}
-                initialView={initialView}
-                onViewChange={receiveView}
-              />
-            </Suspense>
-            <ViewerHeading
-              title={node.name}
-              subtitle={path.length > 1 ? getNode(path[0], lang).name : ""}
-            >
-              <SceneActions
-                lang={lang}
-                ready={sceneReady}
-                onStudio={openStudio}
-                onShare={shareScene}
-                onCompare={openComparison}
-              />
-            </ViewerHeading>
-            <div className="zoom-tools">
-              <button
-                className="icon-button"
-                onClick={() => setZoom({ direction: "in", key: Date.now() })}
-                aria-label={t("放大", "Zoom in")}
-                title={t("放大", "Zoom in")}
-              >
-                <Plus size={17} />
-              </button>
-              <button
-                className="icon-button"
-                onClick={() => setZoom({ direction: "out", key: Date.now() })}
-                aria-label={t("缩小", "Zoom out")}
-                title={t("缩小", "Zoom out")}
-              >
-                <Minus size={17} />
-              </button>
-            </div>
-            <div className="viewer-controls">
-              {id === "phageTail" && mode !== "explode" && (
-                <div className="mechanism-switch">
-                  <span>{t("尾鞘", "Sheath")}</span>
-                  <div
-                    className="view-modes"
-                    role="group"
-                    aria-label={t("尾鞘状态", "Sheath state")}
+                <nav
+                  className="catalog-list"
+                  aria-label={t("当前层级结构", "Structures at this level")}
+                  onKeyDown={(event) => moveControlFocus(event, true)}
+                >
+                  <button
+                    className={
+                      "catalog-item overview " +
+                      (id === scopeId ? "active" : "")
+                    }
+                    aria-current={id === scopeId ? "page" : undefined}
+                    onClick={() =>
+                      navigate(scopePath.length ? scopePath : [path[0]])
+                    }
                   >
-                    <button
-                      aria-pressed={!contracted}
-                      className={!contracted ? "active" : ""}
-                      onClick={() => setContracted(false)}
-                    >
-                      {t("伸展", "Extended")}
-                    </button>
-                    <button
-                      aria-pressed={contracted}
-                      className={contracted ? "active" : ""}
-                      onClick={() => setContracted(true)}
-                    >
-                      {t("收缩", "Contracted")}
-                    </button>
+                    {t("总览", "Overview")}
+                  </button>
+                  {scope.children.map((key) => {
+                    const child = getNode(key, lang);
+                    return (
+                      <button
+                        className={
+                          "catalog-item " + (id === key ? "active" : "")
+                        }
+                        key={key}
+                        onPointerEnter={() => setHighlight(key)}
+                        onPointerLeave={() => setHighlight(null)}
+                        onFocus={() => setHighlight(key)}
+                        onBlur={() => setHighlight(null)}
+                        aria-current={id === key ? "page" : undefined}
+                        onClick={() => navigate([...scopePath, key])}
+                      >
+                        <span
+                          className="structure-mark"
+                          style={{ background: child.color }}
+                        />
+                        <span>{child.name}</span>
+                        <ChevronRight size={15} />
+                      </button>
+                    );
+                  })}
+                </nav>
+              </aside>
+              <section
+                className={`viewer${id === "phageTail" ? " has-mechanism" : ""}${mode === "explode" ? " is-exploded" : ""}`}
+                aria-label={t("模型视图", "Model view")}
+              >
+                <Suspense
+                  fallback={
+                    <div className="model-loading" role="status">
+                      {t("正在准备模型…", "Preparing model…")}
+                    </div>
+                  }
+                >
+                  <CellScene
+                    key={sessionKey}
+                    nodeId={id}
+                    viewKey={path.join("/")}
+                    highlight={highlight}
+                    onEnter={enter}
+                    mode={mode}
+                    explode={explode}
+                    labels={labels}
+                    rotate={rotate && !modalOpen}
+                    resetKey={resetKey}
+                    zoom={zoom}
+                    lang={lang}
+                    contracted={contracted}
+                    onCapabilities={receiveCapabilities}
+                    onSceneReady={receiveScene}
+                    initialView={initialView}
+                    onViewChange={receiveView}
+                    renderingOwner={renderingOwner}
+                  />
+                </Suspense>
+                <ViewerHeading
+                  title={node.name}
+                  subtitle={path.length > 1 ? getNode(path[0], lang).name : ""}
+                >
+                  <SceneActions
+                    lang={lang}
+                    ready={sceneReady}
+                    onStudio={openStudio}
+                    onShare={shareScene}
+                    onCompare={openComparison}
+                  />
+                </ViewerHeading>
+                <div className="zoom-tools">
+                  <button
+                    className="icon-button"
+                    onClick={() =>
+                      setZoom({ direction: "in", key: Date.now() })
+                    }
+                    aria-label={t("放大", "Zoom in")}
+                    title={t("放大", "Zoom in")}
+                  >
+                    <Plus size={17} />
+                  </button>
+                  <button
+                    className="icon-button"
+                    onClick={() =>
+                      setZoom({ direction: "out", key: Date.now() })
+                    }
+                    aria-label={t("缩小", "Zoom out")}
+                    title={t("缩小", "Zoom out")}
+                  >
+                    <Minus size={17} />
+                  </button>
+                </div>
+                <div className="viewer-controls">
+                  {id === "phageTail" && mode !== "explode" && (
+                    <div className="mechanism-switch">
+                      <span>{t("尾鞘", "Sheath")}</span>
+                      <div
+                        className="view-modes"
+                        role="group"
+                        aria-label={t("尾鞘状态", "Sheath state")}
+                      >
+                        <button
+                          aria-pressed={!contracted}
+                          className={!contracted ? "active" : ""}
+                          onClick={() => setContracted(false)}
+                        >
+                          {t("伸展", "Extended")}
+                        </button>
+                        <button
+                          aria-pressed={contracted}
+                          className={contracted ? "active" : ""}
+                          onClick={() => setContracted(true)}
+                        >
+                          {t("收缩", "Contracted")}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {mode === "explode" && capabilities.explode && (
+                    <div className="separation">
+                      <label htmlFor="separation">
+                        {t("分离程度", "Separation")}
+                      </label>
+                      <input
+                        id="separation"
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={explode}
+                        aria-valuetext={`${explode}%`}
+                        onChange={(e) => setExplode(+e.target.value)}
+                      />
+                    </div>
+                  )}
+                  <div className="control-row">
+                    {(capabilities.cutaway || capabilities.explode) && (
+                      <div
+                        className="view-modes"
+                        role="group"
+                        aria-label={t("显示方式", "Display mode")}
+                      >
+                        {[
+                          ["whole", t("整体", "Whole")],
+                          ...(capabilities.cutaway
+                            ? [["section", t("剖面", "Cutaway")]]
+                            : []),
+                          ...(capabilities.explode
+                            ? [["explode", t("拆解", "Exploded")]]
+                            : []),
+                        ].map(([value, label]) => (
+                          <button
+                            key={value}
+                            aria-pressed={
+                              mode === value ||
+                              (!capabilities.cutaway &&
+                                mode === "section" &&
+                                value === "whole")
+                            }
+                            className={
+                              mode === value ||
+                              (!capabilities.cutaway &&
+                                mode === "section" &&
+                                value === "whole")
+                                ? "active"
+                                : ""
+                            }
+                            onClick={() => setMode(value)}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className="utility-controls">
+                      <button
+                        className="icon-button"
+                        onClick={reset}
+                        aria-label={t("重置视角", "Reset view")}
+                        title={t("重置视角", "Reset view")}
+                      >
+                        <RotateCcw size={17} />
+                      </button>
+                      {capabilities.labels && (
+                        <button
+                          className={
+                            "icon-button " +
+                            (labels && labelsAvailable ? "active" : "")
+                          }
+                          aria-pressed={labels && Boolean(labelsAvailable)}
+                          disabled={!labelsAvailable}
+                          onClick={() => setLabels(!labels)}
+                          aria-label={t("显示标签", "Show labels")}
+                          title={
+                            labelsAvailable
+                              ? t("显示标签", "Show labels")
+                              : t(
+                                  "切换到剖面查看内部标签",
+                                  "Use Cutaway to see internal labels",
+                                )
+                          }
+                        >
+                          <Tag size={17} />
+                        </button>
+                      )}
+                      <button
+                        className={"icon-button " + (rotate ? "active" : "")}
+                        aria-pressed={rotate}
+                        onClick={() => setRotate(!rotate)}
+                        aria-label={t("自动旋转", "Auto rotate")}
+                        title={t("自动旋转", "Auto rotate")}
+                      >
+                        <Rotate3D size={18} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              )}
-              {mode === "explode" && capabilities.explode && (
-                <div className="separation">
-                  <label htmlFor="separation">
-                    {t("分离程度", "Separation")}
-                  </label>
-                  <input
-                    id="separation"
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={explode}
-                    aria-valuetext={`${explode}%`}
-                    onChange={(e) => setExplode(+e.target.value)}
-                  />
+                <div className="viewer-footnote">
+                  <span>
+                    {t(
+                      "拖动旋转 · 双指缩放",
+                      "Drag to rotate · Pinch or scroll to zoom",
+                    )}
+                  </span>
+                  <span>
+                    {t("教学示意，非真实比例", "Schematic · Not to scale")}
+                  </span>
                 </div>
-              )}
-              <div className="control-row">
-                {(capabilities.cutaway || capabilities.explode) && (
-                  <div
-                    className="view-modes"
-                    role="group"
-                    aria-label={t("显示方式", "Display mode")}
+              </section>
+              <aside
+                className="details"
+                aria-label={t("结构说明", "Structure details")}
+                key={id}
+              >
+                {viewContext && <p className="detail-context">{viewContext}</p>}
+                <h2>{node.name}</h2>
+                {!en && <p className="latin-name">{node.en}</p>}
+                <p className="node-description">{node.desc}</p>
+                {note && <p className="model-note">{note}</p>}
+                {lastProcess && lastProcess.path[0] === path[0] && (
+                  <button
+                    className="resume-process"
+                    onClick={() =>
+                      navigate(
+                        lastProcess.path,
+                        true,
+                        "process",
+                        lastProcess.id,
+                      )
+                    }
                   >
-                    {[
-                      ["whole", t("整体", "Whole")],
-                      ...(capabilities.cutaway
-                        ? [["section", t("剖面", "Cutaway")]]
-                        : []),
-                      ...(capabilities.explode
-                        ? [["explode", t("拆解", "Exploded")]]
-                        : []),
-                    ].map(([value, label]) => (
-                      <button
-                        key={value}
-                        aria-pressed={
-                          mode === value ||
-                          (!capabilities.cutaway &&
-                            mode === "section" &&
-                            value === "whole")
-                        }
-                        className={
-                          mode === value ||
-                          (!capabilities.cutaway &&
-                            mode === "section" &&
-                            value === "whole")
-                            ? "active"
-                            : ""
-                        }
-                        onClick={() => setMode(value)}
-                      >
-                        {label}
-                      </button>
+                    <span>{t("接着观察过程", "Resume process")}</span>
+                    <strong>
+                      {processCatalog[lastProcess.id].title[lang]}
+                    </strong>
+                    <ChevronRight size={14} />
+                  </button>
+                )}
+                {id === "phageTail" && (
+                  <div className="mechanism-control">
+                    <h3>{t("观察尾鞘收缩", "Observe sheath contraction")}</h3>
+                    <p aria-live="polite">
+                      {mode === "explode"
+                        ? t(
+                            "拆解以伸展构型展示；返回整体模式可继续比较尾鞘收缩。",
+                            "The exploded view uses the extended configuration. Return to Whole mode to compare sheath contraction.",
+                          )
+                        : contracted
+                          ? t(
+                              "尾鞘缩短、增粗，露出中央尾管。比例为示意，未模拟整个感染过程。",
+                              "The sheath shortens and widens, exposing the central tube. Proportions are schematic; the full infection process is not simulated.",
+                            )
+                          : t(
+                              "尾鞘包围尾管。在整体模式中，用模型下方的按钮对比伸展与收缩。",
+                              "The sheath surrounds the tube. In Whole mode, use the buttons beneath the model to compare extension and contraction.",
+                            )}
+                    </p>
+                  </div>
+                )}
+                {node.features.length > 0 && (
+                  <div className="feature-list">
+                    {node.features.map(([title, text]) => (
+                      <section key={title}>
+                        <h3>{title}</h3>
+                        <p>{text}</p>
+                      </section>
                     ))}
                   </div>
                 )}
-                <div className="utility-controls">
-                  <button
-                    className="icon-button"
-                    onClick={reset}
-                    aria-label={t("重置视角", "Reset view")}
-                    title={t("重置视角", "Reset view")}
-                  >
-                    <RotateCcw size={17} />
-                  </button>
-                  {capabilities.labels && (
+                {relatedProcesses.length > 0 && (
+                  <section className="structure-processes">
+                    <h3>{t("相关生物学过程", "Explore related processes")}</h3>
+                    {relatedProcesses
+                      .slice(0, path.length > 1 ? 6 : 3)
+                      .map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => openRelatedProcess(item)}
+                        >
+                          <span>{processCatalog[item.id].title[lang]}</span>
+                          <ChevronRight size={14} />
+                        </button>
+                      ))}
                     <button
-                      className={
-                        "icon-button " +
-                        (labels && labelsAvailable ? "active" : "")
-                      }
-                      aria-pressed={labels && Boolean(labelsAvailable)}
-                      disabled={!labelsAvailable}
-                      onClick={() => setLabels(!labels)}
-                      aria-label={t("显示标签", "Show labels")}
-                      title={
-                        labelsAvailable
-                          ? t("显示标签", "Show labels")
-                          : t(
-                              "切换到剖面查看内部标签",
-                              "Use Cutaway to see internal labels",
-                            )
-                      }
+                      className="all-processes"
+                      onClick={() => navigate(path, true, "process", null)}
                     >
-                      <Tag size={17} />
+                      {t("浏览全部过程", "Browse all processes")}{" "}
+                      <ChevronRight size={12} />
                     </button>
-                  )}
-                  <button
-                    className={"icon-button " + (rotate ? "active" : "")}
-                    aria-pressed={rotate}
-                    onClick={() => setRotate(!rotate)}
-                    aria-label={t("自动旋转", "Auto rotate")}
-                    title={t("自动旋转", "Auto rotate")}
-                  >
-                    <Rotate3D size={18} />
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="viewer-footnote">
-              <span>
-                {t(
-                  "拖动旋转 · 双指缩放",
-                  "Drag to rotate · Pinch or scroll to zoom",
-                )}
-              </span>
-              <span>
-                {t("教学示意，非真实比例", "Schematic · Not to scale")}
-              </span>
-            </div>
-          </section>
-          <aside
-            className="details"
-            aria-label={t("结构说明", "Structure details")}
-            key={id}
-          >
-            {viewContext && <p className="detail-context">{viewContext}</p>}
-            <h2>{node.name}</h2>
-            {!en && <p className="latin-name">{node.en}</p>}
-            <p className="node-description">{node.desc}</p>
-            {note && <p className="model-note">{note}</p>}
-            {lastProcess && lastProcess.path[0] === path[0] && (
-              <button
-                className="resume-process"
-                onClick={() =>
-                  navigate(lastProcess.path, true, "process", lastProcess.id)
-                }
-              >
-                <span>{t("接着观察过程", "Resume process")}</span>
-                <strong>{processCatalog[lastProcess.id].title[lang]}</strong>
-                <ChevronRight size={14} />
-              </button>
-            )}
-            {id === "phageTail" && (
-              <div className="mechanism-control">
-                <h3>{t("观察尾鞘收缩", "Observe sheath contraction")}</h3>
-                <p aria-live="polite">
-                  {mode === "explode"
-                    ? t(
-                        "拆解以伸展构型展示；返回整体模式可继续比较尾鞘收缩。",
-                        "The exploded view uses the extended configuration. Return to Whole mode to compare sheath contraction.",
-                      )
-                    : contracted
-                      ? t(
-                          "尾鞘缩短、增粗，露出中央尾管。比例为示意，未模拟整个感染过程。",
-                          "The sheath shortens and widens, exposing the central tube. Proportions are schematic; the full infection process is not simulated.",
-                        )
-                      : t(
-                          "尾鞘包围尾管。在整体模式中，用模型下方的按钮对比伸展与收缩。",
-                          "The sheath surrounds the tube. In Whole mode, use the buttons beneath the model to compare extension and contraction.",
-                        )}
-                </p>
-              </div>
-            )}
-            {node.features.length > 0 && (
-              <div className="feature-list">
-                {node.features.map(([title, text]) => (
-                  <section key={title}>
-                    <h3>{title}</h3>
-                    <p>{text}</p>
                   </section>
-                ))}
-              </div>
-            )}
-            {relatedProcesses.length > 0 && (
-              <section className="structure-processes">
-                <h3>{t("相关生物学过程", "Explore related processes")}</h3>
-                {relatedProcesses
-                  .slice(0, path.length > 1 ? 6 : 3)
-                  .map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => openRelatedProcess(item)}
-                    >
-                      <span>{processCatalog[item.id].title[lang]}</span>
-                      <ChevronRight size={14} />
-                    </button>
-                  ))}
-                <button
-                  className="all-processes"
-                  onClick={() => navigate(path, true, "process", null)}
-                >
-                  {t("浏览全部过程", "Browse all processes")}{" "}
+                )}
+                {rootIds.includes(id) && (
+                  <div className="root-guide">
+                    <h3>
+                      {t("从整体，到内部", "From the whole to its parts")}
+                    </h3>
+                    <p>
+                      {t(
+                        "点击结构即可进入。左侧目录会随层级更新；顶部路径可返回任意一级。",
+                        "Click a structure to open it. The catalog changes with each level; use the path above to return to any earlier level.",
+                      )}
+                    </p>
+                  </div>
+                )}
+                {node.children.length > 0 && (
+                  <p className="next-level-note">
+                    {t(
+                      "从左侧选择内部结构，继续查看。",
+                      "Choose an internal structure in the catalog to continue.",
+                    )}
+                  </p>
+                )}
+                {node.children.length === 0 && (
+                  <p className="next-level-note">
+                    {t(
+                      "可旋转查看此结构，或通过顶部路径返回。",
+                      "Rotate to inspect this structure, or return using the path above.",
+                    )}
+                  </p>
+                )}
+                {specializedSpecimens.find(
+                  (specimen) => specimen.id === path[0],
+                ) && (
+                  <details className="specimen-references">
+                    <summary>
+                      {t("此细胞的参考资料", "References for this cell")}
+                    </summary>
+                    {specializedSpecimens
+                      .find((specimen) => specimen.id === path[0])
+                      .sources.map((source) => (
+                        <a
+                          key={source.url}
+                          href={source.url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {source.title} ↗
+                        </a>
+                      ))}
+                  </details>
+                )}
+                <button className="source-link" onClick={openAbout}>
+                  {t("模型说明与参考", "Model notes & references")}
                   <ChevronRight size={12} />
                 </button>
-              </section>
-            )}
-            {rootIds.includes(id) && (
-              <div className="root-guide">
-                <h3>{t("从整体，到内部", "From the whole to its parts")}</h3>
-                <p>
-                  {t(
-                    "点击结构即可进入。左侧目录会随层级更新；顶部路径可返回任意一级。",
-                    "Click a structure to open it. The catalog changes with each level; use the path above to return to any earlier level.",
-                  )}
-                </p>
-              </div>
-            )}
-            {node.children.length > 0 && (
-              <p className="next-level-note">
-                {t(
-                  "从左侧选择内部结构，继续查看。",
-                  "Choose an internal structure in the catalog to continue.",
-                )}
-              </p>
-            )}
-            {node.children.length === 0 && (
-              <p className="next-level-note">
-                {t(
-                  "可旋转查看此结构，或通过顶部路径返回。",
-                  "Rotate to inspect this structure, or return using the path above.",
-                )}
-              </p>
-            )}
-            {specializedSpecimens.find(
-              (specimen) => specimen.id === path[0],
-            ) && (
-              <details className="specimen-references">
-                <summary>
-                  {t("此细胞的参考资料", "References for this cell")}
-                </summary>
-                {specializedSpecimens
-                  .find((specimen) => specimen.id === path[0])
-                  .sources.map((source) => (
-                    <a
-                      key={source.url}
-                      href={source.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {source.title} ↗
-                    </a>
-                  ))}
-              </details>
-            )}
-            <button className="source-link" onClick={openAbout}>
-              {t("模型说明与参考", "Model notes & references")}
-              <ChevronRight size={12} />
-            </button>
-          </aside>
-        </main>
-      )}
+              </aside>
+            </main>
+          )
+        }
+      </SceneRenderingHost>
       {studio && (
         <Suspense
           fallback={

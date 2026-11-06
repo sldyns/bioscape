@@ -4,6 +4,11 @@ const defaultRuntime = {
   now: () => performance.now(),
 };
 
+// Some drivers keep an occluded canvas's fence pending even after flushing.
+// Retain the full-quality synchronous path for that renderer after one stall.
+const stalledRenderers = new WeakSet();
+const ASYNC_WAIT_LIMIT_MS = 500;
+
 /** Read the owned RGBA8 capture target without waiting on the main thread. */
 export function readCapturePixelsAsync(
   renderer,
@@ -38,6 +43,19 @@ export function readCapturePixelsAsync(
   };
   const abort = () =>
     finish(new DOMException("Capture cancelled", "AbortError"));
+  const readSynchronously = () => {
+    if (gl.isContextLost?.()) throw new Error("CAPTURE_CONTEXT_LOST");
+    const hasPackBuffer = gl.PIXEL_PACK_BUFFER !== undefined;
+    const previous = hasPackBuffer
+      ? gl.getParameter(gl.PIXEL_PACK_BUFFER_BINDING)
+      : null;
+    try {
+      if (hasPackBuffer) gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+      renderer.readRenderTargetPixels(target, 0, 0, width, height, pixels);
+    } finally {
+      if (hasPackBuffer) gl.bindBuffer(gl.PIXEL_PACK_BUFFER, previous);
+    }
+  };
   if (signal?.aborted) {
     abort();
     return { ready, cancel: abort };
@@ -46,9 +64,10 @@ export function readCapturePixelsAsync(
   try {
     if (
       typeof gl.fenceSync !== "function" ||
-      typeof gl.getBufferSubData !== "function"
+      typeof gl.getBufferSubData !== "function" ||
+      stalledRenderers.has(renderer)
     ) {
-      renderer.readRenderTargetPixels(target, 0, 0, width, height, pixels);
+      readSynchronously();
       finish();
       return { ready, cancel: abort };
     }
@@ -71,9 +90,8 @@ export function readCapturePixelsAsync(
       if (settled) return;
       try {
         if (gl.isContextLost()) throw new Error("CAPTURE_CONTEXT_LOST");
-        if (runtime.now() - started >= 15_000)
-          throw new Error("CAPTURE_READBACK_TIMEOUT");
-        const status = gl.clientWaitSync(fence, 0, 0);
+        // Match Three's nonblocking, flushing fence probe.
+        const status = gl.clientWaitSync(fence, gl.SYNC_FLUSH_COMMANDS_BIT, 0);
         if (
           status === gl.ALREADY_SIGNALED ||
           status === gl.CONDITION_SATISFIED
@@ -87,7 +105,13 @@ export function readCapturePixelsAsync(
           }
           finish();
         } else if (status === gl.TIMEOUT_EXPIRED) {
-          timer = runtime.setTimeout(poll, 0);
+          if (runtime.now() - started >= ASYNC_WAIT_LIMIT_MS) {
+            // Each capture slot still owns this unchanged output target.
+            // Read the same pixels, without rerendering or reducing quality.
+            readSynchronously();
+            stalledRenderers.add(renderer);
+            finish();
+          } else timer = runtime.setTimeout(poll, 0);
         } else {
           throw new Error("CAPTURE_READBACK_FAILED");
         }
