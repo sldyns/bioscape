@@ -48,27 +48,24 @@ function rings(o) {
   });
 }
 function translationAnchors(s) {
-  for (const index of [1, 2, 12, 13]) {
-    assert.equal(s.labels[index].annotationKind, "context");
-    assert.notEqual(s.labels[index].active, false);
-  }
+  assert.equal(s.labels[1].annotationKind, "context");
+  assert.notEqual(s.labels[1].active, false);
   s.labels.forEach((label, index) => {
-    if (![1, 2, 12, 13].includes(index))
-      assert.notEqual(label.annotationKind, "context");
+    if (index !== 1) assert.notEqual(label.annotationKind, "context");
   });
   atObject(s, 0, "experimental-4ug0");
-  atObject(s, 3, "PTC-region-guide");
+  atObject(s, 2, "PTC-region-guide");
   const guide = object(s, "schematic-exit-guide-1");
   const guideRings = rings(guide);
-  anchor(s, 4, guideRings[(guideRings.length - 1) / 2], guide);
-  atObject(s, 5, "peptide-residue-25");
-  atObject(s, 11, "release-factor-head");
+  anchor(s, 3, guideRings[(guideRings.length - 1) / 2], guide);
+  atObject(s, 4, "peptide-residue-25");
+  atObject(s, 10, "release-factor-head");
   const mRNA = object(s, "schematic-mRNA-backbone"),
     points = rings(mRNA);
-  anchor(s, 9, points[0], mRNA);
-  anchor(s, 10, points.at(-1), mRNA);
+  anchor(s, 8, points[0], mRNA);
+  anchor(s, 9, points.at(-1), mRNA);
   for (let i = 0; i < 3; i++) {
-    const point = new THREE.Vector3(...s.labels[6 + i].position);
+    const point = new THREE.Vector3(...s.labels[5 + i].position);
     let distance = Infinity;
     for (let j = 0; j < points.length - 1; j++)
       distance = Math.min(
@@ -215,7 +212,7 @@ for (const [model, conditions, verify] of cases) {
 }
 // Reinsert the exact former offsets so the regression must reject each failure.
 for (const [model, condition, verify, i, offset] of [
-  [translation, {}, translationAnchors, 5, [0, 0.2, 0.2]],
+  [translation, {}, translationAnchors, 4, [0, 0.2, 0.2]],
   [folding, {}, foldingAnchors, 1, [0, 1.3, 0]],
   [splicing, {}, splicingAnchors, 0, [0, -0.55, 0.3]],
   [nitrogen, {}, nitrogenAnchors, 2, [0, 0.6, 0.6]],

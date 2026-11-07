@@ -1,5 +1,18 @@
 # Changelog · 更新日志
 
+## 1.1.3 — 2026-11-08
+
+[正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.3) · [在线体验 / Website](https://sldyns.github.io/bioscape/)
+
+- 核糖体翻译画面移除常驻的坐标表示、重复配色和固定视角说明，细节保留在参考资料、过程介绍和对应章节中。
+- 保留实验结构、独立放大示意、E/P/A 位点、链端和释放因子等生物学标签。
+- 无可用关联入口时隐藏空关联区，保留当前步骤、其他步骤和返回整体结构的有效入口；清理四类范围说明中的内部目录提示。
+- 四个根场景的 912 个正向及 912 个反向状态中，几何、法线、材质、相机、包围范围和保留标签的位置完全一致。
+- 中英文、四个根场景共 96 组全高清无标签画面对比一致，另完成 96 次当前带标签导出；84 个过程、235 个条件的 2,768 个双语章节状态通过实际控件核查。[验证范围](docs/ui/process-annotations-2026-11-07.md)。
+- 同步版本、引用信息、中英文 README 和发布附件。本次更新不引入新的性能结论。
+
+Three duplicate technical notes have moved out of the permanent translation annotations. Biological targets and the distinction between the experimental assembly and enlarged reaction remain visible. Geometry, materials, camera and export quality are unchanged; see the [release notes](docs/releases/v1.1.3.md) for validation scope.
+
 ## 1.1.2 — 2026-11-07
 
 [正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.2) · [在线体验 / Website](https://sldyns.github.io/bioscape/)

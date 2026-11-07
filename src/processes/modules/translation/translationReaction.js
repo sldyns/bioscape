@@ -207,12 +207,6 @@ export function createTranslation({ rootId = "cell" } = {}) {
       2,
     ),
     k.label(
-      [-3.65, -1.53, 0],
-      "RNA C4′／蛋白 Cα · 共同坐标",
-      "RNA C4′ / protein Cα · registered",
-      1,
-    ),
-    k.label(
       [1.4, 3.83, 0],
       "核糖体内部反应 · 独立放大示意",
       "Inside the ribosome · separate reaction enlargement",
@@ -242,48 +236,33 @@ export function createTranslation({ rootId = "cell" } = {}) {
       "Release factor (schematic)",
       1,
     ),
-    k.label(
-      [-3.65, -1.98, 0],
-      "蓝灰：rRNA · 金色：核糖体蛋白",
-      "Blue-grey: rRNA · gold: proteins",
-      1,
-    ),
-    k.label(
-      [1.35, -2.1, 0],
-      "固定核糖体视角：mRNA 向左移位",
-      "Ribosome-fixed view: mRNA shifts left",
-      1,
-    ),
   ];
-  // Representation, enlargement and reading conventions are context notes.
-  for (const index of [1, 2, 12, 13]) labels[index].annotationKind = "context";
+  // Keep the enlargement identifiable; representation details live in the text.
+  labels[1].annotationKind = "context";
   labels[0].priority = 6;
   labels[0].compactText = { zh: "人 80S 实验结构", en: "Human 80S structure" };
-  labels[2].priority = 6;
-  labels[2].compactText = { zh: "核糖体内反应示意", en: "Reaction inside 80S" };
-  labels[1].priority = -1;
-  labels[12].priority = 0;
-  labels[13].priority = 0;
+  labels[1].priority = 6;
+  labels[1].compactText = { zh: "核糖体内反应示意", en: "Reaction inside 80S" };
   const updateLabelAnchors = labelAnchors([
     [labels[0], reference],
-    [labels[3], ptc],
+    [labels[2], ptc],
     [
-      labels[4],
+      labels[3],
       exitGuides[1],
       exitGuides[1].geometry.parameters.path.getPointAt(0.5),
     ],
-    [labels[5], peptide.beads[25]],
+    [labels[4], peptide.beads[25]],
     [
-      labels[9],
+      labels[8],
       mRNABackbone,
       mRNABackbone.geometry.parameters.path.getPoint(0),
     ],
     [
-      labels[10],
+      labels[9],
       mRNABackbone,
       mRNABackbone.geometry.parameters.path.getPoint(1),
     ],
-    [labels[11], factorHead],
+    [labels[10], factorHead],
   ]);
   const sitePoint = new THREE.Vector3();
   const pTip = new THREE.Vector3(),
@@ -349,9 +328,9 @@ export function createTranslation({ rootId = "cell" } = {}) {
         if (sitePoint.x < x) lo = t;
         else hi = t;
       }
-      mRNABackbone.localToWorld(sitePoint).toArray(labels[6 + i].position);
+      mRNABackbone.localToWorld(sitePoint).toArray(labels[5 + i].position);
     }
-    labels[11].active = factor.visible;
+    labels[10].active = factor.visible;
     group.userData = {
       process: "translation",
       rootId,

@@ -70,7 +70,7 @@ export default {
   ],
   sources: [
     {
-      title: "RCSB 4UG0 · Human 80S ribosome",
+      title: "RCSB 4UG0 · human 80S (rRNA C4′ / protein Cα traces)",
       url: "https://www.rcsb.org/structure/4UG0",
     },
     {

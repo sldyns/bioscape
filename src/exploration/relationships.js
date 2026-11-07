@@ -33,13 +33,10 @@ const nuclearDNA = () => ({
   yeast: links("yeast", [["yeastNucleus"], ["yeastNucleus/yeastChromatin"]]),
 });
 
-const cytosolicYeast = label(
-  "酵母细胞质中的过程；结构目录暂无独立的细胞质节点",
-  "A yeast cytosolic process; no separate cytosol view is available",
-);
+const cytosolicYeast = label("酵母细胞质中的过程", "A yeast cytosolic process");
 const cytosolicParamecium = label(
-  "草履虫细胞质中的翻译；结构目录暂无独立的核糖体节点",
-  "Cytosolic translation in Paramecium; no separate ribosome view is available",
+  "草履虫细胞质中的翻译",
+  "Cytosolic translation in Paramecium",
 );
 
 const relationships = {
@@ -326,10 +323,7 @@ const relationships = {
     bacterium: links(
       "bacterium",
       [],
-      label(
-        "集胞藻 PCC 6803 类囊体；结构范例暂无蓝细菌类囊体",
-        "Synechocystis PCC 6803 thylakoid; no cyanobacterial thylakoid structure view is available",
-      ),
+      label("集胞藻 PCC 6803 类囊体", "Synechocystis PCC 6803 thylakoid"),
     ),
   },
   diffusion: {
@@ -814,10 +808,7 @@ const relationships = {
     bacterium: links(
       "bacterium",
       [],
-      label(
-        "铜绿假单胞菌 PAO1 生物膜；结构目录暂无细胞外基质",
-        "P. aeruginosa PAO1 biofilm; extracellular matrix is not represented in the structure catalogue",
-      ),
+      label("铜绿假单胞菌 PAO1 生物膜", "P. aeruginosa PAO1 biofilm"),
     ),
   },
   yeastBudding: {

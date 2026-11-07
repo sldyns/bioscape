@@ -208,6 +208,10 @@ function ProcessPlayer({
     // Structure links depend on the selected stage, not progress within it.
     [rootId, definition, stageIndex, parameters],
   );
+  const hasRelatedStructures =
+    related.current.length > 0 ||
+    related.other.length > 0 ||
+    Boolean(related.scope && originPath.length > 1);
   const locationButton = (item) => (
     <button
       key={item.path.join("/")}
@@ -680,65 +684,60 @@ function ProcessPlayer({
             })}
           </fieldset>
         )}
-        <nav
-          className="process-continuity"
-          aria-label={t("相关结构", "Related structures")}
-        >
-          <div className="continuity-heading">
-            <h3>{t("相关结构", "Related structures")}</h3>
-          </div>
-          {related.scope?.label && (
-            <p className="continuity-scope">{related.scope.label[lang]}</p>
-          )}
-          {related.current.length > 0 ? (
-            <div className="continuity-current">
-              {related.current.map(locationButton)}
+        {hasRelatedStructures ? (
+          <nav
+            className="process-continuity"
+            aria-label={t("相关结构", "Related structures")}
+          >
+            <div className="continuity-heading">
+              <h3>{t("相关结构", "Related structures")}</h3>
             </div>
-          ) : (
-            <p className="continuity-empty">
-              {t(
-                "本步骤暂无对应结构模型。",
-                "No corresponding structure model for this step.",
-              )}
-            </p>
-          )}
-          {related.other.length > 0 && (
-            <details className="continuity-other">
-              <summary>
-                {t("其他步骤的关联结构", "Structures across other steps")}{" "}
-                <span>
-                  {related.other.reduce(
-                    (count, group) => count + group.entries.length,
-                    0,
-                  )}
-                </span>
-              </summary>
-              {related.other.map((group) => (
-                <div className="continuity-group" key={group.stage.at}>
-                  <p>
-                    {String(group.stageIndex + 1).padStart(2, "0")} ·{" "}
-                    {group.stage.title[lang]}
-                  </p>
-                  {group.entries.map(locationButton)}
-                </div>
-              ))}
-            </details>
-          )}
-          {related.scope && originPath.length > 1 && (
-            <button
-              className="continuity-overview"
-              disabled={!onExploreStructure}
-              onClick={() => {
-                pausePlayback();
-                onExploreStructure?.(related.scope.path);
-              }}
-            >
-              {t("查看整体结构", "Whole structure")} ·{" "}
-              {getNode(rootId, lang).name}
-              <ChevronRight size={13} aria-hidden="true" />
-            </button>
-          )}
-        </nav>
+            {related.scope?.label && (
+              <p className="continuity-scope">{related.scope.label[lang]}</p>
+            )}
+            {related.current.length > 0 ? (
+              <div className="continuity-current">
+                {related.current.map(locationButton)}
+              </div>
+            ) : null}
+            {related.other.length > 0 && (
+              <details className="continuity-other">
+                <summary>
+                  {t("其他步骤的关联结构", "Structures across other steps")}{" "}
+                  <span>
+                    {related.other.reduce(
+                      (count, group) => count + group.entries.length,
+                      0,
+                    )}
+                  </span>
+                </summary>
+                {related.other.map((group) => (
+                  <div className="continuity-group" key={group.stage.at}>
+                    <p>
+                      {String(group.stageIndex + 1).padStart(2, "0")} ·{" "}
+                      {group.stage.title[lang]}
+                    </p>
+                    {group.entries.map(locationButton)}
+                  </div>
+                ))}
+              </details>
+            )}
+            {related.scope && originPath.length > 1 && (
+              <button
+                className="continuity-overview"
+                disabled={!onExploreStructure}
+                onClick={() => {
+                  pausePlayback();
+                  onExploreStructure?.(related.scope.path);
+                }}
+              >
+                {t("查看整体结构", "Whole structure")} ·{" "}
+                {getNode(rootId, lang).name}
+                <ChevronRight size={13} aria-hidden="true" />
+              </button>
+            )}
+          </nav>
+        ) : null}
         <p className="process-context">{definition.intro[lang]}</p>
         <details className="process-references">
           <summary>{t("参考资料", "References")}</summary>
