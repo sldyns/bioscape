@@ -10,9 +10,9 @@
 
 [![看见微观，理解生命——BioScape 主页实景](docs/media/readme/home-zh.png)](https://sldyns.github.io/bioscape/)
 
-[正式版本 v1.1.3](https://github.com/sldyns/bioscape/releases/tag/v1.1.3) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+[正式版本 v1.1.4](https://github.com/sldyns/bioscape/releases/tag/v1.1.4) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
 
-本次更新精简翻译画面的重复技术说明，并移除没有可用入口的空关联区。参考资料、生物学标签、有效关联和原有模型及导出画质保留。查看[版本说明](docs/releases/v1.1.3.md)。
+本次更新清理酵母 GAL 场景在无半乳糖、低葡萄糖条件下的重复 Gal80 结果标注。保留激活域标注、其他条件和原有模型及导出画质。查看[版本说明](docs/releases/v1.1.4.md)。
 
 ## 从一个模型开始
 

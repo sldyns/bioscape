@@ -10,9 +10,9 @@ An interactive atlas of biological structures and processes.
 
 [![See the unseen. Understand life. — the BioScape homepage](docs/media/readme/home-en.png)](https://sldyns.github.io/bioscape/)
 
-[Release v1.1.3](https://github.com/sldyns/bioscape/releases/tag/v1.1.3) · [What's new](CHANGELOG.md) · [Verification](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+[Release v1.1.4](https://github.com/sldyns/bioscape/releases/tag/v1.1.4) · [What's new](CHANGELOG.md) · [Verification](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
 
-The latest update removes duplicate translation notes and empty related-structure sections. References, biological labels, usable links and original model/export quality are preserved. Read the [release notes](docs/releases/v1.1.3.md).
+The latest update removes the repeated Gal80 outcome label when galactose is absent and glucose is low. The activation-domain label, other conditions and original model/export quality are preserved. Read the [release notes](docs/releases/v1.1.4.md).
 
 ## A place to begin
 

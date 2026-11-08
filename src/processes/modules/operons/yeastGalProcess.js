@@ -343,7 +343,7 @@ const model = {
       labels[5].active = glucose;
       labels[6].active = mediator.visible;
       labels[7].active = rna.visible;
-      labels[9].active = p > 0.57;
+      labels[9].active = p > 0.57 && (gal || glucose);
       labels[9].text = glucose
         ? b("葡萄糖抑制", "Glucose repression")
         : gal

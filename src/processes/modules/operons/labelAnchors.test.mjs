@@ -187,7 +187,13 @@ function check(s, m, params, p) {
       s.labels[7].active,
       visible(transcript) && transcript.geometry.drawRange.count > 0,
     );
-    assert.equal(s.labels[9].active, p > 0.57);
+    if (params.galactose === "absent" && params.glucose === "low") {
+      assert.equal(
+        s.labels[9].active,
+        false,
+        "Gal80 masking already identifies this repressed state",
+      );
+    } else assert.equal(s.labels[9].active, p > 0.57);
     surface(s, 0, named(s, "Gal4 DNA-binding domain"));
     dna(s, 1, 0.65);
     dna(s, 2, 2.2);
@@ -299,6 +305,19 @@ const oldTrp = trp.create();
 oldTrp.update(0.885, { tryptophan: "high", charging: "normal" });
 oldTrp.labels[12].text.en = "Leader RNA released";
 assert.throws(() => trpWording(oldTrp));
+// Reject restoring the duplicate or hiding necessary GAL annotations.
+const repeatedGal = gal.create();
+const repressedGal = { galactose: "absent", glucose: "low" };
+repeatedGal.update(0.735, repressedGal);
+repeatedGal.labels[9].active = true;
+assert.throws(() => check(repeatedGal, gal, repressedGal, 0.735));
+repeatedGal.update(0.735, repressedGal);
+repeatedGal.labels[3].active = false;
+assert.throws(() => check(repeatedGal, gal, repressedGal, 0.735));
+const inducedGal = { galactose: "present", glucose: "low" };
+repeatedGal.update(0.735, inducedGal);
+repeatedGal.labels[9].active = false;
+assert.throws(() => check(repeatedGal, gal, inducedGal, 0.735));
 console.log(
-  `operons label anchors: ${checks} actual target checks, 16 control combinations, all 28 gallery stage times plus boundary states, transformed geometry and deterministic seeks PASS; four legacy negative controls rejected.`,
+  `operons label anchors: ${checks} actual target checks, 16 control combinations, all 28 gallery stage times plus boundary states, transformed geometry and deterministic seeks PASS; four legacy and three GAL visibility negative controls rejected.`,
 );

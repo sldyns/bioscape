@@ -1,5 +1,15 @@
 # Changelog · 更新日志
 
+## 1.1.4 — 2026-11-08
+
+[正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.4) · [在线体验 / Website](https://sldyns.github.io/bioscape/)
+
+- 酵母 GAL 场景在无半乳糖、低葡萄糖时仅保留“Gal80 遮挡激活域”，隐藏指向同一状态的重复结果标注，中英文同步。
+- 其他三种条件、章节、生物学文本、标签锚点、几何、材质和相机保持一致；保留原有模型与导出画质。
+- 四种条件的 864 个正向、864 个反向状态通过精确对照；96 组全高清无标签画面一致，带标签对照仅出现预期的 10 处变化。[验证范围](docs/ui/gal80-annotations-2026-11-08.md)。
+
+The GAL scene now shows one Gal80 masking label instead of two labels for the same state when galactose is absent and glucose is low. The other conditions, model and export quality are preserved. See the [release notes](docs/releases/v1.1.4.md).
+
 ## 1.1.3 — 2026-11-08
 
 [正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.3) · [在线体验 / Website](https://sldyns.github.io/bioscape/)
