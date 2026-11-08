@@ -1,5 +1,16 @@
 # Changelog · 更新日志
 
+## 1.1.5 — 2026-11-09
+
+[正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.5) · [在线体验 / Website](https://sldyns.github.io/bioscape/)
+
+- 修正植物细胞板接近亲本质膜时的狭窄间隙采样，避免画面提前连通；保留原场函数、全部原采样点和原有建模精细度。
+- 新增实际膜几何回归与固定缓冲区检查，覆盖中间阶段的分离和最终真实连接。
+- 1,142 个前后拖动状态、12,564 次间隙检查及 12 个拓扑状态通过；100 组原有双语全高清画面对照一致，64 组新增连接阶段画面完成检查。[方法与范围](docs/science/plant-junction-sampling-2026-11-09.md)。
+- 同步版本、引用信息、中英文 README 和发布记录。本次修正不新增提速或物理帧率结论。
+
+The plant cell plate retains the narrow separating gap until the original field joins it to the parent membrane. Local conforming samples preserve existing detail, rendering and export quality. See the [release notes](docs/releases/v1.1.5.md).
+
 ## 1.1.4 — 2026-11-08
 
 [正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.4) · [在线体验 / Website](https://sldyns.github.io/bioscape/)

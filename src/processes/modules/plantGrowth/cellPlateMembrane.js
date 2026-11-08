@@ -1,4 +1,5 @@
 import { THREE } from "../../kit.js";
+import { mergeSamplingPlanes } from "./membraneLattice.js";
 
 // The zero surface encloses the vesicle/cell-plate lumen. Union operations
 // really remove internal membrane caps when vesicles or the parental PM join.
@@ -6,12 +7,25 @@ import { THREE } from "../../kit.js";
 export function fieldMembrane(
   k,
   material,
-  { nx, ny, nz, lo, hi, name, focus = false, maxVertices = nx * ny * nz * 36 },
+  {
+    nx,
+    ny,
+    nz,
+    lo,
+    hi,
+    name,
+    focus = false,
+    extraX = 0,
+    extraY = 0,
+    maxVertices = nx * ny * nz * 36,
+  },
 ) {
-  const count = (nx + 1) * (ny + 1) * (nz + 1);
+  const xCapacity = nx + extraX,
+    yCapacity = ny + extraY;
+  const count = (xCapacity + 1) * (yCapacity + 1) * (nz + 1);
   const points = new Float32Array(count * 3),
     values = new Float32Array(count);
-  const index = (x, y, z) => (x * (ny + 1) + y) * (nz + 1) + z;
+  const index = (x, y, z) => (x * (yCapacity + 1) + y) * (nz + 1) + z;
   for (let x = 0; x <= nx; x++)
     for (let y = 0; y <= ny; y++)
       for (let z = 0; z <= nz; z++) {
@@ -54,8 +68,15 @@ export function fieldMembrane(
     outside = new Int32Array(4);
   const crossings = Array.from({ length: 4 }, () => new Float64Array(3));
   const interior = new Float64Array(3);
-  const xCoordinates = new Float32Array(nx + 1),
-    zCoordinates = new Float32Array(nz + 1);
+  const baseX = new Float32Array(nx + 1),
+    baseY = new Float32Array(ny + 1),
+    baseZ = new Float32Array(nz + 1);
+  const xCoordinates = new Float32Array(xCapacity + 1),
+    yCoordinates = new Float32Array(yCapacity + 1),
+    zCoordinates = baseZ;
+  for (let x = 0; x <= nx; x++) baseX[x] = lo[0] + ((hi[0] - lo[0]) * x) / nx;
+  for (let y = 0; y <= ny; y++) baseY[y] = lo[1] + ((hi[1] - lo[1]) * y) / ny;
+  for (let z = 0; z <= nz; z++) baseZ[z] = lo[2] + ((hi[2] - lo[2]) * z) / nz;
   function crossing(a, b, result) {
     const t = values[a] / (values[a] - values[b]);
     for (let c = 0; c < 3; c++)
@@ -99,7 +120,7 @@ export function fieldMembrane(
       normals[cursor++] = nz / length;
     }
   }
-  function update(field, width, depth) {
+  function update(field, width, depth, sampling = null) {
     // Concentrate samples around the growing plate, while retaining the same
     // outer parent-membrane domain and GPU buffers. Early network pores must
     // remain actual holes even when the nascent plate occupies a tiny volume.
@@ -116,16 +137,29 @@ export function fieldMembrane(
     };
     if (focus) {
       for (let x = 0; x <= nx; x++)
-        xCoordinates[x] = stretch((2 * x) / nx - 1, focusX, 0.85, hi[0]);
+        baseX[x] = stretch((2 * x) / nx - 1, focusX, 0.85, hi[0]);
       for (let z = 0; z <= nz; z++)
         zCoordinates[z] = stretch((2 * z) / nz - 1, focusZ, 0.8, hi[2]);
     }
-    for (let x = 0; x <= nx; x++)
+    const activeNx = mergeSamplingPlanes(
+      baseX,
+      sampling?.x,
+      sampling?.xCount ?? 0,
+      xCoordinates,
+    );
+    const activeNy = mergeSamplingPlanes(
+      baseY,
+      sampling?.y,
+      sampling?.yCount ?? 0,
+      yCoordinates,
+    );
+    for (let x = 0; x <= activeNx; x++)
       for (let z = 0; z <= nz; z++)
-        for (let y = 0; y <= ny; y++) {
+        for (let y = 0; y <= activeNy; y++) {
           const i = index(x, y, z);
-          if (focus) {
+          if (focus || sampling) {
             points[i * 3] = xCoordinates[x];
+            points[i * 3 + 1] = yCoordinates[y];
             points[i * 3 + 2] = zCoordinates[z];
           }
           values[i] = field(
@@ -135,8 +169,8 @@ export function fieldMembrane(
           );
         }
     cursor = 0;
-    for (let x = 0; x < nx; x++)
-      for (let y = 0; y < ny; y++)
+    for (let x = 0; x < activeNx; x++)
+      for (let y = 0; y < activeNy; y++)
         for (let z = 0; z < nz; z++) {
           ids[0] = index(x, y, z);
           ids[1] = index(x + 1, y, z);
@@ -196,6 +230,8 @@ export function cellPlateMembrane(k, material) {
     lo: [-2.56, -0.5, -0.88],
     hi: [2.56, 0.5, 0.88],
     focus: true,
+    extraX: 2,
+    extraY: 12,
     name: "Continuous cell-plate lumen membrane and parental junction",
   });
 }

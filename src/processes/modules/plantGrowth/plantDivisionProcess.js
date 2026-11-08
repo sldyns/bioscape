@@ -175,6 +175,12 @@ function create() {
   ];
   let membraneState;
   const fusing = new Float64Array(48 * 4);
+  const membraneSamples = {
+    x: new Float64Array(2),
+    y: new Float64Array(12),
+    xCount: 0,
+    yCount: 0,
+  };
   function update(value) {
     const p = clamp(value),
       separation = ease(p, 0.13, 0.35),
@@ -274,6 +280,29 @@ function create() {
     const nextMembraneState =
       p < 0.3 ? "before-plate" : p >= 0.9 ? "joined" : p;
     if (membraneState !== nextMembraneState) {
+      membraneSamples.xCount = membraneSamples.yCount = 0;
+      const parentGap = 2.36 - radius;
+      // Follow the field's positive maximum between the plate and parent.
+      // It enters the focused grid at an existing plane, avoiding a step.
+      if (parentGap > 0 && parentGap <= 0.26) {
+        const middle = (radius + 2.36) / 2;
+        membraneSamples.x[0] = -middle;
+        membraneSamples.x[1] = middle;
+        membraneSamples.xCount = 2;
+      }
+      // Near the parent, retain any unresolved gap between a vesicle and the
+      // sheet as well. These planes start at the existing y=+/-0.125 samples.
+      for (let i = 0; i < fusionCount; i++) {
+        const at = i * 4,
+          r = fusing[at + 3],
+          gap = Math.abs(fusing[at + 1]) - r - 0.095;
+        if (Math.abs(fusing[at]) + r <= 2.3 || gap <= 0 || gap >= 0.06)
+          continue;
+        if (membraneSamples.yCount === membraneSamples.y.length)
+          throw new Error("Cell-plate junction sampling capacity exceeded");
+        membraneSamples.y[membraneSamples.yCount++] =
+          Math.sign(fusing[at + 1]) * (0.095 + gap / 2);
+      }
       let lastX = NaN,
         lastZ = NaN,
         footprint = 0,
@@ -319,6 +348,7 @@ function create() {
         },
         radius,
         depth,
+        membraneSamples,
       );
     }
     membraneState = nextMembraneState;
