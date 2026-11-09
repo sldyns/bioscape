@@ -1,23 +1,33 @@
 import React, { useEffect, useId, useRef } from "react";
 import { lockPageScroll } from "../scrollLock.js";
 
-export default function StudioLoading({ lang, onClose }) {
+export default function StudioLoading({ lang, onClose, onReload }) {
   const id = useId();
-  const cancelButton = useRef(null);
+  const dialog = useRef(null);
+  const closeButton = useRef(null);
+  const reloadButton = useRef(null);
   const close = useRef(onClose);
   close.current = onClose;
-  const en = lang === "en";
+  const t = (zh, en) => (lang === "en" ? en : zh);
   useEffect(() => {
     const releaseScroll = lockPageScroll();
-    cancelButton.current?.focus({ preventScroll: true });
+    closeButton.current?.focus({ preventScroll: true });
     const key = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopImmediatePropagation();
         close.current();
       } else if (event.key === "Tab") {
-        event.preventDefault();
-        cancelButton.current?.focus({ preventScroll: true });
+        const first = closeButton.current;
+        const last = reloadButton.current ?? first;
+        const active = document.activeElement;
+        if (
+          !dialog.current?.contains(active) ||
+          active === (event.shiftKey ? first : last)
+        ) {
+          event.preventDefault();
+          (event.shiftKey ? last : first)?.focus({ preventScroll: true });
+        }
       }
     };
     window.addEventListener("keydown", key, true);
@@ -37,21 +47,39 @@ export default function StudioLoading({ lang, onClose }) {
       }}
     >
       <section
+        ref={dialog}
         className="share-dialog studio-loading-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${id}-title`}
         aria-describedby={`${id}-status`}
       >
-        <h2 id={`${id}-title`}>
-          {en ? "Image & motion studio" : "影像工作台"}
-        </h2>
-        <p id={`${id}-status`} role="status">
-          {en ? "Preparing Studio…" : "正在准备工作台…"}
+        <h2 id={`${id}-title`}>{t("影像工作台", "Image & motion studio")}</h2>
+        <p id={`${id}-status`} role={onReload ? "alert" : "status"}>
+          {onReload
+            ? t("工作台暂时无法打开。", "Studio could not be opened.")
+            : t("正在准备工作台…", "Preparing Studio…")}
         </p>
-        <button className="share-copy" ref={cancelButton} onClick={onClose}>
-          {en ? "Cancel" : "取消"}
-        </button>
+        <div className="studio-loading-actions">
+          <button
+            type="button"
+            className="share-copy"
+            ref={closeButton}
+            onClick={onClose}
+          >
+            {onReload ? t("关闭", "Close") : t("取消", "Cancel")}
+          </button>
+          {onReload && (
+            <button
+              type="button"
+              className="share-copy"
+              ref={reloadButton}
+              onClick={onReload}
+            >
+              {t("重新加载页面", "Reload page")}
+            </button>
+          )}
+        </div>
       </section>
     </div>
   );

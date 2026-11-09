@@ -70,10 +70,14 @@ export default class ApplicationBoundary extends Component {
   }
 
   componentDidCatch(error) {
-    console.error("BioScape could not display the page", error);
+    console.error(
+      this.props.errorMessage ?? "BioScape could not display the page",
+      error,
+    );
   }
 
   render() {
-    return this.state.failed ? <RecoveryPage /> : this.props.children;
+    if (!this.state.failed) return this.props.children;
+    return this.props.fallback ?? <RecoveryPage />;
   }
 }

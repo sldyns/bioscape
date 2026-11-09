@@ -12,6 +12,7 @@ import { pathToFileURL } from "node:url";
 const directory = await mkdtemp(join(tmpdir(), "bioscape-startup-navigation-"));
 const host = "globalThis.__startupNavigationHarness";
 const componentNames = new Set([
+  "ApplicationBoundary",
   "StudioLoading",
   "AboutModel",
   "ProcessDirectory",

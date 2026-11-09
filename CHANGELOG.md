@@ -1,5 +1,14 @@
 # Changelog · 更新日志
 
+## 1.1.6 — 2026-11-09
+
+[正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.6) · [在线体验 / Website](https://sldyns.github.io/bioscape/)
+
+- 影像工作台加载失败时可以关闭提示，继续操作原场景。重新加载页面前会保存进度和视角。
+- 验证结构、过程及对比场景的键盘操作和故障恢复。恢复后的工作台成功导出 15 秒全高清 MP4 和 PNG。
+
+Studio load failures stay in Studio. Closing the dialog restores the current scene and keyboard focus. Reloading preserves the view and progress. See the [release notes](docs/releases/v1.1.6.md).
+
 ## 1.1.5 — 2026-11-09
 
 [正式版本 / Release](https://github.com/sldyns/bioscape/releases/tag/v1.1.5) · [在线体验 / Website](https://sldyns.github.io/bioscape/)

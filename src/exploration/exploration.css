@@ -329,6 +329,12 @@
   }
 }
 
-.studio-loading-dialog .share-copy {
+.studio-loading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.studio-loading-actions .share-copy {
   min-height: 44px;
 }

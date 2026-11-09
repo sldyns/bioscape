@@ -30,6 +30,7 @@ const Studio = lazy(() => import("./studio/Studio.jsx"));
 import SceneActions from "./exploration/SceneActions.jsx";
 import ViewerHeading from "./exploration/ViewerHeading.jsx";
 import ShareDialog from "./exploration/ShareDialog.jsx";
+import ApplicationBoundary from "./components/ApplicationBoundary.jsx";
 import { createSceneHistorySession } from "./exploration/historySession.js";
 import {
   clearSceneReloadCheckpoint,
@@ -275,6 +276,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     scheduleSceneUrl,
   ]);
   const closeShare = useCallback(() => setShare(null), []);
+  const closeStudio = useCallback(() => setStudio(null), []);
   const aboutRef = useRef(),
     selectedType = useRef(),
     catalogTitle = useRef(),
@@ -535,6 +537,10 @@ export default function App({ historySession, onHome, onSceneLeave }) {
         !comparison && experience === "structure" && Boolean(api.canExplode),
       getSnapshot: snapshot,
     });
+  }
+  function reloadStudio() {
+    flushSceneUrl();
+    window.location.reload();
   }
   navigation.current = {
     saveCurrent,
@@ -1307,18 +1313,27 @@ export default function App({ historySession, onHome, onSceneLeave }) {
         }
       </SceneRenderingHost>
       {studio && (
-        <Suspense
+        <ApplicationBoundary
+          errorMessage="BioScape could not open Studio"
           fallback={
-            <StudioLoading lang={lang} onClose={() => setStudio(null)} />
+            <StudioLoading
+              lang={lang}
+              onClose={closeStudio}
+              onReload={reloadStudio}
+            />
           }
         >
-          <Studio
-            source={studio}
-            lang={lang}
-            onClose={() => setStudio(null)}
-            onShare={async () => createShareUrl()}
-          />
-        </Suspense>
+          <Suspense
+            fallback={<StudioLoading lang={lang} onClose={closeStudio} />}
+          >
+            <Studio
+              source={studio}
+              lang={lang}
+              onClose={closeStudio}
+              onShare={async () => createShareUrl()}
+            />
+          </Suspense>
+        </ApplicationBoundary>
       )}
       {share && <ShareDialog url={share} lang={lang} onClose={closeShare} />}
       {about && (

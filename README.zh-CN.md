@@ -10,9 +10,9 @@
 
 [![看见微观，理解生命——BioScape 主页实景](docs/media/readme/home-zh.png)](https://sldyns.github.io/bioscape/)
 
-[正式版本 v1.1.5](https://github.com/sldyns/bioscape/releases/tag/v1.1.5) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
+[正式版本 v1.1.6](https://github.com/sldyns/bioscape/releases/tag/v1.1.6) · [更新日志](CHANGELOG.md) · [自动检查](https://github.com/sldyns/bioscape/actions/workflows/ci.yml)
 
-本次更新修正植物细胞板接近亲本膜时的狭窄间隙采样，避免画面提前连通。保留原生物学场函数、模型精细度和导出画质。查看[版本说明](docs/releases/v1.1.5.md)。
+工作台加载失败时，关闭提示即可继续探索当前场景。重新加载页面前会保存视角和进度。查看[版本说明](docs/releases/v1.1.6.md)。
 
 ## 从一个模型开始
 
