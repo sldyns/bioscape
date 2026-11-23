@@ -1,4 +1,31 @@
 import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
+import { InstancedMesh, Matrix4, Mesh } from "three";
+
+// Use the same shared geometry BVH for each placement. Before the worker
+// finishes, Three's built-in instanced raycast handles the complete mesh.
+export function createInstanceRaycast() {
+  let surface;
+  const local = new Matrix4();
+  return function (raycaster, hits) {
+    if (!this.geometry.boundsTree) {
+      return InstancedMesh.prototype.raycast.call(this, raycaster, hits);
+    }
+    surface ??= new Mesh(this.geometry, this.material);
+    surface.geometry = this.geometry;
+    surface.material = this.material;
+    for (let i = 0; i < this.count; i++) {
+      this.getMatrixAt(i, local);
+      surface.matrixWorld.multiplyMatrices(this.matrixWorld, local);
+      const start = hits.length;
+      acceleratedRaycast.call(surface, raycaster, hits);
+      for (let j = start; j < hits.length; j++) {
+        hits[j].instanceId = i;
+        hits[j].object = this;
+      }
+    }
+    surface.geometry = surface.material = null;
+  };
+}
 
 // Build exact triangle acceleration off-thread. Render buffers are never transferred
 // or reordered, and standard Three.js picking remains available until a tree is ready.
@@ -9,6 +36,7 @@ export function createPickingIndex() {
     stopped = false;
   const disposed = new WeakSet(),
     tracked = new WeakSet();
+  const raycastCopies = createInstanceRaycast();
   try {
     worker = new Worker(new URL("./picking.worker.js", import.meta.url), {
       type: "module",
@@ -60,11 +88,13 @@ export function createPickingIndex() {
       const geometries = new Set();
       for (const mesh of meshes) {
         if (
-          mesh.isInstancedMesh ||
+          (mesh.isInstancedMesh && !mesh.userData.indexedCopies) ||
           mesh.geometry.attributes.position.count < 1800
         )
           continue;
-        mesh.raycast = acceleratedRaycast;
+        mesh.raycast = mesh.isInstancedMesh
+          ? raycastCopies
+          : acceleratedRaycast;
         const geometry = mesh.geometry;
         geometries.add(geometry);
         if (!tracked.has(geometry)) {

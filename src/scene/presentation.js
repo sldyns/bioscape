@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { children } from "../hierarchy";
+import { instanceMitochondria } from "./mitochondriaOverview.js";
 
 export function makePresentation(model, id, special = null) {
   const root = new THREE.Group(),
@@ -40,7 +41,9 @@ export function makePresentation(model, id, special = null) {
       const key =
         id === "cytoplasm" && sourceKey === "cytoplasm" ? "cytosol" : sourceKey;
       if (id === "cytoplasm" && !childIds.includes(key)) continue;
-      const copy = register(source, key);
+      const copy =
+        (key === "mitochondria" ? instanceMitochondria(source, key) : null) ??
+        register(source, key);
       // Context layers remain legible without obscuring the structures being studied.
       if (["membrane", "cytoplasm", "cytosol", "cytoskeleton"].includes(key))
         copy.traverse((o) => {

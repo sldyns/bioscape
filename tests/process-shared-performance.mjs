@@ -9,6 +9,8 @@ import * as THREE from "three";
 import { WebGLObjects } from "../node_modules/three/src/renderers/webgl/WebGLObjects.js";
 import { getConditionNote } from "../src/exploration/conditionNotes.js";
 import { restoreProcessSession } from "../src/exploration/processSession.js";
+import secretion from "../src/processes/secretionProcess.js";
+import { startPlaybackClock } from "../src/processes/playbackClock.js";
 
 // Execute the real React component bodies/effects. Only browser/GPU adapters are
 // replaced; model transforms, annotation projection/layout and disposal are real.
@@ -20,6 +22,7 @@ const originals = new Map(
     "window",
     "document",
     "ResizeObserver",
+    "IntersectionObserver",
     "requestAnimationFrame",
     "cancelAnimationFrame",
     "__processSharedRuntime",
@@ -219,6 +222,7 @@ class Renderer {
     }
     camera.updateMatrixWorld();
     this.context.draws++;
+    this.context.onDraw?.(this.domElement);
     scene.traverse((object) => {
       if (object.isInstancedMesh) this.context.gpu.update(object);
     });
@@ -296,6 +300,7 @@ function fixture(Component, props) {
     sequence: 0,
     fonts: new Set(),
     observers: [],
+    intersections: [],
     fontScale: 1,
     viewport: { width: 600, height: 400 },
     props,
@@ -328,6 +333,8 @@ function fixture(Component, props) {
       this.focusHistory.push(element);
       previous?.dispatchEvent({ type: "blur" });
       element.dispatchEvent({ type: "focus" });
+      for (let node = element; node; node = node.parentElement)
+        node.dispatchEvent({ type: "focusin" });
     },
   };
   f.document.body = new Element("body", f);
@@ -423,6 +430,21 @@ function fixture(Component, props) {
       observe() {}
       disconnect() {}
     };
+    globalThis.IntersectionObserver = f.disableIntersectionObserver
+      ? undefined
+      : class {
+          constructor(callback) {
+            this.callback = callback;
+            this.targets = new Set();
+            f.intersections.push(this);
+          }
+          observe(target) {
+            this.targets.add(target);
+          }
+          disconnect() {
+            this.targets.clear();
+          }
+        };
     globalThis.requestAnimationFrame = (fn) => {
       f.jobs.set(++f.sequence, fn);
       return f.sequence;
@@ -504,6 +526,7 @@ function sceneFixture(Component) {
     stages: [],
     create() {
       const group = new THREE.Group();
+      f.ownedGroup = group;
       const geometry = new THREE.BoxGeometry();
       f.ownedGeometry = geometry;
       const texture = new THREE.Texture();
@@ -727,8 +750,11 @@ export function createProcessFramingPreparation(options) {
               };
             if (path.endsWith("sceneCapture.js"))
               return {
-                contents:
-                  "export const applySceneView=()=>true,normalizeSceneView=v=>v,readSceneView=()=>({direction:[0,0,1],target:[0,0,0],zoom:1}),createSceneCapture=({getLabels})=>({dispose(){},captureFrame(){return getLabels();}});",
+                contents: `export const applySceneView=()=>true,normalizeSceneView=v=>v,readSceneView=()=>({direction:[0,0,1],target:[0,0,0],zoom:1});
+export function createSceneCapture({getLabels}) {
+  const sample = () => { ${host}.current.onCapture?.(); return getLabels(); };
+  return { dispose(){}, captureFrame: sample, prepareFrame: () => Promise.resolve(sample()) };
+}`,
               };
             if (path === "lucide-react")
               return {
@@ -825,6 +851,96 @@ export function createProcessFramingPreparation(options) {
       0,
     );
     assert.equal(cancelled.pendingInitializations.size, 0);
+  });
+
+  await test("reopened processes reuse only the framing envelope and replay every model sample", async () => {
+    const f = sceneFixture(ProcessScene);
+    const definition = f.props.definition;
+    const scans = () =>
+      f.instanceBoundsCaches.at(-1).admissionStatistics().completedSamples;
+    await f.render();
+    assert(f.api?.ready);
+    assert(scans() > 0);
+    const cameraState = () => {
+      const { camera, target, minDistance, maxDistance } = f.controls.at(-1);
+      return [
+        camera.position.toArray(),
+        target.toArray(),
+        camera.far,
+        minDistance,
+        maxDistance,
+      ];
+    };
+    const coldView = cameraState();
+    const firstGeometry = f.ownedGeometry;
+    assert(firstGeometry.boundingBox?.isBox3);
+    const coldUpdates = f.modelUpdates.splice(0);
+
+    await f.render({ definition: { ...definition } });
+    assert(f.api?.ready);
+    assert.equal(scans(), 0);
+    assert.notEqual(f.ownedGeometry, firstGeometry);
+    assert.deepEqual(f.modelUpdates.splice(0), coldUpdates);
+    assert.deepEqual(cameraState(), coldView);
+    assert.deepEqual(f.ownedGeometry.boundingBox, firstGeometry.boundingBox);
+    assert.equal(f.disposed.filter((item) => item === "geometry").length, 1);
+
+    await f.render({ rootId: "plant" });
+    assert(f.api?.ready);
+    assert(scans() > 0);
+    await f.render({
+      definition: { ...definition },
+      rootId: "cell",
+      parameters: { condition: "other" },
+    });
+    assert(f.api?.ready);
+    assert(scans() > 0);
+    f.dispose();
+  });
+
+  await test("interrupted framing does not populate the envelope for a new attempt", async () => {
+    const f = sceneFixture(ProcessScene);
+    const definition = f.props.definition;
+    f.onModelUpdate = () => {
+      if (f.modelUpdates.length === 3) f.dispose();
+    };
+    await f.render();
+    assert.equal(f.api, null);
+    f.onModelUpdate = null;
+    await f.render({ definition: { ...definition } });
+    assert(f.api?.ready);
+    assert(
+      f.instanceBoundsCaches.at(-1).admissionStatistics().completedSamples > 0,
+    );
+    f.dispose();
+  });
+
+  await test("an empty envelope or a context lost on the first draw keeps the next visit cold", async () => {
+    for (const interruption of ["empty", "context"]) {
+      const f = sceneFixture(ProcessScene);
+      const definition = f.props.definition;
+      if (interruption === "empty")
+        f.onModelUpdate = () => {
+          f.ownedGroup.visible = false;
+        };
+      else
+        f.onDraw = (canvas) =>
+          canvas.dispatchEvent({
+            type: "webglcontextlost",
+            preventDefault() {},
+          });
+      await f.render();
+      if (interruption === "context") assert.equal(f.api, null);
+      else assert(f.api?.ready);
+      f.onDraw = f.onModelUpdate = null;
+      await f.render({ definition: { ...definition } });
+      assert(f.api?.ready);
+      assert(
+        f.instanceBoundsCaches.at(-1).admissionStatistics().completedSamples >
+          0,
+      );
+      f.dispose();
+    }
   });
 
   await test("unmount before framing starts cancels its actual queued model work", async () => {
@@ -953,6 +1069,195 @@ export function createProcessFramingPreparation(options) {
     assert.equal(f.environmentPreparations, 1);
     f.dispose();
     assert.equal(f.environmentDisposals, 1);
+  });
+
+  await test("offscreen process frames defer drawing and catch up without blocking capture or readable keys", async () => {
+    const f = sceneFixture(ProcessScene);
+    await f.render();
+    f.flush();
+    assert(f.api?.ready);
+    assert.equal(f.intersections.length, 1);
+    const [observer] = f.intersections;
+    const [canvas, key] = observer.targets;
+    assert.equal(canvas.className, "process-canvas");
+    assert.equal(key.className, "process-annotation-key");
+    const visibility = (canvasVisible, keyVisible) =>
+      observer.callback([
+        { target: canvas, isIntersecting: canvasVisible },
+        { target: key, isIntersecting: keyVisible },
+      ]);
+    visibility(true, true);
+    assert.equal(
+      f.jobs.size,
+      0,
+      "Observing an already visible scene must not redraw",
+    );
+    const draws = f.draws;
+    const updates = f.modelUpdates.length;
+    const progress = f.props.progressSource;
+    progress.current = 0.25;
+    f.api.requestRender();
+    visibility(false, false);
+    f.flush();
+    assert.equal(f.draws, draws);
+    assert.equal(f.modelUpdates.length, updates);
+    assert.equal(f.api.getProgress(), 0);
+
+    progress.current = 0.4;
+    f.api.requestRender();
+    assert.equal(f.jobs.size, 0);
+    f.onModelUpdate = (value) => {
+      f.ownedGroup.position.x = value;
+      f.labels[0].text.zh = `第一复合体进度 ${value}`;
+    };
+    const capturedPositions = [];
+    f.onCapture = () =>
+      capturedPositions.push(f.ownedGroup.matrixWorld.elements[12]);
+    const captured = f.api.captureFrame({ progress: 0.5 });
+    assert.equal(captured[0].text, "第一复合体进度 0.5");
+    assert.deepEqual(
+      f.modelUpdates.slice(updates).map(({ value }) => value),
+      [0.4, 0.5, 0.4],
+    );
+    assert.equal(f.api.getProgress(), 0.4);
+    const pending = f.api.prepareCaptureFrame({ progress: 0.55 });
+    assert.equal(f.ownedGroup.matrixWorld.elements[12], 0.4);
+    assert.equal((await pending)[0].text, "第一复合体进度 0.55");
+    assert.equal(f.api.captureFrame()[0].text, "第一复合体进度 0.4");
+    assert.deepEqual(capturedPositions, [0.5, 0.55, 0.4]);
+    f.onCapture = () => {
+      throw new Error("readback");
+    };
+    assert.throws(() => f.api.captureFrame({ progress: 0.95 }), /readback/);
+    assert.equal(f.ownedGroup.matrixWorld.elements[12], 0.4);
+    assert.equal(f.draws, draws);
+
+    for (const invalidate of f.fonts) invalidate();
+    const reads = f.reads;
+    const projections = f.projections;
+    progress.current = 0.6;
+    visibility(false, true);
+    f.flush();
+    const item = key.children[0];
+    assert.equal(item.attributes["aria-label"], "1. 第一复合体进度 0.6");
+    assert.equal(f.draws, draws);
+    assert.equal(f.reads, reads);
+    assert.equal(f.projections, projections);
+    visibility(false, false);
+    progress.current = 0.65;
+    item.focus();
+    f.flush();
+    assert.equal(item.attributes["aria-label"], "1. 第一复合体进度 0.65");
+    assert.equal(f.draws, draws);
+
+    f.document.setFocus(f.document.body);
+    progress.current = 0.8;
+    const parameters = { calcium: "blocked" };
+    await f.render({ parameters });
+    assert.equal(f.jobs.size, 0);
+    assert.equal(f.api.getProgress(), 0.65);
+    visibility(true, false);
+    f.flush();
+    assert.equal(f.draws, draws + 1);
+    assert.deepEqual(f.modelUpdates.at(-1), { value: 0.8, parameters });
+    assert(f.reads > reads);
+    assert(f.projections > projections);
+    assert.equal(f.api.getProgress(), 0.8);
+    f.dispose();
+    assert.equal(observer.targets.size, 0);
+    visibility(true, true);
+    assert.equal(f.jobs.size, 0);
+  });
+
+  await test("without a viewport observer the process keeps live drawing and annotations", async () => {
+    const f = sceneFixture(ProcessScene);
+    f.disableIntersectionObserver = true;
+    await f.render();
+    f.flush();
+    const before = f.draws;
+    f.onModelUpdate = (value) => {
+      f.labels[0].text.zh = `进度 ${value}`;
+    };
+    f.props.progressSource.current = 0.45;
+    f.redraw();
+    assert.equal(f.intersections.length, 0);
+    assert.equal(f.draws, before + 1);
+    assert.equal(f.api.getProgress(), 0.45);
+    assert.equal(
+      f.elements.find((el) => el.className === "process-annotation-item")
+        .attributes["aria-label"],
+      "1. 进度 0.45",
+    );
+    f.dispose();
+  });
+
+  await test("the shared process frame advances playback before drawing and keeps independent redraws", async () => {
+    const f = sceneFixture(ProcessScene);
+    await f.render();
+    f.flush();
+    const api = f.api;
+    assert.equal(typeof api.requestPlaybackFrame, "function");
+    const progress = f.props.progressSource;
+    const start = () =>
+      startPlaybackClock({
+        progress,
+        duration: 1,
+        speed: 1,
+        onFrame() {},
+        onPublish() {},
+        onFinish: () => assert.fail("Unexpected end of playback"),
+        requestFrame: api.requestPlaybackFrame,
+        cancelFrame: api.cancelPlaybackFrame,
+      });
+    const step = (now) => {
+      assert.equal(f.jobs.size, 1);
+      const [id, callback] = f.jobs.entries().next().value;
+      f.jobs.delete(id);
+      callback(now);
+    };
+    const [observer] = f.intersections;
+    const visibility = (isIntersecting) =>
+      observer.callback(
+        [...observer.targets].map((target) => ({ target, isIntersecting })),
+      );
+    const initialDraws = f.draws;
+    api.requestRender();
+    const stop = start();
+    step(1000);
+    step(1020);
+    assert.equal(api.getProgress(), 0.02);
+    assert.equal(f.draws, initialDraws + 2);
+
+    visibility(false);
+    step(1040);
+    assert.equal(progress.current, 0.04);
+    assert.equal(api.getProgress(), 0.02);
+    assert.equal(f.draws, initialDraws + 2);
+    visibility(true);
+    step(1060);
+    assert.equal(api.getProgress(), 0.06);
+    assert.equal(f.draws, initialDraws + 3);
+
+    api.requestRender();
+    stop();
+    step(1080);
+    assert.equal(progress.current, 0.06);
+    assert.equal(f.draws, initialDraws + 4);
+    assert.equal(f.jobs.size, 0);
+    const cancel = start();
+    cancel();
+    assert.equal(f.jobs.size, 0);
+
+    let obsoleteTicks = 0;
+    api.requestPlaybackFrame(() => obsoleteTicks++);
+    const lateFrame = [...f.jobs.values()][0];
+    const canvas = f.elements.find((el) => el.tag === "canvas");
+    canvas.dispatchEvent({ type: "webglcontextlost", preventDefault() {} });
+    lateFrame(1100);
+    assert.equal(api.ready, false);
+    assert.equal(f.jobs.size, 0);
+    assert.equal(obsoleteTicks, 0);
+    f.dispose();
   });
 
   await test("recording DOM preserves focus only for connected visible nodes", async () => {
@@ -1327,7 +1632,7 @@ export function createProcessFramingPreparation(options) {
     assert.equal(f.jobs.size, 0);
   });
 
-  await test("zoom and reset controls follow the actual scene readiness callback", async () => {
+  await test("playback, zoom and reset controls follow the actual scene readiness callback", async () => {
     const definition = {
       id: "pending-controls-fixture",
       duration: 30,
@@ -1350,7 +1655,7 @@ export function createProcessFramingPreparation(options) {
     });
     await f.render();
     const checkButtons = (disabled) => {
-      for (const label of ["放大", "缩小", "重置视角"]) {
+      for (const label of ["播放", "放大", "缩小", "重置视角"]) {
         const button = find(
           f.tree,
           (node) =>
@@ -1361,6 +1666,13 @@ export function createProcessFramingPreparation(options) {
       }
     };
     checkButtons(true);
+    const play = () =>
+      find(f.tree, (node) => node.props?.className === "process-play");
+    // A stale event must not start the clock before there is a drawable scene.
+    play().props.onClick();
+    await f.render();
+    assert.equal(play().props["aria-label"], "播放");
+    assert.equal(f.jobs.size, 0);
     const scene = find(
       f.tree,
       (node) =>
@@ -1371,10 +1683,81 @@ export function createProcessFramingPreparation(options) {
     scene.props.onSceneReady({ ready: true, requestRender() {} });
     await f.render();
     checkButtons(false);
+    play().props.onClick();
+    await f.render();
+    assert.equal(play().props["aria-label"], "暂停");
+    assert.equal(f.jobs.size, 1);
     scene.props.onSceneReady(null);
     await f.render();
     checkButtons(true);
+    assert.equal(f.jobs.size, 0);
     f.dispose();
+  });
+
+  await test("interrupted playback publishes its last pose only from a mounted commit", async () => {
+    const published = [];
+    const f = fixture(ProcessPlayer, {
+      definition: secretion,
+      rootId: "cell",
+      lang: "zh",
+      initialState: { progress: 0.1194 },
+      onStateChange: (state, options) =>
+        published.push({
+          progress: state.progress,
+          immediate: options.immediate,
+        }),
+    });
+    await f.render();
+    const scene = () =>
+      find(f.tree, (node) => typeof node.props?.onSceneReady === "function");
+    const playback = () =>
+      find(f.tree, (node) => node.props?.className === "process-play");
+    const timeline = () =>
+      find(f.tree, (node) => node.props?.id === "process-timeline");
+    let redraws = 0;
+    const ready = {
+      ready: true,
+      requestRender() {
+        redraws++;
+      },
+    };
+    async function playTwoFrames(firstTime) {
+      scene().props.onSceneReady(ready);
+      await f.render();
+      playback().props.onClick();
+      await f.render();
+      for (const time of [firstTime, firstTime + 24]) {
+        assert.equal(f.jobs.size, 1);
+        const [id, tick] = f.jobs.entries().next().value;
+        f.jobs.delete(id);
+        tick(time);
+      }
+    }
+    await playTwoFrames(1000);
+    assert.equal(redraws, 2);
+    const liveProgress = scene().props.progressSource.current;
+    assert(liveProgress >= secretion.stages[1].at);
+    assert.equal(published.at(-1).progress, 0.1194);
+
+    scene().props.onSceneReady(null);
+    assert.equal(f.jobs.size, 0);
+    assert.equal(published.at(-1).progress, 0.1194);
+    await f.render();
+    assert.deepEqual(published.at(-1), {
+      progress: liveProgress,
+      immediate: true,
+    });
+    assert.equal(timeline().props.value, 120);
+    assert.match(timeline().props["aria-valuetext"], /^出芽并装载/);
+    assert.equal(playback().props.disabled, true);
+
+    await playTwoFrames(2000);
+    const beforeRetirement = published.length;
+    assert(scene().props.progressSource.current > published.at(-1).progress);
+    scene().props.onSceneReady(null);
+    f.dispose();
+    assert.equal(f.jobs.size, 0);
+    assert.equal(published.length, beforeRetirement);
   });
 
   await test("player memo preserves stage epsilon, random seek, language, condition and root context", async () => {

@@ -1,6 +1,10 @@
 import StudioLoading from "./components/StudioLoading.jsx";
 import { lockPageScroll } from "./scrollLock.js";
 import { project } from "./project";
+import {
+  getSpecimenLight,
+  setSpecimenLight,
+} from "./scene/lightingPreference.js";
 import AboutModel from "./components/AboutModel";
 import ProcessDirectory from "./processes/ProcessDirectory";
 import SceneRenderingHost from "./scene/SceneRenderingHost.jsx";
@@ -22,6 +26,8 @@ import {
   RotateCcw,
   Tag,
   Rotate3D,
+  SunMedium,
+  ChevronDown,
 } from "lucide-react";
 const CellScene = lazy(() => import("./CellScene"));
 const ProcessExperience = lazy(() => import("./processes/ProcessExperience"));
@@ -81,6 +87,7 @@ function moveControlFocus(event, vertical = false) {
   }
 }
 export default function App({ historySession, onHome, onSceneLeave }) {
+  const [lighting, setLighting] = useState(getSpecimenLight);
   const initialHash = useRef(location.hash).current;
   const [sharedState] = useState(
     () =>
@@ -763,6 +770,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
           onClick={leaveForHome}
           aria-label={t("返回首页", "Go to homepage")}
         >
+          <i className="atlas-mark" aria-hidden="true" />
           {project.name}
           <span>{t(project.nameZh, "")}</span>
         </button>
@@ -806,6 +814,23 @@ export default function App({ historySession, onHome, onSceneLeave }) {
           )}
         </nav>
         <div className="header-actions">
+          <label className="light-select">
+            <SunMedium size={16} aria-hidden="true" />
+            <select
+              value={lighting}
+              aria-label={t("标本布光", "Specimen lighting")}
+              title={t("标本布光", "Specimen lighting")}
+              onChange={(event) => {
+                const mode = event.target.value;
+                setSpecimenLight(mode);
+                setLighting(mode);
+              }}
+            >
+              <option value="soft">{t("柔光", "Soft light")}</option>
+              <option value="side">{t("侧光", "Raking light")}</option>
+            </select>
+            <ChevronDown size={12} aria-hidden="true" />
+          </label>
           <button
             className="language"
             onClick={() => setLang(en ? "zh" : "en")}

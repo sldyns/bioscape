@@ -2,14 +2,24 @@
   font-family:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
     "PingFang SC", "Microsoft YaHei", sans-serif;
-  color: #242428;
-  background: #fff;
+  color: #172f27;
+  background: #f8f9f5;
   font-synthesis: none;
-  --ink: #242428;
-  --muted: #85858d;
-  --line: #e9e9ed;
-  --blue: #0071e3;
-  --canvas: #f5f5f7;
+  --atlas-serif:
+    "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia,
+    "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  --ink: #172f27;
+  --muted: #596b60;
+  --line: #d9e0d9;
+  --accent: #225e46;
+  --blue: var(--accent);
+  --canvas: #eaf0ea;
+  --specimen-field: radial-gradient(
+    ellipse at 48% 39%,
+    #fbfcf7 0%,
+    #ecf1eb 55%,
+    #dce5df 100%
+  );
 }
 * {
   box-sizing: border-box;
@@ -61,6 +71,7 @@ svg {
 }
 .atlas {
   min-height: 100svh;
+  background: #fbfcf8;
 }
 .application-recovery {
   min-height: 100svh;
@@ -163,19 +174,100 @@ svg {
   border-bottom: 1px solid var(--line);
   position: relative;
   z-index: 5;
-  background: #ffffffed;
+  background: #163a32;
+  color: #f0f5e9;
+}
+.app-header :focus-visible {
+  outline-color: #d3e6b8;
+}
+.app-header .language,
+.app-header .icon-button,
+.app-header .wordmark span {
+  color: #c7d9cf;
+}
+.app-header .language .active,
+.app-header .breadcrumb-current,
+.app-header .breadcrumbs button[aria-current],
+.app-header .breadcrumbs button:hover {
+  color: #f2f7e9;
+}
+.app-header .breadcrumbs button {
+  color: #c7d9cf;
+}
+.app-header .icon-button:hover {
+  color: #102d24;
+}
+.atlas-mark {
+  position: relative;
+  display: inline-block;
+  width: 24px;
+  height: 27px;
+  flex: 0 0 auto;
+  border: 1.8px solid currentColor;
+  border-radius: 58% 42% 52% 48%;
+  transform: rotate(25deg);
+}
+.atlas-mark::before,
+.atlas-mark::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+.atlas-mark::before {
+  inset: 5px 3px 4px 6px;
+  border: 1.3px solid currentColor;
+}
+.atlas-mark::after {
+  width: 5px;
+  height: 6px;
+  top: 10px;
+  left: 10px;
+  background: currentColor;
+}
+.light-select {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.light-select > svg {
+  position: absolute;
+  pointer-events: none;
+}
+.light-select > svg:first-child {
+  left: 8px;
+}
+.light-select > svg:last-child {
+  right: 6px;
+}
+.light-select select {
+  appearance: none;
+  background: #ffffff0e;
+  color: #ecf3e9;
+  border: 1px solid #749081;
+  border-radius: 5px;
+  padding: 7px 21px 7px 30px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.light-select select option {
+  color: var(--ink);
+  background: #fff;
 }
 .wordmark {
   display: flex;
   align-items: center;
-  gap: 13px;
-  font-size: 19px;
-  letter-spacing: -0.65px;
+  gap: 9px;
+  font-family: var(--atlas-serif);
+  font-size: 25px;
+  letter-spacing: -1.25px;
   font-weight: 600;
   padding: 4px 0;
   white-space: nowrap;
 }
 .wordmark span {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   font-size: 11px;
   font-weight: 400;
   color: #929298;
@@ -265,7 +357,8 @@ svg {
   padding: 0 10px 20px;
 }
 .catalog-heading h1 {
-  font-size: 22px;
+  font-family: var(--atlas-serif);
+  font-size: 24px;
   line-height: 1.4;
   font-weight: 600;
   letter-spacing: -0.7px;
@@ -309,7 +402,7 @@ svg {
   background: #f5f5f7;
 }
 .catalog-item.active {
-  background: #edf3fc;
+  background: #e4eee3;
   color: var(--blue);
 }
 .catalog-item > svg {
@@ -334,7 +427,7 @@ svg {
   position: relative;
   min-width: 0;
   overflow: hidden;
-  background: var(--canvas);
+  background: var(--specimen-field);
   isolation: isolate;
 }
 .model-canvas {
@@ -350,7 +443,7 @@ svg {
 }
 .model-canvas canvas:focus-visible,
 .process-canvas canvas:focus-visible {
-  outline: 3px solid #007aff;
+  outline: 3px solid var(--accent);
   outline-offset: -3px;
 }
 .scene-keyboard-hint {
@@ -451,23 +544,22 @@ canvas:focus-visible ~ .scene-keyboard-hint {
 .view-modes {
   display: flex;
   align-items: center;
-  background: #e9e9ed9c;
+  background: #f8faf2eb;
   padding: 3px;
-  border-radius: 9px;
-  border: 1px solid #e1e1e8;
+  border-radius: 7px;
+  border: 1px solid #b9cbbd;
 }
 .view-modes button {
   padding: 8px 22px;
-  color: #85858e;
+  color: #526457;
   font-size: 12px;
   min-width: 71px;
   border-radius: 6px;
   white-space: nowrap;
 }
 .view-modes button.active {
-  background: #fff;
-  box-shadow: 0 1px 5px #16162912;
-  color: #25252b;
+  background: #315a46;
+  color: white;
 }
 .utility-controls {
   display: flex;
@@ -509,7 +601,8 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   animation: appear 0.25s ease;
 }
 .details h2 {
-  font-size: 28px;
+  font-family: var(--atlas-serif);
+  font-size: 30px;
   font-weight: 600;
   letter-spacing: -1px;
   line-height: 1.35;
@@ -526,9 +619,9 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   margin-top: 8px;
 }
 .node-description {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.95;
-  color: #696973;
+  color: #4a5a50;
   margin-top: 27px;
 }
 .feature-list {
@@ -1240,8 +1333,8 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   color: #82828c;
 }
 .cell-type-switch button[aria-pressed="true"] {
-  background: #f0f2f4;
-  color: #303638;
+  background: #e5eee4;
+  color: #214b36;
   font-weight: 500;
 }
 .anatomy-workspace {
@@ -1424,7 +1517,7 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   align-items: center;
   gap: 12px;
   font-size: 11px;
-  color: #85858e;
+  color: #526457;
 }
 .mechanism-switch .view-modes button {
   padding: 7px 12px;
@@ -1473,5 +1566,25 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   }
   .viewer.is-exploded .zoom-tools {
     bottom: calc(240px + var(--label-rail, 0px));
+  }
+}
+
+@media (max-width: 700px) {
+  .app-header .atlas-mark {
+    width: 18px;
+    height: 21px;
+  }
+  .app-header .atlas-mark::before {
+    inset: 3px 2px 3px 4px;
+  }
+  .app-header .atlas-mark::after {
+    top: 7px;
+    left: 7px;
+    width: 4px;
+    height: 5px;
+  }
+  .light-select select {
+    padding-block: 6px;
+    font-size: 12px;
   }
 }

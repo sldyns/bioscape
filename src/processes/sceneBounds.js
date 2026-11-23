@@ -133,6 +133,29 @@ function applyInstanceBoxMatrix(box, matrix) {
   return box;
 }
 
+const isDrawableMaterial = (material) =>
+  material?.visible && !(material.transparent && material.opacity === 0);
+
+function hasDrawableMaterial(material) {
+  return Array.isArray(material)
+    ? material.some(isDrawableMaterial)
+    : isDrawableMaterial(material);
+}
+
+// A cold framing pass also refreshes local boxes on visible instanced geometry.
+// Preserve those observable updates when a warm pass can reuse the world envelope.
+export function refreshFramingTransforms(root) {
+  root.updateWorldMatrix(true, true);
+  root.traverseVisible((object) => {
+    if (
+      object.isInstancedMesh &&
+      object.geometry?.attributes.position &&
+      hasDrawableMaterial(object.material)
+    )
+      object.geometry.computeBoundingBox();
+  });
+}
+
 // Bounds for what can actually be seen at a sampled time. Box3.setFromObject
 // includes hidden branches, which can make an otherwise legible lesson tiny.
 export function visibleProcessBounds(
@@ -149,15 +172,7 @@ export function visibleProcessBounds(
   const objectBounds = instanceCache ? new THREE.Box3() : null;
   const visit = (object) => {
     if (!object.visible) return;
-    const materials = Array.isArray(object.material)
-      ? object.material
-      : [object.material];
-    const drawable = materials.some(
-      (material) =>
-        material &&
-        material.visible &&
-        !(material.transparent && material.opacity === 0),
-    );
+    const drawable = hasDrawableMaterial(object.material);
     const position = object.geometry?.attributes.position;
     if (position && drawable) {
       if (object.isInstancedMesh) {

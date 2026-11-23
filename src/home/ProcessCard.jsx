@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { assetUrl } from "../assetUrl.js";
 import { exploreSceneHash } from "./routes.js";
 
@@ -123,10 +123,7 @@ export default function ProcessCard({
         </span>
       </div>
       <div className="home-process-info">
-        <h3>
-          {entry.title[lang]}
-          <ArrowUpRight size={17} />
-        </h3>
+        <h3>{entry.title[lang]}</h3>
         {featuredSummaries[entry.id] && (
           <p>{featuredSummaries[entry.id][lang === "en" ? 1 : 0]}</p>
         )}

@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { Box3, Vector3 } from "three";
 import {
   createProcessFramingPreparation,
   createProcessFramingTaskQueue,
+  processFramingEnvelopeSlot,
 } from "../src/processes/framingPreparation.js";
 
 function fixture(options = {}) {
@@ -298,4 +300,78 @@ test("the real queue rejects duplicate ownership and ignores a canceled callback
   queue.dispose();
   assert.throws(() => queue.schedule(() => {}), /unavailable/);
   await new Promise((resolve) => setTimeout(resolve, 0));
+});
+
+test("framing envelopes are separated by creator, model, root and ordered sample plan", () => {
+  const definition = { id: "process", create() {} };
+  const box = new Box3(new Vector3(-1, -2, -3), new Vector3(1, 2, 3));
+  const slot = processFramingEnvelopeSlot(
+    definition,
+    "cell",
+    [0, 1],
+    [{ condition: "a" }, { condition: "b" }],
+  );
+  const before = box.clone();
+  assert.equal(slot.read(), null);
+  slot.store(box);
+  box.min.set(0, 0, 0);
+  const loaded = slot.read();
+  assert.deepEqual(loaded, before);
+  loaded.max.set(0, 0, 0);
+  assert.deepEqual(slot.read(), before);
+
+  for (const [model, root, progress, parameters] of [
+    [
+      { ...definition, create() {} },
+      "cell",
+      [0, 1],
+      [{ condition: "a" }, { condition: "b" }],
+    ],
+    [
+      { ...definition, id: "other" },
+      "cell",
+      [0, 1],
+      [{ condition: "a" }, { condition: "b" }],
+    ],
+    [definition, "plant", [0, 1], [{ condition: "a" }, { condition: "b" }]],
+    [definition, "cell", [0, 0.5, 1], [{ condition: "a" }, { condition: "b" }]],
+    [definition, "cell", [0, 1], [{ condition: "b" }, { condition: "a" }]],
+    [definition, "cell", [0, 1], [{ condition: "a" }]],
+  ]) {
+    assert.equal(
+      processFramingEnvelopeSlot(model, root, progress, parameters).read(),
+      null,
+    );
+  }
+});
+
+test("framing envelope storage is bounded and skips values with ambiguous keys", () => {
+  const definition = { id: "process", create() {} };
+  const box = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+  const slot = (condition) =>
+    processFramingEnvelopeSlot(definition, "cell", [0, 1], [{ condition }]);
+  for (const value of [undefined, -0, NaN, Infinity, {}, ["a"]])
+    assert.equal(slot(value), null);
+  for (const set of [
+    {
+      get condition() {
+        throw new Error("Accessors cannot identify a framing plan");
+      },
+    },
+    { [Symbol("condition")]: "a" },
+    Object.defineProperty({}, "condition", { value: "a" }),
+  ]) {
+    assert.equal(
+      processFramingEnvelopeSlot(definition, "cell", [0, 1], [set]),
+      null,
+    );
+  }
+  for (const invalid of [NaN, Infinity, -0])
+    assert.equal(
+      processFramingEnvelopeSlot(definition, "cell", [0, invalid], [{}]),
+      null,
+    );
+  for (let i = 0; i < 5; i++) slot(i).store(box);
+  assert.equal(slot(0).read(), null);
+  for (let i = 1; i < 5; i++) assert.deepEqual(slot(i).read(), box);
 });

@@ -90,6 +90,35 @@ for (const hz of [60, 75, 90, 120, 144]) {
   queue.step(100600);
 }
 
+// A publication can synchronously pause the clock or retire its scene while a
+// tick is on the stack. It must leave the replacement clock's callback intact.
+{
+  const queue = frameQueue();
+  let stop;
+  const paused = { current: 0 };
+  let replacementTime = 0;
+  stop = startPlaybackClock({
+    progress: paused,
+    duration: 24,
+    speed: 1,
+    onPublish: () => {
+      stop();
+      queue.requestFrame((time) => {
+        replacementTime = time;
+      });
+    },
+    onFinish: () => assert.fail("Cancelled clock finished"),
+    requestFrame: queue.requestFrame,
+    cancelFrame: queue.cancelFrame,
+  });
+  queue.step(80);
+  assert.equal(queue.pending, 1);
+  queue.step(96);
+  assert.equal(replacementTime, 96);
+  assert.equal(queue.pending, 0);
+  assert.equal(paused.current, 0);
+}
+
 // Terminal time is exact, replay is absolute, and a canceled old callback
 // cannot advance a newly selected condition or a scene that has been disposed.
 {

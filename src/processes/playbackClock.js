@@ -10,12 +10,12 @@ export function startPlaybackClock({
   requestFrame = requestAnimationFrame,
   cancelFrame = cancelAnimationFrame,
 }) {
-  let frame = 0;
+  let frame = null;
   let last;
   let published = -Infinity;
   let active = true;
   const tick = (now) => {
-    frame = 0;
+    frame = null;
     if (!active) return;
     if (last !== undefined)
       progress.current = Math.min(
@@ -24,11 +24,13 @@ export function startPlaybackClock({
           (Math.max(0, Math.min(now - last, 100)) * speed) / (duration * 1000),
       );
     last = now;
-    onFrame(progress.current);
+    onFrame?.(progress.current);
+    if (!active) return;
     if (now - published >= 30 || progress.current >= 1) {
       onPublish(progress.current);
       published = now;
     }
+    if (!active) return;
     if (progress.current >= 1) {
       active = false;
       onFinish();
@@ -37,8 +39,8 @@ export function startPlaybackClock({
   frame = requestFrame(tick);
   return () => {
     active = false;
-    if (frame) cancelFrame(frame);
-    frame = 0;
+    if (frame !== null) cancelFrame(frame);
+    frame = null;
   };
 }
 

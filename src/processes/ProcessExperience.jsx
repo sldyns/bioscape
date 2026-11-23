@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   lazy,
@@ -116,6 +117,13 @@ function ProcessPlayer({
     setProgress(progressRef.current);
     publishState({ progress: progressRef.current }, true);
   }, [publishState]);
+  useLayoutEffect(() => {
+    // A pending clock publication can lag the pose when WebGL is interrupted.
+    // Publish the stopped pose from the mounted player, never from its cleanup.
+    const value = progressRef.current;
+    if (!playing && value !== latest.current.progress)
+      publishState({ progress: value }, true);
+  }, [playing, publishState]);
   useEffect(() => {
     publishState({});
   }, [publishState]);
@@ -125,6 +133,7 @@ function ProcessPlayer({
       if (!api?.ready) {
         stopPlayback.current();
         setPlaying(false);
+        setProgress(progressRef.current);
       }
       setReady(Boolean(api?.ready));
       onSceneReady?.(
@@ -332,6 +341,7 @@ function ProcessPlayer({
       pausePlayback();
       return;
     }
+    if (suspended || !sceneApi.current?.ready) return;
     if (progressRef.current >= 1) {
       progressRef.current = 0;
       setProgress(0);
@@ -351,12 +361,20 @@ function ProcessPlayer({
     return () => document.removeEventListener("visibilitychange", pause);
   }, [pausePlayback]);
   useEffect(() => {
-    if (!playing || suspended) return;
+    const scene = sceneApi.current;
+    if (!playing || suspended || !scene?.ready) return;
+    const scheduling =
+      scene.requestPlaybackFrame && scene.cancelPlaybackFrame
+        ? {
+            requestFrame: scene.requestPlaybackFrame,
+            cancelFrame: scene.cancelPlaybackFrame,
+          }
+        : { onFrame: () => scene.requestRender() };
     const stop = startPlaybackClock({
+      ...scheduling,
       progress: progressRef,
       duration: definition.duration,
       speed,
-      onFrame: () => sceneApi.current?.requestRender(),
       onPublish: (value) => {
         setProgress(value);
         publishState({ progress: value });
@@ -528,6 +546,7 @@ function ProcessPlayer({
           <div className="process-playback">
             <button
               className="process-play"
+              disabled={!ready || suspended}
               aria-label={
                 playing
                   ? t("暂停", "Pause")

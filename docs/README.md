@@ -2,6 +2,7 @@
 
 ## Maintainer guides
 
+- [标本图鉴改版与实测](performance/specimen-atlas-2026-11-24.md) · 首页加载、实时布光、结构绘制和过程播放。
 - [Release v1.1.6](releases/v1.1.6.md) · [Changelog](../CHANGELOG.md): the current release and included validation.
 - [Shared renderer and export](performance/shared-renderer-2026-11-06.md): renderer ownership, re-entry and full-quality export validation.
 - [Normal-update CPU measurements](performance/exact-normal-hotpaths-2026-11-06.md): paired measurements, exact output and acceptance scope.

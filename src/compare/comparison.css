@@ -48,6 +48,7 @@
   margin-bottom: 6px;
 }
 .compare-title h1 {
+  font-family: var(--atlas-serif);
   font-size: clamp(20px, 2vw, 27px);
   font-weight: 600;
   letter-spacing: -0.035em;
@@ -157,7 +158,7 @@
   height: calc(clamp(300px, 32vw, 430px) + var(--label-rail, 0px));
   min-height: 290px;
   isolation: isolate;
-  background: radial-gradient(ellipse at 50% 42%, #fff 0%, #f5f6f7 72%);
+  background: var(--specimen-field);
 }
 .compare-canvas.is-suspended {
   pointer-events: none;

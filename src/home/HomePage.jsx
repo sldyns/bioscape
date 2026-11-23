@@ -7,8 +7,7 @@ import React, {
   useState,
 } from "react";
 import {
-  ArrowRight,
-  ArrowUpRight,
+  Box,
   ChevronDown,
   Columns2,
   Focus,
@@ -33,44 +32,14 @@ import "./home.css";
 
 const ProjectDialog = lazy(() => import("../components/ProjectDialog.jsx"));
 
-const modelDetails = {
-  cell: [
-    "细胞膜内，细胞器各司其职",
-    "Organelles at work within the cell membrane.",
-  ],
-  plant: [
-    "叶绿体与中央液泡组成的内部世界",
-    "Chloroplasts and a large central vacuole.",
-  ],
-  bacterium: [
-    "革兰阴性杆菌的包被、拟核与鞭毛",
-    "The envelope, nucleoid and flagellum of a Gram-negative rod.",
-  ],
-  yeast: [
-    "细胞壁包裹着出芽的单细胞真菌",
-    "A budding unicellular fungus within its cell wall.",
-  ],
-  paramecium: [
-    "纤毛、口沟与伸缩泡协同运作",
-    "Cilia, an oral groove and contractile vacuoles.",
-  ],
-  phage: [
-    "头部容纳遗传物质，尾部连接宿主",
-    "A genome-filled head and a tail that attaches to bacteria.",
-  ],
-  erythrocyte: [
-    "成熟后无核，以双凹形态运输氧气",
-    "A nucleus-free, biconcave cell that carries oxygen.",
-  ],
-  neuron: [
-    "从树突与胞体，沿有髓轴突延伸",
-    "From dendrites and soma along a myelinated axon.",
-  ],
-  muscleFibre: [
-    "一根多核细胞，容纳成束肌原纤维",
-    "Bundles of myofibrils within one multinucleate cell.",
-  ],
-};
+const processSearchText = new Map(
+  homeProcesses.map((entry) => [
+    entry.id,
+    normalizeHomeSearch(
+      `${entry.title.zh} ${entry.title.en} ${entry.summary.zh} ${entry.summary.en}`,
+    ),
+  ]),
+);
 
 export default function HomePage({
   lang,
@@ -81,6 +50,8 @@ export default function HomePage({
   onCompare,
 }) {
   const t = (zh, en) => (lang === "en" ? en : zh);
+  const [specimenId, setSpecimenId] = useState("cell");
+  const specimen = homeModels.find((model) => model.id === specimenId);
   const [category, setCategory] = useState("featured");
   const [query, setQuery] = useState("");
   const [activePreview, setActivePreview] = useState(null);
@@ -96,10 +67,7 @@ export default function HomePage({
           category === "featured" ||
           entry.category === category;
         const matchesQuery =
-          !normalized ||
-          normalizeHomeSearch(
-            `${entry.title.zh} ${entry.title.en} ${entry.summary.zh} ${entry.summary.en}`,
-          ).includes(normalized);
+          !normalized || processSearchText.get(entry.id).includes(normalized);
         return (
           matchesCategory &&
           matchesQuery &&
@@ -173,8 +141,8 @@ export default function HomePage({
           }
           aria-label={t("BioScape 首页", "BioScape home")}
         >
+          <span className="atlas-mark" aria-hidden="true" />
           BioScape
-          <span className="home-wordmark-dot" />
         </button>
         <nav
           className="home-nav"
@@ -187,7 +155,7 @@ export default function HomePage({
             {t("生命过程", "Processes")}
           </button>
           <button onClick={() => jump("home-ways")}>
-            {t("探索方式", "Ways to explore")}
+            {t("探索工具", "Exploration tools")}
           </button>
         </nav>
         <div className="home-header-actions">
@@ -208,7 +176,6 @@ export default function HomePage({
               onClick={(event) => follow(event, resume.href, onResume)}
             >
               {t("继续探索", "Continue exploring")}
-              <ArrowUpRight size={15} />
             </a>
           )}
         </div>
@@ -218,31 +185,33 @@ export default function HomePage({
           <div className="home-hero-inner home-container">
             <div className="home-hero-copy">
               <h1 id="home-title">
-                {t("看见微观", "See the unseen.")}
+                {t("微观生命", "An atlas of")}
                 <br />
-                <span>{t("理解生命", "Understand life.")}</span>
+                <em>{t("三维图鉴", "microscopic life.")}</em>
               </h1>
               <p className="home-hero-description">
                 {t(
-                  "从细胞到分子，亲手探索",
-                  "From cells to molecules. Yours to explore.",
+                  "旋转细胞，剖开膜层，沿时间轴观察生命过程。",
+                  "Turn a cell in your hands, look inside a membrane, and follow a biological process through time.",
                 )}
               </p>
               <div className="home-hero-actions">
                 <a
                   className="home-primary"
-                  href={exploreSceneHash("#/cell", lang)}
-                  onClick={(event) => follow(event, "#/cell")}
+                  href={exploreSceneHash(specimen.href, lang)}
+                  onClick={(event) => follow(event, specimen.href)}
                 >
-                  {t("开始探索", "Start exploring")}
-                  <ArrowRight size={18} />
+                  <Box size={17} aria-hidden="true" />
+                  {t(
+                    `探索${specimen.title.zh}`,
+                    `Explore the ${specimen.title.en.toLowerCase()}`,
+                  )}
                 </a>
                 <button
                   className="home-secondary"
                   onClick={() => jump("home-processes")}
                 >
-                  {t("观看过程", "See life in motion")}
-                  <ArrowRight size={16} />
+                  {t("浏览生命过程", "Browse processes")}
                 </button>
               </div>
               {resume && (
@@ -251,55 +220,34 @@ export default function HomePage({
                   href={resume.href}
                   onClick={(event) => follow(event, resume.href, onResume)}
                 >
-                  {t("继续探索", "Continue exploring")}
+                  {t("继续探索", "Continue exploring")}{" "}
                   <span>{resume.label?.[lang]}</span>
-                  <ArrowUpRight size={12} />
                 </a>
               )}
+              <dl
+                className="home-metrics"
+                aria-label={t("图鉴内容", "Atlas contents")}
+              >
+                <div>
+                  <dt>{t("模型", "Models")}</dt>
+                  <dd>{homepageMetrics.modelCount}</dd>
+                </div>
+                <div>
+                  <dt>{t("结构", "Structures")}</dt>
+                  <dd>{homepageMetrics.structureCount}</dd>
+                </div>
+                <div>
+                  <dt>{t("生命过程", "Processes")}</dt>
+                  <dd>{homepageMetrics.processCount}</dd>
+                </div>
+              </dl>
             </div>
-            <HeroScene lang={lang} onExplore={onExplore} />
-            <button
-              className="home-scroll-cue"
-              onClick={() => jump("home-models")}
-            >
-              <span aria-hidden="true" />
-              {t("向下，发现更多", "Scroll to discover")}
-              <ChevronDown size={13} />
-            </button>
-          </div>
-          <div
-            className="home-metrics home-container"
-            aria-label={t("内容概览", "At a glance")}
-          >
-            <div>
-              <strong>
-                {homepageMetrics.modelCount.toString().padStart(2, "0")}
-              </strong>
-              <div className="home-metric-copy">
-                <span>{t("类三维模型", "3D model types")}</span>
-                <small>
-                  {t("细胞、微生物与噬菌体", "Cells, microbes and phages")}
-                </small>
-              </div>
-            </div>
-            <div>
-              <strong>{homepageMetrics.structureCount}</strong>
-              <div className="home-metric-copy">
-                <span>{t("个结构节点", "Structures")}</span>
-                <small>
-                  {t("由整体，深入分子尺度", "From whole cells to molecules")}
-                </small>
-              </div>
-            </div>
-            <div>
-              <strong>{homepageMetrics.processCount}</strong>
-              <div className="home-metric-copy">
-                <span>{t("个生命过程", "Biological processes")}</span>
-                <small>
-                  {t("逐步观察，让机制可见", "Watch mechanisms unfold")}
-                </small>
-              </div>
-            </div>
+            <HeroScene
+              lang={lang}
+              selected={specimenId}
+              onSelect={setSpecimenId}
+              onExplore={onExplore}
+            />
           </div>
         </section>
         <section
@@ -311,7 +259,7 @@ export default function HomePage({
           <div className="home-section-heading">
             <div>
               <h2 id="home-models-title">
-                {t("不同形态，新的发现", "Every form invites a closer look.")}
+                {t("模型图鉴", "The specimen collection")}
               </h2>
             </div>
           </div>
@@ -333,13 +281,11 @@ export default function HomePage({
                     loading="lazy"
                     decoding="async"
                   />
-                  <span className="home-card-open">
-                    <ArrowUpRight size={20} />
-                  </span>
                 </div>
                 <div className="home-model-info">
+                  <span className="home-model-type">{model.eyebrow[lang]}</span>
                   <h3>{model.title[lang]}</h3>
-                  <p>{t(...modelDetails[model.id])}</p>
+                  <p>{model.description[lang]}</p>
                 </div>
               </a>
             ))}
@@ -355,7 +301,7 @@ export default function HomePage({
             <div className="home-section-heading">
               <div>
                 <h2 id="home-processes-title">
-                  {t("让生命过程动起来", "See how life happens.")}
+                  {t("生命过程", "Biological processes")}
                 </h2>
               </div>
             </div>
@@ -445,7 +391,6 @@ export default function HomePage({
                   }}
                 >
                   {t("查看全部过程", "View all processes")}
-                  <ArrowRight size={16} />
                 </button>
               </div>
             )}
@@ -455,7 +400,6 @@ export default function HomePage({
                   `浏览全部 ${homepageMetrics.processCount} 个过程`,
                   `Browse all ${homepageMetrics.processCount} processes`,
                 )}
-                <ArrowRight size={17} />
               </button>
             )}
             {category !== "featured" && !query.trim() && (
@@ -480,12 +424,7 @@ export default function HomePage({
         >
           <div className="home-section-heading">
             <div>
-              <h2 id="home-ways-title">
-                {t(
-                  "从一次观察，到自己的发现",
-                  "From a closer look to your own discovery.",
-                )}
-              </h2>
+              <h2 id="home-ways-title">{t("探索工具", "Exploration tools")}</h2>
             </div>
           </div>
           <div className="home-ways-grid">
@@ -497,11 +436,6 @@ export default function HomePage({
               <div className="home-way-icon">
                 <Layers3 size={25} />
               </div>
-              <ArrowUpRight
-                className="home-way-arrow"
-                size={19}
-                aria-hidden="true"
-              />
               <h3>{t("深入结构", "Look inside")}</h3>
               <p>{t("旋转、剖视、拆解", "Rotate. Cut away. Take apart.")}</p>
             </a>
@@ -509,11 +443,6 @@ export default function HomePage({
               <div className="home-way-icon">
                 <Columns2 size={25} />
               </div>
-              <ArrowUpRight
-                className="home-way-arrow"
-                size={19}
-                aria-hidden="true"
-              />
               <h3>{t("并排比较", "Compare")}</h3>
               <p>{t("两个模型，同屏观察", "Two models, side by side.")}</p>
             </button>
@@ -525,11 +454,6 @@ export default function HomePage({
               <div className="home-way-icon">
                 <Focus size={25} />
               </div>
-              <ArrowUpRight
-                className="home-way-arrow"
-                size={19}
-                aria-hidden="true"
-              />
               <h3>{t("影像创作", "Create")}</h3>
               <p>
                 {t(
@@ -567,7 +491,6 @@ export default function HomePage({
               href={`mailto:${project.email}?subject=BioScape%20commercial%20permission`}
             >
               {t("商用联系", "Commercial enquiries")}
-              <ArrowUpRight size={13} aria-hidden="true" />
             </a>
           </nav>
           <p>
@@ -581,7 +504,6 @@ export default function HomePage({
           <span>{t("设计与开发", "Designed & developed by")}</span>
           <a href={project.homepage} target="_blank" rel="noreferrer">
             {project.author}
-            <ArrowUpRight size={17} aria-hidden="true" />
           </a>
           <small>{project.copyright}</small>
         </div>

@@ -277,7 +277,7 @@ try {
             if (path === "lucide-react")
               return {
                 contents:
-                  "export const ArrowLeft='ArrowLeft',ChevronRight='ChevronRight',Info='Info',Minus='Minus',Plus='Plus',RotateCcw='RotateCcw',Tag='Tag',Rotate3D='Rotate3D';",
+                  "export const ArrowLeft='ArrowLeft',ChevronRight='ChevronRight',ChevronDown='ChevronDown',Info='Info',Minus='Minus',Plus='Plus',RotateCcw='RotateCcw',Tag='Tag',Rotate3D='Rotate3D',SunMedium='SunMedium';",
               };
             return {
               contents: `function Component(){} Component.stubName=${JSON.stringify(path)}; export default Component;`,

@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { ArrowUpRight, Pause, Play } from "lucide-react";
+import { Layers3, Maximize2, Pause, Play } from "lucide-react";
 import { assetUrl } from "../assetUrl.js";
 
 const loadScene = () => import("../CellScene.jsx");
@@ -48,15 +48,17 @@ class SceneBoundary extends Component {
   }
 }
 
-export default function HeroScene({ lang, onExplore }) {
+export default function HeroScene({ lang, selected, onSelect, onExplore }) {
   const t = (zh, en) => (lang === "en" ? en : zh);
   const language = lang === "en" ? "en" : "zh";
-  const [selected, setSelected] = useState("cell");
   const [Scene, setScene] = useState(() => CellScene);
   const [retryKey, setRetryKey] = useState(0);
   const [ready, setReady] = useState(false);
   const [paused, setPaused] = useState(false);
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(
+    () => typeof IntersectionObserver === "undefined",
+  );
+  const [loadPreview, setLoadPreview] = useState(false);
   const [reduced, setReduced] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -91,7 +93,7 @@ export default function HeroScene({ lang, onExplore }) {
   function choose(id) {
     if (id === selected) return;
     setReady(false);
-    setSelected(id);
+    onSelect(id);
   }
   function retryScene() {
     setReady(false);
@@ -100,15 +102,34 @@ export default function HeroScene({ lang, onExplore }) {
     setRetryKey((key) => key + 1);
   }
   return (
-    <div className="home-hero-art" ref={host}>
-      <div className="home-hero-orbit" aria-hidden="true" />
+    <figure className="home-hero-art" ref={host}>
+      <figcaption className="home-art-caption">
+        <span>
+          <Layers3 size={15} aria-hidden="true" />
+          {model.mode === "section"
+            ? t("剖面观察", "Section view")
+            : t("整体观察", "Whole specimen")}
+        </span>
+        <span>
+          {ready
+            ? t("拖动旋转", "Drag to rotate")
+            : loadPreview
+              ? t("正在准备三维模型", "Preparing 3D model")
+              : t("标本预览", "Specimen preview")}
+        </span>
+      </figcaption>
+      <div className="home-hero-field" aria-hidden="true" />
       <div
         className="home-hero-stage"
         data-ready={ready}
         role="region"
         aria-label={t(`${model.zh}三维预览`, `${model.en} 3D preview`)}
-        onPointerDown={() => setPaused(true)}
-        onFocus={() => setPaused(true)}
+        onPointerDown={() => {
+          if (ready) setPaused(true);
+        }}
+        onFocus={() => {
+          if (ready) setPaused(true);
+        }}
       >
         {!ready && (
           <img
@@ -120,31 +141,33 @@ export default function HeroScene({ lang, onExplore }) {
             fetchPriority="high"
           />
         )}
-        <SceneBoundary
-          key={retryKey}
-          lang={language}
-          onFailure={failScene}
-          onRetry={retryScene}
-        >
-          <Suspense fallback={null}>
-            <Scene
-              nodeId={selected}
-              viewKey={`home-${selected}`}
-              mode={model.mode}
-              explode={0}
-              labels={false}
-              highlight={null}
-              rotate={!paused && visible && !reduced}
-              resetKey={0}
-              zoom={defaultZoom}
-              lang={language}
-              allowZoom={false}
-              autoRotateLimit={0.38}
-              onSceneReady={receiveScene}
-              onEnter={(id) => onExplore(`#/${selected}/${id}`)}
-            />
-          </Suspense>
-        </SceneBoundary>
+        {loadPreview && (
+          <SceneBoundary
+            key={retryKey}
+            lang={language}
+            onFailure={failScene}
+            onRetry={retryScene}
+          >
+            <Suspense fallback={null}>
+              <Scene
+                nodeId={selected}
+                viewKey={`home-${selected}`}
+                mode={model.mode}
+                explode={0}
+                labels={false}
+                highlight={null}
+                rotate={!paused && visible && !reduced}
+                resetKey={0}
+                zoom={defaultZoom}
+                lang={language}
+                allowZoom={false}
+                autoRotateLimit={0.38}
+                onSceneReady={receiveScene}
+                onEnter={(id) => onExplore(`#/${selected}/${id}`)}
+              />
+            </Suspense>
+          </SceneBoundary>
+        )}
       </div>
       <div className="home-hero-controls">
         <div
@@ -165,29 +188,28 @@ export default function HeroScene({ lang, onExplore }) {
         </div>
         <div className="home-hero-tools">
           <button
-            className="home-motion-toggle"
+            className={`home-preview-toggle${loadPreview ? " is-live" : ""}`}
             type="button"
-            onClick={() => setPaused((current) => !current)}
-            disabled={reduced || !ready}
+            onClick={() => {
+              if (loadPreview) setPaused((current) => !current);
+              else setLoadPreview(true);
+            }}
+            disabled={loadPreview && (!ready || reduced)}
             aria-label={
-              reduced
-                ? t("已遵循减少动态效果设置", "Reduced motion is enabled")
-                : t("自动旋转", "Automatic rotation")
+              loadPreview
+                ? reduced
+                  ? t("已遵循减少动态效果设置", "Reduced motion is enabled")
+                  : t("自动旋转", "Automatic rotation")
+                : t("开启交互预览", "Start interactive preview")
             }
-            aria-pressed={!paused && !reduced}
-            title={
-              reduced
-                ? t("已遵循减少动态效果设置", "Reduced motion is enabled")
-                : paused
-                  ? t("开始自动旋转", "Start rotation")
-                  : t("暂停自动旋转", "Pause rotation")
-            }
+            aria-pressed={loadPreview ? !paused && !reduced : undefined}
           >
-            {paused || reduced ? (
-              <Play size={14} aria-hidden="true" />
+            {loadPreview && !paused && !reduced ? (
+              <Pause size={14} />
             ) : (
-              <Pause size={14} aria-hidden="true" />
+              <Play size={14} />
             )}
+            {!loadPreview && <span>{t("交互预览", "View in 3D")}</span>}
           </button>
           <button
             type="button"
@@ -196,10 +218,10 @@ export default function HeroScene({ lang, onExplore }) {
             aria-label={t(`探索${model.zh}`, `Explore ${model.en}`)}
             title={t(`探索${model.zh}`, `Explore ${model.en}`)}
           >
-            <ArrowUpRight size={17} aria-hidden="true" />
+            <Maximize2 size={16} aria-hidden="true" />
           </button>
         </div>
       </div>
-    </div>
+    </figure>
   );
 }

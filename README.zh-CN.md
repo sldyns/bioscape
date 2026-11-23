@@ -137,7 +137,9 @@ npm ci
 npm run dev
 ```
 
-发布前运行 `npm run check`。
+在本地图鉴首页选择标本后，可以开启交互预览，也可以直接进入完整模型。工作区顶部的布光选项可以在同一机位切换柔光和侧光。[设计与实测](docs/performance/specimen-atlas-2026-11-24.md)
+
+依次运行 `npm run build` 和 `npm run preview` 可在本地查看正式构建。发布前运行 `npm run check`。
 
 [维护指南](.github/CONTRIBUTING.md) · [文档索引](docs/README.md) · [影片制作](scripts/media/README.md)
 

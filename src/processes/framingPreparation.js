@@ -116,3 +116,66 @@ export function createProcessFramingPreparation({
     },
   };
 }
+
+// Only the numeric envelope outlives a scene. The lazy definition's creator
+// remains stable across visits, while each visit owns a new scene and model.
+const framingEnvelopes = new WeakMap();
+const envelopesPerCreator = 4;
+
+function isFramingValue(value) {
+  return (
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    (Number.isFinite(value) && !Object.is(value, -0))
+  );
+}
+
+export function processFramingEnvelopeSlot(
+  { create, id },
+  rootId,
+  progress,
+  parameterSets,
+) {
+  const samples = [...progress];
+  if (
+    typeof create !== "function" ||
+    typeof id !== "string" ||
+    typeof rootId !== "string" ||
+    samples.some((value) => !Number.isFinite(value) || Object.is(value, -0))
+  )
+    return null;
+  const parameters = [];
+  for (const set of parameterSets) {
+    if (!set || Object.getPrototypeOf(set) !== Object.prototype) return null;
+    const entries = [];
+    for (const key of Reflect.ownKeys(set)) {
+      const field = Object.getOwnPropertyDescriptor(set, key);
+      if (
+        typeof key !== "string" ||
+        !field.enumerable ||
+        !isFramingValue(field.value)
+      )
+        return null;
+      entries.push([key, field.value]);
+    }
+    parameters.push(entries);
+  }
+  const key = JSON.stringify([id, rootId, samples, parameters]);
+
+  return {
+    read() {
+      return framingEnvelopes.get(create)?.get(key)?.clone() ?? null;
+    },
+    store(bounds) {
+      let envelopes = framingEnvelopes.get(create);
+      if (!envelopes) {
+        envelopes = new Map();
+        framingEnvelopes.set(create, envelopes);
+      }
+      if (envelopes.size === envelopesPerCreator && !envelopes.has(key))
+        envelopes.delete(envelopes.keys().next().value);
+      envelopes.set(key, bounds.clone());
+    },
+  };
+}

@@ -33,7 +33,13 @@ function prepareNumbers(sources, lang) {
 // Keep DOM writes, layout reads, and projected placement in separate passes.
 // Rotation changes anchors only; text metrics stay cached until text or viewport
 // changes. This avoids a forced browser layout for every label on every frame.
-export function prepareAnnotationLabels(items, sources, lang, viewportKey) {
+export function prepareAnnotationLabels(
+  items,
+  sources,
+  lang,
+  viewportKey,
+  measure = true,
+) {
   const numbers = prepareNumbers(sources, lang);
   for (const item of items) {
     const text = labelText(item.source, lang);
@@ -70,6 +76,7 @@ export function prepareAnnotationLabels(items, sources, lang, viewportKey) {
     item.preparedNumber = number;
     item.preparedViewport = viewportKey;
   }
+  if (!measure) return;
   for (const item of items) {
     if (!item.active || item.measuredKey === item.measureKey) continue;
     item.size = {

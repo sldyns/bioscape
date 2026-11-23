@@ -18,7 +18,10 @@ import React, {
 } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import {
+  createSpecimenEnvironment,
+  lightSpecimen,
+} from "./scene/specimenLighting.js";
 import { createCellModelResource } from "./scene/cellModelResource.js";
 import { makePresentation } from "./scene/presentation";
 import { createPresentationAppearance } from "./scene/presentationAppearance";
@@ -289,8 +292,6 @@ export default function CellScene({
         });
         renderer.setPixelRatio(Math.min(devicePixelRatio, 1.8));
         renderer.setClearColor(0xf5f5f7, 0);
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 0.98;
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.shadowMap.autoUpdate = false;
@@ -315,28 +316,16 @@ export default function CellScene({
         controls.minDistance = 4;
         controls.maxDistance = 24;
         controls.autoRotateSpeed = 0.24;
-        let env = prepared.environment;
-        let disposeRoom, disposePmrem;
-        if (!env) {
-          const pmrem = new THREE.PMREMGenerator(renderer);
-          disposePmrem = prepared.ownSetup(() => pmrem.dispose());
-          const room = new RoomEnvironment();
-          disposeRoom = prepared.ownSetup(() => room.dispose());
-          env = pmrem.fromScene(room, 0.04);
-        }
+        const env = prepared.environment ?? createSpecimenEnvironment(renderer);
         prepared.ownSetup(() => {
           if (!prepared.environmentManaged) env.dispose();
         });
         prepared.adoptEnvironment(env);
         scene.environment = env.texture;
-        scene.environmentIntensity = 0.45;
-        disposeRoom?.();
-        disposePmrem?.();
-        // A broad key with restrained fill retains membrane depth and pastel color.
-        scene.add(new THREE.HemisphereLight("#ffffff", "#a0a6b2", 0.85));
-        const key = new THREE.DirectionalLight("#fffaf5", 2.3);
+        const lighting = lightSpecimen(renderer, scene, () => invalidate());
+        prepared.ownSetup(lighting.dispose);
+        const { key } = lighting;
         prepared.ownSetup(() => key.shadow.dispose());
-        key.position.set(-5, 5, 7);
         key.castShadow = true;
         key.shadow.mapSize.set(2048, 2048);
         Object.assign(key.shadow.camera, {
@@ -348,10 +337,6 @@ export default function CellScene({
         key.shadow.normalBias = 0.027;
         key.shadow.bias = -0.0002;
         key.shadow.radius = 3;
-        scene.add(key);
-        const fill = new THREE.DirectionalLight("#e2e9ff", 0.65);
-        fill.position.set(4, 1, -3);
-        scene.add(fill);
         const shadowCanvas = document.createElement("canvas");
         shadowCanvas.width = 128;
         shadowCanvas.height = 128;
@@ -1624,6 +1609,7 @@ export default function CellScene({
           facingCull.dispose();
           for (const view of cache.values()) disposeView(view);
           cellModel.dispose();
+          lighting.dispose();
           key.shadow.dispose();
           floor.geometry.dispose();
           floor.material.dispose();

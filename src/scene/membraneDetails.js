@@ -8,19 +8,32 @@ function resourceSet(g) {
     resources.set(g, { materials: new Map(), sphere: null });
   return resources.get(g);
 }
-function material(color) {
-  return new THREE.MeshPhysicalMaterial({
-    color,
-    roughness: 0.52,
-    metalness: 0.01,
-    clearcoat: 0.16,
-    side: THREE.DoubleSide,
-  });
-}
-function add(g, geometry, color, id) {
+// The hydrated heads, acyl chains and molecular ribbons have distinct finishes
+// under the same light. Surface choices are illustrative, like the atlas colors.
+const finishes = {
+  bilayer: { roughness: 0.36, clearcoat: 0.24, clearcoatRoughness: 0.32 },
+  tail: { roughness: 0.65, clearcoat: 0 },
+  membraneProteins: {
+    roughness: 0.47,
+    clearcoat: 0.11,
+    clearcoatRoughness: 0.48,
+  },
+  glycans: { roughness: 0.59, clearcoat: 0.07, clearcoatRoughness: 0.54 },
+};
+function add(g, geometry, color, id, finish = id) {
   const { materials } = resourceSet(g);
-  if (!materials.has(color)) materials.set(color, material(color));
-  const m = new THREE.Mesh(geometry, materials.get(color));
+  const key = `${finish}:${color}`;
+  if (!materials.has(key))
+    materials.set(
+      key,
+      new THREE.MeshPhysicalMaterial({
+        color,
+        metalness: 0.01,
+        side: THREE.DoubleSide,
+        ...finishes[finish],
+      }),
+    );
+  const m = new THREE.Mesh(geometry, materials.get(key));
   m.userData.hitId = id;
   g.add(m);
   return m;
@@ -93,7 +106,13 @@ function lipidPatch(g, withProteins) {
           "bilayer",
         );
         for (let tail = 0; tail < 2; tail++) {
-          const m = add(g, tails.get(`${sign}:${tail}`), "#c0ba96", "bilayer");
+          const m = add(
+            g,
+            tails.get(`${sign}:${tail}`),
+            "#c0ba96",
+            "bilayer",
+            "tail",
+          );
           m.position.set(x, w, z);
         }
       }

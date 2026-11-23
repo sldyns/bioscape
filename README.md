@@ -137,7 +137,9 @@ npm ci
 npm run dev
 ```
 
-Run `npm run check` before publishing.
+In the local atlas, choose a specimen on the cover and open its interactive preview or go straight to its full model. Use the lighting selector in the workspace header to compare soft and raking light from the same camera position. [Design and measurements](docs/performance/specimen-atlas-2026-11-24.md)
+
+Run `npm run build` followed by `npm run preview` to serve the production build locally. Run `npm run check` before publishing.
 
 [Contributing](.github/CONTRIBUTING.md) · [Documentation](docs/README.md) · [Making the films](scripts/media/README.md)
 

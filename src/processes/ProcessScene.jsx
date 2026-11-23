@@ -8,9 +8,18 @@ import React, {
 } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { visibleProcessBounds } from "./sceneBounds.js";
-import { createProcessFramingPreparation } from "./framingPreparation.js";
+import {
+  createSpecimenEnvironment,
+  lightSpecimen,
+} from "../scene/specimenLighting.js";
+import {
+  refreshFramingTransforms,
+  visibleProcessBounds,
+} from "./sceneBounds.js";
+import {
+  createProcessFramingPreparation,
+  processFramingEnvelopeSlot,
+} from "./framingPreparation.js";
 import { createInstanceBoundsCache } from "./instanceBoundsCache.js";
 import { placeLabel } from "./labelLayout.js";
 import { prepareAnnotationLabels } from "./annotationDom.js";
@@ -86,15 +95,32 @@ export default function ProcessScene({
 
   useEffect(() => {
     const element = host.current;
+    const annotationKey = keyHost.current;
     const focusAfterRetry = restoreRetryFocus.current;
     restoreRetryFocus.current = false;
-    let renderer, controls, environment, pmrem, room, observer;
+    let renderer, controls, environment, lighting, observer;
+    let visibilityObserver;
+    let canvasVisible = true;
+    let keyVisible = false;
     let renderingLease = null;
     let scene, model, labelLayer, leaders;
     let disposed = false;
     let contextLost = false;
     let sceneReady = false;
-    let frame = 0;
+    let frame = null;
+    let playbackFrame = null;
+    let renderRequested = false;
+    const canRunFrames = () => !disposed && !contextLost && sceneReady;
+    const cancelQueuedFrame = () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = null;
+    };
+    const discardFrameWork = () => {
+      cancelQueuedFrame();
+      playbackFrame = null;
+      renderRequested = false;
+      element.dataset.renderState = "idle";
+    };
     let width = 1;
     let height = 1;
     let camera;
@@ -143,7 +169,7 @@ export default function ProcessScene({
       );
     };
     const orbitChanged = () => {
-      requestRender();
+      requestRender(true);
       if (suppressViewChange || !api?.ready) return;
       const fit = constrainOrbitView?.();
       if (!live.current.onViewChange) return;
@@ -180,8 +206,10 @@ export default function ProcessScene({
       instanceBounds.clear();
       publishReady(null);
       capture?.dispose();
-      cancelAnimationFrame(frame);
+      discardFrameWork();
       observer?.disconnect();
+      visibilityObserver?.disconnect();
+      annotationKey?.removeEventListener("focusin", refreshFocusedKey);
       document.fonts?.removeEventListener("loadingdone", invalidateAnnotations);
       controls?.removeEventListener("change", orbitChanged);
       disposeOrbitControls(controls);
@@ -194,10 +222,9 @@ export default function ProcessScene({
         onContextRestored,
       );
       try {
+        lighting?.dispose();
         disposeScene(scene, model?.materials ?? []);
         if (!renderingLease) environment?.dispose();
-        room?.dispose();
-        pmrem?.dispose();
       } catch (cause) {
         renderingLease?.invalidate();
         throw cause;
@@ -254,17 +281,15 @@ export default function ProcessScene({
       renderingLease?.invalidate();
       publishReady(null);
       capture?.dispose();
-      cancelAnimationFrame(frame);
-      frame = 0;
+      discardFrameWork();
       setError("context");
       setBusy(false);
     };
     const onContextRestored = () => {
       if (!disposed) setAttempt((value) => value + 1);
     };
-    const projectLabels = () => {
+    const updateAnnotations = (placeOnCanvas) => {
       if (!live.current.annotations) return;
-      const occupied = [];
       const focusedElement = document.activeElement;
       const focusedKey =
         focusedElement?.parentElement === keyHost.current
@@ -288,6 +313,7 @@ export default function ProcessScene({
         physicalSources,
         live.current.lang,
         `${width}|${height}`,
+        placeOnCanvas,
       );
       if (focusedKey?.hidden) {
         // Playback can remove the focused annotation at a stage boundary.
@@ -302,6 +328,8 @@ export default function ProcessScene({
         }
         (nextKey ?? renderer.domElement).focus();
       }
+      if (!placeOnCanvas) return;
+      const occupied = [];
       const protectedAnchors = [];
       // Refresh the full target set before priority-ordered placement. A later
       // label's physical target must also constrain an earlier numbered marker.
@@ -392,29 +420,75 @@ export default function ProcessScene({
       for (const item of labelItems) item.measuredKey = null;
       requestRender();
     };
-    const requestRender = () => {
-      if (!disposed && !contextLost && sceneReady && !frame) {
-        element.dataset.renderState = "active";
-        frame = requestAnimationFrame(render);
-      }
+    const needsLivePose = () =>
+      canvasVisible ||
+      (live.current.annotations &&
+        (keyVisible || keyHost.current?.contains(document.activeElement)));
+    const refreshFocusedKey = () => {
+      if (!canvasVisible && !keyVisible) requestRender();
     };
-    const render = () => {
-      frame = 0;
-      if (disposed || contextLost || !sceneReady) return;
+    const updateRenderState = () => {
+      const state =
+        renderRequested || (playbackFrame && needsLivePose())
+          ? "active"
+          : "idle";
+      if (element.dataset.renderState !== state)
+        element.dataset.renderState = state;
+    };
+    const queueFrame = () => {
+      if (frame === null) frame = requestAnimationFrame(render);
+      updateRenderState();
+    };
+    const requestRender = (orbit = false) => {
+      if (!canRunFrames() || (!orbit && !needsLivePose())) return;
+      renderRequested = true;
+      queueFrame();
+    };
+    const requestPlaybackFrame = (callback) => {
+      if (!canRunFrames()) return null;
+      playbackFrame = callback;
+      queueFrame();
+      return callback;
+    };
+    const cancelPlaybackFrame = (callback) => {
+      if (playbackFrame !== callback) return;
+      playbackFrame = null;
+      if (!renderRequested) cancelQueuedFrame();
+      updateRenderState();
+    };
+    const render = (now) => {
+      frame = null;
+      if (!canRunFrames()) return;
+      const tick = playbackFrame;
+      const requested = renderRequested;
+      playbackFrame = null;
+      renderRequested = false;
       try {
-        if (pose?.apply(readProgress(), live.current.parameters))
-          matricesDirty = true;
-        // OrbitControls emits change only while damping still moves the camera.
-        // The final unchanged frame ends the loop; paused scenes stay idle.
-        controls.update();
-        constrainOrbitTarget();
-        if (matricesDirty) {
-          scene.updateMatrixWorld();
-          matricesDirty = false;
+        // Advance the live pose before drawing, even when an orbit or resize
+        // already requested this frame. An invisible scene only needs its clock.
+        tick?.(now);
+        if (!canRunFrames()) return;
+        const updatePose = needsLivePose();
+        if (requested || (tick && updatePose)) {
+          if (
+            updatePose &&
+            pose?.apply(readProgress(), live.current.parameters)
+          )
+            matricesDirty = true;
+          // Let an existing orbit settle even when scrolling hides the canvas.
+          controls.update();
+          constrainOrbitTarget();
+          if (canvasVisible) {
+            if (matricesDirty) {
+              scene.updateMatrixWorld();
+              matricesDirty = false;
+            }
+            renderer.render(scene, camera);
+            if (!canRunFrames()) return;
+          }
+          if (updatePose) updateAnnotations(canvasVisible);
         }
-        renderer.render(scene, camera);
-        projectLabels();
-        element.dataset.renderState = frame ? "active" : "idle";
+        updateRenderState();
       } catch (cause) {
         fail(cause);
       }
@@ -430,15 +504,13 @@ export default function ProcessScene({
         } else {
           renderer = new THREE.WebGLRenderer({
             antialias: true,
-            alpha: false,
+            alpha: true,
             powerPreference: "high-performance",
           });
         }
         resetSharedRenderingState(renderer, THREE.PCFShadowMap);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        renderer.setClearColor(0xf5f5f7, 1);
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 0.98;
+        renderer.setClearColor(0xeaf0ea, 0);
         renderer.domElement.style.display = "block";
         renderer.domElement.addEventListener("webglcontextlost", onContextLost);
         renderer.domElement.addEventListener(
@@ -463,13 +535,7 @@ export default function ProcessScene({
         ).matches;
         controls.dampingFactor = 0.18;
         controls.addEventListener("change", orbitChanged);
-        scene.add(new THREE.HemisphereLight("#ffffff", "#a0a6b2", 0.85));
-        const key = new THREE.DirectionalLight("#fffaf5", 2.3);
-        key.position.set(-5, 5, 7);
-        scene.add(key);
-        const fill = new THREE.DirectionalLight("#e2e9ff", 0.65);
-        fill.position.set(4, 1, -3);
-        scene.add(fill);
+        lighting = lightSpecimen(renderer, scene, () => requestRender());
 
         model = definition.create({ rootId });
         scene.add(model.group);
@@ -483,8 +549,6 @@ export default function ProcessScene({
             ),
           ].sort((a, b) => a - b),
         );
-        const bounds = new THREE.Box3();
-        const sampleBounds = new THREE.Box3();
         const framingParameters = [live.current.parameters];
         for (const variant of definition.framingParameters ?? []) {
           const candidate = { ...live.current.parameters, ...variant };
@@ -495,12 +559,27 @@ export default function ProcessScene({
           );
           if (!alreadySampled) framingParameters.push(candidate);
         }
+        const envelope = processFramingEnvelopeSlot(
+          definition,
+          rootId,
+          sampleProgress,
+          framingParameters,
+        );
+        const cachedBounds = envelope?.read();
+        const bounds = cachedBounds ?? new THREE.Box3();
+        const sampleBounds = cachedBounds ? null : new THREE.Box3();
         const framingResult = await framing.start(
           framingParameters.flatMap((parameters) =>
             [...sampleProgress].map((value) => ({ value, parameters })),
           ),
           ({ value, parameters }) => {
             model.update(value, parameters);
+            // Hidden geometry can retain state across updates. Replay the same
+            // poses and world transforms even when the envelope is available.
+            if (cachedBounds) {
+              refreshFramingTransforms(model.group);
+              return;
+            }
             bounds.union(
               visibleProcessBounds(
                 model.group,
@@ -527,32 +606,23 @@ export default function ProcessScene({
           readyProgress,
           live.current.parameters,
         );
-        // Preparing the complete framing can be cancelled. Build the identical
-        // environment only after that work succeeds, before any ready render;
-        // abandoned preparations never allocate or render a new PMREM room.
+        // An abandoned framing pass never allocates a new reflection map.
         if (!environment) {
-          pmrem = new THREE.PMREMGenerator(renderer);
-          room = new RoomEnvironment();
-          environment = pmrem.fromScene(room, 0.04);
-          room.dispose();
-          room = null;
-          pmrem.dispose();
-          pmrem = null;
+          environment = createSpecimenEnvironment(renderer);
           if (renderingOwner)
             renderingLease = renderingOwner.adopt(
               createProcessRenderingResources(renderer, environment),
             );
         }
         scene.environment = environment.texture;
-        scene.environmentIntensity = 0.45;
         // Sample the full animation once, then keep its framing fixed while
         // scrubbing. Unused space in a generic envelope should not shrink models.
-        if (
-          bounds.isEmpty() ||
-          ![...bounds.min.toArray(), ...bounds.max.toArray()].every(
+        const validBounds =
+          !bounds.isEmpty() &&
+          [...bounds.min.toArray(), ...bounds.max.toArray()].every(
             Number.isFinite,
-          )
-        ) {
+          );
+        if (!validBounds) {
           bounds.set(
             new THREE.Vector3(-4, -3, -1.2),
             new THREE.Vector3(4, 3, 1.2),
@@ -817,11 +887,13 @@ export default function ProcessScene({
         });
         api = {
           get ready() {
-            return !disposed && !contextLost && sceneReady && Boolean(model);
+            return canRunFrames() && Boolean(model);
           },
           getView: view,
           setView,
           requestRender,
+          requestPlaybackFrame,
+          cancelPlaybackFrame,
           getProgress: () => pose.progress,
           releaseCapture: () => capture.dispose(),
           prepareCaptureFrame(options = {}) {
@@ -870,6 +942,20 @@ export default function ProcessScene({
         if (initial) setView(initial);
         observer = new ResizeObserver(() => resize());
         observer.observe(element);
+        if (typeof IntersectionObserver === "function") {
+          visibilityObserver = new IntersectionObserver((entries) => {
+            if (disposed || contextLost) return;
+            const wasCanvasVisible = canvasVisible;
+            for (const { target, isIntersecting } of entries) {
+              if (target === element) canvasVisible = isIntersecting;
+              else if (target === annotationKey) keyVisible = isIntersecting;
+            }
+            if (!wasCanvasVisible || !canvasVisible) requestRender();
+          });
+          visibilityObserver.observe(element);
+          visibilityObserver.observe(annotationKey);
+          annotationKey.addEventListener("focusin", refreshFocusedKey);
+        }
         document.fonts?.addEventListener("loadingdone", invalidateAnnotations);
         engine.current = {
           api,
@@ -911,13 +997,15 @@ export default function ProcessScene({
         };
         // resize() has queued a frame; render the first pose now without leaving
         // that queued callback orphaned during later cleanup.
-        cancelAnimationFrame(frame);
-        frame = 0;
+        cancelQueuedFrame();
+        renderRequested = true;
         render();
-        if (!disposed) {
+        if (api.ready) {
           setBusy(false);
           publishReady(api);
-          if (focusAfterRetry) renderer.domElement.focus();
+          if (api.ready && focusAfterRetry) renderer.domElement.focus();
+          if (api.ready && !cachedBounds && validBounds)
+            envelope?.store(bounds);
         }
       } catch (cause) {
         if (!disposed) fail(cause);
