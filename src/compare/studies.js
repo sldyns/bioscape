@@ -1,4 +1,12 @@
 import { normalizeComparisonPath } from "./ids.js";
+import { initialStructureMode } from "../scene/specimenViews.js";
+
+export function comparisonStudyMode(path) {
+  const id = path.at(-1);
+  return path.length === 1 || id === "nuclearPores"
+    ? "whole"
+    : initialStructureMode(id);
+}
 
 const overviewPartners = {
   cell: "plant",
@@ -182,12 +190,17 @@ export function defaultComparisonPartner(path) {
       return {
         id: partner.at(-1),
         path: [...partner],
-        mode: "section",
+        mode: comparisonStudyMode(partner),
         labels: false,
       };
   }
   const parent = path.slice(0, -1);
-  return { id: parent.at(-1), path: parent, mode: "section", labels: false };
+  return {
+    id: parent.at(-1),
+    path: parent,
+    mode: initialStructureMode(parent.at(-1)),
+    labels: false,
+  };
 }
 
 export function studyForPanes(leftPath, rightPath) {

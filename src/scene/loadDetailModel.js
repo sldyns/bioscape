@@ -23,6 +23,21 @@ export async function loadDetailModel(id) {
       prepareSpecimen(id, await specimenBuilders[owner]()),
     );
   }
+  if (id === "yeastNuclearPores") {
+    const { yeastPoreReference } = await import("./yeastPoreReference");
+    return detailModel(id, yeastPoreReference());
+  }
+  if (id === "nucleosome" || id === "histones") {
+    const [{ nucleosomeReference }, { default: data }] = await Promise.all([
+      import("./nucleosomeReference"),
+      import("./data/nucleosome-1kx5.json"),
+    ]);
+    return detailModel(id, nucleosomeReference(id, data));
+  }
+  if (id === "dna" || id === "bacterialDNA") {
+    const { dnaDuplexReference } = await import("./dnaDuplexReference");
+    return detailModel(id, dnaDuplexReference(id));
+  }
   if (microbeIds.has(id)) {
     const make =
       id === "yeast" || id.startsWith("yeast")

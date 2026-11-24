@@ -46,7 +46,7 @@ try {
       ),
     ]),
   );
-  assert.equal(definitions.length, 87);
+  assert.equal(definitions.length, 88);
   assert.deepEqual(CONDITION_CONTROL_AUDIT, actual);
   let branches = 0;
   for (const d of definitions) {
@@ -93,7 +93,7 @@ try {
       }
     }
   }
-  assert.equal(branches, 157);
+  assert.equal(branches, 160);
   assert.equal(getConditionNote("unknown", { atp: "absent" }), null);
   const note = (id, parameters) => getConditionNote(id, parameters, "en");
   assert.match(
@@ -172,7 +172,7 @@ try {
     "Runtime lookup must remain standalone metadata",
   );
   console.log(
-    "Condition notes: 87 definitions, 157 options, bilingual copy and combined controls passed.",
+    "Condition notes: 88 definitions, 160 options, bilingual copy and combined controls passed.",
   );
 } finally {
   await rm(dir, { recursive: true, force: true });

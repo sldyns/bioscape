@@ -16,7 +16,7 @@ If Studio fails to load, close its error dialog to keep exploring the current sc
 
 ## A place to begin
 
-Ten model types, 191 structures and 87 processes, with Chinese and English throughout. Start with a familiar cell, look inside an organelle, or follow a process one step at a time.
+Ten model types, 191 structures and 88 processes, with Chinese and English throughout. Start with a familiar cell, look inside an organelle, or follow a process one step at a time.
 
 <table>
 <tr>
@@ -80,7 +80,7 @@ Ten model types, 191 structures and 87 processes, with Chinese and English throu
 
 Rotate a model, open a cutaway, or separate its parts. Follow the hierarchy from a whole cell towards molecular structures, then enter the processes that take place there.
 
-Search the collection for a structure in Chinese or English. On a specimen or process, open the study plate and choose **Compare two** to slide between two real views. A mouse retinal rod links its outer segment to phototransduction and disc renewal.
+Search the collection for a structure in Chinese or English. On a specimen or process, open the study plate and choose **Compare two** to slide between two real views. In a mouse rod, open the outer segment to follow phototransduction and disc renewal, or the synaptic spherule to see how light changes glutamate release.
 
 <table>
 <tr>

@@ -39,6 +39,7 @@ import ModelPicker from "./ModelPicker.jsx";
 import ObservationLocator from "../exploration/ObservationLocator.jsx";
 import {
   comparisonStudies,
+  comparisonStudyMode,
   detailStudies,
   overviewStudies,
   studyForPanes,
@@ -292,7 +293,7 @@ export default function CompareWorkspace({
         next[side] = {
           id,
           path,
-          mode: path.length > 1 ? "section" : "whole",
+          mode: comparisonStudyMode(path),
           labels: path.length === 1,
         };
       }

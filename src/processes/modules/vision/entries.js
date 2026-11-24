@@ -1,5 +1,21 @@
 export const entries = [
   {
+    id: "rodRibbonTransmission",
+    module: "./modules/vision/rodRibbonTransmissionProcess.js",
+    roots: ["rodPhotoreceptor"],
+    title: {
+      zh: "视杆带状突触传递",
+      en: "Transmission at a rod ribbon synapse",
+    },
+    summary: {
+      zh: "观察暗中持续释放的小泡，以及光照如何减少谷氨酸释放、使 ON 型视杆双极细胞去极化。",
+      en: "Watch vesicles fuse in darkness, then see how light reduces glutamate release and depolarizes the rod ON bipolar cell.",
+    },
+    color: "#a38a92",
+    category: "signaling",
+    thumbnail: "/process-thumbnails/rodRibbonTransmission.svg",
+  },
+  {
     id: "phototransduction",
     module: "./modules/vision/phototransductionProcess.js",
     roots: ["rodPhotoreceptor"],

@@ -2,7 +2,7 @@
   "version": 1,
   "unit": "stagePercent",
   "processes": {
-    "actionPotential": {"default":[50,38,50,50,50,100]},
+    "actionPotential": {"default":[50,38,50,62,50,100]},
     "activeTransport": {"default":[50,62,50,50,38,100]},
     "adenineExchange": {"default":[50,62,62,50,62,100]},
     "alternativeSplicing": {"default":[50,50,50,50,50,100]},
@@ -72,6 +72,7 @@
     "rnaProcessing": {"default":[50,50,50,50,50,100]},
     "rnaSilencing": {"default":[50,50,50,50,100]},
     "rodDiscRenewal": {"default":[50,50,50,50,50,50,100]},
+    "rodRibbonTransmission": {"default":[50,50,50,50,50,62,50,100]},
     "secretion": {"default":[50,50,38,12,50,50,100]},
     "signalTransduction": {"default":[50,62,50,50,50,100]},
     "stomata": {"default":[50,38,50,50,62,100]},

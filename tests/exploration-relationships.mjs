@@ -98,7 +98,7 @@ try {
     definitionMetadata.map((d) => [d.id, d.controls]),
   );
   const stages = new Map(definitionMetadata.map((d) => [d.id, d.stages]));
-  assert.equal(Object.keys(processCatalog).length, 87);
+  assert.equal(Object.keys(processCatalog).length, 88);
   let rootCases = 0;
   let destinations = 0;
   const rootOnly = [];

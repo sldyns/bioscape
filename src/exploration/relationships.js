@@ -296,6 +296,9 @@ const relationships = {
       ["rodOuterSegment", 0.67],
     ]),
   },
+  rodRibbonTransmission: {
+    rodPhotoreceptor: links("rodPhotoreceptor", [["rodSpherule", 0.065]]),
+  },
   rodDiscRenewal: {
     rodPhotoreceptor: links("rodPhotoreceptor", [
       ["rodConnectingCilium", 0],

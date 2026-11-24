@@ -205,8 +205,8 @@
   {
     "id": "actionPotential",
     "root": "cell",
-    "frame": 0.55,
-    "source": "/scripts/preview/index.html?process=actionPotential&frame=0.55&root=cell",
+    "frame": 0.48,
+    "source": "/scripts/preview/index.html?process=actionPotential&frame=0.48&root=cell",
     "image": "/process-thumbnails/rendered/actionPotential.webp"
   },
   {
@@ -593,6 +593,13 @@
     "frame": 0.2,
     "source": "/scripts/preview/index.html?process=phototransduction&frame=0.2&root=rodPhotoreceptor",
     "image": "/process-thumbnails/rendered/phototransduction.webp"
+  },
+  {
+    "id": "rodRibbonTransmission",
+    "root": "rodPhotoreceptor",
+    "frame": 0.161,
+    "source": "/scripts/preview/index.html?process=rodRibbonTransmission&frame=0.161&root=rodPhotoreceptor",
+    "image": "/process-thumbnails/rendered/rodRibbonTransmission.webp"
   },
   {
     "id": "rodDiscRenewal",

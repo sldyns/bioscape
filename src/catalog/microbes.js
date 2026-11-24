@@ -85,8 +85,8 @@ export const microbeDefinitions = [
     "yeastNuclearPores",
     "核孔复合体",
     "Nuclear pore complex",
-    "核孔复合体选择性调控蛋白质、RNA及核糖体亚基等的核质运输。这里示意共有的环状支架与运输屏障，不表示精确的酵母核孔蛋白数量或原子结构。",
-    "Nuclear pore complexes selectively regulate transport of proteins, RNA and ribosomal subunits. This shared scaffold and barrier schematic does not claim exact yeast nucleoporin counts or atomic structure.",
+    "酿酒酵母的核孔支架由八个重复单元围成。沿中央通道比较朝向细胞质与核内的两侧，也可剖开相邻单元，观察夹在内外环之间的结构。",
+    "Eight repeating spokes form the budding yeast pore scaffold. Compare its cytoplasmic and nuclear faces, or open a sector to see how the inner and outer rings meet.",
     "#9f87b3",
   ),
   node(
@@ -396,6 +396,10 @@ export const microbeDefinitions = [
 ];
 export const microbeIds = new Set(microbeDefinitions.map((d) => d[0]));
 export const microbeNotes = {
+  yeastNuclearPores: {
+    zh: "支架取自酿酒酵母整合结构 PDB-IHM 8ZZC 的模型 1。色块表示蛋白质的粗粒度轮廓。此视图省略柔性的 FG 重复区；细胞中的中央通道具有选择性运输屏障。",
+    en: "The scaffold follows model 1 of the integrative yeast structure PDB-IHM 8ZZC. Colored surfaces follow coarse-grained protein envelopes. Flexible FG repeats are omitted here; they contribute to the selective barrier in the living pore.",
+  },
   yeast: {
     zh: "选择酿酒酵母的出芽阶段。细胞壁成分、芽颈与内部细胞器分别可进入；几何、细胞器数量及相对大小均为教学示意。",
     en: "A budding Saccharomyces cerevisiae. Explore wall components, the bud neck and organelles separately. Geometry, organelle counts and relative sizes are schematic.",

@@ -6,6 +6,9 @@ export const CONDITION_CONTROL_AUDIT = {
   phototransduction: {
     illumination: { default: "flash", options: ["flash", "dark"] },
   },
+  rodRibbonTransmission: {
+    illumination: { default: "step", options: ["step", "dark", "light"] },
+  },
   rodDiscRenewal: {},
   adenineExchange: {},
   secretion: {},
@@ -463,6 +466,36 @@ export const CONDITION_CONTROL_AUDIT = {
 };
 
 const rules = [
+  {
+    processId: "rodRibbonTransmission",
+    when: {
+      illumination: "dark",
+    },
+    kind: "condition",
+    title: {
+      zh: "暗态下的持续释放",
+      en: "Tonic output in darkness",
+    },
+    body: {
+      zh: "持续黑暗时，视杆保持相对去极化。带状突触不断有小泡融合，树突尖端的 mGluR6–Gₒ 信号使 TRPM1 较少开放。",
+      en: "Throughout darkness the rod stays relatively depolarized. Intermittent vesicle fusion sustains glutamate output, and mGluR6–Gₒ signaling at the dendritic tip keeps TRPM1 opening low.",
+    },
+  },
+  {
+    processId: "rodRibbonTransmission",
+    when: {
+      illumination: "light",
+    },
+    kind: "condition",
+    title: {
+      zh: "开灯后维持光照",
+      en: "Maintaining illumination after onset",
+    },
+    body: {
+      zh: "本组也从黑暗开始。开灯后，视杆钙流和谷氨酸释放下降，双极细胞的 TRPM1 更容易开放。后两个阶段继续展示光照下的响应。",
+      en: "This condition also starts in darkness. After light onset, rod calcium entry and glutamate release fall, while bipolar TRPM1 opening increases. Illumination continues through the final two chapters.",
+    },
+  },
   {
     processId: "phototransduction",
     when: { illumination: "dark" },

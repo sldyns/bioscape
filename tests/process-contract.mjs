@@ -58,7 +58,9 @@ for (const e of extensionEntries) {
       error(e.id, "duration outside 24–40 seconds");
     if (
       d.stages.length < 4 ||
-      d.stages.length > 7 ||
+      d.stages.length > 8 ||
+      d.stages[0].at !== 0 ||
+      d.stages.at(-1).at >= 1 ||
       d.stages.some(
         (stage, i) =>
           !Number.isFinite(stage.at) ||

@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import * as THREE from "three";
+import { nucleosomeReference } from "../src/scene/nucleosomeReference.js";
 import { chromatinDetail } from "../src/scene/chromatinDetails.js";
 import { nuclearDetail } from "../src/scene/nuclearDetails.js";
+const coordinates = JSON.parse(
+  readFileSync(
+    new URL("../src/scene/data/nucleosome-1kx5.json", import.meta.url),
+  ),
+);
 const view = new THREE.Vector3(
   0.05084271097105143,
   0.06609552426236684,
@@ -31,7 +38,10 @@ for (const [id, parts] of [
   ["chromatin", ["nucleosome", "dna"]],
   ["nucleosome", ["histones", "dna"]],
 ]) {
-  const group = chromatinDetail(id);
+  const group =
+    id === "nucleosome"
+      ? nucleosomeReference(id, coordinates)
+      : chromatinDetail(id);
   for (const part of parts) {
     assert.ok(
       group.userData.partAnchors?.[part],
@@ -44,11 +54,14 @@ for (const [id, parts] of [
   }
   dispose(group);
 }
-const histones = chromatinDetail("histones");
-const colors = ["a58bbc", "c4a2ad", "849db3", "b8b097"];
+const histones = nucleosomeReference("histones", coordinates);
+const colors = ["947b9b", "b58e87", "698298", "ae9f7d"];
 const names = ["H2A × 2", "H2B × 2", "H3 × 2", "H4 × 2"];
-assert.equal(histones.userData.landmarks.length, 4);
-histones.userData.landmarks.forEach((landmark, i) => {
+const wholeMarks = histones.userData.landmarks.filter(
+  (mark) => !mark.visibleModes || mark.visibleModes.includes("whole"),
+);
+assert.equal(wholeMarks.length, 4);
+wholeMarks.forEach((landmark, i) => {
   assert.equal(landmark.zh, names[i]);
   assert.equal(landmark.en, names[i]);
   assert.equal(

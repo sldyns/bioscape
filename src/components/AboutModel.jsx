@@ -98,6 +98,28 @@ export default function AboutModel({ t, aboutRef, onClose }) {
         </p>
         <details className="about-references">
           <summary>{t("科学参考", "Scientific references")}</summary>
+          {[
+            [
+              "8ZZC",
+              "酿酒酵母核孔的整合支架",
+              "Integrative budding yeast pore scaffold",
+            ],
+            [
+              "1KX5",
+              "包裹 DNA 的核小体核心",
+              "DNA-bound nucleosome core particle",
+            ],
+            ["1BNA", "游离 B 型 DNA 双链", "Free B-DNA duplex"],
+          ].map(([code, zh, en]) => (
+            <a
+              key={code}
+              href={`https://www.rcsb.org/structure/${code}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t(zh, en)} · PDB {code} ↗
+            </a>
+          ))}
           {microbeNuclearSources.map((source) => (
             <a
               key={source.url}

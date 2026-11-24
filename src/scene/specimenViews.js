@@ -17,8 +17,14 @@ const directions = {
 };
 
 export const specimenDirection = (id) => directions[id] ?? [0.05, 0.065, 1];
+const wholeFirst = new Set([
+  "erythrocyte",
+  "yeastNuclearPores",
+  "nucleosome",
+  "histones",
+]);
 export const initialStructureMode = (id) =>
-  id === "erythrocyte" ? "whole" : "section";
+  wholeFirst.has(id) ? "whole" : "section";
 
 export function turnedView(view, turn, tilt = 0) {
   const [x, y, z] = view.direction;

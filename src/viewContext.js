@@ -134,6 +134,20 @@ const contexts = {
     "染色质的一小段 · 展开示意",
     "A short chromatin segment · Spread-out schematic",
   ],
+  yeastNuclearPores: [
+    "酿酒酵母核孔 · 8ZZC 支架",
+    "Budding yeast nuclear pore · 8ZZC scaffold",
+  ],
+  nucleosome: [
+    "147 碱基对缠绕核心 · 1KX5",
+    "147 base pairs around a histone core · 1KX5",
+  ],
+  histones: ["爪蟾组蛋白八聚体 · 1KX5", "Xenopus histone octamer · 1KX5"],
+  dna: ["游离 B 型 DNA · 1BNA 参考双链", "Free B-DNA · 1BNA reference duplex"],
+  bacterialDNA: [
+    "通用 B 型 DNA 参考 · 1BNA",
+    "B-DNA structural reference · 1BNA",
+  ],
   lysosomalPump: [
     "溶酶体膜上的一个质子泵",
     "One proton pump in the lysosomal membrane",

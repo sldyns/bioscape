@@ -1,6 +1,22 @@
-import { bilayer, pore } from "./structural.js";
+import { bilayer } from "./structural.js";
 import { anchorObject } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, phase, bilingual as b } from "../../kit.js";
+
+import {
+  axonPores,
+  cationMark,
+  localMembraneTime,
+  sodiumState,
+  potassiumOpen,
+  sodiumInactivation,
+  spatialVoltage,
+} from "./axonMembrane.js";
+
+// The second sample lies just upstream of nominal zone 1, so the 0.24 Na
+// stage opens on a measured pore together with the wavefront. All samples,
+// including the voltage trace, use the same distance-dependent delay.
+const samples = [0, 0.9, 2, 3, 4, 5];
+const axonX = (zone) => -3.15 + zone * 1.26;
 
 const sodiumCaptions = {
   closed: b("Na⁺ 通道 · 关闭", "Na⁺ channel · closed"),
@@ -21,8 +37,8 @@ const stages = [
     0,
     "静息膜",
     "Resting membrane",
-    "示例为哺乳动物无髓轴突的纵向剖面。离子梯度已存在；本图不显示所有维持梯度的机制。",
-    "Longitudinal cutaway of a mammalian unmyelinated axon. Ion gradients already exist; not all mechanisms maintaining them are shown.",
+    "放大区上方是细胞外液，Na⁺ 较多；下方是细胞质，K⁺ 较多。蓝色和铜色小球分别表示这两种正离子，颗数仅作示意。",
+    "The enlarged patch faces Na⁺-rich extracellular fluid above and K⁺-rich cytoplasm below. Blue and copper spheres represent these positive ions. Counts are illustrative.",
   ],
   [
     0.12,
@@ -42,15 +58,15 @@ const stages = [
     0.42,
     "邻近膜依次激活",
     "Neighboring membrane activates",
-    "局部电流使前方膜达到阈值，动作电位被逐段再生；不是同一批离子沿轴突奔跑。",
-    "Local current brings the membrane ahead to threshold, regenerating the action potential along the axon; the same ions do not race along its length.",
+    "局部电流使前方膜达到阈值。轴突下方的曲线表示同一时刻各处的膜电位，曲线隆起随波向右移动。放大区的离子只在当地跨膜。",
+    "Local current brings the membrane ahead to threshold. The curve below the axon shows membrane potential by position at one instant. Its crest travels to the right while ions cross locally.",
   ],
   [
     0.64,
     "钾外流与不应期",
     "Potassium efflux and refractoriness",
-    "Na⁺ 通道失活，延迟开放的 K⁺ 通道使 K⁺ 外流、膜复极化。后方短暂不应期限制再次激发。",
-    "Na⁺ channels inactivate; delayed K⁺ channel opening lets K⁺ leave and repolarizes the membrane. The region behind is temporarily refractory.",
+    "延迟开放的 K⁺ 通道让 K⁺ 外流，膜电位回落。Na⁺ 通道失活时，胞质侧的紫色连接环扣在孔侧。波后方的膜要等通道恢复才能再次兴奋。",
+    "Delayed K⁺ opening allows outward current and repolarization. During Na⁺ channel inactivation, the purple intracellular linker docks beside the pore. The channel must recover before it can open again.",
   ],
   [
     0.9,
@@ -95,24 +111,47 @@ export default {
   ],
   sources: [
     {
-      title: "NCBI Bookshelf — Neuroanatomy, Neuron Action Potential",
-      url: "https://www.ncbi.nlm.nih.gov/books/NBK546639/",
+      title:
+        "Alle, Roth & Geiger (2009) — Energy-efficient action potentials in hippocampal mossy fibers",
+      url: "https://pubmed.ncbi.nlm.nih.gov/19745156/",
     },
     {
       title:
-        "Action potential initiation and propagation: upstream influences on neurotransmission",
-      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC2661755/",
+        "Hodgkin & Huxley (1952) — A quantitative description of membrane current and its application to conduction and excitation in nerve",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC1392413/",
+    },
+    {
+      title:
+        "Fan et al. (2023) — Cryo-EM structure of human voltage-gated sodium channel Naᵥ1.6",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC9945969/",
+    },
+    {
+      title:
+        "Long, Campbell & MacKinnon (2005) — Crystal structure of a mammalian voltage-dependent Shaker family K⁺ channel",
+      url: "https://pubmed.ncbi.nlm.nih.gov/16002581/",
+    },
+    {
+      title:
+        "Jiang et al. (2021) — Open-state structure and pore gating mechanism of the cardiac sodium channel",
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC8673466/",
     },
   ],
   create() {
     const k = sceneKit(),
       { group } = k;
-    const lipid = k.material("#b5b9af"),
-      // The camera sees the inner face of each cutaway state band.
-      rest = k.material("#81968b", { side: THREE.DoubleSide }),
-      na = k.material("#4b9694"),
-      potassium = k.material("#c49b5d");
-    const box = new THREE.BoxGeometry(1, 1, 1);
+    const pore = axonPores(k);
+    const markCation = cationMark(k);
+    const rest = k.material("#81968b", { side: THREE.DoubleSide }),
+      na = k.material("#346b9c"),
+      potassium = k.material("#b96632"),
+      field = k.material("#59697a"),
+      locatorGold = k.material("#b48f53");
+    function membrane(options) {
+      const { heads, tails } = bilayer(k, options);
+      heads.material.color.set("#c2bdb0");
+      tails.material.color.set("#baab91");
+      return heads;
+    }
     const axonWall = k.mesh(
       new THREE.CylinderGeometry(
         0.86,
@@ -145,14 +184,14 @@ export default {
     axonWall.name = "axon cutaway wall";
     axoplasm.rotation.z = Math.PI / 2;
     const holes = [];
-    for (let i = 0; i < 6; i++)
+    for (const sample of samples)
       for (const dx of [-0.28, 0.28])
-        holes.push({ x: -3.15 + i * 1.26 + dx, z: 0.25, r: 0.245 });
-    bilayer(k, { x0: -4.25, x1: 4.25, y: 0.86, z0: -0.6, z1: 0.72, holes });
-    bilayer(k, { x0: -4.25, x1: 4.25, y: -0.86, z0: -0.6, z1: 0.72 });
+        holes.push({ x: axonX(sample) + dx, z: 0.25, r: 0.26 });
+    membrane({ x0: -4.25, x1: 4.25, y: 0.86, z0: -0.6, z1: 0.72, holes });
+    membrane({ x0: -4.25, x1: 4.25, y: -0.86, z0: -0.6, z1: 0.72 });
     const zones = [];
-    for (let i = 0; i < 6; i++) {
-      const x = -3.15 + i * 1.26;
+    for (let i = 0; i < samples.length; i++) {
+      const x = axonX(samples[i]);
       const patch = k.mesh(
         new THREE.CylinderGeometry(
           0.8,
@@ -173,25 +212,35 @@ export default {
       for (const type of ["na", "k"]) {
         const cx = x + (type === "na" ? -0.28 : 0.28),
           mat = type === "na" ? na : potassium;
-        const channel = pore(k, {
-          position: [cx, 0.86, 0.25],
-          color: type === "na" ? "#4b9694" : "#bd985d",
-          radius: 0.135,
-          height: 0.62,
-        });
-        const ion = k.ball([cx, type === "na" ? 1.6 : 0.1, 0.25], 0.061, mat);
+        const channel = pore(group, [cx, 0.86, 0.25], type);
+        const ion = k.ball(
+          [cx, type === "na" ? 1.6 : 0.1, 0.25],
+          type === "na" ? 0.052 : 0.058,
+          mat,
+        );
+        ion.name = type + " overview crossing ion";
         parts.push({ type, cx, channel, ion });
       }
       zones.push({ x, patch, parts });
     }
-    const current = k.segment([-3.5, 0, 0.6], [-2.8, 0, 0.6], 0.035, na);
+    const current = k.segment([-3.5, 0, 0.6], [-2.8, 0, 0.6], 0.035, field);
     const tip = k.mesh(
       new THREE.ConeGeometry(0.12, 0.26, 16),
-      na,
+      field,
       [-2.65, 0, 0.6],
     );
     tip.rotation.z = -Math.PI / 2;
-    const stimulus = k.ring([-4, 0.86, 0.5], 0.34, 0.04, potassium);
+    const stimulus = new THREE.Group();
+    group.add(stimulus);
+    k.ring([-4, 0.86, 0.5], 0.34, 0.04, locatorGold, stimulus);
+    k.segment([-4, 1.82, 0.46], [-4, 1.39, 0.46], 0.047, field, stimulus);
+    const stimulusTip = k.mesh(
+      new THREE.ConeGeometry(0.13, 0.25, 16),
+      field,
+      [-4, 1.29, 0.46],
+      stimulus,
+    );
+    stimulusTip.rotation.z = Math.PI;
     // Molecular detail and propagation are deliberately different scales.
     const overview = new THREE.Group();
     overview.name = "unmyelinated axon propagation overview";
@@ -200,28 +249,16 @@ export default {
     overview.position.set(2.65, 0.25, 0);
     overview.scale.set(0.46, 0.88, 0.7);
     const selectedIndex = 3,
-      selectedX = -3.15 + selectedIndex * 1.26;
+      selectedX = axonX(samples[selectedIndex]);
     const locator = k.ring(
       [selectedX, 0.86, 0.34],
       0.4,
       0.035,
-      potassium,
+      locatorGold,
       overview,
     );
+    locator.name = "fixed overview membrane sample";
     locator.scale.set(1.0, 1.05, 1);
-    // Explicit stationary connector marks which membrane region is magnified.
-    k.tube(
-      [
-        [2.65 + selectedX * 0.46, 1.3, 0.05],
-        [2.65 + selectedX * 0.46, 2.1, 0.05],
-        [-1.75, 2.1, 0.05],
-        [-1.75, 1.56, 0.05],
-      ],
-      0.015,
-      k.material("#a3aba2"),
-      group,
-      64,
-    );
     const detail = new THREE.Group();
     detail.name = "stationary selected membrane region enlarged";
     detail.position.set(-2.45, 0.2, 0.15);
@@ -230,7 +267,7 @@ export default {
     const detailLipids = new THREE.Group();
     detail.add(detailLipids);
     detailLipids.scale.y = 1.8;
-    bilayer(k, {
+    const exposedHeads = membrane({
       x0: -0.91,
       x1: 0.91,
       y: 0,
@@ -239,28 +276,48 @@ export default {
       // gate, central lumen and local ion transit remain visible.
       z1: 0,
       holes: [
-        { x: -0.43, z: 0, r: 0.235 },
-        { x: 0.43, z: 0, r: 0.235 },
+        { x: -0.43, z: 0, r: 0.264 },
+        { x: 0.43, z: 0, r: 0.264 },
       ],
       parent: detailLipids,
       spacing: 0.095,
     });
+    // Land the magnification leader on an actual outer-leaflet head and on
+    // the overview ring. The intervening space contains mobile ions.
+    const headMatrix = new THREE.Matrix4();
+    exposedHeads.getMatrixAt(exposedHeads.count - 1, headMatrix);
+    const corner = exposedHeads.localToWorld(
+      new THREE.Vector3().setFromMatrixPosition(headMatrix),
+    );
+    const ringTop = locator.localToWorld(new THREE.Vector3(0, 0.4, 0));
+    const ridge = 1.94;
+    const leader = k.tube(
+      [
+        ringTop.toArray(),
+        [ringTop.x, ridge - 0.14, ringTop.z],
+        [ringTop.x - 0.12, ridge, ringTop.z],
+        [ringTop.x - 0.35, ridge, ringTop.z],
+        [corner.x + 0.35, ridge, corner.z],
+        [corner.x + 0.12, ridge, corner.z],
+        [corner.x, ridge - 0.14, corner.z],
+        corner.toArray(),
+      ],
+      0.013,
+      k.material("#a39783"),
+      group,
+      54,
+    );
+    leader.name = "fixed membrane magnification leader";
     const detailChannels = [];
     for (const type of ["na", "k"]) {
       const x = type === "na" ? -0.43 : 0.43,
         mat = type === "na" ? na : potassium;
-      const channel = pore(k, {
-        position: [x, 0, 0],
-        color: type === "na" ? "#467f81" : "#b18b50",
-        radius: 0.135,
-        height: 0.62,
-        parent: detail,
-      });
+      const channel = pore(detail, [x, 0, 0], type, true);
       const mouth = k.ring(
         [x, 0.335, 0],
         0.112,
         0.024,
-        k.material(type === "na" ? "#8ab5b1" : "#d0b789"),
+        k.material(type === "na" ? "#8299ac" : "#c9ac82"),
         detail,
       );
       mouth.name = `enlarged ${type} extracellular collar`;
@@ -268,11 +325,103 @@ export default {
       const exit = k.ring([x, -0.335, 0], 0.105, 0.021, mat, detail);
       exit.name = `enlarged ${type} cytoplasmic collar`;
       exit.rotation.x = Math.PI / 2;
-      const ions = Array.from({ length: 3 }, () =>
-        k.ball([x, 0.65, 0], 0.047, mat, detail),
+      const ions = Array.from({ length: 3 }, (_, j) => {
+        const ion = k.ball(
+          [x, 0.65, 0],
+          type === "na" ? 0.055 : 0.061,
+          mat,
+          detail,
+        );
+        ion.name = type + " crossing ion " + j;
+        markCation(ion);
+        return ion;
+      });
+      const side = type === "na" ? -1 : 1;
+      const flowArrow = new THREE.Group();
+      flowArrow.name = type + " flux direction beyond exit";
+      detail.add(flowArrow);
+      k.segment(
+        [x, side * 0.69, 0],
+        [x, side * 0.81, 0],
+        0.014,
+        mat,
+        flowArrow,
       );
-      detailChannels.push({ type, x, channel, ions, mouth, exit });
+      const head = k.mesh(
+        new THREE.ConeGeometry(0.052, 0.11, 20),
+        mat,
+        [x, side * 0.845, 0],
+        flowArrow,
+      );
+      head.rotation.z = side < 0 ? Math.PI : 0;
+      let latch;
+      if (type === "na") {
+        const cytoplasmic = new THREE.Group();
+        channel.group.add(cytoplasmic);
+        latch = sodiumInactivation(k, cytoplasmic, channel);
+      }
+      detailChannels.push({
+        type,
+        x,
+        channel,
+        ions,
+        mouth,
+        exit,
+        flowArrow,
+        latch,
+      });
     }
+    // Representative stationary ions show that gradients exist even at rest.
+    // Sparse samples deliberately avoid the tubes along which the marked ions move.
+    const compartments = new THREE.Group();
+    detail.add(compartments);
+    for (const [species, coords, color] of [
+      [
+        "Na+",
+        [
+          [-0.8, 0.53, -0.19],
+          [-0.66, 0.66, -0.27],
+          [-0.19, 0.47, -0.15],
+          [0.08, 0.65, -0.23],
+          [0.73, 0.52, -0.17],
+          [0.22, -0.59, -0.24],
+        ],
+        "#6a8aa4",
+      ],
+      [
+        "K+",
+        [
+          [-0.75, -0.6, -0.2],
+          [-0.23, -0.53, -0.18],
+          [0.01, -0.69, -0.14],
+          [0.75, -0.54, -0.14],
+          [0.65, -0.69, -0.32],
+          [0.23, 0.52, -0.24],
+        ],
+        "#bb895f",
+      ],
+    ]) {
+      const pool = new THREE.InstancedMesh(
+        k.sphere,
+        k.material(color),
+        coords.length,
+      );
+      pool.name = species + " compartment samples";
+      const obj = new THREE.Object3D();
+      obj.scale.setScalar(species === "Na+" ? 0.031 : 0.036);
+      coords.forEach((xyz, i) => {
+        obj.position.fromArray(xyz);
+        obj.updateMatrix();
+        pool.setMatrixAt(i, obj.matrix);
+      });
+      compartments.add(pool);
+    }
+    const voltage = spatialVoltage(
+      k,
+      (zone) => 2.65 + axonX(zone) * 0.46,
+      selectedIndex,
+      samples,
+    );
     const labels = [
       k.label(
         [-2.45, 2.61, 0.1],
@@ -284,11 +433,16 @@ export default {
       k.label([-1.33, 1.52, 0.3], "K⁺ 通道 · 关闭", "K⁺ channel · closed", 2),
       k.label(
         [-2.45, -1.53, 0.3],
-        "细胞质侧 · 通道出口",
-        "Cytoplasmic side · channel exit",
+        "细胞质侧 · K⁺ 较多",
+        "Cytoplasm · K⁺ enriched",
         1,
       ),
-      k.label([-2.45, 0.85, 1.02], "细胞外侧", "Extracellular side", 1),
+      k.label(
+        [-2.45, 0.85, 1.02],
+        "细胞外侧 · Na⁺ 较多",
+        "Outside · Na⁺ enriched",
+        1,
+      ),
       k.label(
         [2.65, -1.25, 0.25],
         "无髓轴突 · 去极化依次再生",
@@ -307,6 +461,12 @@ export default {
         "Magnified region",
         1,
       ),
+      k.label(
+        [0, 0, 0],
+        "膜电位 · 内相对外，向上为去极化",
+        "Membrane potential · inside relative to outside, upward is depolarized",
+        1,
+      ),
     ];
     const baseColor = new THREE.Color("#81968b"),
       depColor = new THREE.Color("#4b9694"),
@@ -320,10 +480,11 @@ export default {
         refractory = 0;
       for (let i = 0; i < zones.length; i++) {
         const z = zones[i],
-          t = enabled ? (p - (0.14 + i * 0.105)) / 0.21 : -1;
-        const n = t >= 0 && t < 0.25,
-          q = t >= 0.22 && t < 0.69,
-          r = t >= 0.25 && t < 0.9;
+          t = localMembraneTime(p, samples[i], enabled);
+        const state = sodiumState(t),
+          n = state === "open",
+          q = potassiumOpen(t),
+          r = state === "inactivated";
         openNa += n ? 1 : 0;
         openK += q ? 1 : 0;
         refractory += r ? 1 : 0;
@@ -340,34 +501,29 @@ export default {
           a.ion.position.y = a.type === "na" ? 1.55 - 1.4 * f : 0.15 + 1.4 * f;
         }
       }
-      const localT = enabled ? (p - (0.14 + selectedIndex * 0.105)) / 0.21 : -1;
-      labels[1].text =
-        localT < 0
-          ? sodiumCaptions.closed
-          : localT < 0.25
-            ? sodiumCaptions.open
-            : localT < 0.9
-              ? sodiumCaptions.inactivated
-              : sodiumCaptions.recovered;
-      labels[2].text =
-        localT >= 0.22 && localT < 0.69
-          ? potassiumCaptions.open
-          : potassiumCaptions.closed;
+      const localT = localMembraneTime(p, samples[selectedIndex], enabled);
+      const sodium = sodiumState(localT),
+        potassiumConducting = potassiumOpen(localT);
+      labels[1].text = sodiumCaptions[sodium];
+      labels[2].text = potassiumConducting
+        ? potassiumCaptions.open
+        : potassiumCaptions.closed;
       for (const d of detailChannels) {
         const isNa = d.type === "na",
-          opened = isNa
-            ? localT >= 0 && localT < 0.25
-            : localT >= 0.22 && localT < 0.69;
+          opened = isNa ? sodium === "open" : potassiumConducting;
+        d.latch?.(sodium === "inactivated");
+        d.flowArrow.visible = opened;
         const localFlow = isNa
           ? phase(localT, 0, 0.25)
           : phase(localT, 0.22, 0.69);
         d.channel.setOpen(opened);
         d.ions.forEach((ion, j) => {
-          const f = localFlow * 1.45 - j * 0.22;
+          const f = localFlow * 1.72 - j * 0.36;
           ion.visible = opened && f >= 0 && f <= 1;
           ion.position.set(d.x, isNa ? 0.68 - 1.36 * f : -0.68 + 1.36 * f, 0);
         });
       }
+      voltage.update(p, enabled);
       const front = -3.65 + 8 * phase(p, 0.14, 0.72);
       current.visible = tip.visible = enabled && p >= 0.14 && p < 0.72;
       current.position.x = front + 0.35;
@@ -382,6 +538,7 @@ export default {
       anchorObject(labels[5], axoplasm);
       anchorObject(labels[6], zones[selectedIndex].patch);
       anchorObject(labels[7], locator);
+      anchorObject(labels[8], voltage.probe);
       Object.assign(group.userData, {
         process: "actionPotential",
         specimen: "mammalian unmyelinated neuronal axon",
@@ -391,11 +548,12 @@ export default {
         refractoryZones: refractory,
         propagation: "regenerated depolarization left to right",
         ionMotion: "local transmembrane only",
-        recovered: p >= 0.9,
+        recovered: enabled && p >= 0.9,
         magnifiedRegion: selectedIndex,
         magnification: 2.6,
-        detailSodiumOpen: enabled && localT >= 0 && localT < 0.25,
-        detailPotassiumOpen: enabled && localT >= 0.22 && localT < 0.69,
+        detailSodiumOpen: sodium === "open",
+        detailSodiumState: sodium,
+        detailPotassiumOpen: potassiumConducting,
         detailTracksFixedMembraneRegion: true,
       });
     }

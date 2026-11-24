@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import "./axonFlux.test.mjs";
 import test from "node:test";
 import { Group, Matrix4, Triangle, Vector3 } from "three";
 import actionPotential from "./actionPotentialProcess.js";
