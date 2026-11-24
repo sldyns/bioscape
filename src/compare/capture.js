@@ -4,6 +4,31 @@ import { getComparisonEntry } from "./catalog.js";
 const transientFrames = new WeakMap();
 const validScale = (value) => (Number.isFinite(value) && value > 0 ? value : 1);
 
+export function comparisonPaneCaptions(state, lang) {
+  const language = lang === "en" ? "en" : "zh";
+  const entries = [state.left, state.right].map((pane) =>
+    getComparisonEntry(pane.id, pane.path),
+  );
+  const ancestors = entries.map((entry) =>
+    entry.trail.map((id) => getComparisonEntry(id)[language]),
+  );
+  return entries.map((entry, index) => {
+    const trail = ancestors[index];
+    const other = ancestors[1 - index];
+    const name = entry[language];
+    let context = trail[0] || "";
+    if (
+      name === entries[1 - index][language] &&
+      context &&
+      context === other[0]
+    ) {
+      const nearest = trail.findLast((label) => !other.includes(label));
+      if (nearest && nearest !== context) context += " · " + nearest;
+    }
+    return { name, context };
+  });
+}
+
 // Typography and pane division use the export coordinate system even when the
 // browser displays a smaller preview. Pixel rounding is applied only to renders.
 export function comparisonCaptureLayout(width, height, labelScale = 1) {
@@ -78,6 +103,7 @@ export function captureComparisonFrame(apis, state, lang, options = {}) {
       ctx.fillRect(0, 0, layout.width, layout.height);
     }
     const language = lang === "en" ? "en" : "zh";
+    const captions = comparisonPaneCaptions(state, language);
     for (const [index, side] of ["left", "right"].entries()) {
       const pane = panes[index];
       const modelHeight = Math.max(16, pane.height - titleHeight);
@@ -102,7 +128,8 @@ export function captureComparisonFrame(apis, state, lang, options = {}) {
       ctx.font = `500 ${fontSize}px system-ui, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const title = `${index === 0 ? "A" : "B"} · ${getComparisonEntry(state[side].id)[language]}`;
+      const { name, context } = captions[index];
+      const title = `${index === 0 ? "A" : "B"} · ${name}`;
       const center = pane.x + pane.width / 2;
       // A fine halo keeps specimen identity readable on transparent/dark captures.
       ctx.lineWidth = Math.max(2, fontSize * 0.2);
@@ -111,8 +138,9 @@ export function captureComparisonFrame(apis, state, lang, options = {}) {
       ctx.fillStyle = "#27313b";
       ctx.fillText(title, center, pane.y + titleY, pane.width - 20);
       ctx.font = `${scaleFontSize}px system-ui, sans-serif`;
-      const scaleNote =
-        language === "en"
+      const scaleNote = context
+        ? context + (language === "en" ? " · Independent scale" : " · 独立缩放")
+        : language === "en"
           ? "Independently fitted · not to the same scale"
           : "独立适配画面 · 非统一比例";
       ctx.strokeText(scaleNote, center, pane.y + scaleY, pane.width - 20);

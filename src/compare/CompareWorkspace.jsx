@@ -29,21 +29,27 @@ import {
   normalizeComparisonView,
   sameView,
 } from "./state.js";
-import { captureComparisonFrame, releaseComparisonCapture } from "./capture.js";
+import {
+  captureComparisonFrame,
+  comparisonPaneCaptions,
+  releaseComparisonCapture,
+} from "./capture.js";
 import "./comparison.css";
 import ModelPicker from "./ModelPicker.jsx";
+import ObservationLocator from "../exploration/ObservationLocator.jsx";
+import {
+  comparisonStudies,
+  detailStudies,
+  overviewStudies,
+  studyForPanes,
+} from "./studies.js";
 
 const CellScene = lazy(() => import("../CellScene.jsx"));
 const NO_ZOOM = { direction: null, key: 0 };
 const sides = ["left", "right"];
-const presets = [
-  ["cell", "plant", "动物与植物", "Animal & plant"],
-  ["cell", "bacterium", "真核与原核", "Eukaryote & prokaryote"],
-  ["erythrocyte", "neuron", "运输与信号", "Transport & signaling"],
-  ["neuron", "muscleFibre", "信号与收缩", "Signaling & contraction"],
-  ["plant", "yeast", "植物与真菌", "Plant & fungus"],
-  ["bacterium", "phage", "细菌与噬菌体", "Bacterium & phage"],
-];
+const isParentOf = (parent, child) =>
+  parent.length + 1 === child.length &&
+  parent.every((id, i) => id === child[i]);
 
 export default function CompareWorkspace({
   lang = "zh",
@@ -75,7 +81,6 @@ export default function CompareWorkspace({
   });
   const [focused, setFocused] = useState({ left: null, right: null });
   const [ready, setReady] = useState(false);
-  const [sceneGeneration, setSceneGeneration] = useState(0);
 
   const publish = useCallback(() => {
     if (emitFrame.current) cancelAnimationFrame(emitFrame.current);
@@ -112,6 +117,13 @@ export default function CompareWorkspace({
             ]),
           ),
         );
+      },
+      getSubtitle() {
+        return comparisonPaneCaptions(stateRef.current, live.current.language)
+          .map(({ name, context }) =>
+            context ? name + " (" + context + ")" : name,
+          )
+          .join(" / ");
       },
       captureFrame(options) {
         return captureComparisonFrame(
@@ -172,6 +184,13 @@ export default function CompareWorkspace({
     },
     [replaceState],
   );
+  const markPaneLoading = useCallback((side) => {
+    apis.current[side] = null;
+    setReady(false);
+    live.current.onSceneReady?.(null);
+    setCapabilities((previous) => ({ ...previous, [side]: null }));
+    setFocused((previous) => ({ ...previous, [side]: null }));
+  }, []);
   const selectModel = useCallback(
     (side, id, path) => {
       if (!isComparisonId(id)) return;
@@ -187,11 +206,7 @@ export default function CompareWorkspace({
         updatePane(side, { path: nextPath });
         return;
       }
-      apis.current[side] = null;
-      setReady(false);
-      live.current.onSceneReady?.(null);
-      setCapabilities((previous) => ({ ...previous, [side]: null }));
-      setFocused((previous) => ({ ...previous, [side]: null }));
+      markPaneLoading(side);
       updatePane(side, {
         id,
         path: nextPath,
@@ -199,7 +214,7 @@ export default function CompareWorkspace({
         view: old.view ? { ...old.view, target: [0, 0, 0] } : null,
       });
     },
-    [updatePane],
+    [markPaneLoading, updatePane],
   );
   const enterModel = useCallback(
     (side, id) => {
@@ -263,26 +278,26 @@ export default function CompareWorkspace({
     }));
     setFocused((previous) => ({ left: previous.right, right: previous.left }));
   }
-  function choosePreset(left, right) {
-    if (
-      stateRef.current.left.id === left &&
-      stateRef.current.right.id === right
-    )
-      return;
-    apis.current = { left: null, right: null };
-    setReady(false);
-    setCapabilities({ left: null, right: null });
-    setFocused({ left: null, right: null });
-    live.current.onSceneReady?.(null);
-    replaceState({
-      left: { id: left },
-      right: { id: right },
+  function chooseStudy(id) {
+    const study = comparisonStudies.find((item) => item.id === id);
+    if (!study) return;
+    const next = { ...stateRef.current };
+    study.paths.forEach((path, index) => {
+      const side = sides[index];
+      const id = path.at(-1);
+      if (next[side].id === id) {
+        next[side] = { ...next[side], path };
+      } else {
+        markPaneLoading(side);
+        next[side] = {
+          id,
+          path,
+          mode: path.length > 1 ? "section" : "whole",
+          labels: path.length === 1,
+        };
+      }
     });
-    setSceneGeneration((previous) => previous + 1);
-    setResets((previous) => ({
-      left: previous.left + 1,
-      right: previous.right + 1,
-    }));
+    replaceState(next);
   }
   function reset(side) {
     const next = {
@@ -295,6 +310,11 @@ export default function CompareWorkspace({
 
   const left = getComparisonEntry(state.left.id, state.left.path);
   const right = getComparisonEntry(state.right.id, state.right.path);
+  const leftPath = [...left.trail, left.id];
+  const rightPath = [...right.trail, right.id];
+  const study = studyForPanes(leftPath, rightPath);
+  const parentAndChild =
+    isParentOf(leftPath, rightPath) || isParentOf(rightPath, leftPath);
   const rows = comparisonRows(
     state.left.id,
     state.right.id,
@@ -328,9 +348,6 @@ export default function CompareWorkspace({
             </button>
           )}
           <div>
-            <span className="compare-eyebrow">
-              BIO SCAPE / {t("比较", "COMPARE")}
-            </span>
             <h1>{t("结构对比", "Compare structures")}</h1>
           </div>
         </div>
@@ -359,20 +376,29 @@ export default function CompareWorkspace({
       </header>
 
       <div className="compare-toolbar">
-        <div
-          className="compare-presets"
-          aria-label={t("比较主题", "Comparison themes")}
-        >
-          {presets.map(([a, b, zh, en]) => (
-            <button
-              key={`${a}-${b}`}
-              aria-pressed={state.left.id === a && state.right.id === b}
-              onClick={() => choosePreset(a, b)}
-            >
-              {t(zh, en)}
-            </button>
-          ))}
-        </div>
+        <label className="compare-study-picker">
+          <span>{t("对照主题", "Comparison study")}</span>
+          <select
+            value={study?.id || ""}
+            onChange={(event) => chooseStudy(event.target.value)}
+          >
+            <option value="" disabled>
+              {t("自选模型", "Custom pair")}
+            </option>
+            {[
+              [t("局部结构", "Structural details"), detailStudies],
+              [t("整体标本", "Whole specimens"), overviewStudies],
+            ].map(([label, options]) => (
+              <optgroup key={label} label={label}>
+                {options.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.title[language]}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </label>
         <div className="compare-tools">
           <button onClick={swap}>
             <ArrowLeftRight size={15} />
@@ -381,6 +407,15 @@ export default function CompareWorkspace({
         </div>
       </div>
 
+      {(study?.observation || parentAndChild) && (
+        <p className="compare-observation">
+          {study?.observation?.[language] ||
+            t(
+              "一侧展示选中的部位，另一侧保留它在上一级结构中的位置。",
+              "One view isolates the selected part. The other shows its position in the enclosing structure.",
+            )}
+        </p>
+      )}
       <p className="compare-scale-note">
         {t("视图分别缩放，非同一比例。", "Views are scaled independently.")}
       </p>
@@ -439,7 +474,6 @@ export default function CompareWorkspace({
                   }
                 >
                   <CellScene
-                    key={sceneGeneration}
                     nodeId={pane.id}
                     viewKey={`comparison/${paneIdentities[side]}/${pane.id}`}
                     mode={pane.mode}
@@ -523,6 +557,14 @@ export default function CompareWorkspace({
                   </label>
                 )}
               </div>
+              <ObservationLocator
+                key={`${pane.id}/${pane.mode}/${resets[side]}`}
+                api={apis.current[side]}
+                mode={pane.mode}
+                lang={language}
+                onFocus={(view) => viewChanged(side, view)}
+                onReset={() => reset(side)}
+              />
               {focus && (
                 <div className="compare-focus" role="status">
                   <div>

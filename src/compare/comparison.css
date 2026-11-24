@@ -40,13 +40,6 @@
   width: 36px;
   flex-shrink: 0;
 }
-.compare-eyebrow {
-  display: block;
-  font-size: 10px;
-  letter-spacing: 0.13em;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
 .compare-title h1 {
   font-family: var(--font-display);
   font-size: clamp(20px, 2vw, 27px);
@@ -75,26 +68,36 @@
   justify-content: space-between;
   margin-bottom: 12px;
 }
-.compare-presets {
+.compare-study-picker {
   display: flex;
-  flex: 1;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
   min-width: 0;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.compare-presets button {
-  padding: 6px 11px;
-  font-size: 11px;
-  min-height: 32px;
-  border: 1px solid var(--line);
-  border-radius: 20px;
   color: var(--muted);
-  background: white;
+  font-size: 12px;
 }
-.compare-presets button[aria-pressed="true"] {
-  color: var(--accent);
-  border-color: #c7c7ca;
-  background: var(--canvas);
+.compare-study-picker span {
+  flex: none;
+}
+.compare-study-picker select {
+  min-width: 0;
+  max-width: 100%;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+}
+.compare-observation {
+  margin: 0 0 3px;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.compare-pane > .observation-locator {
+  margin: 0 16px 12px;
 }
 .compare-tools {
   gap: 7px;
@@ -421,16 +424,14 @@
   .compare-actions button {
     min-height: 39px;
   }
-  .compare-presets {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    max-width: 100%;
-    padding-bottom: 5px;
-    scrollbar-width: thin;
+  .compare-study-picker {
+    flex: 1;
+    gap: 5px;
+    align-items: stretch;
+    flex-direction: column;
   }
-  .compare-presets button {
-    flex-shrink: 0;
-    min-height: 37px;
+  .compare-study-picker select {
+    min-height: 38px;
   }
   .compare-toolbar {
     gap: 8px;
@@ -505,9 +506,6 @@
 .compare-heading {
   margin-bottom: 17px;
 }
-.compare-eyebrow {
-  margin-bottom: 4px;
-}
 .compare-title h1 {
   font-size: 25px;
 }
@@ -515,16 +513,6 @@
   align-items: center;
   gap: 14px;
   margin-bottom: 9px;
-}
-.compare-presets {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  min-width: 0;
-  padding: 2px 0 6px;
-  scrollbar-width: thin;
-}
-.compare-presets button {
-  flex-shrink: 0;
 }
 .compare-scale-note {
   margin-bottom: 13px;
@@ -808,9 +796,6 @@
   }
   .compare-actions button {
     padding: 5px 9px;
-  }
-  .compare-eyebrow {
-    display: none;
   }
   .compare-canvas {
     height: calc(305px + var(--label-rail, 0px));

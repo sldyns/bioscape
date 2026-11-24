@@ -97,7 +97,7 @@ Begin with [transcription](https://sldyns.github.io/bioscape/#/cell?view=process
 
 ## Make the view your own
 
-**Compare.** Place two models side by side, each with its own view, cutaway, labels and disassembly controls. Comparison notes explain the specimens represented; the views are fitted independently, without a common physical scale.
+**Compare.** Open Compare from a structural detail to see a related specimen or its enclosing structure. Choose a study such as connecting and motile cilia, locate a feature in either pane, and rotate each model independently. Each view is fitted separately. Exported comparisons identify each specimen.
 
 **Create.** Compose images and short films in Studio. Choose landscape, portrait or square; export a PNG with an optional transparent background, or record an orbit, disassembly or biological process.
 

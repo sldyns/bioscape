@@ -13,6 +13,7 @@ try {
       contents: `
         export * from './src/compare/state.js';
         export * from './src/compare/catalog.js';
+        export * from './src/compare/studies.js';
         export * from './src/exploration/state.js';
         export * from './src/home/routes.js';
         export { contextNotes } from './src/catalog/cellTypes.js';
@@ -26,6 +27,63 @@ try {
     logLevel: "silent",
   });
   const api = await import(pathToFileURL(outfile));
+  for (const study of api.comparisonStudies) {
+    const [left, right] = study.paths;
+    for (const path of study.paths) {
+      const entry = api.getComparisonEntry(path.at(-1), path);
+      assert.deepEqual(
+        [...entry.trail, entry.id],
+        path,
+        "each study opens a registered specimen path",
+      );
+    }
+    assert.equal(api.studyForPanes(left, right)?.id, study.id);
+    assert.equal(
+      api.studyForPanes(right, left)?.id,
+      study.id,
+      "swap preserves the observation",
+    );
+  }
+  for (const group of api.comparisonGroups) {
+    for (const entry of group.entries) {
+      const path = [...entry.trail, entry.id];
+      const partner = api.defaultComparisonPartner(path);
+      assert.ok(api.isComparisonId(partner.id));
+      assert.notEqual(partner.id, entry.id);
+      if (path.length > 1) {
+        assert.deepEqual(
+          api.normalizeComparisonState({ right: partner }).right.path,
+          partner.path,
+        );
+        assert.ok(
+          api.studyForPanes(path, partner.path) ||
+            path.slice(0, -1).join("/") === partner.path.join("/"),
+        );
+      }
+    }
+  }
+  for (const ancestry of [
+    ["cell", "cytoplasm", "mitochondria", "mitoInner", "cristae"],
+    ["plant", "plantMitochondria", "mitoInner", "cristae"],
+  ]) {
+    const junction = [...ancestry, "cristaJunction"];
+    const rim = [...ancestry, "cristaRim"];
+    assert.deepEqual(api.defaultComparisonPartner(junction).path, rim);
+    assert.ok(api.studyForPanes(rim, junction));
+  }
+  assert.deepEqual(
+    api.defaultComparisonPartner([
+      "plant",
+      "plantNucleus",
+      "chromatin",
+      "nucleosome",
+    ]).path,
+    ["plant", "plantNucleus", "chromatin", "dna"],
+  );
+  assert.deepEqual(
+    api.defaultComparisonPartner(["neuron", "neuronMyelin"]).path,
+    ["neuron"],
+  );
   const plantPaths = [
     ["plant", "plantNucleus", "nucleolus"],
     ["plant", "plantNucleus", "envelope", "innerNuclear"],

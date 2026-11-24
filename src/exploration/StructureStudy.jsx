@@ -4,6 +4,7 @@ import ObservationPlate, {
 } from "../components/ObservationPlate.jsx";
 import { turnedView } from "../scene/specimenViews.js";
 import specimenAngles from "../scene/specimenAngles.json" with { type: "json" };
+import ObservationLocator from "./ObservationLocator.jsx";
 
 export default function StructureStudy({
   nodeId,
@@ -15,12 +16,11 @@ export default function StructureStudy({
   stopRotation,
   onView,
   onReset,
+  resetKey,
 }) {
   const [plate, setPlate] = useState(null);
-  const [selected, setSelected] = useState("");
   const en = lang === "en";
   const api = ready ? apiRef.current : null;
-  const targets = api?.getObservationTargets?.(mode, lang) ?? [];
   const openPlate = () => {
     if (!api?.ready) return;
     stopRotation();
@@ -74,34 +74,15 @@ export default function StructureStudy({
       >
         {en ? "Compare four views" : "四面视角对照"}
       </button>
-      {targets.length > 0 && (
-        <label>
-          <span>{en ? "Locate in this model" : "在模型中定位"}</span>
-          <select
-            value={selected}
-            onChange={(event) => {
-              const key = event.target.value;
-              stopRotation();
-              if (!key) {
-                setSelected("");
-                onReset();
-                return;
-              }
-              if (api.focusObservation(key)) {
-                setSelected(key);
-                onView(api.getView());
-              }
-            }}
-          >
-            <option value="">{en ? "Entire specimen" : "完整视野"}</option>
-            {targets.map((target) => (
-              <option key={target.key} value={target.key}>
-                {target.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
+      <ObservationLocator
+        key={`${nodeId}/${mode}/${resetKey}`}
+        api={api}
+        mode={mode}
+        lang={lang}
+        onSelect={stopRotation}
+        onReset={onReset}
+        onFocus={onView}
+      />
       {plate && plate.scene === api && (
         <ObservationPlate
           plate={plate}

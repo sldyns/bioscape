@@ -47,6 +47,7 @@ import { readSceneState, sceneHash, sceneUrl } from "./exploration/state.js";
 import { getProcessesForStructure } from "./exploration/relationships.js";
 import { prepareRelatedProcessEntry } from "./exploration/relatedProcessEntry.js";
 import { normalizeComparisonState, isComparisonId } from "./compare/state.js";
+import { defaultComparisonPartner } from "./compare/studies.js";
 import "./exploration/exploration.css";
 
 import { getNode, modelNotes } from "./hierarchy";
@@ -494,23 +495,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
         labels,
         view: sceneApi.current?.getView(),
       },
-      right: {
-        id:
-          {
-            cell: "plant",
-            plant: "cell",
-            bacterium: "cell",
-            yeast: "plant",
-            paramecium: "cell",
-            phage: "bacterium",
-            erythrocyte: "neuron",
-            neuron: "muscleFibre",
-            muscleFibre: "neuron",
-            rodPhotoreceptor: "neuron",
-          }[path[0]] || "plant",
-        mode: "whole",
-        labels: false,
-      },
+      right: defaultComparisonPartner(path),
     });
     comparisonState.current = next;
     setComparison(next);
@@ -544,9 +529,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
           ? processCatalog[processId].title[lang]
           : node.name,
       subtitle: comparison
-        ? [comparisonState.current.left.id, comparisonState.current.right.id]
-            .map((key) => getNode(key, lang).name)
-            .join(" · ")
+        ? api.getSubtitle()
         : experience === "process"
           ? processCatalog[processId].summary?.[lang] || ""
           : viewContext,
@@ -1248,6 +1231,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                 {!en && <p className="latin-name">{node.en}</p>}
                 <p className="node-description">{node.desc}</p>
                 <StructureStudy
+                  resetKey={resetKey}
                   key={path.join("/") + ":" + mode}
                   nodeId={id}
                   apiRef={sceneApi}

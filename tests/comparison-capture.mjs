@@ -15,7 +15,48 @@ try {
     outfile,
     logLevel: "silent",
   });
-  const { comparisonCaptureLayout } = await import(pathToFileURL(outfile));
+  const { comparisonCaptureLayout, comparisonPaneCaptions } = await import(
+    pathToFileURL(outfile)
+  );
+  const captions = comparisonPaneCaptions(
+    {
+      left: {
+        id: "paraMacroChromatin",
+        path: ["paramecium", "paraMacro", "paraMacroChromatin"],
+      },
+      right: {
+        id: "paraMicroChromatin",
+        path: ["paramecium", "paraMicro", "paraMicroChromatin"],
+      },
+    },
+    "zh",
+  );
+  assert.notEqual(
+    captions[0].name + captions[0].context,
+    captions[1].name + captions[1].context,
+  );
+  const pores = comparisonPaneCaptions(
+    {
+      left: {
+        id: "nuclearPores",
+        path: ["plant", "plantNucleus", "nuclearPores"],
+      },
+      right: {
+        id: "yeastNuclearPores",
+        path: ["yeast", "yeastNucleus", "yeastNuclearPores"],
+      },
+    },
+    "en",
+  );
+  assert.match(pores[0].context, /plant/i);
+  assert.match(pores[1].context, /yeast/i);
+  assert.deepEqual(
+    comparisonPaneCaptions(
+      { left: { id: "cell" }, right: { id: "plant" } },
+      "zh",
+    ).map((c) => c.context),
+    ["", ""],
+  );
   assert.equal(
     typeof comparisonCaptureLayout,
     "function",
