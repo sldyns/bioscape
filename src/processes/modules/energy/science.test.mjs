@@ -1,3 +1,4 @@
+import "./adenineExchange.science.test.mjs";
 import assert from "node:assert/strict";
 import { Matrix4, Vector3, Box3 } from "three";
 import respiration from "./respirationProcess.js";

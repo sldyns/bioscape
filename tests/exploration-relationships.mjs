@@ -98,7 +98,7 @@ try {
     definitionMetadata.map((d) => [d.id, d.controls]),
   );
   const stages = new Map(definitionMetadata.map((d) => [d.id, d.stages]));
-  assert.equal(Object.keys(processCatalog).length, 84);
+  assert.equal(Object.keys(processCatalog).length, 87);
   let rootCases = 0;
   let destinations = 0;
   const rootOnly = [];
@@ -516,7 +516,7 @@ try {
       }
     }
   console.log(
-    `Exploration relationships: 84 processes, ${rootCases} supported root/process cases, ${destinations} validated destinations; ${rootOnly.length} qualified root-only cases.`,
+    `Exploration relationships: ${Object.keys(processCatalog).length} processes, ${rootCases} supported root/process cases, ${destinations} validated destinations; ${rootOnly.length} qualified root-only cases.`,
   );
   console.log(`Root-only scope: ${rootOnly.join(", ")}`);
   console.log(

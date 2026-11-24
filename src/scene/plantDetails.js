@@ -4,7 +4,6 @@ import {
   TAU,
   ball,
   tube,
-  setHit,
   place,
   shell,
   aqueousMixture,
@@ -23,19 +22,12 @@ import {
 } from "./plantOrganelleDetails";
 import { golgiAssembly } from "./golgiDetails";
 import { ribosomeBody } from "./ribosomeDetails";
-import { detailModel } from "./detailModels";
 import {
   plantCompartmentDetail,
   vacuoleAssembly,
 } from "./plantCompartmentDetails";
 import { plantWallDetail } from "./plantWallDetails";
 import { chloroplastDetail, chloroplastAssembly } from "./chloroplastDetails";
-function remap(g, map, fallback) {
-  g.traverse((o) => {
-    if (o.isMesh) o.userData.hitId = map[o.userData.hitId] || fallback;
-  });
-  return g;
-}
 function wall() {
   const g = new T.Group();
   shell(g, [2.15, 2.62, 1.32], 0.12, "#b0be91", "cellWall", {
@@ -192,20 +184,5 @@ export function plantDetail(id) {
   const organelle = plantOrganelleDetail(id);
   if (organelle) return organelle;
   if (id === "plantCytoplasm") return aqueousMixture(id);
-  if (id === "plantRibosome")
-    return remap(
-      detailModel("ribosomes"),
-      {
-        largeSubunit: "plant60S",
-        smallSubunit: "plant40S",
-        mrna: "mrna",
-        trna: "trna",
-      },
-      id,
-    );
-  if (id === "plant60S" || id === "plant40S") {
-    const key = id === "plant60S" ? "largeSubunit" : "smallSubunit";
-    return setHit(ribosomeBody({ detail: true, only: key }), id);
-  }
   return null;
 }

@@ -1,5 +1,21 @@
 export const entries = [
   {
+    id: "adenineExchange",
+    module: "./modules/energy/adenineExchangeProcess.js",
+    roots: ["cell"],
+    title: {
+      zh: "线粒体 ADP / ATP 交换",
+      en: "Mitochondrial ADP / ATP exchange",
+    },
+    summary: {
+      zh: "跟随两个独立核苷酸，观察内膜载体交替向膜间隙和基质开放。",
+      en: "Track two nucleotides as an inner-membrane carrier opens alternately to the intermembrane space and the matrix.",
+    },
+    color: "#9b869f",
+    category: "energy",
+    thumbnail: "/process-thumbnails/adenineExchange.svg",
+  },
+  {
     id: "respiration",
     module: "./modules/energy/respirationProcess.js",
     roots: ["cell", "plant", "yeast", "paramecium"],

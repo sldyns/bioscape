@@ -105,7 +105,9 @@ export function makePresentation(model, id, special = null) {
     if (direction.length() < 0.2)
       direction.set(Math.cos(i * 2.4), Math.sin(i * 2.4), 0.35);
     direction.normalize().multiplyScalar(0.95);
-    if (["erythrocyte", "neuron", "muscleFibre"].includes(id)) {
+    if (
+      ["erythrocyte", "neuron", "muscleFibre", "rodPhotoreceptor"].includes(id)
+    ) {
       // Nested anatomical layers have nearly identical centroids. Explicit
       // directions reveal them while keeping continuous neurites attached.
       const offsets = {
@@ -118,6 +120,12 @@ export function makePresentation(model, id, special = null) {
         neuronMyelin: [0.45, 1, 0.6],
         neuronNodes: [0.45, 0, 0],
         neuronTerminals: [0.45, 0, 0],
+        rodOuterSegment: [0, 1.5, -0.65],
+        rodDiscs: [0, -0.75, 0.55],
+        rodRhodopsin: [0.15, -1.4, 1.25],
+        rodConnectingCilium: [-0.1, 1.1, 0.4],
+        rodInnerSegment: [-0.4, 0, 0],
+        rodSpherule: [-0.85, -0.85, 0.45],
         muscleFibreSarcolemma: [0, 1.1, 0.5],
         muscleFibreNuclei: [0, -1.15, 0.25],
         muscleFibreMyofibrils: [0, 0, 0],

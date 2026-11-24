@@ -119,12 +119,30 @@ try {
       "legacy ID-only lookup keeps its canonical root",
     );
   }
-  assert.equal(api.searchComparisonEntries().length, 9);
+  assert.equal(api.searchComparisonEntries().length, 10);
   assert.equal(
     api.comparisonEntries.length,
-    182,
+    191,
     "legacy canonical ID directory remains deduplicated",
   );
+
+  for (const query of ["视紫红质", "rhodopsin"]) {
+    const first = api.searchComparisonEntries(query)[0];
+    assert.equal(first.id, "rodRhodopsin");
+    assert.deepEqual(first.trail, ["rodPhotoreceptor"]);
+  }
+  const junctions = api.searchComparisonEntries("crista junction");
+  assert.ok(
+    junctions.some(
+      (entry) => entry.id === "cristaJunction" && entry.trail[0] === "plant",
+    ),
+  );
+  assert.ok(
+    junctions.some(
+      (entry) => entry.id === "cristaJunction" && entry.trail[0] === "cell",
+    ),
+  );
+  assert.equal(api.searchComparisonEntries("cristae")[0].id, "cristae");
 
   const legacy = api.normalizeComparisonState({
     left: { id: "nucleolus" },

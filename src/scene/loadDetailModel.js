@@ -1,16 +1,27 @@
 import { plantDefinitions, bacteriaDefinitions } from "../catalog/cellTypes";
-import {
-  specializedSpecimenIds,
-  specializedPartIds,
-} from "../compare/specimens.js";
+import { specializedOwner, prepareSpecimen } from "../compare/specimens.js";
 import { microbeIds } from "../catalog/microbes";
 const plantIds = new Set(plantDefinitions.map((d) => d[0]));
 const bacteriaIds = new Set(bacteriaDefinitions.map((d) => d[0]));
 import { detailModel } from "./detailModels";
+const specimenBuilders = {
+  erythrocyte: () =>
+    import("../compare/models/erythrocyte.js").then((m) => m.buildErythrocyte),
+  neuron: () =>
+    import("../compare/models/neuron.js").then((m) => m.buildNeuron),
+  muscleFibre: () =>
+    import("../compare/models/muscle.js").then((m) => m.buildMuscleFibre),
+  rodPhotoreceptor: () =>
+    import("../compare/models/rod.js").then((m) => m.buildRod),
+};
+
 export async function loadDetailModel(id) {
-  if (specializedSpecimenIds.has(id) || specializedPartIds.has(id)) {
-    const { getSpecimenModel } = await import("../compare/specimenModels.js");
-    return detailModel(id, getSpecimenModel(id));
+  const owner = specializedOwner.get(id);
+  if (owner) {
+    return detailModel(
+      id,
+      prepareSpecimen(id, await specimenBuilders[owner]()),
+    );
   }
   if (microbeIds.has(id)) {
     const make =
@@ -36,6 +47,13 @@ export async function loadDetailModel(id) {
             ? await import("./data/ribosome-7k00-largeSubunit.json")
             : await import("./data/ribosome-7k00-smallSubunit.json");
     return detailModel(id, ribosomeReference(id, data, subunit));
+  }
+  if (id === "plantRibosome") {
+    const [{ plantRibosomeReference }, { default: data }] = await Promise.all([
+      import("./plantRibosomeReference"),
+      import("./data/ribosome-8b2l-assembly.json"),
+    ]);
+    return detailModel(id, plantRibosomeReference(data));
   }
   if (id === "bacterialRibosome") {
     const [

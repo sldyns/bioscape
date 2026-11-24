@@ -241,6 +241,7 @@ try {
     const hiddenInside = {
       erythrocyte: ["erythrocyteCytosol"],
       neuron: ["neuronNucleus"],
+      rodPhotoreceptor: ["rodDiscs", "rodRhodopsin"],
       muscleFibre: [
         "muscleFibreNuclei",
         "muscleFibreSarcomere",

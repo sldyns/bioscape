@@ -8,6 +8,28 @@ import {
   ease,
   bilingual as b,
 } from "../../kit.js";
+
+// Select a material contact on the rendered helix, approached from the thick filament.
+function actinContact(monomers, domains, x, y) {
+  const sign = Math.sign(y);
+  const target = new THREE.Vector3(x, y - sign * 0.18, 0.07);
+  const center = new THREE.Vector3(),
+    origin = new THREE.Vector3();
+  const matrix = new THREE.Matrix4();
+  let nearest = Infinity;
+  for (let i = 0; i < monomers.count; i++) {
+    monomers.getMatrixAt(i, matrix);
+    center.setFromMatrixPosition(matrix);
+    const distance = center.distanceToSquared(target);
+    if (distance < nearest) {
+      nearest = distance;
+      origin.set(center.x, 0, center.z);
+    }
+  }
+  const ray = new THREE.Raycaster(origin, new THREE.Vector3(0, sign, 0));
+  return ray.intersectObjects([monomers, domains], false)[0].point;
+}
+
 export default {
   id: "muscle",
   title: b("骨骼肌滑动肌丝", "Skeletal muscle sliding filaments"),
@@ -46,15 +68,15 @@ export default {
       0.31,
       "横桥结合",
       "Cross-bridges attach",
-      "已结合 ADP 与无机磷酸的肌球蛋白头接触暴露的肌动蛋白位点。图中同步头部用于解释，真实肌节中的头部并不同步。",
-      "Myosin heads carrying ADP and inorganic phosphate contact exposed actin sites. Heads are synchronized for explanation; real sarcomeres cycle asynchronously.",
+      "携带 ADP 和无机磷酸的肌球蛋白头陆续接触暴露的肌动蛋白位点。为了看清一次冲程，图中的头部随后一起摆动。真实肌节中，各头部的循环彼此错开。",
+      "Myosin heads carrying ADP and inorganic phosphate dock on exposed actin sites. The drawing groups their next stroke so it can be followed. Individual heads cycle asynchronously in muscle.",
     ],
     [
       0.43,
       "动力冲程",
       "Power stroke",
-      "强结合、磷酸释放与头部构象变化耦联，推动两侧细肌丝向肌节中央滑动；Z 盘距离减小。",
-      "Strong binding, phosphate release and head conformational changes are coupled, sliding thin filaments toward the center and bringing Z discs closer.",
+      "肌球蛋白头抓住同一肌动蛋白位点，杠杆臂摆动，两侧细肌丝向 M 线滑动，Z 盘靠近。磷酸释放与动力冲程耦联。",
+      "Each motor stays on the same actin site as its lever arm swings. Both thin filaments slide toward the M line, bringing the Z discs closer. Phosphate release is coupled to the working stroke.",
     ],
     [
       0.65,
@@ -76,6 +98,21 @@ export default {
     description: b(dz, de),
   })),
   sources: [
+    {
+      title:
+        "Wang et al. (2021) — The molecular basis for sarcomere organization in vertebrate skeletal muscle",
+      url: "https://pubmed.ncbi.nlm.nih.gov/33765442/",
+    },
+    {
+      title:
+        "Reconditi et al. (2004) — The myosin motor in muscle generates a smaller and slower working stroke at higher load",
+      url: "https://pubmed.ncbi.nlm.nih.gov/15058307/",
+    },
+    {
+      title:
+        "Wakayama et al. (2004) — Structural transients of contractile proteins upon sudden ATP liberation in skeletal muscle fibers",
+      url: "https://pubmed.ncbi.nlm.nih.gov/15240477/",
+    },
     {
       title: "OpenStax — Muscle Fiber Contraction and Relaxation",
       url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/10-3-muscle-fiber-contraction-and-relaxation",
@@ -108,9 +145,9 @@ export default {
       for (let j = 0; j <= 140; j++) {
         const x = -2.25 + (4.5 * j) / 140,
           a = x * 14 + strand;
-        pts.push([x, 0.15 * Math.cos(a), 0.15 * Math.sin(a)]);
+        pts.push([x, 0.177 * Math.cos(a), 0.177 * Math.sin(a)]);
       }
-      k.tube(pts, 0.031, k.material("#bd9cac"), group, 160);
+      k.tube(pts, 0.024, k.material("#bd9cac"), group, 160);
     }
     const mline = k.mesh(box, k.material("#a5aaa7"), [0, 0, -0.25]);
     mline.scale.set(0.07, 2.2, 0.16);
@@ -147,6 +184,7 @@ export default {
           k.material("#95b6a7"),
           36 * 2 * 2,
         );
+        domains.name = `actin outer domains ${side}:${y}`;
         sideGroup.add(monomers, domains);
         const temp = new THREE.Object3D();
         let idx = 0;
@@ -232,23 +270,37 @@ export default {
           ion.name = `muscle calcium marker ${ions.length}`;
           ions.push({ object: ion, y });
         }
-        for (const anchor of [1.1, 1.62, 2.03]) {
+        for (const [anchor, dockStart, dockEnd] of [
+          [1.1, 0.31, 0.37],
+          [1.62, 0.31, 0.42],
+          [2.03, 0.27, 0.31],
+        ]) {
+          const sign = Math.sign(y);
           const pivot = new THREE.Group();
           pivot.name = `myosin cross-bridge ${side}:${y}:${anchor}`;
-          pivot.position.set(side * anchor, 0, 0.12);
+          pivot.position.x = side * anchor;
           group.add(pivot);
-          const arm = k.segment(
-            [0, 0, 0],
-            [0, Math.sign(y) * 0.6, 0],
-            0.065,
+          const base = new THREE.Vector3(0, sign * 0.08, -0.03);
+          const stalk = k.segment(
+            base.toArray(),
+            [0, sign * 0.2, 0],
+            0.039,
             myosin,
             pivot,
           );
-          const head = motorHead(k, pivot, Math.sign(y), myosin);
+          stalk.name = "myosin S2 tether";
+          const { head, lever, shaft } = motorHead(k, pivot, sign, myosin);
+          const site = actinContact(
+            monomers,
+            domains,
+            side * (anchor + 0.29),
+            y,
+          );
+          site.sub(pivot.position);
           const atp = new THREE.Group();
           atp.name = "myosin nucleotide-state markers";
-          atp.position.set(0.14, Math.sign(y) * 0.6, 0.16);
-          pivot.add(atp);
+          atp.position.set(0.025, -sign * 0.17, 0.145);
+          head.add(atp);
           const ATP = k.ball([0, 0, 0], 0.07, nucleotide, atp);
           ATP.name = "ATP bound marker";
           const ADP = k.ball([-0.035, 0, 0], 0.052, k.material("#b7a365"), atp);
@@ -256,15 +308,20 @@ export default {
           const Pi = k.ball([0.058, 0, 0], 0.031, k.material("#e0ceb0"), atp);
           Pi.name = "Pi bound marker";
           heads.push({
-            pivot,
-            arm,
+            base,
+            stalk,
             head,
-            atp,
+            lever,
+            shaft,
+            site,
+            dockStart,
+            dockEnd,
+            inward: new THREE.Vector3(0, -sign, 0),
             ATP,
             ADP,
             Pi,
             side,
-            sign: Math.sign(y),
+            sign,
           });
         }
       }
@@ -357,7 +414,16 @@ export default {
       k.label([-2.4, -1.13, 0.3], "肌动蛋白细肌丝", "Actin thin filament", 1),
       k.label([2.25, 1.16, 0.35], "Ca²⁺ → 肌钙蛋白", "Ca²⁺ → troponin", 1),
       k.label([1.6, -0.4, 0.45], "ATP / ADP + Pi", "ATP / ADP + Pi", 1),
+      k.label([-1.62, 0.6, 0.1], "横桥结合", "Cross-bridge attachment", 2),
     ];
+    const observedBridge = heads[4];
+    const lightChain = observedBridge.lever.getObjectByName(
+      "essential light chain",
+    );
+    const leverOffset = new THREE.Vector3(),
+      direction = new THREE.Vector3();
+    const zAxis = new THREE.Vector3(0, 0, 1),
+      up = new THREE.Vector3(0, 1, 0);
     function update(progress, parameters = {}) {
       const p = clamp(progress),
         allowed = parameters.calcium !== "low";
@@ -367,12 +433,8 @@ export default {
       const stroke = allowed ? phase(p, 0.43, 0.61) : 0,
         shift = 0.58 * stroke;
       const bound = allowed && p >= 0.31 && p < 0.65;
-      // Approach exposed actin before binding, then withdraw after ATP binds.
-      // Keep the bound interval unchanged without snapping the whole lever.
-      const contactReach = allowed
-        ? ease(p, 0.27, 0.31) * (1 - ease(p, 0.65, 0.675))
-        : 0;
-      const reset = phase(p, 0.72, 0.8);
+      const release = ease(p, 0.65, 0.675);
+      const travel = stroke - (allowed ? ease(p, 0.72, 0.8) : 0);
       const nucleotideState =
         !allowed || p < 0.43 || p >= 0.72
           ? "ADP + Pi"
@@ -391,11 +453,41 @@ export default {
         t.object.position.y = t.y + Math.sign(t.y) * (0.6 - 0.48 * active);
       });
       heads.forEach((h) => {
-        const lean = allowed ? -0.45 + 0.82 * stroke - 0.82 * reset : -0.45;
-        h.pivot.rotation.z = h.side * h.sign * lean;
-        const reach = 0.77 + 0.31 * contactReach;
-        h.pivot.scale.y = reach;
-        h.atp.visible = true;
+        const contact = allowed
+          ? ease(p, h.dockStart, h.dockEnd) * (1 - release)
+          : 0;
+        const clearance = 1 - contact;
+        // While bound, the motor and its original actin subunit move together.
+        h.head.position.copy(h.site);
+        h.head.position.x -= h.side * 0.58 * travel;
+        h.head.position.y -= h.sign * 0.28 * clearance;
+        h.head.rotation.z =
+          h.side * h.sign * 0.46 * (1 - 2 * travel) * clearance;
+
+        // A rigid light-chain lever swings about the distal converter. Its
+        // proximal end stays linked to the backbone by the flexible S2 tether.
+        const axial = h.side * 0.29 * (2 * travel - 1);
+        const depth = -0.31 * clearance;
+        const length = h.shaft.scale.y;
+        leverOffset.set(
+          axial,
+          -h.sign * Math.sqrt(length * length - axial * axial - depth * depth),
+          depth,
+        );
+        direction
+          .copy(leverOffset)
+          .applyAxisAngle(zAxis, -h.head.rotation.z)
+          .normalize();
+        h.lever.quaternion.setFromUnitVectors(h.inward, direction);
+        direction
+          .copy(h.lever.position)
+          .applyQuaternion(h.head.quaternion)
+          .add(h.head.position)
+          .add(leverOffset)
+          .sub(h.base);
+        h.stalk.position.copy(h.base).addScaledVector(direction, 0.5);
+        h.stalk.scale.y = direction.length();
+        h.stalk.quaternion.setFromUnitVectors(up, direction.normalize());
         h.ATP.visible = nucleotideState === "ATP";
         h.ADP.visible =
           nucleotideState === "ADP" || nucleotideState === "ADP + Pi";
@@ -418,6 +510,35 @@ export default {
         0,
         srVertices.getZ(0),
       );
+      const bridgeLabel = labels[9];
+      bridgeLabel.active = !allowed || (p >= 0.31 && p < 0.8);
+      if (!allowed) {
+        bridgeLabel.text.zh = "低 Ca²⁺ · 横桥保持分离";
+        bridgeLabel.text.en = "Low Ca²⁺ · head remains detached";
+        anchorObject(bridgeLabel, observedBridge.head.children[2]);
+      } else if (p < 0.43) {
+        bridgeLabel.text.zh = "肌球蛋白头接触肌动蛋白";
+        bridgeLabel.text.en = "Myosin docks on actin";
+        anchorObject(
+          bridgeLabel,
+          observedBridge.head.children[2],
+          0,
+          observedBridge.sign,
+          0,
+        );
+      } else if (p < 0.65) {
+        bridgeLabel.text.zh = "已结合横桥 · 杠杆臂摆动";
+        bridgeLabel.text.en = "Attached cross-bridge · lever swing";
+        anchorObject(bridgeLabel, lightChain);
+      } else if (p < 0.72) {
+        bridgeLabel.text.zh = "ATP 结合 · 头部脱离";
+        bridgeLabel.text.en = "ATP binds · head detaches";
+        anchorObject(bridgeLabel, observedBridge.ATP);
+      } else {
+        bridgeLabel.text.zh = "ATP 水解后 · 杠杆臂复位";
+        bridgeLabel.text.en = "After hydrolysis · lever resets";
+        anchorObject(bridgeLabel, lightChain);
+      }
       anchorObject(labels[2], thin[0].zDisc, 0, -0.45, 0.5);
       anchorObject(labels[3], thin[1].zDisc, 0, -0.45, 0.5);
       anchorInstance(labels[4], labelledActin, labelledActin.count - 1);

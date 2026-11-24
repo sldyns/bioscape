@@ -497,6 +497,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
             erythrocyte: "neuron",
             neuron: "muscleFibre",
             muscleFibre: "neuron",
+            rodPhotoreceptor: "neuron",
           }[path[0]] || "plant",
         mode: "whole",
         labels: false,

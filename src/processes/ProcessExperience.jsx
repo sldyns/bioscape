@@ -379,6 +379,7 @@ function ProcessPlayer({
     pausePlayback();
     setPlate({
       scene,
+      stageIndex,
       title: t("阶段图版", "Stage views"),
       subtitle: [definition.title[lang], conditionNote?.title]
         .filter(Boolean)

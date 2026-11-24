@@ -3,6 +3,11 @@
  * Chapters remain the normal-mechanism reference when a selected condition blocks it.
  */
 export const CONDITION_CONTROL_AUDIT = {
+  phototransduction: {
+    illumination: { default: "flash", options: ["flash", "dark"] },
+  },
+  rodDiscRenewal: {},
+  adenineExchange: {},
   secretion: {},
   transcription: {},
   photosynthesis: {},
@@ -458,6 +463,19 @@ export const CONDITION_CONTROL_AUDIT = {
 };
 
 const rules = [
+  {
+    processId: "phototransduction",
+    when: { illumination: "dark" },
+    kind: "condition",
+    title: {
+      zh: "持续黑暗中的暗电流",
+      en: "Dark current under sustained darkness",
+    },
+    body: {
+      zh: "持续黑暗时，视紫红质保持暗态，cGMP 门控通道仍可开放。各阶段显示同一细胞在没有闪光时的状态。",
+      en: "In sustained darkness rhodopsin stays in its dark state and cGMP-gated channels can conduct. Each chapter describes the cell at the corresponding time without a flash.",
+    },
+  },
   {
     processId: "replication",
     when: {

@@ -731,8 +731,8 @@ export const extraNotes = {
     en: "Experimental E. coli 70S backbones from PDB 7K00 preserve both subunits in one deposited coordinate frame. Colors distinguish 50S/30S and rRNA/proteins. tRNA, mRNA, ligands, and unmodeled residues are omitted.",
   },
   plantRibosome: {
-    zh: "总览保留80S功能示意，进入大小亚基切换到小麦实验主链参考（8JIV / 8JIW）；两个尺度不用于比较尺寸。",
-    en: "The overview retains an 80S functional schematic; subunits switch to experimental wheat backbone references (8JIV / 8JIW). The two scales are not for size comparison.",
+    zh: "总览取自烟草叶胞质中翻译时的 80S 核糖体（PDB 8B2L）。60S、40S、mRNA 和两条 tRNA 共用实验坐标。剖切打开亚基之间的结合区。单独查看 60S 或 40S 时，显示小麦胚的独立实验结构（8JIV、8JIW）。",
+    en: "The overview uses a translating cytosolic 80S ribosome from tobacco leaves (PDB 8B2L). Both subunits, the mRNA and two tRNAs share the deposited coordinates. The cutaway exposes the binding sites between the subunits. The separate 60S and 40S views show wheat-germ structures 8JIV and 8JIW.",
   },
 };
 

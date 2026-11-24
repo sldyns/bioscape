@@ -155,30 +155,56 @@ export function pore(
   return { group, domains, gate, setOpen };
 }
 export function motorHead(k, parent, sign, material) {
-  const group = new THREE.Group();
-  parent.add(group);
-  group.name = "myosin motor cleft and lever arm";
+  const head = new THREE.Group();
+  parent.add(head);
+  head.name = "myosin motor cleft and lever arm";
+  // The outer pole of the third lobe is the actin-facing contact point.
   for (const [x, y, z, sx, sy, sz] of [
-    [-0.065, 0.57, 0, 0.11, 0.095, 0.1],
-    [0.08, 0.6, -0.025, 0.1, 0.1, 0.08],
-    [0, 0.7, -0.05, 0.115, 0.055, 0.07],
-    [-0.08, 0.69, 0.04, 0.07, 0.055, 0.065],
+    [-0.065, -0.185, 0.05, 0.11, 0.095, 0.1],
+    [0.08, -0.155, 0.025, 0.1, 0.1, 0.08],
+    [0, -0.055, 0, 0.115, 0.055, 0.07],
+    [-0.08, -0.065, 0.09, 0.07, 0.055, 0.065],
   ])
-    k.ball([x, sign * y, z], [sx, sy, sz], material, group);
+    k.ball([x, sign * y, z], [sx, sy, sz], material, head);
+  head.children[2].name = "actin-facing motor lobe";
+  const lever = new THREE.Group();
+  lever.name = "myosin light-chain lever";
+  lever.position.set(0, -sign * 0.18, 0.045);
+  head.add(lever);
+  const shaft = k.segment(
+    [0, 0, 0],
+    [0, -sign * 0.44, 0],
+    0.052,
+    material,
+    lever,
+  );
+  shaft.name = "myosin lever shaft";
   const light = k.material("#c2a8b5");
-  for (const y of [0.24, 0.35, 0.45])
-    k.ball([0.012, sign * y, 0.01], [0.085, 0.055, 0.066], light, group);
+  for (const [name, y] of [
+    ["essential light chain", 0.12],
+    ["regulatory light chain", 0.29],
+  ]) {
+    for (const lobe of [-1, 1]) {
+      const part = k.ball(
+        [lobe * 0.022, -sign * (y + lobe * 0.036), lobe * 0.012],
+        [0.063, 0.056, 0.055],
+        light,
+        lever,
+      );
+      part.name = name;
+    }
+  }
   const helix = [];
   for (let i = 0; i <= 40; i++) {
     let t = i / 40;
     helix.push([
       0.022 * Math.cos(t * Math.PI * 8),
-      sign * (0.12 + t * 0.4),
+      -sign * (0.02 + t * 0.4),
       0.022 * Math.sin(t * Math.PI * 8),
     ]);
   }
-  k.tube(helix, 0.019, material, group, 64);
-  return group;
+  k.tube(helix, 0.019, material, lever, 64);
+  return { head, lever, shaft };
 }
 
 // Mechanism schematic of an AMPA tetramer: each subunit has M1/M3/M4

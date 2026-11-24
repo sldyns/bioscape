@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import * as THREE from "three";
 import { fileURLToPath } from "node:url";
 import { extensionEntries } from "../src/processes/extensions.js";
+import { rootIds } from "../src/catalog/cellTypes.js";
 const root = fileURLToPath(new URL("../", import.meta.url)),
   issues = [],
   summary = [];
@@ -43,20 +44,7 @@ for (const e of extensionEntries) {
     seen.add(e.id);
     if (!fs.existsSync(root + "/public" + e.thumbnail))
       error(e.id, "thumbnail missing");
-    if (
-      e.roots.some(
-        (r) =>
-          ![
-            "cell",
-            "plant",
-            "yeast",
-            "bacterium",
-            "paramecium",
-            "phage",
-          ].includes(r),
-      )
-    )
-      error(e.id, "unknown root");
+    if (e.roots.some((r) => !rootIds.includes(r))) error(e.id, "unknown root");
     const d = (
       await import(new URL("../src/processes/" + e.module, import.meta.url))
     ).default;

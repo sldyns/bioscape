@@ -1,3 +1,4 @@
+import { normalizeSearch } from "../catalog/search.js";
 import { cellTypes, contextNotes } from "../catalog/cellTypes.js";
 import { getNode, modelNotes } from "../hierarchy.js";
 import { specializedSpecimens, specializedSpecimenIds } from "./specimens.js";
@@ -226,8 +227,8 @@ export const comparisonGroups = [
   })),
   {
     id: "specialized",
-    zh: "人体特化细胞",
-    en: "Specialized human cells",
+    zh: "动物特化细胞",
+    en: "Specialized animal cells",
     entries: scopedEntries.filter((entry) => entry.rootId === "specialized"),
   },
 ];
@@ -274,43 +275,49 @@ export function comparisonRows(
   return rows;
 }
 
-// Empty search starts with the nine whole models. A category reveals its parts;
-// search matches bilingual names and ancestry once per ID within each specimen.
+let searchIndex;
+function indexedEntries() {
+  if (!searchIndex) {
+    searchIndex = scopedEntries.map((entry) => {
+      const names = [entry.zh, entry.en].map(normalizeSearch);
+      const ancestors = entry.trail.flatMap((id) => {
+        const parent = entryById.get(id);
+        return [parent.zh, parent.en];
+      });
+      return {
+        entry,
+        names,
+        words: names.join(" ").split(/[^\p{L}\p{N}]+/u),
+        text: [...names, ...ancestors.map(normalizeSearch)].join(" "),
+      };
+    });
+  }
+  return searchIndex;
+}
+
+// A named structure ranks ahead of its descendants. Keep each specimen's own
+// path for structures shared between species, including deep links from home.
 export function searchComparisonEntries(query = "", group = "") {
-  const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  const results = scopedEntries.filter((entry) => {
-    if (group && entry.rootId !== group) return false;
-    if (!terms.length) return group || !entry.trail.length;
-    const names = [entry, ...entry.trail.map((id) => entryById.get(id))]
-      .filter(Boolean)
-      .flatMap((item) => [item.zh, item.en])
-      .join(" ")
-      .toLocaleLowerCase();
-    return terms.every((term) => names.includes(term));
-  });
-  if (!terms.length) return results;
-  // Keep ancestry matches available, but lead with the structure actually named
-  // by the query ("myelin" should not bury Myelin below every neuronal part).
-  const phrase = terms.join(" ");
-  const rank = (entry) => {
-    const names = [entry.zh, entry.en].map((name) => name.toLocaleLowerCase());
-    const words = names.join(" ").split(/[^\p{L}\p{N}]+/u);
-    return (
-      (names.includes(phrase) ? 20 : 0) +
-      terms.reduce(
-        (score, term) =>
-          score +
-          (words.includes(term)
-            ? 4
-            : names.some((name) => name.includes(term))
-              ? 2
-              : 0),
-        0,
-      )
+  const phrase = normalizeSearch(query).replace(/\s+/g, " ");
+  if (!phrase) {
+    return scopedEntries.filter((entry) =>
+      group ? entry.rootId === group : !entry.trail.length,
     );
-  };
-  return results
-    .map((entry) => ({ entry, rank: rank(entry) }))
-    .sort((a, b) => b.rank - a.rank)
-    .map(({ entry }) => entry);
+  }
+  const terms = phrase.split(/\s+/);
+  const results = [];
+  for (const { entry, names, words, text } of indexedEntries()) {
+    if (
+      (group && entry.rootId !== group) ||
+      !terms.every((term) => text.includes(term))
+    )
+      continue;
+    let rank = names.includes(phrase) ? 20 : 0;
+    for (const term of terms) {
+      if (words.includes(term)) rank += 4;
+      else if (names.some((name) => name.includes(term))) rank += 2;
+    }
+    results.push({ entry, rank });
+  }
+  return results.sort((a, b) => b.rank - a.rank).map(({ entry }) => entry);
 }

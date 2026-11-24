@@ -1,3 +1,4 @@
+import { rodSpecimen } from "./models/rodMetadata.js";
 import { erythrocyteRefinementMetadata } from "./models/erythrocyteMetadata.js";
 import { neuronRefinementMetadata } from "./models/neuronMetadata.js";
 import { muscleMetadata } from "./models/muscleMetadata.js";
@@ -264,6 +265,7 @@ export const specializedSpecimens = [
       },
     ],
   },
+  rodSpecimen,
 ];
 
 const refinements = {
@@ -273,6 +275,7 @@ const refinements = {
 };
 for (const specimen of specializedSpecimens) {
   const refinement = refinements[specimen.id];
+  if (!refinement) continue;
   specimen.scope = refinement.scope;
   specimen.parts = Array.isArray(refinement.parts)
     ? refinement.parts
@@ -284,6 +287,21 @@ for (const specimen of specializedSpecimens) {
     (source, index, sources) =>
       sources.findIndex((item) => item.url === source.url) === index,
   );
+}
+
+export const specializedOwner = new Map(
+  specializedSpecimens.flatMap(({ id, parts }) => [
+    [id, id],
+    ...parts.map((part) => [part.id, id]),
+  ]),
+);
+
+export function prepareSpecimen(id, build) {
+  if (!build) return null;
+  const group = build(id);
+  group.userData.ownedGeometry = true;
+  group.userData.specimenId = specializedOwner.get(id);
+  return group;
 }
 
 export const specializedSpecimenIds = new Set(

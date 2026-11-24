@@ -182,6 +182,24 @@ const definitions = [
     "嵴是内膜向内的折叠，扩大内膜面积。其形态可以是片状或管状，与线粒体的功能状态有关。",
     "Cristae are folds of the inner membrane that increase its area. They may be lamellar or tubular, depending on mitochondrial state and cell type.",
     "#d4ac77",
+    ["cristaJunction", "cristaRim"],
+  ],
+  [
+    "cristaJunction",
+    "嵴连接部",
+    "Crista junction",
+    "内边界膜在这里延续为嵴膜。沿狭窄颈部的开口，可从膜间隙进入嵴腔。",
+    "The inner boundary membrane continues into the crista membrane. A narrow neck connects the intermembrane space to the crista lumen.",
+    "#b8957e",
+    [],
+  ],
+  [
+    "cristaRim",
+    "嵴缘与 ATP 合酶二聚体",
+    "Crista rim and ATP synthase dimers",
+    "在片状嵴弯曲的边缘，一些 ATP 合酶二聚体排列成行。膜内的 F₀ 与朝向基质的 F₁ 头部沿嵴缘可以分别辨认。",
+    "Rows of ATP synthase dimers follow the curved rim of a lamellar crista. Membrane-embedded F₀ and matrix-facing F₁ heads can be followed along the rim.",
+    "#ae99ad",
     [],
   ],
   [
@@ -705,8 +723,16 @@ export const modelNotes = {
     en: "Rings represent porins. The cut edge is artificial; Whole mode restores the membrane. Outer and inner membranes are two distinct lipid bilayers, not the two faces of a single membrane.",
   },
   cristae: {
-    zh: "沿裁切边缘可以看到一片连续内膜折出的嵴腔。成对的紫色小体表示嵴顶的一部分 ATP 合酶，它们的头部朝向基质。模型简化了嵴连接处的狭窄形状。",
-    en: "The cut edge reveals the lumen inside each fold of a continuous inner membrane. Paired purple heads mark some of the ATP synthases along the ridges and face the matrix. The narrow crista junctions are simplified.",
+    zh: "沿裁切边缘可追踪片状嵴与内边界膜的连续关系。进入嵴连接部观察腔道开口，或沿嵴缘辨认朝向基质的 ATP 合酶。",
+    en: "Follow the cut edge of a lamellar crista into the inner boundary membrane. Open the junction to trace its lumen or the curved rim to locate matrix-facing ATP synthases.",
+  },
+  cristaJunction: {
+    zh: "剖面去掉前侧一段膜，可从膜间隙沿狭口进入扩张的嵴腔。青色小体表示一个 Mic60 位点，其膜外结构域朝向膜间隙一侧。模型将一段嵴膜放大并裁切，宽度、形状和蛋白数量均为示意。",
+    en: "The cutaway removes a front sector so the open passage can be followed into the wider crista lumen. A teal feature represents one Mic60 site, with its membrane-extrinsic domain on the intermembrane-space side. The cropped membrane shape, junction width and protein count are schematic.",
+  },
+  cristaRim: {
+    zh: "每一对中，两个合酶分别嵌入弯曲膜面，头部朝基质侧张开。剖面裁掉近端一小段膜以显示嵴腔。所示对数、间距、倾角与蛋白外形用于说明位置关系；不同生物和细胞状态可有差异。",
+    en: "The two enzymes in each pair enter differently oriented parts of the same membrane, and their catalytic heads splay toward the matrix. A cut at the near end reveals the crista lumen. The displayed number, spacing, tilt and protein envelopes illustrate spatial relationships and vary across organisms and cell states.",
   },
   atpSynthase: {
     zh: "膜片环绕嵌入膜内的 F₀；中轴与周围支架连接朝向基质的 F₁ 头部。体块只表示功能分区，不代表特定物种的亚基数量或原子结构。",

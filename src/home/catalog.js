@@ -68,6 +68,13 @@ const modelIntroductions = {
     ),
     eyebrow: bilingual("动物 · 神经细胞", "Animal · Nerve cell"),
   },
+  rodPhotoreceptor: {
+    description: bilingual(
+      "沿成年小鼠视杆观察外节膜盘、连接纤毛和突触小球",
+      "Follow a mouse rod from its disc stack and cilium to the synaptic spherule.",
+    ),
+    eyebrow: bilingual("哺乳动物 · 视网膜", "Mammal · Retina"),
+  },
   muscleFibre: {
     description: bilingual(
       "进入一根多核肌细胞，观察肌原纤维与重复肌节",

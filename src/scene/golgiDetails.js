@@ -248,7 +248,13 @@ export function vesicleAssembly({
         { zh: "膜蛋白", en: "Membrane protein", position: [0.96, 0, -0.28] },
       ]
     : cargoOnly
-      ? []
+      ? [
+          {
+            zh: "折叠的可溶性货物蛋白",
+            en: "Folded soluble cargo protein",
+            position: [0.30072, 0.28863, 0.04712],
+          },
+        ]
       : [{ zh: "囊泡腔", en: "Vesicle lumen", position: [0.2, -0.65, -0.2] }];
   return g;
 }

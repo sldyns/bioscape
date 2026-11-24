@@ -14,7 +14,7 @@ import {
 } from "./microbeGeometry";
 import { place, setHit, lipidPatch } from "./specimenGeometry";
 import { rawMitochondrion } from "./mitochondriaDetails";
-import { plantER } from "./plantOrganelleDetails";
+import { yeastCorticalER } from "./yeastCorticalER";
 import { splitSection } from "./implicitMembrane";
 import { microbeNucleusPart } from "./parameciumDetails";
 function retainSurface(mesh, signedDistance) {
@@ -285,9 +285,6 @@ function septum() {
 function mito() {
   return setHit(rawMitochondrion({ includeDNA: false }), "yeastMito");
 }
-function er() {
-  return setHit(plantER(), "yeastER");
-}
 function yeast() {
   const g = new T.Group();
   texturedShell(g, [1.6, 1.95, 1.25], 0.09, "#c8b491", "yeastWall", {
@@ -316,7 +313,8 @@ function yeast() {
     [0.04, -1.42, 0.12, 1.1],
   ])
     place(g, mito(), "yeastMito", [x, y, z], 0.48, [0, 0, a]);
-  place(g, er(), "yeastER", [-0.7, 0.17, -0.28], 0.43, [0, 0, 0.2]);
+  const corticalER = yeastCorticalER({ inCell: true });
+  g.add(corticalER);
   const b = place(
     g,
     bud({ growing: true }),
@@ -365,7 +363,7 @@ function yeast() {
     yeastNucleus: [-0.61, 0.54, 0.5],
     yeastVacuole: [0.6, -0.3, 0.55],
     yeastMito: [0.05, -1.42, 0.4],
-    yeastER: [-0.9, 0.12, 0.05],
+    yeastER: corticalER.userData.partAnchors.yeastER,
     yeastBud: [1.25, 1.92, 0.3],
   };
   return g;
@@ -376,16 +374,66 @@ export function yeastDetail(id) {
       return yeast();
     case "yeastWall":
       return wallPatch();
-    case "yeastGlucan":
-      return setHit(wallPatch({ only: id }), id);
+    case "yeastGlucan": {
+      const g = setHit(wallPatch({ only: id }), id);
+      g.userData.landmarks = [
+        {
+          zh: "葡聚糖主链",
+          en: "Glucan backbone",
+          position: [-0.59771, -0.15226, 0.59605],
+        },
+        {
+          zh: "相邻葡聚糖链间的连接",
+          en: "Link between glucan chains",
+          position: [0.36232, -0.09299, 0.55365],
+        },
+      ];
+      return g;
+    }
     case "yeastMannan": {
       const g = new T.Group();
       ball(g, [0, -0.1, 0], [0.2, 0.28, 0.15], "#b4b392", id);
       glycan(g, [0, 0.07, 0], id, 1.7);
+      g.userData.landmarks = [
+        {
+          zh: "蛋白质核心",
+          en: "Protein core",
+          position: [0.00746, -0.09031, 0.14911],
+        },
+        {
+          zh: "甘露聚糖侧链",
+          en: "Mannan side chain",
+          position: [0.2319, 1.16167, -0.15035],
+        },
+      ];
       return g;
     }
-    case "yeastMembrane":
-      return lipidPatch(id);
+    case "yeastMembrane": {
+      const g = lipidPatch(id);
+      g.userData.landmarks = [
+        {
+          zh: "朝向细胞壁的脂质头部",
+          en: "Wall-facing lipid head",
+          position: [0.85111, 0.24636, 0.47022],
+        },
+        {
+          zh: "朝向细胞质的脂质头部",
+          en: "Cytosol-facing lipid head",
+          position: [-0.82889, -0.19364, 0.61022],
+        },
+        {
+          zh: "疏水脂肪酸链",
+          en: "Hydrophobic acyl chain",
+          position: [-0.11287, 0.1135, 0.58831],
+        },
+        {
+          zh: "跨膜蛋白",
+          en: "Transmembrane protein",
+          position: [-0.55234, 0.34578, 0.13463],
+        },
+      ];
+      return g;
+    }
     case "yeastNucleus":
       return nucleus(id, {
         nucleolusShape: "peripheral-crescent",
@@ -409,7 +457,7 @@ export function yeastDetail(id) {
     case "yeastMito":
       return mito();
     case "yeastER":
-      return er();
+      return yeastCorticalER();
     case "yeastBud":
       return bud();
     case "yeastSeptum":

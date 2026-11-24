@@ -289,17 +289,42 @@ const relationships = {
       ["bacterialCytoplasm", 0.38],
     ]),
   },
+  phototransduction: {
+    rodPhotoreceptor: links("rodPhotoreceptor", [
+      ["rodRhodopsin", 0.13],
+      ["rodDiscs", 0.3],
+      ["rodOuterSegment", 0.67],
+    ]),
+  },
+  rodDiscRenewal: {
+    rodPhotoreceptor: links("rodPhotoreceptor", [
+      ["rodConnectingCilium", 0],
+      ["rodOuterSegment", 0.1],
+      ["rodDiscs", 0.24],
+    ]),
+  },
+  adenineExchange: {
+    cell: links("cell", [
+      ["mitochondria", 0],
+      ["mitochondria/mitoInner", 0.15],
+      ["mitochondria/matrix", 0.34],
+    ]),
+  },
   respiration: {
     cell: links("cell", [
       ["mitochondria", 0],
       ["mitochondria/mitoInner", 0],
       ["mitochondria/mitoInner/cristae", 0.33],
+      ["mitochondria/mitoInner/cristae/cristaJunction", 0.33],
+      ["mitochondria/mitoInner/cristae/cristaRim", 0.67],
       ["mitochondria/mitoInner/atpSynthase", 0.67],
     ]),
     plant: links("plant", [
       ["plantMitochondria", 0],
       ["plantMitochondria/mitoInner", 0],
       ["plantMitochondria/mitoInner/cristae", 0.33],
+      ["plantMitochondria/mitoInner/cristae/cristaJunction", 0.33],
+      ["plantMitochondria/mitoInner/cristae/cristaRim", 0.67],
       ["plantMitochondria/mitoInner/atpSynthase", 0.67],
     ]),
     yeast: links("yeast", [["yeastMito", 0]]),

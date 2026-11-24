@@ -1,3 +1,4 @@
+import CatalogImage from "./CatalogImage.jsx";
 import React, {
   lazy,
   Suspense,
@@ -31,6 +32,7 @@ import { exploreSceneHash } from "./routes.js";
 import "./home.css";
 
 const ProjectDialog = lazy(() => import("../components/ProjectDialog.jsx"));
+const StructureMatches = lazy(() => import("./StructureMatches.jsx"));
 
 const processSearchText = new Map(
   homeProcesses.map((entry) => [
@@ -54,6 +56,9 @@ export default function HomePage({
   const specimen = homeModels.find((model) => model.id === specimenId);
   const [category, setCategory] = useState("featured");
   const [query, setQuery] = useState("");
+  const [structureQuery, setStructureQuery] = useState("");
+  const structureSearch = useRef(null);
+  const structureTerm = normalizeHomeSearch(structureQuery);
   const [activePreview, setActivePreview] = useState(null);
   const [projectPage, setProjectPage] = useState(null);
   useEffect(() => setActivePreview(null), [category, query]);
@@ -256,39 +261,87 @@ export default function HomePage({
           tabIndex={-1}
           aria-labelledby="home-models-title"
         >
-          <div className="home-section-heading">
+          <div className="home-section-heading home-model-heading">
             <div>
               <h2 id="home-models-title">
                 {t("模型图鉴", "The specimen collection")}
               </h2>
             </div>
+            <div className="home-search">
+              <Search size={16} aria-hidden="true" />
+              <input
+                ref={structureSearch}
+                type="search"
+                value={structureQuery}
+                placeholder={t(
+                  "搜索标本或内部结构",
+                  "Search specimens or structures",
+                )}
+                aria-label={t(
+                  "搜索标本或内部结构",
+                  "Search specimens or structures",
+                )}
+                onChange={(event) => setStructureQuery(event.target.value)}
+              />
+              {structureQuery && (
+                <button
+                  type="button"
+                  aria-label={t("清除结构搜索", "Clear structure search")}
+                  onClick={() => {
+                    setStructureQuery("");
+                    structureSearch.current.focus();
+                  }}
+                >
+                  <X size={15} />
+                </button>
+              )}
+            </div>
           </div>
-          <div className="home-model-grid">
-            {homeModels.map((model) => (
-              <a
-                className={`home-model-card is-${model.id}`}
-                href={exploreSceneHash(model.href, lang)}
-                key={model.id}
-                onClick={(event) => follow(event, model.href)}
-              >
-                <div className="home-model-media">
-                  <img
-                    src={assetUrl(model.image)}
-                    alt=""
-                    width="1000"
-                    height="1000"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div className="home-model-info">
-                  <span className="home-model-type">{model.eyebrow[lang]}</span>
-                  <h3>{model.title[lang]}</h3>
-                  <p>{model.description[lang]}</p>
-                </div>
-              </a>
-            ))}
-          </div>
+          {structureTerm ? (
+            <Suspense
+              fallback={
+                <p role="status">
+                  {t("正在读取结构目录…", "Loading structures…")}
+                </p>
+              }
+            >
+              <StructureMatches
+                key={structureTerm}
+                query={structureTerm}
+                lang={lang}
+                follow={follow}
+              />
+            </Suspense>
+          ) : (
+            <div className="home-model-grid">
+              {homeModels.map((model) => (
+                <a
+                  className={`home-model-card is-${model.id}`}
+                  href={exploreSceneHash(model.href, lang)}
+                  key={model.id}
+                  onClick={(event) => follow(event, model.href)}
+                >
+                  <div className="home-model-media">
+                    <CatalogImage
+                      src={assetUrl(model.image)}
+                      alt=""
+                      width="1000"
+                      height="1000"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                  <div className="home-model-info">
+                    <span className="home-model-type">
+                      {model.eyebrow[lang]}
+                    </span>
+                    <h3>{model.title[lang]}</h3>
+                    <p>{model.description[lang]}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
         </section>
         <section className="home-process-section">
           <div

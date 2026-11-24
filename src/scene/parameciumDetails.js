@@ -13,6 +13,7 @@ import {
 } from "./microbeGeometry";
 import { place } from "./specimenGeometry";
 import { poreComplex } from "./nuclearBodies";
+import { parameciumNuclearField } from "./parameciumNuclearFields";
 import { chromatinDetail } from "./chromatinDetails";
 import { splitSection } from "./implicitMembrane";
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
@@ -1313,13 +1314,13 @@ export function parameciumDetail(id) {
       return nuclearAssembly(id);
     case "paraMacroEnvelope":
     case "paraMicroEnvelope":
-      return nuclearEnvelopePatch(id);
+      return parameciumNuclearField(id);
     case "paraMacroPores":
     case "paraMicroPores":
       return nuclearPoreDetail(id);
     case "paraMacroChromatin":
     case "paraMicroChromatin":
-      return nuclearChromatinDetail(id);
+      return parameciumNuclearField(id);
     case "paraMacroNucleoli":
       return microbeNucleusPart(id, "nucleolus");
     case "paraTrichocysts":

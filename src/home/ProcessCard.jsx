@@ -1,3 +1,4 @@
+import CatalogImage from "./CatalogImage.jsx";
 import React, { useEffect, useRef, useState } from "react";
 import { Play } from "lucide-react";
 import { assetUrl } from "../assetUrl.js";
@@ -90,7 +91,7 @@ export default function ProcessCard({
       onBlur={onDeactivate}
     >
       <div className="home-process-media">
-        <img
+        <CatalogImage
           src={assetUrl(entry.image)}
           alt=""
           width="640"

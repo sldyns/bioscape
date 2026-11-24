@@ -339,12 +339,12 @@ test("both lamellae share one inner boundary, with open lumina and matrix-facing
   );
   for (const name of ["matrix-face", "luminal-face"]) {
     const patches = g.children.filter((o) => o.name === name);
-    assert.equal(
-      patches.length,
-      2,
+    const retained = patches.filter((o) => !o.userData.cap),
+      restored = patches.filter((o) => o.userData.cap);
+    assert(
+      retained.length && restored.length,
       "both cropped segments must form each leaflet",
     );
-    const [a, b] = patches;
     const edge = (mesh) => {
       const positions = mesh.geometry.attributes.position;
       const keys = new Set();
@@ -358,9 +358,10 @@ test("both lamellae share one inner boundary, with open lumina and matrix-facing
         );
       return keys;
     };
-    const first = edge(a);
+    const first = new Set(retained.flatMap((m) => [...edge(m)]));
+    const other = new Set(restored.flatMap((m) => [...edge(m)]));
     assert(
-      [...edge(b)].filter((key) => first.has(key)).length >= 100,
+      [...other].filter((key) => first.has(key)).length >= 100,
       "whole must restore the shared crop edge",
     );
   }
@@ -434,7 +435,9 @@ test("both lamellae share one inner boundary, with open lumina and matrix-facing
 
 test("batched mitochondrial leaves own their geometry and stay within the visible mesh budgets", () => {
   for (const [id, limit, triangleLimit] of [
-    ["cristae", 5, 22500],
+    ["cristae", 8, 22500],
+    ["cristaJunction", 4, 21000],
+    ["cristaRim", 14, 52500],
     ["atpSynthase", 9, 18000],
   ]) {
     const group = detailModel(id),
@@ -451,7 +454,11 @@ test("batched mitochondrial leaves own their geometry and stay within the visibl
     for (const mode of ["whole", "section"]) {
       const visible = inMode(group, mode);
       assert(visible.length > 0 && visible.length <= limit);
-      assert(visible.every((o) => o.userData.hitId === id));
+      const owners = new Set(visible.map((o) => o.userData.hitId));
+      assert.deepEqual(
+        owners,
+        new Set(id === "cristae" ? [id, "cristaJunction", "cristaRim"] : [id]),
+      );
       const triangles = visible.reduce(
         (sum, o) =>
           sum +
@@ -466,4 +473,216 @@ test("batched mitochondrial leaves own their geometry and stay within the visibl
         o.material?.dispose();
       });
   }
+});
+
+function visibleMeshes(group, mode) {
+  const result = [];
+  group.traverse((o) => {
+    if (o.isMesh && !(mode === "whole" ? o.userData.cutOnly : o.userData.cap))
+      result.push(o);
+  });
+  return result;
+}
+
+// Weld coincident UV/cut-chart vertices for the topology check only. A closed
+// connected thickness shell has Euler characteristic 2 minus twice its genus.
+function assertClosedBilayer(meshes, holes) {
+  const vertices = new Map(),
+    edges = new Map(),
+    components = [];
+  function root(i) {
+    while (components[i] !== i) {
+      components[i] = components[components[i]];
+      i = components[i];
+    }
+    return i;
+  }
+  function vertex(key) {
+    if (!vertices.has(key)) {
+      vertices.set(key, vertices.size);
+      components.push(components.length);
+    }
+    return vertices.get(key);
+  }
+  let triangles = 0;
+  for (const mesh of meshes) {
+    const p = mesh.geometry.attributes.position,
+      indices = mesh.geometry.index;
+    const ids = Array.from({ length: p.count }, (_, i) =>
+      [p.getX(i), p.getY(i), p.getZ(i)]
+        .map((n) => Math.round(n * 1e5))
+        .join(","),
+    );
+    const v = (j) => vertex(ids[indices.getX(j)]);
+    for (let j = 0; j < indices.count; j += 3) {
+      const tri = [v(j), v(j + 1), v(j + 2)];
+      if (new Set(tri).size < 3) continue;
+      triangles++;
+      const leader = root(tri[0]);
+      for (let k = 0; k < 3; k++) {
+        components[root(tri[k])] = leader;
+        const a = tri[k],
+          b = tri[(k + 1) % 3],
+          key = Math.min(a, b) + "," + Math.max(a, b);
+        edges.set(key, (edges.get(key) || 0) + 1);
+      }
+    }
+  }
+  assert(
+    [...edges.values()].every((n) => n === 2),
+    "each bilayer edge must have exactly two incident faces",
+  );
+  assert.equal(
+    new Set(components.map((_, i) => root(i))).size,
+    1,
+    "no disconnected lipid islands",
+  );
+  assert.equal(
+    vertices.size - edges.size + triangles,
+    2 - 2 * holes,
+    "each paired membrane domain occupies one opening",
+  );
+}
+
+test("a real junction throat opens from intermembrane space into the expanded crista", () => {
+  const g = localMitochondrialLeaf("cristaJunction");
+  const path = [
+    [-0.17, -0.57, 0],
+    [-0.17, -0.23, 0],
+    [-0.16, -0.13, 0],
+    [-0.155, -0.047, 0],
+    [-0.105, 0.042, 0.003],
+    [-0.01, 0.109, 0.011],
+    [0.1, 0.189, 0.022],
+    [0.2, 0.244, 0.043],
+  ];
+  for (const mode of ["whole", "section"]) {
+    const visible = visibleMeshes(g, mode),
+      membrane = visible.filter((m) => m.material.vertexColors);
+    assertClosedBilayer(membrane, 0);
+    for (const dx of [-0.035, 0, 0.035])
+      for (const dz of [-0.03, 0, 0.03]) {
+        for (let i = 1; i < path.length; i++) {
+          const from = new THREE.Vector3(...path[i - 1]),
+            direction = new THREE.Vector3(...path[i]).sub(from);
+          from.add(new THREE.Vector3(dx, 0, dz));
+          const length = direction.length();
+          assert.equal(
+            new THREE.Raycaster(
+              from,
+              direction.normalize(),
+              0,
+              length,
+            ).intersectObjects(visible, false).length,
+            0,
+          );
+        }
+      }
+  }
+  const faces = visibleMeshes(g, "whole").filter((m) =>
+    ["matrix-face", "luminal-face"].includes(m.name),
+  );
+  function lumenWidth(x, y) {
+    const hits = intersections(
+      faces,
+      new THREE.Vector3(x, y, -1),
+      new THREE.Vector3(0, 0, 1),
+    );
+    assert.deepEqual(
+      hits.map((h) => h.object.name),
+      ["matrix-face", "luminal-face", "luminal-face", "matrix-face"],
+    );
+    return hits[2].point.z - hits[1].point.z;
+  }
+  const throat = lumenWidth(-0.17, -0.13),
+    chamber = lumenWidth(0.18, 0.245);
+  assert(throat > 0.09 && chamber > throat * 2);
+  const domain = g.getObjectByName("Mic60 IMS domain"),
+    probe = new THREE.Vector3(0, 0, -1);
+  const wall = intersections(faces, domain.position, probe);
+  assert.deepEqual(
+    wall.slice(0, 2).map((hit) => hit.object.name),
+    ["luminal-face", "matrix-face"],
+  );
+  assert(wall[0].distance < 0.04);
+});
+
+test("the crista ridge embeds paired tilted ATP synthases with their heads in the matrix", () => {
+  const g = localMitochondrialLeaf("cristaRim"),
+    groups = g.children.filter((o) => o.isGroup);
+  const sample = groups[0].getObjectByName("membrane-rotor");
+  assert(
+    groups.every(
+      (o) => o.getObjectByName("membrane-rotor").geometry === sample.geometry,
+    ),
+  );
+  for (const mode of ["whole", "section"]) {
+    const visible = visibleMeshes(g, mode),
+      membrane = visible.filter((o) => o.material.vertexColors);
+    const shown = groups.filter(
+      (o) => mode === "whole" || !o.children[0].userData.cap,
+    );
+    assert(shown.length >= 6 && shown.length % 2 === 0);
+    assertClosedBilayer(membrane, shown.length / 2);
+    const faces = membrane.filter((o) =>
+      ["matrix-face", "luminal-face"].includes(o.name),
+    );
+    for (let i = 0; i < shown.length; i += 2) {
+      const pair = shown.slice(i, i + 2);
+      const axes = pair.map((o) =>
+        new THREE.Vector3(0, 0, 1).applyQuaternion(o.quaternion),
+      );
+      const angle = axes[0].angleTo(axes[1]);
+      assert(
+        angle > 0.58 && angle < 1.65,
+        "both enzymes must tilt away from the curved crest",
+      );
+      const heads = pair.map((o) =>
+        o.localToWorld(new THREE.Vector3(0, 0, 0.47)),
+      );
+      const separation = pair[0].position.distanceTo(pair[1].position);
+      assert(
+        separation > 0.095 && heads[0].distanceTo(heads[1]) > separation * 1.65,
+      );
+      pair.forEach((o, j) => {
+        const axis = axes[j],
+          at = o.position;
+        const segment = new THREE.Raycaster(
+          at.clone().addScaledVector(axis, -0.037),
+          axis,
+          0,
+          0.074,
+        );
+        assert.equal(
+          segment.intersectObjects(faces, false).length,
+          0,
+          "no bilayer crosses a rotor footprint",
+        );
+        const along = (p) => p.clone().sub(at).dot(axis);
+        const rot = extrema(o.getObjectByName("membrane-rotor"), along);
+        assert(rot.min < -0.016 && rot.max > 0.016);
+        for (const head of o.children.filter(
+          (c) => c.name === "catalytic-domain",
+        ))
+          assert(extrema(head, along).min > 0.065);
+      });
+    }
+  }
+});
+
+test("both crista children have first-hit surface anchors in both parent modes", () => {
+  const g = mitochondriaDetail("cristae");
+  g.updateMatrixWorld(true);
+  const view = new THREE.Vector3(-0.99, 0.136, -0.003).normalize();
+  for (const mode of ["whole", "section"])
+    for (const [id, position] of Object.entries(g.userData.partAnchors)) {
+      const p = g.localToWorld(new THREE.Vector3(...position));
+      const hit = intersections(
+        visibleMeshes(g, mode),
+        p.clone().addScaledVector(view, 4),
+        view.clone().negate(),
+      )[0];
+      assert.equal(hit.object.userData.hitId, id);
+      assert(hit.point.distanceTo(p) < 0.002);
+    }
 });

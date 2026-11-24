@@ -1,7 +1,20 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-const TAU = Math.PI * 2,
-  V = (x, y, z) => new THREE.Vector3(x, y, z);
+import {
+  TAU,
+  V,
+  mesh,
+  ball,
+  line,
+  surface,
+  membranePiece,
+  bilayerEdge,
+} from "./mitochondrialGeometry.js";
+import {
+  addCristaJunction,
+  addCristaRim,
+  assignCristaRegion,
+} from "./cristaDetails.js";
 const colors = {
   outer: "#b68b73",
   inner: "#d2aa78",
@@ -10,62 +23,6 @@ const colors = {
   matrix: "#b3b7a0",
   dna: "#8f9f91",
 };
-function mesh(g, geo, color, id, flags = {}) {
-  const m = new THREE.Mesh(
-    geo,
-    new THREE.MeshPhysicalMaterial({
-      color,
-      roughness: 0.53,
-      clearcoat: 0.15,
-      side: THREE.DoubleSide,
-    }),
-  );
-  m.userData = { hitId: id, ...flags };
-  g.add(m);
-  return m;
-}
-function ball(g, p, s, color, id) {
-  const m = mesh(g, new THREE.SphereGeometry(1, 20, 14), color, id);
-  m.position.copy(p);
-  m.scale.set(...s);
-  return m;
-}
-function line(g, points, r, color, id, closed = false) {
-  return mesh(
-    g,
-    new THREE.TubeGeometry(
-      new THREE.CatmullRomCurve3(points, closed),
-      Math.max(48, points.length * 2),
-      r,
-      8,
-      closed,
-    ),
-    color,
-    id,
-  );
-}
-function surface(fn, nu = 100, nv = 64) {
-  const pos = [],
-    uv = [],
-    idx = [];
-  for (let i = 0; i <= nu; i++)
-    for (let j = 0; j <= nv; j++) {
-      pos.push(...fn(i / nu, j / nv));
-      uv.push(i / nu, j / nv);
-    }
-  for (let i = 0; i < nu; i++)
-    for (let j = 0; j < nv; j++) {
-      const a = i * (nv + 1) + j,
-        b = a + nv + 1;
-      idx.push(a, b, a + 1, a + 1, b, b + 1);
-    }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
-  g.setIndex(idx);
-  g.computeVertexNormals();
-  return g;
-}
 const folds = [-0.56, -0.39, -0.19, 0.02, 0.2, 0.4, 0.57];
 function foldHeight(y, a) {
   return folds.reduce(
@@ -194,33 +151,6 @@ function synthase(g, base = V(0, 0, 0), scale = 1) {
   );
   return sub;
 }
-// Opaque faces, cut edges and lipid relief share one vertex-colored material
-// signature. The detail loader batches them independently of the protein parts.
-function membranePiece(g, geometry, color, id, flags) {
-  if (color) {
-    const tint = new THREE.Color(color);
-    const shades = new Float32Array(geometry.attributes.position.count * 3);
-    for (let i = 0; i < shades.length; i += 3) tint.toArray(shades, i);
-    geometry.setAttribute("color", new THREE.BufferAttribute(shades, 3));
-  }
-  const piece = mesh(g, geometry, "#ffffff", id, flags);
-  piece.material.vertexColors = true;
-  return piece;
-}
-// A cut through one lipid bilayer exposes its hydrophobic interior between two
-// polar faces. The edge is shared by the membrane fragment and crista crops.
-function bilayerEdge(g, sample, steps, id, flags) {
-  const geometry = surface((u, v) => sample(u, v * 2 - 1), steps, 4);
-  const bands = ["#e0b997", "#b3876b", "#886855", "#b08868", "#e9c79a"].map(
-    (color) => new THREE.Color(color),
-  );
-  const shades = [];
-  for (let i = 0; i <= steps; i++)
-    for (const color of bands) shades.push(color.r, color.g, color.b);
-  geometry.setAttribute("color", new THREE.Float32BufferAttribute(shades, 3));
-  return membranePiece(g, geometry, null, id, flags);
-}
-
 function synthaseMembrane(g) {
   const id = "atpSynthase";
   // The footprint includes the stationary membrane domain beside the rotor.
@@ -368,8 +298,12 @@ function wrappedSurface(fn, nu, nv, closedProfile = false) {
       smoothCoincidentNormals(geometry, [i * (nv + 1), i * (nv + 1) + nv]);
   return geometry;
 }
-function catalyticDomain(i) {
-  const geometry = new THREE.SphereGeometry(1, 26, 16);
+function catalyticDomain(i, compact) {
+  const geometry = new THREE.SphereGeometry(
+    1,
+    compact ? 16 : 26,
+    compact ? 10 : 16,
+  );
   const position = geometry.attributes.position;
   const center = (i * TAU) / 6;
   for (let j = 0; j < position.count; j++) {
@@ -411,9 +345,7 @@ function catalyticDomain(i) {
   return geometry;
 }
 
-function enlargedSynthase(g) {
-  const id = "atpSynthase";
-  synthaseMembrane(g);
+function synthaseDomains(g, id, compact = false) {
   // A continuous, grooved annulus represents the membrane rotor. Its relief
   // does not enumerate c subunits of any particular organism.
   const ring = new THREE.CatmullRomCurve3(
@@ -448,20 +380,24 @@ function enlargedSynthase(g) {
           0.015 * grooves * THREE.MathUtils.smoothstep(p.x, 0.125, 0.163);
         return [r * Math.cos(a), r * Math.sin(a), p.z];
       },
-      64,
-      18,
+      compact ? 36 : 64,
+      compact ? 12 : 18,
       true,
     ),
     "#779a97",
     id,
   ).name = "membrane-rotor";
-  ball(g, V(0, 0, -0.011), [0.081, 0.08, 0.105], "#779a97", id);
+  const width = compact ? 12 : 20,
+    height = compact ? 8 : 14;
+  ball(g, V(0, 0, -0.011), [0.081, 0.08, 0.105], "#779a97", id, width, height);
   const fixed = ball(
     g,
     V(0.084, 0.18, -0.007),
     [0.142, 0.1, 0.117],
     "#a49376",
     id,
+    width,
+    height,
   );
   fixed.name = "stationary-membrane-domain";
   fixed.rotation.z = -0.44;
@@ -478,15 +414,19 @@ function enlargedSynthase(g) {
           (1 + 0.16 * Math.cos(2 * a - 6 * v));
         return [r * Math.cos(a) + 0.014 * Math.sin(v * 3), r * Math.sin(a), z];
       },
-      18,
-      15,
+      compact ? 14 : 18,
+      compact ? 9 : 15,
     ),
     "#85778e",
     id,
   ).name = "central-shaft";
   for (let i = 0; i < 6; i++)
-    mesh(g, catalyticDomain(i), i % 2 ? "#a28daf" : "#d0af8e", id).name =
-      "catalytic-domain";
+    mesh(
+      g,
+      catalyticDomain(i, compact),
+      i % 2 ? "#a28daf" : "#d0af8e",
+      id,
+    ).name = "catalytic-domain";
   const stalk = line(
     g,
     [
@@ -508,6 +448,8 @@ function enlargedSynthase(g) {
     [0.061, 0.077, 0.042],
     "#978569",
     id,
+    width,
+    height,
   );
   cap.name = "stator-crown";
   cap.rotation.z = -0.42;
@@ -586,6 +528,18 @@ function enlargedCristae(g) {
     const { center, normal } = frame(x, v);
     return center.addScaledVector(normal, side * 0.015).toArray();
   }
+  // Reassign the existing triangles at the bases and crests. An exposed cut
+  // edge and the two leaflets retain the same anatomical owner.
+  function region(x, v) {
+    const phase = (v * (curve.points.length - 1)) % 14;
+    if (x < 0.16 && Math.abs(phase - 7) <= 1.65) return "cristaRim";
+    if (
+      x < 0.12 &&
+      ((phase >= 1.65 && phase <= 3.85) || (phase >= 10.15 && phase <= 12.35))
+    )
+      return "cristaJunction";
+    return id;
+  }
   const front = -1.05,
     cut = -0.81,
     back = 0.89,
@@ -595,14 +549,17 @@ function enlargedCristae(g) {
     [cut, back, false, 28],
   ]) {
     const x = (u) => THREE.MathUtils.lerp(start, end, u);
-    for (const side of [-1, 1])
-      membranePiece(
+    for (const side of [-1, 1]) {
+      const face = membranePiece(
         g,
         surface((u, v) => leaflet(x(u), v, side), steps, across),
         side > 0 ? "#c79c75" : "#ab826f",
         id,
         { cap },
-      ).name = side > 0 ? "matrix-face" : "luminal-face";
+      );
+      face.name = side > 0 ? "matrix-face" : "luminal-face";
+      assignCristaRegion(face, (u, v) => region(x(u), v));
+    }
     for (const edge of [0, 1])
       bilayerEdge(g, (u, side) => leaflet(x(u), edge, side), steps, id, {
         cap,
@@ -612,8 +569,16 @@ function enlargedCristae(g) {
     [back, {}],
     [front, { cap: true }],
     [cut, { cutOnly: true }],
-  ])
-    bilayerEdge(g, (v, side) => leaflet(x, v, side), across, id, flags);
+  ]) {
+    const edge = bilayerEdge(
+      g,
+      (v, side) => leaflet(x, v, side),
+      across,
+      id,
+      flags,
+    );
+    assignCristaRegion(edge, (v) => region(x, v));
+  }
   // Schematic ATP synthase pairs sit on the matrix side of curved crests.
   // Primary cryotomography: Strauss et al., doi:10.1038/emboj.2008.35.
   for (const crest of [7, 21])
@@ -627,17 +592,55 @@ function enlargedCristae(g) {
           g,
           new THREE.CylinderGeometry(0.011, 0.018, 0.066, 8),
           "#90816c",
-          id,
+          "cristaRim",
         );
         stem.name = "crest-stem";
         stem.position.copy(center).addScaledVector(normal, 0.011);
         stem.quaternion.setFromUnitVectors(V(0, 1, 0), normal);
-        const head = mesh(g, new THREE.SphereGeometry(1, 12, 7), "#a899ac", id);
+        const head = mesh(
+          g,
+          new THREE.SphereGeometry(1, 12, 7),
+          "#a899ac",
+          "cristaRim",
+        );
         head.name = "crest-head";
         head.scale.set(0.034, 0.032, 0.029);
         head.position.copy(center).addScaledVector(normal, 0.061);
         head.quaternion.setFromUnitVectors(V(0, 0, 1), normal);
       }
+  // Barycentres of visible retained triangles keep each leader attached in
+  // both Whole and Section, including the restored near end.
+  function anchorAt(corners, side) {
+    const p = V(0, 0, 0);
+    for (const [u, v] of corners)
+      p.add(V(...leaflet(cut + ((back - cut) * u) / 28, v / across, side)));
+    return p.multiplyScalar(1 / 3).toArray();
+  }
+  const junction = anchorAt(
+    [
+      [1, 14],
+      [2, 13],
+      [2, 14],
+    ],
+    -1,
+  );
+  const rim = anchorAt(
+    [
+      [4, 86],
+      [5, 85],
+      [5, 86],
+    ],
+    1,
+  );
+  g.userData.partAnchors = { cristaJunction: junction, cristaRim: rim };
+  g.annotationTargets = {
+    cristaJunction: [
+      junction,
+      leaflet(-0.75, 11 / 28, -1),
+      leaflet(-0.43, 17 / 28, 1),
+    ],
+    cristaRim: [rim, leaflet(-0.69, 6.6 / 28, 1), leaflet(-0.27, 21.3 / 28, 1)],
+  };
 }
 function crestSynthase(g, fold, angle, scale) {
   const y = folds[fold] + 0.017 * Math.sin(angle * 2 + fold * 0.7),
@@ -794,6 +797,8 @@ export function mitochondriaDetail(id) {
       "mitoOuter",
       "mitoInner",
       "cristae",
+      "cristaJunction",
+      "cristaRim",
       "matrix",
       "mitoDNA",
       "atpSynthase",
@@ -839,6 +844,18 @@ export function mitochondriaDetail(id) {
   if (id === "mitoDNA") {
     circularDNA(g);
     g.rotation.set(0.25, -0.12, -0.14);
+    g.userData.landmarks = [
+      {
+        zh: "糖–磷酸骨架",
+        en: "Sugar–phosphate backbone",
+        position: [-0.51311, 0.36105, 0.03679],
+      },
+      {
+        zh: "碱基对（示意）",
+        en: "Base pair (schematic)",
+        position: [0.41447, -0.43458, -0.01161],
+      },
+    ];
   }
   if (id === "cristae") {
     enlargedCristae(g);
@@ -852,8 +869,15 @@ export function mitochondriaDetail(id) {
       },
     ];
   }
+  if (id === "cristaJunction") addCristaJunction(g);
+  if (id === "cristaRim") {
+    const monomer = new THREE.Group();
+    synthaseDomains(monomer, id, true);
+    addCristaRim(g, monomer);
+  }
   if (id === "atpSynthase") {
-    enlargedSynthase(g);
+    synthaseMembrane(g);
+    synthaseDomains(g, id);
     g.rotation.set(-0.25, -0.95, -0.15);
     g.userData.landmarks = [
       { zh: "F₁ · 基质侧", en: "F₁ · Matrix side", position: [0, 0, 0.6] },

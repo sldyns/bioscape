@@ -30,7 +30,7 @@ try {
   } = await import(pathToFileURL(outfile));
   assert.equal(
     searchComparisonEntries().length,
-    9,
+    10,
     "browse starts with complete models",
   );
   assert.ok(

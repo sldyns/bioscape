@@ -55,6 +55,117 @@
 .observation-frames[data-count="4"] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.observation-frames[hidden] {
+  display: none;
+}
+.observation-layout {
+  display: flex;
+  width: fit-content;
+  margin: 16px 22px 0;
+  padding: 3px;
+  background: var(--canvas);
+  border-radius: 9px;
+}
+.observation-layout button {
+  border-radius: 6px;
+  padding: 6px 15px;
+  color: var(--muted);
+}
+.observation-layout button[aria-pressed="true"] {
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 1px 3px #0002;
+}
+.plate-comparison {
+  padding: 16px 22px 20px;
+}
+.plate-comparison-choices,
+.plate-comparison-open {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.plate-comparison-choices label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.plate-comparison-choices select {
+  width: 100%;
+  font: inherit;
+  font-size: 14px;
+  padding: 6px;
+  color: var(--ink);
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+.plate-comparison-image {
+  display: grid;
+  position: relative;
+  width: min(100%, 78dvh);
+  aspect-ratio: 8 / 5;
+  margin: 12px auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: ew-resize;
+}
+.plate-comparison-image canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  grid-area: 1 / 1;
+}
+.plate-comparison-image canvas:first-child {
+  clip-path: inset(0 calc(100% - var(--split)) 0 0);
+}
+.plate-comparison-image canvas:nth-child(2) {
+  clip-path: inset(0 0 0 var(--split));
+}
+.plate-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--split);
+  width: 1px;
+  background: #49494e;
+  box-shadow: 0 0 0 1px #ffffffa6;
+  pointer-events: none;
+}
+.plate-comparison-slider {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.plate-comparison-slider input {
+  flex: 1;
+  min-width: 0;
+  min-height: 30px;
+  accent-color: var(--accent);
+}
+.plate-comparison-slider output {
+  min-width: 4ch;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.plate-comparison-open {
+  margin-top: 10px;
+}
+.plate-comparison-open button {
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.plate-comparison-open button:hover {
+  background: var(--canvas);
+}
 @media (min-width: 621px) {
   .observation-plate:has(.observation-frames[data-count="4"]) {
     width: min(760px, calc(100% - 40px));
@@ -114,6 +225,12 @@
   }
   .observation-plate header {
     padding: 15px;
+  }
+  .observation-layout {
+    margin: 12px 12px 0;
+  }
+  .plate-comparison {
+    padding: 12px;
   }
   .observation-frames {
     grid-template-columns: repeat(2, minmax(0, 1fr));

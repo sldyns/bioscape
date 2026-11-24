@@ -21,7 +21,9 @@ import { entries as bacterialSignals } from "./modules/bacterialSignals/entries.
 import { entries as yeastLife } from "./modules/yeastLife/entries.js";
 import { entries as parameciumLife } from "./modules/parameciumLife/entries.js";
 import { entries as phageLife } from "./modules/phageLife/entries.js";
+import { entries as vision } from "./modules/vision/entries.js";
 export const extensionEntries = [
+  ...vision,
   ...genome,
   ...regulation,
   ...chromatin,

@@ -125,8 +125,8 @@ export const microbeDefinitions = [
     "yeastER",
     "内质网",
     "Endoplasmic reticulum",
-    "与外层核膜连续的膜网络参与蛋白质及脂质合成。酵母内质网还沿细胞周边延伸；这里展示其中一段膜囊和管网。",
-    "A membrane network continuous with the outer nuclear membrane supports protein and lipid synthesis. Yeast ER also extends along the cell cortex; part of this network is shown here.",
+    "酿酒酵母的皮层内质网沿质膜延伸。带窗孔的扁平膜囊与膜管相通，窗孔里是胞质。半透明的质膜与内质网之间留有窄隙。剖面露出膜管内腔，核糖体附着在朝向胞质的一面。",
+    "In budding yeast, cortical ER follows the plasma membrane. Tubules open into flattened cisternae, and cytosol passes through the fenestrae. A narrow gap separates the ER from the translucent plasma membrane. The cutaway exposes the tubule lumen. Bound ribosomes lie on the cytosolic face.",
     "#ae9eba",
   ),
   node(
@@ -250,16 +250,16 @@ export const microbeDefinitions = [
     "paraMacroEnvelope",
     "核被膜",
     "Nuclear envelope",
-    "内、外两层核膜包围大核，膜间为核周隙；两层膜在核孔边缘相连。这里放大局部膜片，展示膜与通道的连续关系。",
-    "Inner and outer nuclear membranes enclose the macronucleus, separated by the perinuclear space. They join at pore rims. This enlarged patch shows membrane and channel continuity.",
+    "尾草履虫间期的大核比小核大。剖面显示一段较平缓的核被膜，核孔边缘的内外核膜彼此连续。核质一侧可见核仁和染色质小体。两个核的视图分别放大，核孔和膜间距为示意。",
+    "The interphase macronucleus of P. caudatum is larger than the micronucleus. This gently curved section shows the two membranes joining at a pore, with a nucleolus and chromatin bodies on the nuclear side. The two views are magnified independently, with enlarged pores and membrane spacing.",
     "#b5a0c4",
   ),
   node(
     "paraMicroEnvelope",
     "核被膜",
     "Nuclear envelope",
-    "小核也有双层核被膜。尾草履虫小核分裂时，纺锤体在保留的核被膜内形成；此处仅展示间期核膜的局部结构。",
-    "The micronucleus also has a double nuclear envelope. In P. caudatum, the division spindle forms within the retained envelope; this patch depicts its interphase structure only.",
+    "尾草履虫间期只有一枚小核。这个较小的核在图中呈更明显的弧度，膜下可见分散的生殖系染色质。内外核膜在核孔边缘相连。两个核的视图分别放大，核孔和膜间距为示意。",
+    "P. caudatum has one interphase micronucleus. Its smaller size is illustrated by the stronger curvature, with distributed germline chromatin on the nuclear side. The two membranes join at a pore. The two views are magnified independently, with enlarged pores and membrane spacing.",
     "#b5a0c4",
   ),
   node(
@@ -282,16 +282,16 @@ export const microbeDefinitions = [
     "paraMacroChromatin",
     "染色质",
     "Chromatin",
-    "大核染色质含DNA及相关蛋白，支持日常基因表达。局部模型放大DNA绕组蛋白形成核小体的基本组织方式；核小体数量、间距与折叠不是实测构象。",
-    "Macronuclear chromatin contains DNA and associated proteins and supports everyday gene expression. This local model enlarges the basic organization of DNA around histones in nucleosomes; their number, spacing and folding are schematic.",
+    "营养生长期，尾草履虫的大核负责日常基因表达。电镜切片中，许多染色质小体散布于较细的核内物质之间，核仁的轮廓更大。这里示意一小块核质，颜色与各结构的位置仅用于辨认。",
+    "During vegetative growth, the macronucleus of P. caudatum supports everyday gene expression. Thin sections show many small chromatin bodies among finer material and much larger nucleolar profiles. This sample illustrates one region of nucleoplasm. Colors and positions are schematic.",
     "#a28db4",
   ),
   node(
     "paraMicroChromatin",
     "染色质",
     "Chromatin",
-    "小核染色质保存生殖系基因组，在有性过程中将遗传信息传给后代。这里放大DNA与组蛋白的基本组织方式，不把间期染色质画成分裂期的浓缩染色体。",
-    "Micronuclear chromatin preserves the germline genome for transmission during sexual processes. This view enlarges basic DNA–histone organization rather than representing interphase chromatin as condensed division-stage chromosomes.",
+    "营养生长期，尾草履虫的一枚小核保存生殖系基因组。间期染色质分布在小核主体内，一端可见无染色质的极帽。部分近缘种的小核染色质集中在中央。极帽的外形随克隆而异，颜色和纹理为示意。",
+    "The single micronucleus of vegetative P. caudatum carries the germline genome. In interphase, chromatin fills the main body, leaving a chromatin-free cap at one pole. Some related species have a central chromatin mass. Cap shape varies among clones. Colors and textures are schematic.",
     "#9782ab",
   ),
   node(
@@ -429,6 +429,31 @@ export const microbeNotes = {
 // Direct microscopy of P. caudatum anchors the species depiction. Related
 // Paramecium studies support schematic chromatin/nucleolar organization only.
 export const parameciumNuclearSources = [
+  {
+    title: "P. caudatum interphase micronuclei across clones (1968)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/5707577/",
+  },
+  {
+    title: "Paramecium micronuclear morphotypes (Fokin, 1997)",
+    url: "https://doi.org/10.1016/S0003-9365(97)80017-6",
+  },
+  {
+    title:
+      "P. caudatum micronuclear chromatin distribution (Allen TEM, Fig. 47)",
+    url: "https://www6.pbrc.hawaii.edu/allen/ch10a/47-pca730323-15.html",
+  },
+  {
+    title: "P. caudatum nuclear envelopes in interphase (Allen, Fig. 50a)",
+    url: "https://www6.pbrc.hawaii.edu/allen/ch10a/50-pca.html",
+  },
+  {
+    title: "P. caudatum macronuclear chromatin bodies and nucleoli (1957)",
+    url: "https://doi.org/10.1508/cytologia.22.322",
+  },
+  {
+    title: "RNA synthesis in the two nuclei of P. caudatum (2003)",
+    url: "https://doi.org/10.1023/A:1022820032433",
+  },
   {
     title: "P. caudatum nuclear ultrastructure (1954)",
     url: "https://www.jstage.jst.go.jp/article/cytologia1929/19/4/19_4_306/_article",

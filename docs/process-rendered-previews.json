@@ -219,8 +219,8 @@
   {
     "id": "muscle",
     "root": "cell",
-    "frame": 0.55,
-    "source": "/scripts/preview/index.html?process=muscle&frame=0.55&root=cell",
+    "frame": 0.61,
+    "source": "/scripts/preview/index.html?process=muscle&frame=0.61&root=cell",
     "image": "/process-thumbnails/rendered/muscle.webp"
   },
   {
@@ -586,5 +586,26 @@
     "frame": 0.521,
     "source": "/scripts/preview/index.html?process=bacterialExpression&frame=0.521&root=bacterium",
     "image": "/process-thumbnails/rendered/bacterialExpression.webp"
+  },
+  {
+    "id": "phototransduction",
+    "root": "rodPhotoreceptor",
+    "frame": 0.2,
+    "source": "/scripts/preview/index.html?process=phototransduction&frame=0.2&root=rodPhotoreceptor",
+    "image": "/process-thumbnails/rendered/phototransduction.webp"
+  },
+  {
+    "id": "rodDiscRenewal",
+    "root": "rodPhotoreceptor",
+    "frame": 0.87,
+    "source": "/scripts/preview/index.html?process=rodDiscRenewal&frame=0.87&root=rodPhotoreceptor",
+    "image": "/process-thumbnails/rendered/rodDiscRenewal.webp"
+  },
+  {
+    "id": "adenineExchange",
+    "root": "cell",
+    "frame": 0.55,
+    "source": "/scripts/preview/index.html?process=adenineExchange&frame=0.55&root=cell",
+    "image": "/process-thumbnails/rendered/adenineExchange.webp"
   }
 ]

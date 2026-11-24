@@ -58,6 +58,7 @@ export const processesByRoot = {
   // four existing models are root-independent; no generic-cell redirect is used.
   neuron: ["actionPotential", "synapse"],
   muscleFibre: ["muscle"],
+  rodPhotoreceptor: [],
   erythrocyte: ["osmoticBalance"],
 };
 for (const entry of extensionEntries) {

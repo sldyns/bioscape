@@ -109,6 +109,57 @@ export default function AboutModel({ t, aboutRef, onClose }) {
             </a>
           ))}
           <a
+            href="https://www.rcsb.org/structure/8B2L"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t(
+              "烟草叶胞质 80S 核糖体 · PDB 8B2L",
+              "Tobacco leaf cytosolic 80S ribosome · PDB 8B2L",
+            )}{" "}
+            ↗
+          </a>
+          <a
+            href="https://doi.org/10.1083/jcb.201011039"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t(
+              "酿酒酵母皮层内质网的三维结构",
+              "Three-dimensional organization of cortical ER in budding yeast",
+            )}{" "}
+            ↗
+          </a>
+          <a
+            href="https://pubmed.ncbi.nlm.nih.gov/9245766/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t(
+              "线粒体嵴连接部 · 电子断层成像",
+              "Crista junctions in electron tomography",
+            )}{" "}
+            ↗
+          </a>
+          <a
+            href="https://pubmed.ncbi.nlm.nih.gov/18323778/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t(
+              "沿线粒体嵴缘排列的 ATP 合酶二聚体",
+              "ATP synthase dimer rows along crista rims",
+            )}{" "}
+            ↗
+          </a>
+          <a
+            href="https://pubmed.ncbi.nlm.nih.gov/28254827/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t("Mic60 与嵴膜形态", "Mic60 and crista membrane shape")} ↗
+          </a>
+          <a
             href="https://pubmed.ncbi.nlm.nih.gov/27402755/"
             target="_blank"
             rel="noreferrer"

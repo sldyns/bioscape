@@ -4,6 +4,14 @@ const directions = {
   erythrocyte: [0.34, 0.58, 1],
   atpSynthase: [0.062, -0.205, 0.977],
   cristae: [-0.99, 0.136, -0.003],
+  cristaJunction: [-0.28, 0.2, 1],
+  cristaRim: [-0.78, 0.35, 0.61],
+  rodOuterSegment: [0.36, 0.21, 1],
+  rodDiscs: [0.23, 0.26, 1],
+  rodConnectingCilium: [0.34, 0.16, 1],
+  rodInnerSegment: [0.08, 0.18, 1],
+  rodSpherule: [0.68, 0.33, 1],
+  rodPhotoreceptor: [0.12, 0.16, 1],
   muscleFibre: [0.16, 0.18, 1],
 };
 

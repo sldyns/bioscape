@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { lockPageScroll } from "../scrollLock.js";
+import PlateComparison from "./PlateComparison.jsx";
 import "./observationPlate.css";
 
 const tileWidth = 576,
@@ -15,6 +16,7 @@ export default function ObservationPlate({ plate, lang, onClose, onChoose }) {
   const [finished, setFinished] = useState(0);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [comparing, setComparing] = useState(false);
   const en = lang === "en";
   useLayoutEffect(() => {
     const panel = dialog.current;
@@ -104,8 +106,32 @@ export default function ObservationPlate({ plate, lang, onClose, onChoose }) {
           <span aria-hidden="true">×</span>
         </button>
       </header>
+      {frames.length > 1 && (
+        <div
+          className="observation-layout"
+          role="group"
+          aria-label={en ? "Plate layout" : "图版布局"}
+        >
+          <button
+            type="button"
+            aria-pressed={!comparing}
+            onClick={() => setComparing(false)}
+          >
+            {en ? "Grid" : "分格"}
+          </button>
+          <button
+            type="button"
+            aria-pressed={comparing}
+            disabled={finished !== frames.length || failed}
+            onClick={() => setComparing(true)}
+          >
+            {en ? "Compare two" : "双图对照"}
+          </button>
+        </div>
+      )}
       <div
         className="observation-frames"
+        hidden={comparing}
         data-count={frames.length}
         aria-busy={!failed && finished < frames.length}
       >
@@ -144,6 +170,16 @@ export default function ObservationPlate({ plate, lang, onClose, onChoose }) {
           </button>
         ))}
       </div>
+      {comparing && (
+        <PlateComparison
+          scene={scene}
+          frames={frames}
+          tiles={tiles}
+          lang={lang}
+          initialIndex={plate.stageIndex ?? 0}
+          onChoose={onChoose}
+        />
+      )}
       {failed && (
         <button
           className="observation-retry"

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { Vector3, Matrix4, Triangle, Raycaster } from "three";
+import { Box3, Vector3, Matrix4, Triangle, Raycaster } from "three";
 import actionPotential from "./actionPotentialProcess.js";
 import synapse from "./synapseProcess.js";
 import muscle from "./muscleProcess.js";
@@ -172,24 +172,176 @@ assert.ok(
 const mus = muscle.create(),
   markerGroups = named(mus, "myosin nucleotide-state markers");
 assert.ok(markerGroups.length >= 8);
+const bridges = objects(mus, (o) =>
+  o.name.startsWith("myosin cross-bridge "),
+).map((pivot) => {
+  const [side, y] = pivot.name.split(" ").at(-1).split(":").map(Number);
+  const sign = Math.sign(y),
+    face = pivot.getObjectByName("actin-facing motor lobe");
+  const vertices = face.geometry.attributes.position;
+  const pole = new Vector3().fromBufferAttribute(
+    vertices,
+    sign > 0 ? 0 : vertices.count - 1,
+  );
+  return {
+    pivot,
+    side,
+    sign,
+    face,
+    pole,
+    shaft: pivot.getObjectByName("myosin lever shaft"),
+    stalk: pivot.getObjectByName("myosin S2 tether"),
+    actin: ["actin thin filament", "actin outer domains"].map((prefix) =>
+      mus.group.getObjectByName(`${prefix} ${side}:${y}`),
+    ),
+  };
+});
+const motorTip = (b) => b.face.localToWorld(b.pole.clone());
+const rodEnd = (mesh, end) => mesh.localToWorld(new Vector3(0, end / 2, 0));
+function materialContact(b) {
+  const tip = motorTip(b);
+  const ray = new Raycaster(
+    new Vector3(tip.x, 0, tip.z),
+    new Vector3(0, b.sign, 0),
+  );
+  return ray.intersectObjects(b.actin, false)[0];
+}
+function contactGap(b) {
+  const hit = materialContact(b);
+  return hit ? (hit.point.y - motorTip(b).y) * b.sign : Infinity;
+}
+function updateMuscle(p, calcium = "released") {
+  mus.update(p, { calcium });
+  mus.group.updateMatrixWorld(true);
+}
+assert.equal(bridges.length, 12);
 const expected = [
-  [0.35, false, true, true, true],
-  [0.5, false, true, false, true],
-  [0.6, false, false, false, true],
-  [0.68, true, false, false, false],
-  [0.76, false, true, true, false],
+  [0.35, false, true, true, 4],
+  [0.5, false, true, false, 12],
+  [0.6, false, false, false, 12],
+  [0.68, true, false, false, 0],
+  [0.76, false, true, true, 0],
 ];
-for (const [p, atp, adp, pi, bound] of expected) {
-  mus.update(p);
+for (const [p, atp, adp, pi, contacts] of expected) {
+  updateMuscle(p);
   for (const g of markerGroups) {
     assert.equal(g.getObjectByName("ATP bound marker").visible, atp);
     assert.equal(g.getObjectByName("ADP bound marker").visible, adp);
     assert.equal(g.getObjectByName("Pi bound marker").visible, pi);
-    assert.equal(g.parent.scale.y, bound ? 1.08 : 0.77);
   }
+  assert.equal(
+    bridges.filter((b) => Math.abs(contactGap(b)) < 1e-6).length,
+    contacts,
+  );
+}
+// The first tips touch at the stage boundary, and the remaining tips dock
+// inside the attachment interval while both Z discs and filaments are still.
+const discs = ["left Z disc", "right Z disc"].map((name) =>
+  mus.group.getObjectByName(name),
+);
+const separation = () => world(discs[0]).distanceTo(world(discs[1]));
+const prebinding = [];
+for (const [p, contacts] of [
+  [0.27, 0],
+  [0.31, 4],
+  [0.35, 4],
+  [0.37, 8],
+  [0.42, 12],
+  [0.43, 12],
+]) {
+  updateMuscle(p);
+  const gaps = bridges.map(contactGap);
+  assert.ok(gaps.every((gap) => Number.isFinite(gap) && gap > -1e-7));
+  assert.equal(gaps.filter((gap) => gap < 1e-6).length, contacts);
+  assert.ok(Math.abs(separation() - 7.4) < 1e-6);
+  prebinding.push(gaps);
+}
+// Every late head closes a visible clearance around its own actin target.
+for (let i = 0; i < bridges.length; i++) {
+  if (prebinding[1][i] > 0.1)
+    assert.ok(prebinding[1][i] - prebinding[2][i] > 0.06);
+}
+updateMuscle(0.43);
+const registered = bridges.map((b) => {
+  const hit = materialContact(b),
+    matrix = new Matrix4();
+  hit.object.getMatrixAt(hit.instanceId, matrix);
+  const local = hit.object
+    .worldToLocal(hit.point.clone())
+    .applyMatrix4(matrix.invert());
+  return { object: hit.object, index: hit.instanceId, local, x: motorTip(b).x };
+});
+const anchors = bridges.map((b) => rodEnd(b.stalk, -1));
+const thickFilament = mus.group.getObjectByName("bipolar thick filament");
+function thinSpan(mesh) {
+  const centers = [0, mesh.count - 1].map((index) => {
+    const matrix = new Matrix4();
+    mesh.getMatrixAt(index, matrix);
+    return mesh.localToWorld(new Vector3().setFromMatrixPosition(matrix));
+  });
+  return centers[0].distanceTo(centers[1]);
+}
+const restingSpans = bridges.map((b) => thinSpan(b.actin[0]));
+function verifyLinkage() {
+  assert.ok(
+    Math.abs(
+      rodEnd(thickFilament, -1).distanceTo(rodEnd(thickFilament, 1)) - 4.5,
+    ) < 1e-6,
+  );
+  bridges.forEach((b, i) => {
+    assert.ok(Math.abs(thinSpan(b.actin[0]) - restingSpans[i]) < 1e-6);
+    assert.ok(rodEnd(b.stalk, -1).distanceTo(anchors[i]) < 1e-6);
+    assert.ok(rodEnd(b.stalk, 1).distanceTo(rodEnd(b.shaft, 1)) < 1e-6);
+    assert.ok(
+      Math.abs(rodEnd(b.shaft, -1).distanceTo(rodEnd(b.shaft, 1)) - 0.44) <
+        1e-6,
+    );
+  });
+}
+const leverAxial = (b) =>
+  b.side * (rodEnd(b.shaft, 1).x - rodEnd(b.shaft, -1).x);
+for (const p of [0.43, 0.462, 0.519, 0.57, 0.61, 0.649999, 0.65]) {
+  updateMuscle(p);
+  verifyLinkage();
+  const slide = (7.4 - separation()) / 2;
+  bridges.forEach((b, i) => {
+    const { object, index, local, x } = registered[i],
+      matrix = new Matrix4();
+    object.getMatrixAt(index, matrix);
+    const site = object.localToWorld(local.clone().applyMatrix4(matrix));
+    assert.ok(
+      motorTip(b).distanceTo(site) < 1e-6,
+      "motor slipped off its material actin site",
+    );
+    assert.ok(Math.abs(b.side * (x - motorTip(b).x) - slide) < 1e-6);
+    if (p === 0.43) assert.ok(leverAxial(b) < -0.26);
+    if (p >= 0.61) assert.ok(leverAxial(b) > 0.26);
+  });
+}
+// ATP opens a gap before recovery. Once detached, the lever returns toward
+// the primed orientation while the thin filaments retain their displacement.
+for (const p of [0.66, 0.675, 0.72, 0.755, 0.8, 1]) {
+  updateMuscle(p);
+  verifyLinkage();
+  assert.ok(Math.abs(separation() - 6.24) < 1e-6);
+  assert.ok(bridges.every((b) => contactGap(b) > (p === 0.66 ? 0.06 : 0.16)));
+  if (p <= 0.72) assert.ok(bridges.every((b) => leverAxial(b) > 0.26));
+  if (p >= 0.8) assert.ok(bridges.every((b) => leverAxial(b) < -0.26));
 }
 mus.update(0, { calcium: "low" });
 const lowSnapshot = fingerprint(mus);
+// All four catalytic lobes fit on the thick-filament side of the entire
+// helical actin envelope, including protrusions between the sampled sites.
+for (const b of bridges) {
+  const motor = new Box3(),
+    filament = new Box3();
+  for (const lobe of b.face.parent.children.filter((node) => node.isMesh))
+    motor.expandByObject(lobe, true);
+  for (const mesh of b.actin) filament.expandByObject(mesh);
+  const gap =
+    b.sign > 0 ? filament.min.y - motor.max.y : motor.min.y - filament.max.y;
+  assert.ok(gap > 0.15, "a parked catalytic lobe overlaps low-calcium actin");
+}
 for (const p of [0, 0.15, 0.31, 0.43, 0.5, 0.6, 0.65, 0.72, 0.8, 0.94, 1]) {
   mus.update(p, { calcium: "low" });
   assert.equal(
@@ -197,7 +349,34 @@ for (const p of [0, 0.15, 0.31, 0.43, 0.5, 0.6, 0.65, 0.72, 0.8, 0.94, 1]) {
     lowSnapshot,
     "low Ca cannot discharge/reload the nucleotide markers",
   );
+  verifyLinkage();
+  assert.ok(bridges.every((b) => contactGap(b) > 0.2));
+  assert.ok(Math.abs(separation() - 7.4) < 1e-6);
 }
+updateMuscle(0);
+const restSnapshot = fingerprint(mus);
+for (const p of [0.034, 0.095, 0.149999]) {
+  updateMuscle(p);
+  assert.equal(fingerprint(mus), restSnapshot);
+}
+// Seek across the attachment and release intervals in both directions, with
+// control changes. Include the visible bilingual legends and the exported state.
+const repeatedMuscle = new Map();
+const arbitraryPoses = [
+  0.3553, 0.6791, 0.31, 0.3939, 0.978, 0.5167, 0.6591, 0.74, 0.4122, 0.02,
+];
+for (const calcium of ["low", "released", "released", "low"])
+  for (const p of [...arbitraryPoses, ...arbitraryPoses.toReversed()]) {
+    updateMuscle(p, calcium);
+    const state = JSON.stringify([
+      fingerprint(mus),
+      mus.labels.filter((l) => l.active !== false),
+      mus.group.userData,
+    ]);
+    const key = `${calcium}:${p}`;
+    if (repeatedMuscle.has(key)) assert.equal(state, repeatedMuscle.get(key));
+    else repeatedMuscle.set(key, state);
+  }
 
 // Audit neurons-04: recover material centerlines from paired actual outer/inner
 // tube meshes. Radius-weighted cancellation also handles incomplete B walls.
@@ -632,6 +811,26 @@ for (const calcium of ["released", "low"])
       world(target),
       "nucleotide label misses the current visible marker or empty motor",
     );
+    const bridge = bridges.find(
+      (b) => b.pivot.name === "myosin cross-bridge -1:0.79:1.62",
+    );
+    const legend = mus.labels[9];
+    assert.equal(legend.active, calcium === "low" || (p >= 0.31 && p < 0.8));
+    if (legend.active) {
+      const observed =
+        calcium === "low"
+          ? world(bridge.face)
+          : p < 0.43
+            ? motorTip(bridge)
+            : p >= 0.65 && p < 0.72
+              ? world(bridge.pivot.getObjectByName("ATP bound marker"))
+              : world(bridge.pivot.getObjectByName("essential light chain"));
+      samePoint(
+        labelPoint(mus, 9),
+        observed,
+        "cross-bridge leader lost the displayed motor feature",
+      );
+    }
   }
 for (const atp of ["available", "absent"])
   for (const p of [0, 0.17, 0.185, 0.355, 0.525, 0.715, 0.905, 1]) {

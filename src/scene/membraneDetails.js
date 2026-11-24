@@ -279,6 +279,22 @@ export function membraneDetail(id) {
               position: [0, 0.49, 0],
             },
           ]
-        : [];
+        : [
+            {
+              zh: "近膜端糖残基",
+              en: "Membrane-proximal sugar",
+              position: [0.01989, -0.52176, 0.06908],
+            },
+            {
+              zh: "糖链分支点",
+              en: "Glycan branch point",
+              position: [0.07989, 0.00324, 0.09158],
+            },
+            {
+              zh: "末端糖残基",
+              en: "Terminal sugar residue",
+              position: [-0.26511, 0.52824, 0.12158],
+            },
+          ];
   return g;
 }
