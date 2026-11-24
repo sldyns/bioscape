@@ -2,24 +2,19 @@
   font-family:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
     "PingFang SC", "Microsoft YaHei", sans-serif;
-  color: #172f27;
-  background: #f8f9f5;
-  font-synthesis: none;
-  --atlas-serif:
-    "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia,
-    "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
-  --ink: #172f27;
-  --muted: #596b60;
-  --line: #d9e0d9;
-  --accent: #225e46;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue",
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ink: #1d1d1f;
+  --muted: #606065;
+  --line: #dedee2;
+  --accent: #06c;
   --blue: var(--accent);
-  --canvas: #eaf0ea;
-  --specimen-field: radial-gradient(
-    ellipse at 48% 39%,
-    #fbfcf7 0%,
-    #ecf1eb 55%,
-    #dce5df 100%
-  );
+  --canvas: #f5f5f7;
+  color-scheme: light;
+  color: var(--ink);
+  background: #fff;
+  font-synthesis: none;
 }
 * {
   box-sizing: border-box;
@@ -71,7 +66,7 @@ svg {
 }
 .atlas {
   min-height: 100svh;
-  background: #fbfcf8;
+  background: transparent;
 }
 .application-recovery {
   min-height: 100svh;
@@ -174,28 +169,8 @@ svg {
   border-bottom: 1px solid var(--line);
   position: relative;
   z-index: 5;
-  background: #163a32;
-  color: #f0f5e9;
-}
-.app-header :focus-visible {
-  outline-color: #d3e6b8;
-}
-.app-header .language,
-.app-header .icon-button,
-.app-header .wordmark span {
-  color: #c7d9cf;
-}
-.app-header .language .active,
-.app-header .breadcrumb-current,
-.app-header .breadcrumbs button[aria-current],
-.app-header .breadcrumbs button:hover {
-  color: #f2f7e9;
-}
-.app-header .breadcrumbs button {
-  color: #c7d9cf;
-}
-.app-header .icon-button:hover {
-  color: #102d24;
+  background: #ffffffeb;
+  color: var(--ink);
 }
 .atlas-mark {
   position: relative;
@@ -242,9 +217,9 @@ svg {
 }
 .light-select select {
   appearance: none;
-  background: #ffffff0e;
-  color: #ecf3e9;
-  border: 1px solid #749081;
+  background: var(--canvas);
+  color: var(--ink);
+  border: 1px solid var(--line);
   border-radius: 5px;
   padding: 7px 21px 7px 30px;
   font: inherit;
@@ -259,7 +234,7 @@ svg {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-family: var(--atlas-serif);
+  font-family: var(--font-display);
   font-size: 25px;
   letter-spacing: -1.25px;
   font-weight: 600;
@@ -357,7 +332,7 @@ svg {
   padding: 0 10px 20px;
 }
 .catalog-heading h1 {
-  font-family: var(--atlas-serif);
+  font-family: var(--font-display);
   font-size: 24px;
   line-height: 1.4;
   font-weight: 600;
@@ -402,7 +377,7 @@ svg {
   background: #f5f5f7;
 }
 .catalog-item.active {
-  background: #e4eee3;
+  background: #eaf2fc;
   color: var(--blue);
 }
 .catalog-item > svg {
@@ -427,7 +402,7 @@ svg {
   position: relative;
   min-width: 0;
   overflow: hidden;
-  background: var(--specimen-field);
+  background: transparent;
   isolation: isolate;
 }
 .model-canvas {
@@ -544,22 +519,23 @@ canvas:focus-visible ~ .scene-keyboard-hint {
 .view-modes {
   display: flex;
   align-items: center;
-  background: #f8faf2eb;
+  background: #f1f1f3eb;
   padding: 3px;
   border-radius: 7px;
-  border: 1px solid #b9cbbd;
+  border: 1px solid var(--line);
 }
 .view-modes button {
   padding: 8px 22px;
-  color: #526457;
+  color: var(--muted);
   font-size: 12px;
   min-width: 71px;
   border-radius: 6px;
   white-space: nowrap;
 }
 .view-modes button.active {
-  background: #315a46;
-  color: white;
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 1px 3px #0002;
 }
 .utility-controls {
   display: flex;
@@ -601,7 +577,7 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   animation: appear 0.25s ease;
 }
 .details h2 {
-  font-family: var(--atlas-serif);
+  font-family: var(--font-display);
   font-size: 30px;
   font-weight: 600;
   letter-spacing: -1px;
@@ -621,7 +597,7 @@ canvas:focus-visible ~ .scene-keyboard-hint {
 .node-description {
   font-size: 14px;
   line-height: 1.95;
-  color: #4a5a50;
+  color: #48484c;
   margin-top: 27px;
 }
 .feature-list {
@@ -636,16 +612,16 @@ canvas:focus-visible ~ .scene-keyboard-hint {
 }
 .study-action {
   justify-self: start;
-  border: 1px solid #b3c8b7;
+  border: 1px solid var(--line);
   border-radius: 6px;
   padding: 7px 12px;
   color: var(--accent);
   font-size: 13px;
   font-weight: 600;
-  background: #eef3e9;
+  background: var(--canvas);
 }
 .study-action:hover {
-  background: #e1ecd9;
+  background: #e9e9ed;
 }
 .structure-study label {
   display: grid;
@@ -1152,7 +1128,7 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   z-index: 2;
 }
 .label-leaders line {
-  stroke: #62796e;
+  stroke: #73737a;
   stroke-width: 1;
   stroke-opacity: 0.76;
 }
@@ -1373,8 +1349,8 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   color: #82828c;
 }
 .cell-type-switch button[aria-pressed="true"] {
-  background: #e5eee4;
-  color: #214b36;
+  background: #eaf2fc;
+  color: var(--accent);
   font-weight: 500;
 }
 .anatomy-workspace {
@@ -1557,7 +1533,7 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   align-items: center;
   gap: 12px;
   font-size: 11px;
-  color: #526457;
+  color: var(--muted);
 }
 .mechanism-switch .view-modes button {
   padding: 7px 12px;

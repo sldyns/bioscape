@@ -539,7 +539,7 @@ export default function ProcessScene({
         }
         resetSharedRenderingState(renderer, THREE.PCFShadowMap);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        renderer.setClearColor(0xeaf0ea, 0);
+        renderer.setClearColor(0xf5f5f7, 0);
         renderer.domElement.style.display = "block";
         // The structure renderer sets pixel dimensions inline. This host fits
         // its canvas via CSS and owns the drawing buffer size independently.

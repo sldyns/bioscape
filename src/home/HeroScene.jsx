@@ -118,7 +118,6 @@ export default function HeroScene({ lang, selected, onSelect, onExplore }) {
               : t("标本预览", "Specimen preview")}
         </span>
       </figcaption>
-      <div className="home-hero-field" aria-hidden="true" />
       <div
         className="home-hero-stage"
         data-ready={ready}

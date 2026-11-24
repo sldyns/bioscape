@@ -81,7 +81,6 @@ export const homeModels = cellTypes.map(({ id }) => ({
   id,
   title: bilingual(getNode(id, "zh").name, getNode(id, "en").name),
   ...modelIntroductions[id],
-  accent: getNode(id).color,
   image: `home/models/${id}.webp`,
   href: `#/${id}`,
 }));

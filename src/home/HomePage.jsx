@@ -270,7 +270,6 @@ export default function HomePage({
                 href={exploreSceneHash(model.href, lang)}
                 key={model.id}
                 onClick={(event) => follow(event, model.href)}
-                style={{ "--model-accent": model.accent }}
               >
                 <div className="home-model-media">
                   <img

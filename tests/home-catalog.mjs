@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { build } from "esbuild";
-import { access, mkdtemp, rm } from "node:fs/promises";
+import { access, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -79,8 +79,14 @@ try {
       assert.equal(model.title[lang], getNode(model.id, lang).name);
     assert.ok(model.description.zh.length <= 28, model.id);
     assert.ok(model.description.en.length <= 80, model.id);
-    assert.match(model.accent, /^#[0-9a-f]{6}$/i);
     assert.equal(model.image, `home/models/${model.id}.webp`);
+    const poster = await readFile(join(project, "public", model.image));
+    assert.equal(poster.toString("ascii", 8, 12), "WEBP", model.id);
+    const chunk = poster.toString("ascii", 12, 16);
+    // VP8X carries the alpha flag in its feature byte. VP8L packs it after the dimensions.
+    const alphaFlag =
+      chunk === "VP8X" ? poster[20] : chunk === "VP8L" ? poster[24] : 0;
+    assert.ok(alphaFlag & 0x10, `${model.id} poster needs an alpha channel`);
     assert.deepEqual(parsePath(model.href), [model.id]);
     assert.equal(parseExperience(model.href), "structure");
   }

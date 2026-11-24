@@ -4,15 +4,15 @@
   max-height: calc(100dvh - 48px);
   margin: auto;
   padding: 0;
-  border: 1px solid #e1e6e5;
+  border: 1px solid var(--line);
   border-radius: 20px;
-  color: #28312e;
+  color: var(--ink);
   background: #fff;
-  box-shadow: 0 24px 100px #172a2433;
+  box-shadow: 0 24px 100px #00000026;
   overflow: hidden;
 }
 .project-dialog::backdrop {
-  background: #18241f66;
+  background: #00000052;
 }
 .project-dialog-inner {
   display: flex;
@@ -30,7 +30,7 @@
   font-size: 11px;
   line-height: 1.6;
   letter-spacing: 0.03em;
-  color: #65766e;
+  color: var(--muted);
   margin-bottom: 9px;
 }
 .project-dialog-header h2 {
@@ -50,29 +50,29 @@
   height: 36px;
   margin: -5px -7px 0 0;
   border-radius: 50%;
-  color: #69746e;
+  color: var(--muted);
 }
 .project-dialog-close:hover {
-  background: #f0f3f1;
+  background: #f2f2f5;
 }
 .project-dialog-nav {
   display: flex;
   flex-shrink: 0;
   gap: 20px;
   padding: 0 30px;
-  border-bottom: 1px solid #e5ebe7;
+  border-bottom: 1px solid var(--line);
 }
 .project-dialog-nav button {
   border-bottom: 2px solid transparent;
   border-radius: 0;
   padding: 0 0 13px;
-  color: #748078;
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.7;
 }
 .project-dialog-nav button[aria-pressed="true"] {
-  color: #2e5645;
-  border-color: #608b74;
+  color: var(--accent);
+  border-color: var(--accent);
 }
 .project-dialog-body {
   min-height: 0;
@@ -99,7 +99,7 @@
 .project-dialog-body p {
   font-size: 13px;
   line-height: 1.9;
-  color: #606c65;
+  color: var(--muted);
 }
 .project-creator {
   display: flex;
@@ -110,14 +110,14 @@
   margin-top: 23px;
   padding: 20px 22px;
   border-radius: 12px;
-  background: #f2f6f3;
+  background: var(--canvas);
 }
 .project-creator span,
 .project-creator small {
   display: block;
   font-size: 11px;
   line-height: 1.7;
-  color: #65776c;
+  color: var(--muted);
 }
 .project-creator a {
   display: flex;
@@ -127,7 +127,7 @@
   font-size: 24px;
   font-weight: 600;
   letter-spacing: -0.5px;
-  color: #2e5141;
+  color: var(--ink);
 }
 .project-permissions {
   display: grid;
@@ -137,9 +137,9 @@
 }
 .project-permissions section {
   padding: 17px 19px;
-  border: 1px solid #e2e9e4;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fbfcfb;
+  background: #fafafa;
 }
 .project-permissions h4 {
   margin: 0 0 7px;
@@ -155,18 +155,18 @@
   align-items: center;
   gap: 3px;
   margin-top: 10px;
-  color: #2e6950;
+  color: var(--accent);
   font-size: 12px;
   line-height: 1.7;
 }
 .project-dialog-body .project-legal-summary {
   font-size: 11px;
-  color: #748078;
+  color: var(--muted);
   margin-top: 16px;
 }
 .project-document {
   margin-top: 23px;
-  border-top: 1px solid #e5ebe7;
+  border-top: 1px solid var(--line);
   padding-top: 19px;
 }
 .project-document-heading {
@@ -184,24 +184,24 @@
   align-items: center;
   gap: 3px;
   white-space: nowrap;
-  color: #607c6c;
+  color: var(--muted);
   font-size: 11px;
 }
 .project-document pre {
   margin: 0;
   padding: 18px 20px;
   border-radius: 10px;
-  background: #f6f8f6;
+  background: var(--canvas);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 11px;
   line-height: 1.85;
-  color: #566259;
+  color: var(--muted);
 }
 .project-document button {
   margin-top: 10px;
-  color: #2e6950;
+  color: var(--accent);
 }
 .project-dialog-footer {
   display: flex;
@@ -211,17 +211,17 @@
   flex-wrap: wrap;
   gap: 7px 16px;
   padding: 18px 30px;
-  border-top: 1px solid #e5ebe7;
-  background: #fbfcfb;
+  border-top: 1px solid var(--line);
+  background: #fafafa;
   font-size: 11px;
   line-height: 1.7;
-  color: #748078;
+  color: var(--muted);
 }
 .project-dialog-footer a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #355f49;
+  color: var(--accent);
   font-size: 12px;
   overflow-wrap: anywhere;
 }

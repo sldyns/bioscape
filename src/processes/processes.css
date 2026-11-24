@@ -20,7 +20,7 @@
   margin-bottom: 13px;
 }
 .process-catalog h1 {
-  font-family: var(--atlas-serif);
+  font-family: var(--font-display);
   font-size: 21px;
   line-height: 1.5;
   font-weight: 600;
@@ -39,7 +39,7 @@
   background: var(--canvas);
 }
 .process-directory-content h2 {
-  font-family: var(--atlas-serif);
+  font-family: var(--font-display);
   font-size: 29px;
   font-weight: 600;
   letter-spacing: -0.7px;
@@ -225,7 +225,7 @@
   background: #f5f5f7;
 }
 .process-steps button[aria-current] {
-  background: #e3eee2;
+  background: #eaf2fc;
   color: var(--blue);
 }
 @media (min-width: 601px) {
@@ -255,7 +255,7 @@
 .process-stage {
   min-width: 0;
   min-height: 0;
-  background: var(--canvas);
+  background: transparent;
   display: flex;
   flex-direction: column;
 }
@@ -269,7 +269,7 @@
   inset: 0;
   overflow: hidden;
   touch-action: none;
-  background: var(--specimen-field);
+  background: transparent;
 }
 .process-canvas canvas {
   position: absolute;
@@ -318,7 +318,7 @@
   white-space: nowrap;
   padding: 4px 7px;
   border-radius: 5px;
-  color: #304c40;
+  color: #424247;
   background: #ffffffeb;
   box-shadow: 0 1px 5px #30303508;
   pointer-events: none;
@@ -879,7 +879,7 @@
   width: 21px;
   height: 21px;
   padding: 0;
-  border: 1px solid #7f9b8c;
+  border: 1px solid #86868b;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -903,7 +903,7 @@
   overflow: hidden;
 }
 .process-label-leaders line {
-  stroke: #627f71;
+  stroke: #787880;
   stroke-width: 0.8;
   opacity: 0.65;
 }
@@ -916,10 +916,10 @@
 .process-annotation-item[aria-pressed="true"] {
   color: var(--accent);
   font-weight: 650;
-  background: #e4eee1;
+  background: #eaf2fc;
 }
 .process-label-leaders .pinned-anchor {
-  fill: #f9fff148;
+  fill: #ffffff48;
   stroke: var(--accent);
   stroke-width: 2;
 }
@@ -949,7 +949,7 @@
   position: absolute;
   width: 1px;
   height: 4px;
-  background: #63826e;
+  background: #898990;
 }
 .process-step-controls .study-action {
   margin-right: auto;

@@ -5,7 +5,7 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #142e256b;
+  background: #00000052;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -25,8 +25,8 @@
   border: 1px solid #ffffffb3;
   border-radius: 22px;
   background: #fff;
-  color: var(--ink);
-  box-shadow: 0 24px 100px #142b233f;
+  color: #242428;
+  box-shadow: 0 24px 100px #00000026;
   font-size: 13px;
 }
 .studio-dialog button,
@@ -47,25 +47,24 @@
   align-items: flex-start;
   gap: 20px;
   padding: 26px 30px 22px;
-  color: #f1f4e8;
-  background: #193e33;
-  border-bottom: 1px solid #38604e;
+  border-bottom: 1px solid #eceef1;
   flex-shrink: 0;
 }
 .studio-eyebrow {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 1.9px;
-  color: #c5d8c4;
+  color: #8a8f98;
 }
 .studio-header h2 {
   margin: 7px 0 6px;
-  font: 500 25px / 1.2 var(--atlas-serif);
+  font-size: 23px;
+  font-weight: 600;
   letter-spacing: -0.65px;
 }
 .studio-header p:last-child {
   font-size: 12px;
-  color: #c5d7ca;
+  color: #737982;
 }
 .studio-close {
   display: grid;
@@ -73,15 +72,12 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #355a4e;
-  color: #f1f4e8;
+  background: #f1f2f5;
+  color: #6c737d;
   flex-shrink: 0;
 }
 .studio-close:hover {
-  background: #466e5f;
-}
-.studio-dialog .studio-close:focus-visible {
-  outline-color: #ebd694;
+  background: #e5e8ec;
 }
 .studio-body {
   display: grid;
@@ -95,7 +91,7 @@
   min-width: 0;
   min-height: 0;
   padding: 23px 26px 18px;
-  background: #f3f5f0;
+  background: #f5f6f8;
 }
 .studio-preview-heading {
   display: flex;
@@ -228,9 +224,9 @@
   background: #f6f8fc;
 }
 .studio-choices button[aria-pressed="true"] {
-  border-color: #9fb8a4;
-  background: #edf4eb;
-  color: #285239;
+  border-color: #98bde8;
+  background: #f2f7ff;
+  color: #2168b7;
 }
 .studio-compositions .studio-choices button {
   display: flex;
@@ -345,7 +341,7 @@
   transition: transform 0.18s;
 }
 .studio-toggles input:checked + .studio-toggle {
-  background: var(--accent);
+  background: #4594e7;
 }
 .studio-toggles input:checked + .studio-toggle::after {
   transform: translateX(12px);
@@ -375,7 +371,7 @@
 .studio-scrubber input {
   width: 100%;
   min-width: 0;
-  accent-color: var(--accent);
+  accent-color: #428edd;
 }
 .studio-scrubber span {
   white-space: nowrap;
@@ -404,7 +400,7 @@
   color: #b44c3f;
 }
 .studio-notice {
-  color: #4d7970;
+  color: var(--muted);
 }
 .studio-actions {
   display: flex;
@@ -444,7 +440,7 @@
   border: 1px solid var(--accent);
 }
 .studio-dialog .studio-primary:hover {
-  background: #194b37;
+  background: #006acf;
 }
 .studio-share-link {
   display: flex;

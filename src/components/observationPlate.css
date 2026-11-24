@@ -3,14 +3,14 @@
   max-height: min(86dvh, 920px);
   padding: 0;
   color: var(--ink);
-  border: 1px solid #d7e2d8;
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: #f8f9f5;
-  box-shadow: 0 25px 80px #0c211b48;
+  background: #fff;
+  box-shadow: 0 25px 80px #00000026;
   overscroll-behavior: contain;
 }
 .observation-plate::backdrop {
-  background: #13291ed9;
+  background: #00000052;
 }
 .observation-plate header {
   position: sticky;
@@ -21,17 +21,18 @@
   align-items: flex-start;
   gap: 18px;
   padding: 21px 24px;
-  background: #183b32;
-  color: #f1f5e9;
+  background: #fffffff5;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
 }
 .observation-plate h2 {
   margin: 0;
-  font: 500 25px/1.2 var(--atlas-serif);
+  font: 600 25px/1.2 var(--font-display);
 }
 .observation-plate header p {
   margin: 6px 0 0;
   font-size: 13px;
-  color: #c9ddcd;
+  color: var(--muted);
 }
 .observation-plate header button {
   display: grid;
@@ -39,11 +40,11 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #36594b;
-  color: white;
+  background: var(--canvas);
+  color: var(--ink);
 }
 .observation-plate header button:focus-visible {
-  outline-color: #efd99e;
+  outline-color: var(--accent);
 }
 .observation-frames {
   display: grid;
@@ -76,7 +77,7 @@
   position: relative;
   display: grid;
   place-items: center;
-  background: var(--specimen-field);
+  background: transparent;
 }
 .observation-image canvas {
   width: 100%;
@@ -103,7 +104,7 @@
 .observation-retry {
   margin: 0 22px 18px;
   padding: 8px 14px;
-  background: #e2ebdc;
+  background: var(--canvas);
   border-radius: 6px;
 }
 @media (max-width: 620px) {
