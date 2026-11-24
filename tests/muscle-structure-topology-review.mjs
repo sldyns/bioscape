@@ -331,6 +331,7 @@ function topology(meshes) {
   }
   return {
     triangles,
+    eulerCharacteristic: parent.size - edges.size + triangles,
     components: new Set([...parent.keys()].map(find)).size,
     openEdges: [...edges.values()].filter((x) => x === 1).length,
     nonmanifoldEdges: [...edges.values()].filter((x) => x > 2).length,
@@ -370,6 +371,18 @@ check(
   "Longitudinal SR and terminal cisternae must share open tube rims, not intersect intact end walls",
 );
 
+const detailSR = buildMuscleFibre("muscleFibreSR");
+detailSR.updateMatrixWorld(true);
+const detailSRTopology = topology(detailSR.children);
+check(
+  detailSRTopology.components === 1 &&
+    detailSRTopology.openEdges === 0 &&
+    detailSRTopology.nonmanifoldEdges === 0 &&
+    detailSRTopology.inconsistentWinding === 0 &&
+    detailSRTopology.eulerCharacteristic === -80,
+  "The sleeve, its 40 fenestrations and both terminal cisternae must form one closed membrane",
+);
+
 const summary = {
   myofibrils: centres.length,
   fibrilGap,
@@ -381,10 +394,12 @@ const summary = {
   solidMembraneControls,
   nuclearTopology,
   srTopology,
+  detailSRTopology,
   organelleStats,
   errors,
 };
 console.log(JSON.stringify(summary, null, 2));
 dispose(fibre);
 dispose(nucleus);
+dispose(detailSR);
 assert.equal(errors.length, 0, errors.join("\n"));

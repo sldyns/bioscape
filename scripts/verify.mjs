@@ -67,6 +67,7 @@ try {
     "tests/muscle-structure-topology-review.mjs",
     "tests/process-session.mjs",
     "tests/process-playback.mjs",
+    "tests/study-plates.mjs",
     "tests/related-process-entry.mjs",
     "tests/proteasome-polish.mjs",
     "tests/replication-recruitment.mjs",

@@ -705,8 +705,8 @@ export const modelNotes = {
     en: "Rings represent porins. The cut edge is artificial; Whole mode restores the membrane. Outer and inner membranes are two distinct lipid bilayers, not the two faces of a single membrane.",
   },
   cristae: {
-    zh: "截取一小块连续内膜，展示嵴的两侧膜面及其围成的嵴腔。开放边缘为人为裁切；嵴腔不是基质。此处简化了真实嵴连接处的狭窄几何形态。",
-    en: "A cropped continuous inner-membrane patch shows both sides of each fold and the crista lumen. Open edges are illustrative cuts; the lumen is not matrix. Narrow crista-junction geometry is simplified.",
+    zh: "沿裁切边缘可以看到一片连续内膜折出的嵴腔。成对的紫色小体表示嵴顶的一部分 ATP 合酶，它们的头部朝向基质。模型简化了嵴连接处的狭窄形状。",
+    en: "The cut edge reveals the lumen inside each fold of a continuous inner membrane. Paired purple heads mark some of the ATP synthases along the ridges and face the matrix. The narrow crista junctions are simplified.",
   },
   atpSynthase: {
     zh: "膜片环绕嵌入膜内的 F₀；中轴与周围支架连接朝向基质的 F₁ 头部。体块只表示功能分区，不代表特定物种的亚基数量或原子结构。",

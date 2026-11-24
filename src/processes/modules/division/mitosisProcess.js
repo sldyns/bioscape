@@ -21,12 +21,30 @@ function create() {
     pole.position.x = side * 2.6;
     return pole;
   });
+  const cortex = cell.mesh.getObjectByName("membrane-inner-leaflet").geometry;
+  const { widthSegments, heightSegments } = cortex.parameters;
+  // Sample the retained rear cortex, from its upper cut edge down to the
+  // lower edge. Every other fiber reaches the membrane-adjacent cortex.
+  const corticalSites = [
+    [0.325, 0],
+    [0.35, 0.06],
+    [0.4, 0.095],
+    [0.5, 0.11],
+    [0.6, 0.095],
+    [0.65, 0.06],
+    [0.675, 0],
+  ];
   const astrals = [-1, 1].flatMap((side) =>
-    Array.from({ length: 7 }, (_, i) => ({
-      side,
-      angle: (i * Math.PI * 2) / 7,
-      mesh: k.line(),
-    })),
+    corticalSites.map(([latitude, longitude], i) => {
+      const column = Math.round(
+        (side < 0 ? 1 - longitude : 0.5 + longitude) * widthSegments,
+      );
+      const vertex =
+        Math.round(latitude * heightSegments) * (widthSegments + 1) + column;
+      const mesh = k.line();
+      mesh.name = "astral-microtubule";
+      return { side, vertex, reach: i % 2 ? 0.76 : 0.978, mesh };
+    }),
   );
   const chromosomes = Array.from({ length: 4 }, (_, i) =>
     [-1, 1].map((side) => {
@@ -125,18 +143,22 @@ function create() {
       pole.visible = true;
       pole.scale.setScalar(1 - 0.45 * poleSettlement);
     });
-    astrals.forEach(({ side, angle, mesh }) => {
+    const astralExtension =
+      (0.32 + 0.68 * ease(p, 0.05, 0.31)) * (1 - ease(p, 0.75, 0.83));
+    const cortexVertices = cortex.attributes.position;
+    astrals.forEach(({ side, vertex, reach, mesh }) => {
       mesh.visible = p < 0.83;
-      const reach = 1 - 0.8 * poleSettlement;
+      const extent = reach * astralExtension,
+        startX = side * poleX;
       k.setSegment(
         mesh,
-        side * poleX,
+        startX,
         0,
         0,
-        side * (poleX + 0.34 * reach),
-        Math.cos(angle) * 0.42 * reach,
-        Math.sin(angle) * 0.42 * reach,
-        0.018,
+        startX + (cortexVertices.getX(vertex) - startX) * extent,
+        cortexVertices.getY(vertex) * extent,
+        cortexVertices.getZ(vertex) * extent,
+        0.016 * (1 - ease(p, 0.78, 0.83)),
       );
     });
     chromosomes.forEach((c) => {
@@ -281,8 +303,8 @@ export default {
       at: 0.19,
       title: b("动粒捕获微管", "Kinetochore capture"),
       description: b(
-        "微管连接到姐妹染色单体的动粒。正常情况下，两姐妹分别朝向相反的纺锤体极。",
-        "Microtubules attach to sister kinetochores. Normally, the two sisters become oriented toward opposite spindle poles.",
+        "动粒微管从纺锤体两极向内连接姐妹动粒，正常情况下两姐妹分别朝向相反的极。两极外侧的星状微管向细胞皮层伸展，参与纺锤体定位。",
+        "Kinetochore microtubules extend inward from opposite poles to attach to sister kinetochores. Outside the spindle, astral microtubules extend toward the cell cortex and help position the spindle.",
       ),
     },
     {
@@ -319,6 +341,11 @@ export default {
     },
   ],
   sources: [
+    {
+      title:
+        "Chromosome- and spindle-pole-derived signals generate an intrinsic code for spindle position and orientation",
+      url: "https://doi.org/10.1038/ncb2440",
+    },
     {
       title:
         "Mastronarde et al. (1993): Interpolar spindle microtubules in PTK cells",

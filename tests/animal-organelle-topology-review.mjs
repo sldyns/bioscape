@@ -3,12 +3,14 @@ import { createHash } from "node:crypto";
 import { test } from "node:test";
 import { build } from "esbuild";
 import * as THREE from "three";
+import { mitochondriaDetail } from "../src/scene/mitochondriaDetails.js";
 
-// The app's scene modules use extensionless imports. Bundle just these two
-// assemblies in memory, retaining the same Three runtime as the geometry probe.
+// Bundle the app's extensionless scene imports in memory and retain the same
+// Three runtime as the geometry probes.
 const compiled = await build({
   stdin: {
     contents: `
+      export { detailModel } from "./src/scene/detailModels.js";
       export { lysosomeAssembly, protonPump } from "./src/scene/lysosomeDetails.js";
       export { peroxisomeAssembly } from "./src/scene/peroxisomeDetails.js";
       export { erDetail } from "./src/scene/erDetails.js";
@@ -32,10 +34,15 @@ const compiled = await build({
     },
   ],
 });
-const { lysosomeAssembly, peroxisomeAssembly, protonPump, erDetail } =
-  await import(
-    `data:text/javascript,${encodeURIComponent(compiled.outputFiles[0].text)}`
-  );
+const {
+  detailModel,
+  lysosomeAssembly,
+  peroxisomeAssembly,
+  protonPump,
+  erDetail,
+} = await import(
+  `data:text/javascript,${encodeURIComponent(compiled.outputFiles[0].text)}`
+);
 const lysosome = lysosomeAssembly();
 const peroxisome = peroxisomeAssembly();
 lysosome.updateMatrixWorld(true);
@@ -223,5 +230,240 @@ test("rough ER labels terminate on visible membranes and ribosomes, not the cent
         `${id}/${mode}: anchor must lie on the first visible surface at the default camera`,
       );
     }
+  }
+});
+
+function localMitochondrialLeaf(id) {
+  const group = mitochondriaDetail(id);
+  group.rotation.set(0, 0, 0);
+  group.updateMatrixWorld(true);
+  return group;
+}
+function intersections(meshes, origin, direction) {
+  return new THREE.Raycaster(origin, direction).intersectObjects(meshes, false);
+}
+function inMode(group, mode) {
+  return group.children.filter((o) =>
+    mode === "whole" ? !o.userData.cutOnly : !o.userData.cap,
+  );
+}
+
+test("the ATP synthase cut reveals the embedded rotor and retains both stalks", () => {
+  const g = localMitochondrialLeaf("atpSynthase");
+  const rotor = g.getObjectByName("membrane-rotor");
+  const fixed = g.getObjectByName("stationary-membrane-domain");
+  const shaft = g.getObjectByName("central-shaft");
+  const stalk = g.getObjectByName("peripheral-stalk");
+  const crown = g.getObjectByName("stator-crown");
+  const domains = g.children.filter((o) => o.name === "catalytic-domain");
+  for (const part of [rotor, shaft, ...domains]) {
+    const { position, normal } = part.geometry.attributes;
+    const joined = new Map();
+    let duplicates = 0;
+    for (let i = 0; i < position.count; i++) {
+      // Round only for grouping duplicate vertices at periodic seams and poles.
+      const key = [position.getX(i), position.getY(i), position.getZ(i)]
+        .map((v) => Math.round(v * 1e6))
+        .join(",");
+      const n = new THREE.Vector3().fromBufferAttribute(normal, i);
+      if (joined.has(key)) {
+        assert(
+          n.distanceTo(joined.get(key)) < 1e-5,
+          part.name + " has a hard lighting seam",
+        );
+        duplicates++;
+      } else joined.set(key, n);
+    }
+    assert(duplicates > 0);
+  }
+  assert.equal(domains.length, 6);
+  assert.equal(new Set(domains.map((o) => o.material.color.getHex())).size, 2);
+  const bounds = (o) => new THREE.Box3().setFromObject(o, true);
+  const head = new THREE.Box3();
+  domains.forEach((domain) => head.union(bounds(domain)));
+  const membrane = intersections(
+    inMode(g, "whole"),
+    new THREE.Vector3(-0.37, 0.02, -1),
+    new THREE.Vector3(0, 0, 1),
+  );
+  assert(membrane.length >= 2);
+  for (const domain of [rotor, fixed]) {
+    assert(bounds(domain).min.z < membrane[0].point.z);
+    assert(bounds(domain).max.z > membrane.at(-1).point.z);
+  }
+  assert(head.min.z > bounds(rotor).max.z + 0.12);
+  assert(
+    bounds(shaft).min.z < bounds(rotor).max.z &&
+      bounds(shaft).max.z > head.min.z,
+  );
+  const path = stalk.geometry.parameters.path;
+  assert(
+    fixed.worldToLocal(path.getPoint(0)).length() < 1,
+    "stator must contact its membrane domain",
+  );
+  assert(
+    crown.worldToLocal(path.getPoint(1)).length() < 1,
+    "stator must contact its crown",
+  );
+  const sight = new THREE.Vector3(-1, 0, 0);
+  const origin = new THREE.Vector3(0.85, 0, 0);
+  const whole = intersections(inMode(g, "whole"), origin, sight)[0];
+  const section = intersections(inMode(g, "section"), origin, sight)[0];
+  assert(whole.object.userData.cap && whole.distance + 0.2 < section.distance);
+  assert.equal(section.object, rotor);
+  origin.z = 0.23;
+  for (const mode of ["whole", "section"])
+    assert.equal(
+      intersections(inMode(g, mode), origin, sight)[0].object,
+      shaft,
+    );
+  const view = new THREE.Vector3(0.82, -0.32, 0.47).normalize();
+  for (const [i, expected] of [
+    [0, "catalytic-domain"],
+    [1, "membrane-rotor"],
+  ]) {
+    const endpoint = new THREE.Vector3(...g.userData.landmarks[i].position);
+    const hit = intersections(
+      inMode(g, "section"),
+      endpoint.addScaledVector(view, 2),
+      view.clone().negate(),
+    )[0];
+    assert.equal(hit.object.name, expected, g.userData.landmarks[i].en);
+  }
+});
+
+test("both lamellae share one inner boundary, with open lumina and matrix-facing heads", () => {
+  const g = localMitochondrialLeaf("cristae");
+  const sheets = inMode(g, "section").filter((o) =>
+    ["matrix-face", "luminal-face"].includes(o.name),
+  );
+  for (const name of ["matrix-face", "luminal-face"]) {
+    const patches = g.children.filter((o) => o.name === name);
+    assert.equal(
+      patches.length,
+      2,
+      "both cropped segments must form each leaflet",
+    );
+    const [a, b] = patches;
+    const edge = (mesh) => {
+      const positions = mesh.geometry.attributes.position;
+      const keys = new Set();
+      for (let i = 0; i < positions.count; i++)
+        keys.add(
+          new THREE.Vector3()
+            .fromBufferAttribute(positions, i)
+            .toArray()
+            .map((v) => v.toFixed(5))
+            .join(","),
+        );
+      return keys;
+    };
+    const first = edge(a);
+    assert(
+      [...edge(b)].filter((key) => first.has(key)).length >= 100,
+      "whole must restore the shared crop edge",
+    );
+  }
+  const up = new THREE.Vector3(0, 0, 1);
+  for (const x of [-0.73, -0.43, -0.15]) {
+    for (const y of [-0.28, 0.35]) {
+      const hits = intersections(sheets, new THREE.Vector3(x, y, -0.6), up);
+      assert.deepEqual(
+        hits.map((h) => h.object.name),
+        ["luminal-face", "matrix-face"],
+      );
+      assert(hits[0].point.z > 0.15, "no basal sheet may seal the lumen");
+    }
+    const widths = [-0.12, 0.105].map((z) => {
+      const hits = intersections(
+        sheets.filter((o) => o.name === "luminal-face"),
+        new THREE.Vector3(x, -0.85, z),
+        new THREE.Vector3(0, 1, 0),
+      );
+      assert.equal(hits.length, 4);
+      return [
+        hits[1].point.y - hits[0].point.y,
+        hits[3].point.y - hits[2].point.y,
+      ];
+    });
+    for (let i = 0; i < 2; i++)
+      assert(
+        widths[0][i] > 0.075 && widths[1][i] > widths[0][i] * 1.4,
+        "the junction must open into a wider lamella",
+      );
+  }
+  for (const y of [-0.28, 0.035, 0.35]) {
+    const hits = intersections(sheets, new THREE.Vector3(0.8, y, -0.6), up);
+    assert(
+      hits[0].point.z < -0.17,
+      "lamellae must return to the uncut boundary at the far end",
+    );
+  }
+  const matrix = new THREE.Vector3(...g.userData.landmarks[0].position);
+  assert.equal(
+    intersections(sheets, matrix, up.clone().negate())[0].object.name,
+    "matrix-face",
+  );
+  const lumen = new THREE.Vector3(...g.userData.landmarks[1].position);
+  lumen.x += 0.11; // just inside the cropped edge at the landmark's height
+  assert.equal(intersections(sheets, lumen, up.clone().negate()).length, 0);
+  assert.equal(intersections(sheets, lumen, up)[0].object.name, "luminal-face");
+  const heads = g.children.filter((o) => o.name === "crest-head");
+  const stems = g.children.filter((o) => o.name === "crest-stem");
+  assert(heads.length >= 4 && heads.length === stems.length);
+  for (const stem of stems) {
+    const normal = new THREE.Vector3(0, 1, 0).applyQuaternion(stem.quaternion);
+    const half = stem.geometry.parameters.height / 2;
+    const hits = intersections(
+      sheets,
+      stem.position.clone().addScaledVector(normal, -half),
+      normal,
+    );
+    assert.deepEqual(
+      hits.slice(0, 2).map((h) => h.object.name),
+      ["luminal-face", "matrix-face"],
+    );
+    assert(hits[1].distance < 2 * half);
+    const tip = stem.position.clone().addScaledVector(normal, half);
+    assert(
+      heads.some((head) => head.worldToLocal(tip.clone()).length() < 1),
+      "the stem must meet its matrix head",
+    );
+  }
+});
+
+test("batched mitochondrial leaves own their geometry and stay within the visible mesh budgets", () => {
+  for (const [id, limit, triangleLimit] of [
+    ["cristae", 5, 22500],
+    ["atpSynthase", 9, 18000],
+  ]) {
+    const group = detailModel(id),
+      other = detailModel(id);
+    assert(group.userData.ownedGeometry);
+    const owned = new Set(
+      group.children.flatMap((o) => [o.geometry, o.material]),
+    );
+    assert(
+      other.children.every(
+        (o) => !owned.has(o.geometry) && !owned.has(o.material),
+      ),
+    );
+    for (const mode of ["whole", "section"]) {
+      const visible = inMode(group, mode);
+      assert(visible.length > 0 && visible.length <= limit);
+      assert(visible.every((o) => o.userData.hitId === id));
+      const triangles = visible.reduce(
+        (sum, o) =>
+          sum +
+          (o.geometry.index?.count ?? o.geometry.attributes.position.count) / 3,
+        0,
+      );
+      assert(triangles <= triangleLimit);
+    }
+    for (const root of [group, other])
+      root.traverse((o) => {
+        o.geometry?.dispose();
+        o.material?.dispose();
+      });
   }
 });

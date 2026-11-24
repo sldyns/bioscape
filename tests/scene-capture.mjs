@@ -77,6 +77,42 @@ test("capture adjusts fit for aspect and turns relative to camera without touchi
   assert.deepEqual(camera.position.toArray(), [1, 0, 20]);
 });
 
+test("a study plate retains its selected pivot, angle and zoom while the live camera moves", async () => {
+  const { turnedView } = await import("../src/scene/specimenViews.js");
+  const camera = new THREE.PerspectiveCamera(36, 2, 0.1, 100);
+  const target = new THREE.Vector3(-3, 4, 2);
+  camera.position.set(-4, 5, 20);
+  const saved = { direction: [0, 0, 1], target: [2, -1, 3], zoom: 0.8 };
+  const view = turnedView(saved, Math.PI / 2, Math.PI / 6);
+  const pivot = new THREE.Vector3(...saved.target);
+  const copy = captureCamera(
+    camera,
+    target,
+    10,
+    576,
+    360,
+    0,
+    (c, t) => {
+      assert.equal(c.aspect, 1.6);
+      assert.ok(t.distanceTo(pivot) < 1e-10);
+      return 13;
+    },
+    undefined,
+    view,
+  );
+  const offset = copy.position.clone().sub(pivot);
+  assert.ok(Math.abs(offset.length() - 10.4) < 1e-9);
+  assert.ok(
+    offset
+      .normalize()
+      .distanceTo(new THREE.Vector3(Math.cos(Math.PI / 6), 0.5, 0)) < 1e-9,
+  );
+  assert.deepEqual(camera.position.toArray(), [-4, 5, 20]);
+  assert.deepEqual(target.toArray(), [-3, 4, 2]);
+  assert.equal(saved.zoom, 0.8);
+  assert.deepEqual(saved.direction, [0, 0, 1]);
+});
+
 test("capture labels remain within canvas with legible spacing and omit excess annotations", () => {
   const labels = Array.from({ length: 80 }, (_, index) => ({
     text: `Annotation ${index}`,

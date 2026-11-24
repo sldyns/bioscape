@@ -21,6 +21,7 @@ export function axialRadius(mesh, x, columns = 48) {
       count: a.count,
       array: a.array,
       version: -1,
+      ascending: false,
       spans,
       values: new Float64Array(spans * 6),
       polygonFactor: Math.cos(Math.PI / columns),
@@ -29,12 +30,14 @@ export function axialRadius(mesh, x, columns = 48) {
   }
   const values = profile.values;
   if (profile.version !== a.version) {
-    let span = 0;
+    let span = 0,
+      ascending = true;
     for (let row = 0; row < a.count - columns - 1; row += columns + 1) {
       const next = row + columns + 1,
         x0 = a.getX(row),
         x1 = a.getX(next),
         offset = span++ * 6;
+      ascending &&= Number.isFinite(x0) && Number.isFinite(x1) && x0 <= x1;
       values[offset] = x0;
       values[offset + 1] = Math.min(x0, x1);
       values[offset + 2] = Math.max(x0, x1);
@@ -42,13 +45,30 @@ export function axialRadius(mesh, x, columns = 48) {
       values[offset + 4] = Math.hypot(a.getY(row), a.getZ(row));
       values[offset + 5] = Math.hypot(a.getY(next), a.getZ(next));
     }
+    profile.ascending = ascending;
     profile.version = a.version;
   }
+  const indexed = profile.ascending && Number.isFinite(x);
+  let first = 0;
+  if (indexed) {
+    // Start at the first span whose right endpoint can contain the query.
+    // Equal endpoints still visit every overlapping span in the original order.
+    let end = profile.spans;
+    while (first < end) {
+      const middle = (first + end) >>> 1;
+      if (values[middle * 6 + 2] < x) first = middle + 1;
+      else end = middle;
+    }
+  }
   let radius = 0;
-  for (let i = 0; i < profile.spans; i++) {
+  for (let i = first; i < profile.spans; i++) {
     const offset = i * 6,
       width = values[offset + 3];
-    if (x < values[offset + 1] || x > values[offset + 2]) continue;
+    if (x < values[offset + 1]) {
+      if (indexed) break;
+      continue;
+    }
+    if (x > values[offset + 2]) continue;
     if (Math.abs(width) < 1e-9) continue;
     const u = (x - values[offset]) / width;
     radius = Math.max(

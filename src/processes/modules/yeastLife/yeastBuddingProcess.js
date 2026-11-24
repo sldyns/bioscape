@@ -5,6 +5,7 @@ import {
   cytoplasmicAnatomy,
   materialInventory,
 } from "./anatomy.js";
+import { buddingNeck } from "./buddingNeck.js";
 import { axialRadius, axialTube } from "./topology.js";
 import { labelAnchors } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
@@ -121,9 +122,7 @@ function create() {
     });
     return { parent, strands };
   });
-  const collarA = k.ring([0.1, 0, 0], 0.44, 0.045, teal),
-    collarB = k.ring([0.2, 0, 0], 0.44, 0.045, teal);
-  collarA.rotation.y = collarB.rotation.y = Math.PI / 2;
+  const septins = buddingNeck(k, mother.mesh, bud.mesh, teal);
   const contractile = k.ring([0.15, 0, 0], 0.41, 0.04, pink);
   contractile.rotation.y = Math.PI / 2;
   const diskGeometry = new THREE.RingGeometry(0.43, 0.43, 48, 1);
@@ -156,8 +155,6 @@ function create() {
     axialTube(k, teal, `budding-actin-cable-${i}`),
   );
   const routePoint = new THREE.Vector3();
-  const scar = k.ring([-1.95, -1.04, 0.5], 0.21, 0.045, gold);
-  scar.rotation.x = 0.9;
   const labels = [
     k.label([-1.5, -1.85, 0], "母细胞", "Mother cell", 10),
     k.label([1.3, 1.5, 0], "芽体：极性生长", "Bud: polarized growth", 10),
@@ -172,6 +169,7 @@ function create() {
   ];
   labels[4].annotationKind = "context";
   const anchor = labelAnchors(labels);
+  let previousGrowth, previousClosing, previousShift, previousCableThickness;
   function update(raw) {
     const p = clamp(raw),
       growth = ease(p, 0.05, 0.4),
@@ -180,47 +178,54 @@ function create() {
     const closing = ease(p, 0.76, 0.85);
     const neck = 0.025 + 0.405 * Math.sqrt(growth),
       budLength = 0.025 + 2.25 * growth;
-    const motherEndAngle = Math.asin(neck / 1.48);
-    const motherCenter = 0.15 - 1.5 * Math.cos(motherEndAngle);
-    mother.shape((t) => {
-      // Keep the outer neck in place; grow a membrane-lined septal annulus inward.
-      if (t > 0.9) return [0.15, neck * (1 - (closing * (t - 0.9)) / 0.1)];
-      const angle = Math.PI + ((motherEndAngle - Math.PI) * t) / 0.9;
-      return [motherCenter + 1.5 * Math.cos(angle), 1.48 * Math.sin(angle)];
-    });
-    const budRadius = Math.max(neck * 1.04, 0.04 + 1.03 * growth);
-    const budStartAngle = Math.asin(neck / budRadius);
-    const budAxis = budLength / (1 + Math.cos(budStartAngle));
-    bud.shape((t) => {
-      if (t < 0.1) return [0.15 + shift, neck * (1 - closing * (1 - t / 0.1))];
-      const angle =
-        budStartAngle + ((Math.PI - budStartAngle) * (t - 0.1)) / 0.9;
-      return [
-        0.15 + shift + budAxis * (Math.cos(budStartAngle) - Math.cos(angle)),
-        budRadius * Math.sin(angle),
-      ];
-    });
-    collarA.scale.setScalar(neck / 0.44);
-    collarB.scale.setScalar(neck / 0.44);
-    collarB.position.x = 0.2 + shift;
-    collarA.visible = collarB.visible = p > 0.025;
+    const wallChanged =
+      growth !== previousGrowth || closing !== previousClosing;
+    const budChanged = wallChanged || shift !== previousShift;
+    if (wallChanged) {
+      const motherEndAngle = Math.asin(neck / 1.48);
+      const motherCenter = 0.15 - 1.5 * Math.cos(motherEndAngle);
+      mother.shape((t) => {
+        // Keep the outer neck in place; grow a membrane-lined septal annulus inward.
+        if (t > 0.9) return [0.15, neck * (1 - (closing * (t - 0.9)) / 0.1)];
+        const angle = Math.PI + ((motherEndAngle - Math.PI) * t) / 0.9;
+        return [motherCenter + 1.5 * Math.cos(angle), 1.48 * Math.sin(angle)];
+      });
+    }
+    if (budChanged) {
+      const budRadius = Math.max(neck * 1.04, 0.04 + 1.03 * growth);
+      const budStartAngle = Math.asin(neck / budRadius);
+      const budAxis = budLength / (1 + Math.cos(budStartAngle));
+      bud.shape((t) => {
+        if (t < 0.1)
+          return [0.15 + shift, neck * (1 - closing * (1 - t / 0.1))];
+        const angle =
+          budStartAngle + ((Math.PI - budStartAngle) * (t - 0.1)) / 0.9;
+        return [
+          0.15 + shift + budAxis * (Math.cos(budStartAngle) - Math.cos(angle)),
+          budRadius * Math.sin(angle),
+        ];
+      });
+    }
+    septins.update(p, growth, separation);
     contractile.visible = p > 0.64 && p < 0.87;
     contractile.scale.setScalar(Math.max(0.015, 1 - closing));
     septumA.visible = septumB.visible = p > 0.76;
-    const septumPositions = diskGeometry.attributes.position;
-    for (let i = 0; i < septumPositions.count; i++) {
-      const angle = ((i % 49) / 48) * Math.PI * 2;
-      const radius = i < 49 ? neck * (1 - closing) : neck;
-      septumPositions.setXYZ(
-        i,
-        radius * Math.cos(angle),
-        radius * Math.sin(angle),
-        0,
-      );
+    if (wallChanged) {
+      const septumPositions = diskGeometry.attributes.position;
+      for (let i = 0; i < septumPositions.count; i++) {
+        const angle = ((i % 49) / 48) * Math.PI * 2;
+        const radius = i < 49 ? neck * (1 - closing) : neck;
+        septumPositions.setXYZ(
+          i,
+          radius * Math.cos(angle),
+          radius * Math.sin(angle),
+          0,
+        );
+      }
+      septumPositions.needsUpdate = true;
+      diskGeometry.computeBoundingSphere();
+      diskGeometry.computeBoundingBox();
     }
-    septumPositions.needsUpdate = true;
-    diskGeometry.computeBoundingSphere();
-    diskGeometry.computeBoundingBox();
     septumB.position.x = 0.15 + shift;
     const move = ease(p, 0.34, 0.5),
       segregation = ease(p, 0.48, 0.68),
@@ -369,15 +374,23 @@ function create() {
       );
       secretion[i].position.copy(routePoint);
     }
+    const cableThickness =
+      0.016 * ease(p, 0.12, 0.145) * (1 - ease(p, 0.63, 0.65));
     cables.forEach((c, i) => {
       c.mesh.visible = p > 0.12 && p < 0.65;
-      c.shape(
-        (u, point) => cytoplasmicRoute(u, i ? 1 : -1, point),
-        0.016 * ease(p, 0.12, 0.145) * (1 - ease(p, 0.63, 0.65)),
-      );
+      if (budChanged || cableThickness !== previousCableThickness)
+        c.shape(
+          (u, point) => cytoplasmicRoute(u, i ? 1 : -1, point),
+          cableThickness,
+        );
     });
-    motherLayers.update();
-    budLayers.update();
+    if (wallChanged) motherLayers.update();
+    if (budChanged) budLayers.update();
+    // The wall layers share the fixed local poses of their source surfaces.
+    previousGrowth = growth;
+    previousClosing = closing;
+    previousShift = shift;
+    previousCableThickness = cableThickness;
     nuclearLayers.update();
     pores.update();
     budInterior.visible = growth > 0.25;
@@ -441,8 +454,8 @@ export default {
       at: 0.14,
       title: B("芽体极性生长", "Polarized bud growth"),
       description: B(
-        "沿肌动蛋白索运输的分泌囊泡向芽体供给膜和细胞壁材料；芽体逐渐增大，芽颈保持连接。",
-        "Secretory vesicles travel along actin cables to supply membrane and wall material to the expanding bud; its neck remains connected.",
+        "分泌囊泡沿肌动蛋白索把膜和细胞壁材料运入芽体。芽颈保持连通，颈内侧的成对隔膜蛋白丝沿母芽轴排列成沙漏状。",
+        "Secretory vesicles follow actin cables into the growing bud. At the open neck, paired septin filaments run along the mother–bud axis in an hourglass-shaped collar.",
       ),
     },
     {
@@ -465,8 +478,8 @@ export default {
       at: 0.73,
       title: B("收缩与隔膜形成", "Constriction and septation"),
       description: B(
-        "细胞核分开后，芽颈的肌动蛋白–肌球蛋白环收缩，质膜与隔膜从芽颈周缘向中心推进，直到中央通道闭合并分隔两侧胞质。",
-        "After nuclear partition, the actomyosin ring constricts. Plasma membrane and septum advance inward from the neck circumference until the central opening closes and partitions the two cytoplasms.",
+        "细胞核分开后，芽颈的隔膜蛋白重排成两个环。两环之间的肌动蛋白–肌球蛋白环收缩，质膜和隔膜从周缘向内推进，直到两侧胞质分开。",
+        "At cytokinesis the septin collar splits into two rings. Between them the actomyosin ring constricts, and membrane and septum advance inward to partition the cytoplasm.",
       ),
     },
     {
@@ -488,6 +501,11 @@ export default {
     { color: "#c99c61", text: B("核内纺锤体", "Intranuclear spindle") },
   ],
   sources: [
+    {
+      title:
+        "Architecture and dynamic remodelling of the septin cytoskeleton during the cell cycle",
+      url: "https://doi.org/10.1038/ncomms6698",
+    },
     {
       title:
         "Role of actin and Myo2p in polarized secretion and growth of Saccharomyces cerevisiae",

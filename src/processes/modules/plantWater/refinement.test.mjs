@@ -31,7 +31,11 @@ const rootWalls = tissue.group.children.filter(
 const leafWalls = tissue.group.children.filter(
   (n) => n.name === "mesophyll rear wall cutaway",
 );
-assert.equal(rootWalls.length, 4);
+assert.equal(rootWalls.length, 3);
+const epidermis = tissue.group.getObjectByName(
+  "root epidermal rear wall cutaway",
+);
+assert.equal(epidermis.geometry, rootWalls[0].geometry);
 assert.equal(leafWalls.length, 4);
 assert(rootWalls.every((n) => n.geometry === rootWalls[0].geometry));
 assert(leafWalls.every((n) => n.geometry === leafWalls[0].geometry));

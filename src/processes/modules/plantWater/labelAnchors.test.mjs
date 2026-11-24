@@ -119,7 +119,7 @@ assert(!guard.labels[3].active);
 const tree = xylem.create({ rootId: "plant" });
 const column = tree.group.getObjectByName("continuous liquid water column");
 const wet = tree.group.getObjectByName("wet mesophyll wall film");
-const rootCell = tree.group.getObjectByName("root cortical cell");
+const rootCell = tree.group.getObjectByName("root epidermal cell");
 const top = tree.group.getObjectByName("upper leaf guard cell"),
   bottom = tree.group.getObjectByName("lower leaf guard cell");
 for (const stomata of ["open", "close"])

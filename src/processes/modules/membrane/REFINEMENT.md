@@ -12,6 +12,8 @@ After: denser instanced paired leaflets with distinct headgroups, glycerol necks
 Before: one six-ellipsoid channel and spherical tracers.
 After: a four-monomer aquaporin assembly, six helical ribbons and connecting surface loops per monomer, paired half-helical pore features, and four distinct water paths. Water is routed through monomer pores, never the central tetramer interface. Oxygen retains its bilayer path; tracers distinguish bent water and diatomic oxygen. Both gradient controls and bidirectional particle accounting survive. The two route materials are included in the full returned material inventory.
 
+The water route now assigns each rendered molecule a separate three-dimensional reservoir site. Opposing passages use different monomer pores and the return pairs enter at different times. The half-helices and terminal loops leave room for the oxygen and both hydrogens, including each approach and exit bend. Equal-gradient chapters distinguish water activity from oxygen concentration. The focused aquaporin test sweeps all three atomic spheres past the actual channel triangles in all four pores and samples both complete trajectories.
+
 ## activeTransport
 
 Before: ten ellipsoid rods and three solid cytoplasmic spheres.

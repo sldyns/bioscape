@@ -10,8 +10,8 @@ export const erythrocyteRefinementMetadata = {
       en: "A continuous lipid bilayer surrounds the biconcave cell. The enlarged patch shows a schematic cytoplasmic spectrin network, short actin junctions and band 3–ankyrin attachment. Only selected linkages are shown; the skeleton is not a regular crystal lattice.",
     },
     erythrocyteCytosol: {
-      zh: "血红蛋白溶于胞质，无膜包裹。局部显示人去氧血红蛋白 2HHB 的实验 Cα 主链：两条 α 链、两条 β 链及四个血红素。保留沉积相对坐标；管径和配色示意，省略侧链、水与离子。去氧态不画结合氧。",
-      en: "Haemoglobin is dissolved in cytosol, without a surrounding membrane. Detail uses experimental Cα coordinates of human deoxyhaemoglobin 2HHB: two α chains, two β chains and four hemes in deposited relative positions. Tube radii and colours are illustrative; side chains, water and ions are omitted. No oxygen is drawn in this deoxy state.",
+      zh: "胞质中溶解着血红蛋白。模型沿人去氧血红蛋白 2HHB 的实验 Cα 坐标绘制两条 α 链和两条 β 链。带状部分标出原始结构记录中的螺旋。在四个血红素中，卟啉环各有四个氮与中央铁配位。该去氧态没有结合氧。颜色和带宽用于辨认结构，省略侧链、水及游离离子。",
+      en: "Haemoglobin is dissolved in the cytosol. Two α and two β chains follow the experimental Cα coordinates of human deoxyhaemoglobin 2HHB. Ribbons mark helices annotated in the deposition. Each of the four hemes shows its central iron coordinated by four porphyrin nitrogens. The deoxy structure has no bound oxygen. Colours and ribbon widths are illustrative. Side chains, water and free ions are omitted.",
     },
   },
   sources: [

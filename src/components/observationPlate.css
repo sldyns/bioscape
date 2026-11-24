@@ -1,0 +1,126 @@
+.observation-plate {
+  width: min(900px, calc(100% - 32px));
+  max-height: min(86dvh, 920px);
+  padding: 0;
+  color: var(--ink);
+  border: 1px solid #d7e2d8;
+  border-radius: 16px;
+  background: #f8f9f5;
+  box-shadow: 0 25px 80px #0c211b48;
+  overscroll-behavior: contain;
+}
+.observation-plate::backdrop {
+  background: #13291ed9;
+}
+.observation-plate header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 21px 24px;
+  background: #183b32;
+  color: #f1f5e9;
+}
+.observation-plate h2 {
+  margin: 0;
+  font: 500 25px/1.2 var(--atlas-serif);
+}
+.observation-plate header p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #c9ddcd;
+}
+.observation-plate header button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #36594b;
+  color: white;
+}
+.observation-plate header button:focus-visible {
+  outline-color: #efd99e;
+}
+.observation-frames {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 16px;
+  padding: 22px;
+}
+.observation-frames[data-count="4"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 621px) {
+  .observation-plate:has(.observation-frames[data-count="4"]) {
+    width: min(760px, calc(100% - 40px));
+  }
+}
+.observation-tile {
+  padding: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-align: start;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.observation-tile:hover,
+.observation-tile:focus-visible {
+  border-color: var(--accent);
+}
+.observation-image {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: var(--specimen-field);
+}
+.observation-image canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.observation-image > span {
+  position: absolute;
+  font-size: 12px;
+  color: var(--muted);
+}
+.observation-caption {
+  display: grid;
+  gap: 4px;
+  padding: 11px 13px 14px;
+}
+.observation-caption strong {
+  font-weight: 600;
+}
+.observation-caption small {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.observation-retry {
+  margin: 0 22px 18px;
+  padding: 8px 14px;
+  background: #e2ebdc;
+  border-radius: 6px;
+}
+@media (max-width: 620px) {
+  .observation-plate {
+    width: calc(100% - 16px);
+    max-height: 90dvh;
+  }
+  .observation-plate header {
+    padding: 15px;
+  }
+  .observation-frames {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 12px;
+    gap: 8px;
+  }
+  .observation-caption {
+    padding: 8px;
+    min-height: 45px;
+  }
+}

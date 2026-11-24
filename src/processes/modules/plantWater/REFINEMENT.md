@@ -14,3 +14,11 @@ Validation: `node src/processes/modules/plantWater/smoke.mjs` passed for all fou
 Visual acceptance remains pending root screenshot review; these checks do not establish that the accepted transcription model's visual quality has been reached. No browser, global catalog, renderer or thumbnail changes were made for this refinement.
 
 2026-10-15 continuation: photorelocation now has bounded posterior wall/cortical surfaces with an open anterior aperture. Long-distance transport adds shared rear root and mesophyll cutaways while preserving wet-wall/pit/vapor coordinates. Plasmolysis retains its compartments, improves cytoplasm contrast and instances 132 unchanged crossing cellulose bundles (131 fewer scene nodes). Stomata retained after original-resolution baseline review. Focused science, smoke and new refinement invariants pass; resource counts and pending root rendered acceptance are recorded in `docs/qa/process-refinement-2026-10-15/agents/refine_plant_water.md`.
+
+The guard-cell model now assigns separate lateral sections to 16 water tracers, 16 ion tracers and eight proton tracers. Endpoints follow the actual body and vacuolar meshes. Water crosses the plasma membrane and tonoplast; the ion and proton paths connect the cytoplasm and apoplast. The ABA water cohort exits throughout its full interval. Sustained light has its own late chapters.
+
+In plasmolysis, the raised section tracers cross the vacuolar and cell outlines on continuous paths on either side of the visible nucleus. Continued exposure to a hypertonic bath retains the contracted vacuole in both the geometry and the late chapters.
+
+The xylem model connects the soil to a closed epidermal root-hair tip, a cutaway with a visible intracellular uptake route, the cortex and the basal vessel opening. The root-hair wall follows the water path. Returning tracer markers fade at their endpoints. Late chapters distinguish an open stoma from a narrowing one. Root anatomy follows [OpenStax Biology 2e, Roots](https://openstax.org/books/biology-2e/pages/30-3-roots).
+
+The tests in `tracerPaths.test.mjs` check tracer separation, direction, membrane crossings against rendered triangles, nuclear silhouette clearance, the root-hair lumen and the basal vessel opening. The root and leaf pathways are qualitative, with intermediate tissues condensed.

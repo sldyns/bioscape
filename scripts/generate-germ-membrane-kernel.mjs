@@ -24,9 +24,9 @@ const OP = {
   "i32.eqz": 0x45,
   "i32.eq": 0x46,
   "i32.ne": 0x47,
-  "i32.lt_u": 0x49,
+  "i32.lt_s": 0x48,
+  "i32.gt_s": 0x4a,
   "i32.gt_u": 0x4b,
-  "i32.ge_s": 0x4e,
   "i32.ge_u": 0x4f,
   "i32.add": 0x6a,
   "i32.sub": 0x6b,
@@ -174,13 +174,26 @@ function allocate() {
   );
   take("crossOffsets", "u16", 16, offsets(cross));
   take("crossData", "u8", crossData.length, crossData);
-  const kinds = new Uint8Array(plane + row + 2);
-  [1, row, plane, row + 1, plane + 1, plane + row, plane + row + 1].forEach(
-    (offset, kind) => {
-      kinds[offset] = kind;
-    },
+  const directions = [
+    1,
+    row,
+    plane,
+    row + 1,
+    plane + 1,
+    plane + row,
+    plane + row + 1,
+  ];
+  // A tetrahedron edge always has the same offset from the cell's cache base.
+  const edgeKeyOffsets = tets.flatMap((tet) =>
+    edges.map(([a, b]) => {
+      const first = corner[tet[a]],
+        second = corner[tet[b]];
+      const kind = directions.indexOf(Math.abs(first - second));
+      if (kind === -1) throw Error("Unexpected membrane edge direction");
+      return Math.min(first, second) * directions.length + kind;
+    }),
   );
-  take("edgeKinds", "u8", kinds.length, [...kinds]);
+  take("edgeKeyOffsets", "u16", edgeKeyOffsets.length, edgeKeyOffsets);
   take("field", "f32", count);
   take("gradients", "f32", count * 3);
   take("coordinates", "f32", count * 3);
@@ -196,6 +209,7 @@ function allocate() {
   take("ids", "i32", 4);
   take("values", "f64", 4);
   take("edgeKeys", "i32", 6);
+  take("edgeSources", "i32", 6);
   take("ep", "f64", 18);
   take("en", "f64", 18);
   take("meta", "i32", 2);
@@ -397,7 +411,9 @@ export function buildKernelModule() {
   const { layout, initial } = allocate();
   const integers = [
     "cell",
+    "cellEdgeBase",
     "tet",
+    "tetEdgeBase",
     "n",
     "mask",
     "cross",
@@ -406,6 +422,7 @@ export function buildKernelModule() {
     "b",
     "key",
     "cached",
+    "source",
     "e3",
     "a3",
     "b3",
@@ -421,15 +438,11 @@ export function buildKernelModule() {
     "candidates",
     "ia",
     "ib",
-    "low",
-    "high",
   ];
   const doubles = [
     "t",
     "norm",
-    "x",
-    "y",
-    "z",
+    "coordinate",
     "minX",
     "minY",
     "minZ",
@@ -446,6 +459,13 @@ export function buildKernelModule() {
     g = (name) => f.get(name);
   const promote = (value) => op("f64.promote_f32", value),
     demote = (value) => op("f32.demote_f64", value);
+  const includeBounds = (load) => {
+    for (const [axis, name] of ["X", "Y", "Z"].entries()) {
+      f.set("coordinate", load(axis));
+      f.set("min" + name, op("f64.min", g("min" + name), g("coordinate")));
+      f.set("max" + name, op("f64.max", g("max" + name), g("coordinate")));
+    }
+  };
   for (const [name, array] of [
     ["positions", "positions"],
     ["normals", "normals"],
@@ -474,6 +494,7 @@ export function buildKernelModule() {
     );
     f.when(op("i32.eqz", outside), () => {
       f.set("n", f.load("activeCells", g("cell")));
+      f.set("cellEdgeBase", mul(g("n"), i(7)));
       f.loop("tet", i(tets.length), () => {
         f.set("mask", i(0));
         for (let j = 0; j < 4; j++) {
@@ -502,57 +523,60 @@ export function buildKernelModule() {
         }
         f.set("triCount", f.load("triCounts", g("mask")));
         f.when(op("i32.ne", g("triCount"), i(0)), () => {
+          f.set("tetEdgeBase", mul(g("tet"), i(edges.length)));
           f.set("triOffset", f.load("triOffsets", g("mask")));
           f.set("crossCount", f.load("crossCounts", g("mask")));
           f.set("crossOffset", f.load("crossOffsets", g("mask")));
           f.loop("cross", g("crossCount"), () => {
             f.set("e", f.load("crossData", add(g("crossOffset"), g("cross"))));
-            f.set("a", f.load("edges", mul(g("e"), i(2))));
-            f.set("b", f.load("edges", plus(mul(g("e"), i(2)), 1)));
-            f.set("ia", f.load("ids", g("a")));
-            f.set("ib", f.load("ids", g("b")));
-            const lower = op("i32.lt_u", g("ia"), g("ib"));
-            f.set("low", select(g("ia"), g("ib"), lower));
-            f.set("high", select(g("ib"), g("ia"), lower));
             f.set(
               "key",
               add(
-                mul(g("low"), i(7)),
-                f.load("edgeKinds", op("i32.sub", g("high"), g("low"))),
+                g("cellEdgeBase"),
+                f.load("edgeKeyOffsets", add(g("tetEdgeBase"), g("e"))),
               ),
             );
-            f.set("cached", op("i32.sub", f.load("edgeCache", g("key")), i(1)));
-            f.store("edgeKeys", g("e"), g("key"));
+            f.set("cached", f.load("edgeCache", g("key")));
             f.set("e3", mul(g("e"), i(3)));
             f.when(
-              op("i32.ge_s", g("cached"), i(0)),
+              op("i32.ne", g("cached"), i(0)),
               () => {
-                for (let axis = 0; axis < 3; axis++) {
-                  f.store(
-                    "ep",
-                    plus(g("e3"), axis),
+                const negated = op("i32.sub", i(0), g("cached"));
+                f.set(
+                  "source",
+                  op(
+                    "i32.sub",
+                    select(
+                      negated,
+                      g("cached"),
+                      op("i32.lt_s", g("cached"), i(0)),
+                    ),
+                    i(1),
+                  ),
+                );
+                f.store("edgeSources", g("e"), g("source"));
+                // The first later tetrahedron uses the stored Float32
+                // coordinates. Include their rounded bounds once.
+                f.when(op("i32.gt_s", g("cached"), i(0)), () => {
+                  includeBounds((axis) =>
                     promote(
                       f.dynamicLoad(
                         "f32",
                         g("positions"),
-                        plus(g("cached"), axis),
+                        plus(g("source"), axis),
                       ),
                     ),
                   );
-                  f.store(
-                    "en",
-                    plus(g("e3"), axis),
-                    promote(
-                      f.dynamicLoad(
-                        "f32",
-                        g("normals"),
-                        plus(g("cached"), axis),
-                      ),
-                    ),
-                  );
-                }
+                  f.store("edgeCache", g("key"), negated);
+                });
               },
               () => {
+                f.store("edgeKeys", g("e"), g("key"));
+                f.store("edgeSources", g("e"), i(-1));
+                f.set("a", f.load("edges", mul(g("e"), i(2))));
+                f.set("b", f.load("edges", plus(mul(g("e"), i(2)), 1)));
+                f.set("ia", f.load("ids", g("a")));
+                f.set("ib", f.load("ids", g("b")));
                 f.set(
                   "t",
                   op(
@@ -615,6 +639,9 @@ export function buildKernelModule() {
                     plus(g("e3"), axis),
                     op("f64.div", f.load("en", plus(g("e3"), axis)), g("norm")),
                   );
+                // Fresh intersections use the original unrounded bounds.
+                // Each crossing contributes at least one emitted vertex.
+                includeBounds((axis) => f.load("ep", plus(g("e3"), axis)));
               },
             );
           });
@@ -627,43 +654,47 @@ export function buildKernelModule() {
                 f.emit(op("i32.sub", i(-1), g("cursor")), 0x0f);
               },
             );
-            f.set("key", f.load("edgeKeys", g("e")));
-            f.when(op("i32.eqz", f.load("edgeCache", g("key"))), () => {
-              f.store("edgeCache", g("key"), plus(g("cursor"), 1));
-              f.dynamicStore(
-                "u32",
-                g("candidates"),
-                g("candidateCount"),
-                op("i32.div_u", g("cursor"), i(3)),
-              );
-              f.set("candidateCount", plus(g("candidateCount"), 1));
-            });
-            f.set("e3", mul(g("e"), i(3)));
-            for (let axis = 0; axis < 3; axis++) {
-              const name = ["x", "y", "z"][axis];
-              f.set(name, f.load("ep", plus(g("e3"), axis)));
-              f.dynamicStore(
-                "f32",
-                g("positions"),
-                g("cursor"),
-                demote(g(name)),
-              );
-              f.dynamicStore(
-                "f32",
-                g("normals"),
-                g("cursor"),
-                demote(f.load("en", plus(g("e3"), axis))),
-              );
-              f.set("cursor", plus(g("cursor"), 1));
-            }
-            for (const [axis, name] of [
-              ["X", "x"],
-              ["Y", "y"],
-              ["Z", "z"],
-            ]) {
-              f.set("min" + axis, op("f64.min", g("min" + axis), g(name)));
-              f.set("max" + axis, op("f64.max", g("max" + axis), g(name)));
-            }
+            f.set("source", f.load("edgeSources", g("e")));
+            f.when(
+              op("i32.lt_s", g("source"), i(0)),
+              () => {
+                f.set("key", f.load("edgeKeys", g("e")));
+                f.store("edgeCache", g("key"), plus(g("cursor"), 1));
+                f.dynamicStore(
+                  "u32",
+                  g("candidates"),
+                  g("candidateCount"),
+                  op("i32.div_u", g("cursor"), i(3)),
+                );
+                f.set("candidateCount", plus(g("candidateCount"), 1));
+                f.store("edgeSources", g("e"), g("cursor"));
+                f.set("e3", mul(g("e"), i(3)));
+                for (const [target, scratch] of [
+                  ["positions", "ep"],
+                  ["normals", "en"],
+                ])
+                  for (let axis = 0; axis < 3; axis++)
+                    f.dynamicStore(
+                      "f32",
+                      g(target),
+                      plus(g("cursor"), axis),
+                      demote(f.load(scratch, plus(g("e3"), axis))),
+                    );
+              },
+              () => {
+                // Copy the emitted Float32 bits, including another
+                // occurrence of a fresh edge in this tetrahedron.
+                for (const target of ["positions", "normals"])
+                  for (let axis = 0; axis < 3; axis++)
+                    f.dynamicStore(
+                      "u32",
+                      g(target),
+                      plus(g("cursor"), axis),
+                      f.dynamicLoad("u32", g(target), plus(g("source"), axis)),
+                    );
+              },
+            );
+            f.set("cursor", plus(g("cursor"), 3));
           });
         });
       });

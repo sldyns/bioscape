@@ -4,6 +4,7 @@ import * as THREE from "three";
 import process from "./chloroplastMovementProcess.js";
 import { ease } from "../../kit.js";
 import "./waterFlux.test.mjs";
+import "./tracerPaths.test.mjs";
 import "./labelAnchors.test.mjs";
 import "./nuclearCompartments.test.mjs";
 

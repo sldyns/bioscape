@@ -30,6 +30,9 @@ import "./processes.css";
 import "../exploration/processContinuity.css";
 import { processLoaders } from "./loaders.js";
 import { startPlaybackClock } from "./playbackClock.js";
+import { resolveStageCopy } from "./stageCopy.js";
+import ObservationPlate from "../components/ObservationPlate.jsx";
+import { sceneTime as clock, stageFrames, stageStop } from "./studyFrames.js";
 const players = Object.fromEntries(
   Object.entries(processLoaders).map(([id, load]) => [
     id,
@@ -58,8 +61,6 @@ export default function ProcessExperience({ processId, ...props }) {
     </Suspense>
   );
 }
-const clock = (progress, duration) =>
-  `0:${String(Math.round(progress * duration)).padStart(2, "0")}`;
 
 function ProcessPlayer({
   definition: baseDefinition,
@@ -91,6 +92,8 @@ function ProcessPlayer({
   const [parameters, setParameters] = useState(initial.parameters);
   const [progress, setProgress] = useState(initial.progress);
   const [playing, setPlaying] = useState(false);
+  const [segment, setSegment] = useState(null);
+  const [plate, setPlate] = useState(null);
   const [speed, setSpeed] = useState(initial.speed);
   const [annotations, setAnnotations] = useState(initial.annotations);
   const [ready, setReady] = useState(false);
@@ -132,6 +135,7 @@ function ProcessPlayer({
       sceneApi.current = api;
       if (!api?.ready) {
         stopPlayback.current();
+        setPlate(null);
         setPlaying(false);
         setProgress(progressRef.current);
       }
@@ -155,9 +159,10 @@ function ProcessPlayer({
                   .filter(Boolean)
                   .join(" · "),
               getFrameCaption: (fraction) => {
+                const frameParameters = latest.current.parameters;
                 const condition = getConditionNote(
                   definition.id,
-                  latest.current.parameters,
+                  frameParameters,
                   lang,
                 );
                 if (condition?.kind === "reference") return condition.title;
@@ -177,7 +182,8 @@ function ProcessPlayer({
                   " / " +
                   definition.stages.length +
                   " · " +
-                  definition.stages[index].title[lang]
+                  resolveStageCopy(definition.stages[index], frameParameters)
+                    .title[lang]
                 );
               },
             })
@@ -196,31 +202,39 @@ function ProcessPlayer({
   const selectedStep = useRef(null);
   const en = lang === "en",
     t = (zh, english) => (en ? english : zh);
+  const stages = useMemo(
+    () => definition.stages.map((stage) => resolveStageCopy(stage, parameters)),
+    [definition.stages, parameters],
+  );
   const stageIndex = Math.max(
     0,
-    definition.stages.findLastIndex((stage) => progress + 0.00001 >= stage.at),
+    stages.findLastIndex((stage) => progress + 0.00001 >= stage.at),
   );
-  const stage = definition.stages[stageIndex];
+  const stage = stages[stageIndex];
   const conditionNote = useMemo(
     () => getConditionNote(definition.id, parameters, lang),
     [definition.id, parameters, lang],
   );
+  const showConditionNote =
+    conditionNote &&
+    (stage === definition.stages[stageIndex] ||
+      conditionNote.kind === "reference");
   const related = useMemo(
     () =>
       groupProcessStructures(
         rootId,
         definition.id,
-        definition.stages,
+        stages,
         progress,
         parameters,
       ),
     // Structure links depend on the selected stage, not progress within it.
-    [rootId, definition, stageIndex, parameters],
+    [rootId, definition.id, stages, stageIndex, parameters],
   );
   const hasRelatedStructures =
     related.current.length > 0 ||
     related.other.length > 0 ||
-    Boolean(related.scope && originPath.length > 1);
+    Boolean(related.scope?.label);
   const locationButton = (item) => (
     <button
       key={item.path.join("/")}
@@ -342,6 +356,7 @@ function ProcessPlayer({
       return;
     }
     if (suspended || !sceneApi.current?.ready) return;
+    setSegment(null);
     if (progressRef.current >= 1) {
       progressRef.current = 0;
       setProgress(0);
@@ -349,6 +364,35 @@ function ProcessPlayer({
       sceneApi.current?.requestRender();
     }
     setPlaying(true);
+  }
+  function playStage() {
+    if (!ready || suspended) return;
+    const end = stageStop(stages, stageIndex);
+    if (end <= stage.at) return;
+    seek(stage.at);
+    setSegment({ end });
+    setPlaying(true);
+  }
+  function openPlate() {
+    const scene = sceneApi.current;
+    if (!scene?.ready) return;
+    pausePlayback();
+    setPlate({
+      scene,
+      title: t("阶段图版", "Stage views"),
+      subtitle: [definition.title[lang], conditionNote?.title]
+        .filter(Boolean)
+        .join(" · "),
+      frames: stageFrames(
+        definition,
+        stages,
+        rootId,
+        parameters,
+        lang,
+        scene.getView(),
+        conditionNote?.kind === "reference",
+      ),
+    });
   }
   useEffect(() => {
     if (suspended) pausePlayback();
@@ -374,6 +418,7 @@ function ProcessPlayer({
       ...scheduling,
       progress: progressRef,
       duration: definition.duration,
+      end: segment?.end ?? 1,
       speed,
       onPublish: (value) => {
         setProgress(value);
@@ -383,7 +428,7 @@ function ProcessPlayer({
     });
     stopPlayback.current = stop;
     return stop;
-  }, [playing, suspended, definition, speed, publishState]);
+  }, [playing, suspended, definition, speed, segment, publishState]);
 
   return (
     <main className="process-workspace" data-process={definition.id}>
@@ -425,7 +470,7 @@ function ProcessPlayer({
           className="process-steps"
           aria-label={t("讲解步骤", "Explanation steps")}
         >
-          {definition.stages.map((item, index) => (
+          {stages.map((item, index) => (
             <button
               key={item.at}
               ref={stageIndex === index ? selectedStep : null}
@@ -561,16 +606,23 @@ function ProcessPlayer({
             <label className="sr-only" htmlFor="process-timeline">
               {t("过程时间线", "Process timeline")}
             </label>
-            <input
-              id="process-timeline"
-              type="range"
-              min="0"
-              max="1000"
-              step="1"
-              value={Math.round(progress * 1000)}
-              aria-valuetext={`${stage.title[lang]}, ${clock(progress, definition.duration)}`}
-              onChange={(e) => seek(Number(e.target.value) / 1000)}
-            />
+            <div className="study-timeline">
+              <input
+                id="process-timeline"
+                type="range"
+                min="0"
+                max="1000"
+                step="1"
+                value={Math.round(progress * 1000)}
+                aria-valuetext={`${conditionNote?.kind === "reference" ? conditionNote.title : stage.title[lang]}, ${clock(progress, definition.duration)}`}
+                onChange={(e) => seek(Number(e.target.value) / 1000)}
+              />
+              <span className="study-timeline-ticks" aria-hidden="true">
+                {stages.slice(1).map((s) => (
+                  <i key={s.at} style={{ left: `${s.at * 100}%` }} />
+                ))}
+              </span>
+            </div>
             <span className="process-time">
               {clock(progress, definition.duration)} /{" "}
               {clock(1, definition.duration)}
@@ -580,6 +632,17 @@ function ProcessPlayer({
             <button onClick={() => seek(0)} disabled={progress === 0}>
               <RotateCcw size={13} />
               {t("回到开头", "Start over")}
+            </button>
+            <button
+              type="button"
+              disabled={
+                !ready || suspended || stageStop(stages, stageIndex) <= stage.at
+              }
+              onClick={playStage}
+              title={t("播放本步", "Play this step")}
+            >
+              <Play size={13} aria-hidden="true" />
+              {t("播放本步", "Play this step")}
             </button>
             <label>
               {t("播放速度", "Speed")}
@@ -599,15 +662,22 @@ function ProcessPlayer({
           </div>
           <div className="process-step-controls">
             <button
+              className="study-action"
+              disabled={!ready || suspended}
+              onClick={openPlate}
+            >
+              {t("阶段图版", "Stage views")}
+            </button>
+            <button
               disabled={stageIndex === 0}
-              onClick={() => seek(definition.stages[stageIndex - 1].at)}
+              onClick={() => seek(stages[stageIndex - 1].at)}
             >
               <ChevronLeft size={14} />
               {t("上一步", "Previous")}
             </button>
             <button
-              disabled={stageIndex === definition.stages.length - 1}
-              onClick={() => seek(definition.stages[stageIndex + 1].at)}
+              disabled={stageIndex === stages.length - 1}
+              onClick={() => seek(stages[stageIndex + 1].at)}
             >
               {t("下一步", "Next")}
               <ChevronRight size={14} />
@@ -631,7 +701,7 @@ function ProcessPlayer({
           <ArrowLeft size={14} aria-hidden="true" />
           {t("返回模型", "Back to model")}
         </button>
-        {conditionNote && (
+        {showConditionNote && (
           <section className="process-condition-note" aria-live="polite">
             <span>{t("当前条件的响应", "Response to this condition")}</span>
             <strong>{conditionNote.title}</strong>
@@ -644,7 +714,7 @@ function ProcessPlayer({
               ? t("机制参考", "Mechanism reference")
               : t("当前步骤", "Current step")}{" "}
             {String(stageIndex + 1).padStart(2, "0")} /{" "}
-            {String(definition.stages.length).padStart(2, "0")}
+            {String(stages.length).padStart(2, "0")}
           </p>
           <h2 ref={explanationTitle} tabIndex={-1}>
             {stage.title[lang]}
@@ -775,6 +845,17 @@ function ProcessPlayer({
           ))}
         </details>
       </aside>
+      {plate && plate.scene === sceneApi.current && ready && !suspended && (
+        <ObservationPlate
+          plate={plate}
+          lang={lang}
+          onClose={() => setPlate(null)}
+          onChoose={(frame) => {
+            setPlate(null);
+            seek(frame.options.progress);
+          }}
+        />
+      )}
     </main>
   );
 }

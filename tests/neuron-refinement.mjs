@@ -42,6 +42,48 @@ for (const id of ids) {
     assert(g.children.some((o) => o.userData.cap));
     assert(g.children.some((o) => o.userData.cutOnly));
   }
+  if (id === "neuronTerminals") {
+    const byColor = (hex) =>
+      g.children.filter((o) => o.material.color.getHexString() === hex);
+    const vesicles = byColor("ddbd82")[0].geometry.attributes.position;
+    let cutRim = 0;
+    for (let i = 0; i < vesicles.count; i++) {
+      assert(vesicles.getZ(i) < 1e-6, "no vesicle remains in the removed half");
+      if (Math.abs(vesicles.getZ(i)) < 1e-6) cutRim++;
+    }
+    assert(cutRim > 100, "cut-open vesicles have finite membrane rims");
+    const active = byColor("aa807a")[0],
+      patch = active.geometry.attributes.position;
+    for (let i = 0; i < patch.count; i++) {
+      const distance =
+        (patch.getX(i) / (0.69 * 1.7)) ** 2 +
+        (patch.getY(i) / (0.49 * 1.7)) ** 2 +
+        (patch.getZ(i) / (0.42 * 1.7)) ** 2;
+      assert(
+        distance > 0.85 && distance < 1,
+        "release plaque lines the inner plasma membrane",
+      );
+    }
+    const anchor = new T.Vector3(
+      ...g.userData.landmarks.find((item) => item.id === "active").position,
+    );
+    assert(
+      new T.Raycaster(
+        anchor.clone().add(new T.Vector3(0, 0, 1)),
+        new T.Vector3(0, 0, -1),
+      )
+        .intersectObject(active)[0]
+        .point.distanceTo(anchor) < 1e-4,
+    );
+    for (const half of byColor("76a7ac")) {
+      half.geometry.computeBoundingBox();
+      assert(
+        half.geometry.boundingBox.min.x < -2.49 &&
+          half.geometry.boundingBox.max.x > 1.17,
+        "both cut halves span the entire stalk and bouton",
+      );
+    }
+  }
   // Same route should produce stable allocations and geometry, with no random placement.
   const repeat = buildNeuron(id);
   assert.equal(repeat.children.length, g.children.length);

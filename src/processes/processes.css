@@ -840,7 +840,7 @@
   max-width: 100%;
   color: #666975;
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.55;
   padding: 3px 0;
   background: transparent;
@@ -888,7 +888,8 @@
   background: #fffffff0;
   box-shadow: none;
 }
-.process-model-label.highlighted {
+.process-model-label.highlighted,
+.process-model-label.pinned {
   color: white;
   background: var(--blue);
   border-color: var(--blue);
@@ -906,10 +907,69 @@
   stroke-width: 0.8;
   opacity: 0.65;
 }
-.process-label-leaders line.highlighted {
+.process-label-leaders line.highlighted,
+.process-label-leaders line.pinned {
   stroke: var(--blue);
   stroke-width: 1.4;
   opacity: 1;
+}
+.process-annotation-item[aria-pressed="true"] {
+  color: var(--accent);
+  font-weight: 650;
+  background: #e4eee1;
+}
+.process-label-leaders .pinned-anchor {
+  fill: #f9fff148;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.process-annotation-key[data-density="many"] {
+  height: 68px;
+}
+.process-annotation-key[data-density="few"] {
+  height: 38px;
+}
+.study-timeline {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: grid;
+  align-items: center;
+}
+.study-timeline input {
+  width: 100%;
+  margin-inline: 0;
+}
+.study-timeline-ticks {
+  position: absolute;
+  inset: 100% 7px auto;
+  pointer-events: none;
+}
+.study-timeline-ticks i {
+  position: absolute;
+  width: 1px;
+  height: 4px;
+  background: #63826e;
+}
+.process-step-controls .study-action {
+  margin-right: auto;
+  color: var(--accent);
+}
+@media (max-width: 620px) {
+  .process-annotation-key[data-density="many"] {
+    height: 82px;
+  }
+  .process-annotation-key[data-density="few"] {
+    height: 49px;
+  }
+  .process-reading-controls {
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  .process-step-controls {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
 }
 @media (max-width: 600px) {
   .process-scene-toolbar {

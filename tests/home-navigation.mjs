@@ -63,6 +63,14 @@ const snapshot = {
     right: { id: "plant", mode: "whole", explode: 40, labels: false },
   },
 };
+for (const href of ["#/erythrocyte", "#erythrocyte"])
+  assert.equal(readSceneState(exploreSceneHash(href, "zh")).mode, "whole");
+assert.equal(readSceneState(exploreSceneHash("#/cell", "en")).mode, "section");
+const savedSection = sceneHash("#/erythrocyte", {
+  lang: "zh",
+  mode: "section",
+});
+assert.equal(exploreSceneHash(savedSection, "en"), savedSection);
 const hash = sceneHash("#/plant?view=process&process=photosynthesis", snapshot);
 
 for (const source of [

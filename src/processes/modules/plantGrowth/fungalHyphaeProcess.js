@@ -1,5 +1,5 @@
 import { vesicle, beads, anchorLabel } from "./structuralDetail.js";
-import { fieldMembrane } from "./cellPlateMembrane.js";
+import { hyphalMembrane } from "./hyphalMembrane.js";
 import { THREE, sceneKit, clamp, ease, bilingual as b } from "../../kit.js";
 function create() {
   const k = sceneKit(),
@@ -13,7 +13,7 @@ function create() {
     pm = k.material("#9fae9d", {
       transparent: true,
       opacity: 1,
-      depthWrite: false,
+      depthWrite: true,
       side: THREE.DoubleSide,
     }),
     septum = k.material("#b8a282"),
@@ -52,15 +52,7 @@ function create() {
     new THREE.SphereGeometry(0.77, 40, 24, Math.PI, Math.PI, 0, Math.PI / 2),
     wall,
   );
-  const fusionMembrane = fieldMembrane(k, pm, {
-    nx: 40,
-    ny: 56,
-    nz: 28,
-    lo: [0, -0.84, -0.84],
-    hi: [0.88, 0.84, 0],
-    maxVertices: 150000,
-    name: "Apical plasma membrane continuous with exocytotic vesicle lumens",
-  });
+  const fusionMembrane = hyphalMembrane(k, pm);
   const memCap = fusionMembrane.mesh;
   cap.name = "Advancing hyphal apical wall";
   cap.rotation.z = -Math.PI / 2;
@@ -228,6 +220,9 @@ function create() {
         k.mesh(geometry, chitin, [0, 0, 0], g);
       deliveredCohorts.push({ m: g, index: i, cycle });
     }
+  const synthaseAxis = new THREE.Vector3(1, 0, 0),
+    synthaseDepth = -0.2,
+    synthaseRingRadius = Math.sqrt(0.69 ** 2 - synthaseDepth ** 2);
   const synthases = [],
     deposits = [];
   for (let i = 0; i < 15; i++) {
@@ -235,10 +230,18 @@ function create() {
     const m = new THREE.Group();
     group.add(m);
     m.name = "Apical membrane wall-synthase subunits";
+    // Keep the front cutaway strip free for incoming/fusing vesicle lumens.
+    // The complete synthase geometry follows the local membrane normal.
+    const normal = new THREE.Vector3(
+      (synthaseRingRadius * Math.cos(theta)) / 0.69,
+      (synthaseRingRadius * Math.sin(theta)) / 0.69,
+      synthaseDepth / 0.69,
+    );
+    m.quaternion.setFromUnitVectors(synthaseAxis, normal);
     for (let n = 0; n < 3; n++)
       k.ball([-0.02, (n - 1) * 0.055, 0.015], [0.065, 0.032, 0.075], actin, m);
     k.ball([-0.085, 0, 0], [0.055, 0.08, 0.07], actin, m);
-    synthases.push({ m, theta });
+    synthases.push({ m, normal });
     const d = new THREE.Group();
     group.add(d);
     d.name = "Extracellular wall polymer bundle";
@@ -367,27 +370,7 @@ function create() {
     });
     const nextMembraneKey = `${delivery}:${p}`;
     if (membraneKey !== nextMembraneKey) {
-      fusionMembrane.update(
-        (x, y, z) => {
-          let field = 0.69 - Math.sqrt(x * x + y * y + z * z);
-          for (let i = 0; i < fusionCount; i++) {
-            const dx = x - fusing[i * 3],
-              dy = y - fusing[i * 3 + 1],
-              r = fusing[i * 3 + 2];
-            const bound = field + r;
-            if (
-              bound > 0 &&
-              Math.abs(dx) < bound &&
-              Math.abs(dy) < bound &&
-              Math.abs(z) < bound
-            )
-              field = Math.min(field, Math.sqrt(dx * dx + dy * dy + z * z) - r);
-          }
-          return field;
-        },
-        1,
-        1,
-      );
+      fusionMembrane.update(fusing, fusionCount);
       membraneKey = nextMembraneKey;
     }
     deliveredCohorts.forEach(({ m, index: i, cycle }) => {
@@ -417,10 +400,9 @@ function create() {
       m.position.y *= gate;
       m.position.z *= gate;
     });
-    synthases.forEach(({ m, theta }) => {
-      m.position.set(tip + 0.69 * Math.cos(theta), 0.69 * Math.sin(theta), 0);
+    synthases.forEach(({ m, normal }) => {
+      m.position.set(tip + 0.69 * normal.x, 0.69 * normal.y, 0.69 * normal.z);
       m.visible = p >= 0.18;
-      m.rotation.z = theta;
     });
     deposits.forEach(({ m, birth, side }, i) => {
       const birthTip = 1.15 + ease(birth, 0.28, 1) * 1.65 * delivery;

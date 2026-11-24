@@ -24,6 +24,29 @@ function frameQueue() {
   };
 }
 
+{
+  const queue = frameQueue(),
+    progress = { current: 0.37 },
+    values = [];
+  let ended = 0;
+  startPlaybackClock({
+    progress,
+    duration: 1,
+    speed: 1.5,
+    end: 0.48998,
+    onPublish: (value) => values.push(value),
+    onFinish: () => ended++,
+    requestFrame: queue.requestFrame,
+    cancelFrame: queue.cancelFrame,
+  });
+  queue.step(0);
+  queue.step(90);
+  queue.step(150);
+  assert.equal(ended, 1);
+  assert.equal(queue.pending, 0);
+  assert.equal(values.at(-1), 0.48998);
+  assert.equal(progress.current, 0.48998);
+}
 for (const hz of [60, 75, 90, 120, 144]) {
   const queue = frameQueue();
   const progress = { current: 0 };

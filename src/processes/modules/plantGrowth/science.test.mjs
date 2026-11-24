@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import "./seek.test.mjs";
 import "./fusion.test.mjs";
 import "./junctionSampling.test.mjs";
+import "./hyphalJunctionSampling.test.mjs";
 import "./doubleFertilizationCompartments.test.mjs";
 import * as THREE from "three";
 import division from "./plantDivisionProcess.js";
@@ -56,7 +57,7 @@ const snapshot = (g) => {
 };
 // Weld actual rendered triangles, then inspect connectivity and boundary edges.
 // This sees open slabs, disconnected caps and missing parent junctions directly.
-function components(mesh) {
+function components(mesh, exact = false) {
   const attr = mesh.geometry.attributes.position;
   const n = mesh.geometry.drawRange.count;
   const ids = new Map(),
@@ -66,7 +67,7 @@ function components(mesh) {
     faces = [];
   function vertex(i) {
     const p = [attr.getX(i), attr.getY(i), attr.getZ(i)];
-    const key = p.map((x) => Math.round(x * 1e5)).join(",");
+    const key = (exact ? p : p.map((x) => Math.round(x * 1e5))).join(",");
     if (!ids.has(key)) {
       ids.set(key, vertices.length);
       parent.push(vertices.length);
@@ -77,13 +78,21 @@ function components(mesh) {
   const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
   for (let i = 0; i < n; i += 3) {
     const v = [vertex(i), vertex(i + 1), vertex(i + 2)];
-    if (new Set(v).size < 3) continue;
+    if (new Set(v).size < 3) {
+      assert(!exact, "Float32 welding must preserve all membrane faces");
+      continue;
+    }
     faces.push(v);
     parent[find(v[1])] = find(v[0]);
     parent[find(v[2])] = find(v[0]);
     for (let j = 0; j < 3; j++) {
-      const edge = [v[j], v[(j + 1) % 3]].sort((a, b) => a - b).join(":");
-      edges.set(edge, (edges.get(edge) || 0) + 1);
+      const first = v[j];
+      const second = v[(j + 1) % 3];
+      const edge = [first, second].sort((a, b) => a - b).join(":");
+      const occurrence = edges.get(edge) ?? { count: 0, orientation: 0 };
+      occurrence.count++;
+      occurrence.orientation += first < second ? 1 : -1;
+      edges.set(edge, occurrence);
     }
   }
   const groups = new Map();
@@ -98,10 +107,11 @@ function components(mesh) {
       });
     groups.get(root).points.push(p);
   });
-  for (const [key, count] of edges) {
+  for (const [key, { count, orientation }] of edges) {
     const [a, b] = key.split(":").map(Number);
     groups.get(find(a)).edgeCount++;
     assert(count <= 2, "membrane has no non-manifold seams");
+    if (exact && count === 2) assert.equal(orientation, 0, "membrane winding");
     if (count === 1)
       groups.get(find(a)).boundary.push([vertices[a], vertices[b]]);
   }
@@ -326,6 +336,28 @@ for (const delivery of ["normal", "reduced"]) {
   update(h, 0.1, { delivery });
   update(h, 0.95, { delivery });
   assert.deepEqual(snapshot(h.group), s);
+}
+// Reproduce the narrow coarse-to-dense inversion and Float32 outer tangency
+// failures in both transport conditions on the actual rendered membrane.
+const apicalMembrane = objects(
+  h.group,
+  "Apical plasma membrane continuous with exocytotic vesicle lumens",
+)[0];
+assert(apicalMembrane);
+for (const { delivery, progress } of [
+  { delivery: "normal", progress: 0.57349609375 },
+  { delivery: "normal", progress: 0.6344254699823925 },
+  { delivery: "reduced", progress: 0.7229003906250001 },
+  { delivery: "reduced", progress: 0.9767727915933019 },
+]) {
+  update(h, progress, { delivery });
+  for (const { boundary } of components(apicalMembrane, true))
+    assert(
+      boundary.every(
+        ([a, b]) => (a[0] === 0 && b[0] === 0) || (a[2] === 0 && b[2] === 0),
+      ),
+      "only the declared cut planes can bound the membrane",
+    );
 }
 assert.deepEqual(resources(h.group), hi);
 console.log(

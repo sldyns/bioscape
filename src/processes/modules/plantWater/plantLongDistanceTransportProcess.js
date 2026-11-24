@@ -10,8 +10,8 @@ const process = {
   id: "plantLongDistanceTransport",
   title: b("木质部运输与蒸腾", "Xylem transport and transpiration"),
   intro: b(
-    "被子植物根—茎—叶的组织级纵向剖示，多个细胞与器官组合，比例经过压缩。连续木质部水柱连接根部吸水与叶片湿细胞壁蒸发；蒸腾产生张力，木质部本身没有主动水泵。比较中途闭孔与持续开放；忽略根压、栓塞及不同植物的解剖差异。",
-    "A compressed tissue-level longitudinal section across an angiosperm root, stem and leaf, combining multiple cells and organs. A continuous xylem water column links root uptake to evaporation from wet leaf walls. Transpiration generates tension; xylem contains no active water pump. Compare mid-sequence stomatal closure with continued opening. Root pressure, embolism and anatomical variation are omitted.",
+    "被子植物根—茎—叶的组织级纵向剖示，多个细胞与器官组合，比例经过压缩。连续木质部水柱连接根部吸水与叶片湿细胞壁蒸发；蒸腾产生张力，木质部本身没有主动水泵。比较中途闭孔与持续开放；忽略根压、栓塞及不同植物的解剖差异。示踪速度仅用于定性比较。",
+    "A compressed tissue-level longitudinal section across an angiosperm root, stem and leaf, combining multiple cells and organs. A continuous xylem water column links root uptake to evaporation from wet leaf walls. Transpiration generates tension; xylem contains no active water pump. Compare mid-sequence stomatal closure with continued opening. Root pressure, embolism and anatomical variation are omitted. Tracer speeds are qualitative.",
   ),
   duration: 34,
   controls: [
@@ -54,28 +54,52 @@ const process = {
       at: 0.47,
       title: b("根吸水补充", "Root uptake replenishes water"),
       description: b(
-        "在土壤水分可用的条件下，水沿总体水势梯度从土壤穿过根组织进入木质部。根的径向屏障和并行路径在此压缩表示。",
-        "With water available in soil, water enters xylem through root tissues along the overall water-potential gradient. Radial root barriers and parallel routes are condensed here.",
+        "根毛是根表皮细胞的延伸。示踪水从土壤经根毛和皮层进入木质部，方向取决于总体水势梯度。根内的径向屏障和并行通路在此简化。",
+        "The root hair extends from an epidermal cell. Tracers follow water from soil through the hair and cortex into the xylem along the overall water-potential gradient. Radial barriers and parallel routes within the root are simplified.",
       ),
     },
     {
       at: 0.65,
-      title: b("气孔改变蒸腾通量", "Stomata regulate transpiration"),
+      title: b("气孔收窄，蒸腾减弱", "Stomatal narrowing slows transpiration"),
       description: b(
-        "选择闭孔时，出口变窄使蒸气扩散和木质部体积流减慢；持续开放分支维持较强水流。",
-        "In the closure scenario, the narrower pore reduces vapor diffusion and xylem bulk flow. Continued opening maintains stronger flow.",
+        "孔隙变窄后，水蒸气扩散和木质部水流都减慢。",
+        "The narrower pore slows water vapor diffusion and xylem flow.",
       ),
+      conditionCopy: [
+        {
+          when: { stomata: "open" },
+          title: b("开放气孔维持蒸腾", "Open stomata sustain transpiration"),
+          description: b(
+            "水蒸气继续通过气孔扩散到空气中。",
+            "Water vapor continues to diffuse through the open pores into the air.",
+          ),
+        },
+      ],
     },
     {
       at: 0.88,
       title: b("连续水柱仍然存在", "The water column remains"),
       description: b(
-        "减弱蒸腾不会把导管中的水抽空。示意保留连续水柱并降低示踪速度，不表示真实流速或压力测量。",
-        "Reduced transpiration does not empty the vessel. The model retains the continuous water column while reducing tracer speed; it provides no measured flow rate or pressure.",
+        "蒸腾减弱后，导管内水柱保持连续，图中示踪颗粒移动变慢。",
+        "Reduced transpiration leaves a continuous liquid column in the vessel. The tracers move more slowly in this schematic.",
       ),
+      conditionCopy: [
+        {
+          when: { stomata: "open" },
+          title: b("水柱继续流动", "The water column keeps flowing"),
+          description: b(
+            "导管内水柱保持连续，示踪颗粒继续向叶运动。",
+            "The water column remains continuous, and the tracers continue moving toward the leaf.",
+          ),
+        },
+      ],
     },
   ],
   sources: [
+    {
+      title: "OpenStax Biology 2e — Roots",
+      url: "https://openstax.org/books/biology-2e/pages/30-3-roots",
+    },
     {
       title: "OpenStax Biology 2e — Transport of Water and Solutes in Plants",
       url: "https://openstax.org/books/biology-2e/pages/30-5-transport-of-water-and-solutes-in-plants",
@@ -203,39 +227,81 @@ const process = {
         -2.66,
         0,
       ]);
-      rootCell.name = "root cortical cell";
+      const tissue = i === 0 ? "root epidermal" : "root cortical";
+      rootCell.name = tissue + " cell";
       rootCells.push(rootCell);
       k.mesh(rootWallGeometry, tissueWall, [
         -3.65 + i * 0.73,
         -2.66,
         -0.303,
-      ]).name = "root cortical rear wall cutaway";
+      ]).name = tissue + " rear wall cutaway";
       const cytoplasm = k.ball(
         [-3.65 + i * 0.73, -2.66, -0.23],
         [0.285, 0.39, 0.035],
         corticalFace,
       );
-      cytoplasm.name = "root cortical cytoplasm cut surface";
+      cytoplasm.name = tissue + " cytoplasm cut surface";
       const edges = new THREE.LineSegments(rootEdges, rootEdgeMaterial);
       edges.position.set(-3.65 + i * 0.73, -2.66, 0);
       group.add(edges);
     }
-    k.tube(
-      [
-        [-3.94, -2.65, 0],
-        [-4.3, -2.67, 0],
-        [-4.5, -3.12, 0],
-      ],
-      0.09,
-      wallMat,
-    );
-    const rootPath = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-4.5, -3.1, 0.15),
-      new THREE.Vector3(-3.7, -2.67, 0.15),
-      new THREE.Vector3(-2.2, -2.66, 0.15),
-      new THREE.Vector3(-0.85, -2.5, 0.15),
+    const hairTip = new THREE.Vector3(-4.5, -3.12, 0);
+    const hairBase = new THREE.Vector3(-3.94, -2.65, 0);
+    const hairPath = new THREE.CatmullRomCurve3([
+      hairTip,
+      new THREE.Vector3(-4.3, -2.67, 0),
+      hairBase,
     ]);
-    k.mesh(new THREE.TubeGeometry(rootPath, 64, 0.037, 8, false), waterMat);
+    // A front window in the root-hair wall exposes the intracellular portion
+    // of the route. The distal end retains the closed tip of an epidermal cell.
+    const section = new THREE.Shape();
+    const startAngle = (-3 * Math.PI) / 4,
+      endAngle = (3 * Math.PI) / 4;
+    section.absarc(0, 0, 0.115, startAngle, endAngle, false);
+    section.absarc(0, 0, 0.088, endAngle, startAngle, true);
+    section.closePath();
+    k.mesh(
+      new THREE.ExtrudeGeometry(section, {
+        extrudePath: hairPath,
+        steps: 48,
+        curveSegments: 14,
+        bevelEnabled: false,
+      }),
+      wallMat,
+    ).name = "root hair wall cutaway";
+    const outward = hairPath.getTangent(0).negate();
+    const cap = k.mesh(
+      new THREE.SphereGeometry(0.115, 28, 14, 0, 2 * Math.PI, 0, Math.PI / 2),
+      wallMat,
+      hairTip.toArray(),
+    );
+    cap.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), outward);
+    cap.name = "closed root hair tip";
+    const rootPath = new THREE.CurvePath();
+    rootPath.add(
+      new THREE.LineCurve3(
+        hairTip.clone().addScaledVector(outward, 0.32),
+        hairTip,
+      ),
+    );
+    rootPath.add(hairPath);
+    // The condensed tissue path joins the water column through the open
+    // basal end of the first element, clear of its lignified side wall.
+    rootPath.add(
+      new THREE.CatmullRomCurve3([
+        hairBase,
+        new THREE.Vector3(-3.65, -2.65, 0),
+        new THREE.Vector3(-2.4, -2.66, 0.08),
+        new THREE.Vector3(-1.57, -2.68, 0.08),
+        new THREE.Vector3(-1.19, -2.78, 0.08),
+        new THREE.Vector3(-0.91, -2.7, 0.08),
+        new THREE.Vector3(-0.85, -2.5, 0.08),
+      ]),
+    );
+    k.mesh(
+      new THREE.TubeGeometry(rootPath, 120, 0.037, 8, false),
+      waterMat,
+    ).name = "soil to xylem uptake route";
     for (let i = 0; i < 9; i++)
       k.ball(
         [-4.5 + (i % 3) * 0.38, -3.6 + Math.floor(i / 3) * 0.24, -0.25],
@@ -300,8 +366,19 @@ const process = {
         k.ball([0, 0, 0], [0.055, 0.14, 0.055], k.material("#427fa7")),
       );
     const uptake = [];
-    for (let i = 0; i < 6; i++)
-      uptake.push(k.ball([0, 0, 0], 0.05, k.material("#5b98bb")));
+    const uptakeMaterial = k.material("#5b98bb", {
+      transparent: true,
+      depthWrite: false,
+    });
+    for (let i = 0; i < 6; i++) {
+      const marker = k.ball(
+        [0, 0, 0],
+        0.05,
+        i === 0 ? uptakeMaterial : uptakeMaterial.clone(),
+      );
+      marker.name = "root water uptake tracer";
+      uptake.push(marker);
+    }
     const vapor = [],
       vaporPaths = [],
       vaporMaterial = k.material("#a9c6d4", {
@@ -357,7 +434,6 @@ const process = {
         nearestSurfaceVertex(wetFilm, [1.7, 2.9, 0.046]),
       ),
     ];
-    const point = new THREE.Vector3();
     function update(value, parameters = {}) {
       const p = clamp(value),
         close = parameters.stomata !== "open",
@@ -391,8 +467,10 @@ const process = {
       });
       uptake.forEach((m, i) => {
         m.visible = p > 0.43;
-        rootPath.getPoint((distance + i / 6) % 1, point);
-        m.position.copy(point);
+        const t = (distance + i / 6) % 1;
+        rootPath.getPoint(t, m.position);
+        m.material.opacity =
+          ease(p, 0.43, 0.46) * ease(t, 0, 0.045) * (1 - ease(t, 0.95, 1));
       });
       vapor.forEach((m, i) => {
         const t = (distance + i / 15) % 1;

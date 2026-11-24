@@ -50,6 +50,8 @@ import { normalizeComparisonState, isComparisonId } from "./compare/state.js";
 import "./exploration/exploration.css";
 
 import { getNode, modelNotes } from "./hierarchy";
+import StructureStudy from "./exploration/StructureStudy.jsx";
+import { initialStructureMode } from "./scene/specimenViews.js";
 import { specializedSpecimens } from "./compare/specimens.js";
 import { cellTypes, rootIds, contextNotes } from "./catalog/cellTypes";
 
@@ -108,7 +110,9 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     ),
     [processId, setProcessId] = useState(() => parseProcess(location.hash)),
     [mode, setMode] = useState(
-      sharedState?.origin?.mode || sharedState?.mode || "section",
+      sharedState?.origin?.mode ||
+        sharedState?.mode ||
+        initialStructureMode(path.at(-1)),
     ),
     [explode, setExplode] = useState(
       sharedState?.origin?.explode ?? sharedState?.explode ?? 60,
@@ -436,7 +440,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
     setPath(next);
     setExperience(nextExperience);
     setProcessId(nextProcess);
-    setMode(saved?.mode || "section");
+    setMode(saved?.mode || initialStructureMode(next.at(-1)));
     setExplode(saved?.explode ?? 60);
     setLabels(saved?.labels ?? false);
     setContracted(saved?.contracted ?? false);
@@ -1233,6 +1237,18 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                 <h2>{node.name}</h2>
                 {!en && <p className="latin-name">{node.en}</p>}
                 <p className="node-description">{node.desc}</p>
+                <StructureStudy
+                  key={path.join("/") + ":" + mode}
+                  nodeId={id}
+                  apiRef={sceneApi}
+                  ready={sceneReady}
+                  mode={mode}
+                  lang={lang}
+                  name={node.name}
+                  stopRotation={() => setRotate(false)}
+                  onView={receiveView}
+                  onReset={() => setResetKey((key) => key + 1)}
+                />
                 {note && <p className="model-note">{note}</p>}
                 {lastProcess && lastProcess.path[0] === path[0] && (
                   <button

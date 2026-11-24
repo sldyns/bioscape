@@ -352,6 +352,55 @@ export function muscleMyofibrilCentres() {
         );
   return a;
 }
+// Finite lattice fragment: thin filaments interdigitate around the seven thick filaments.
+const actinCentres = Array.from({ length: 18 }, (_, i) => {
+  const a = (i * TAU) / 18;
+  return [
+    (0.58 + (i % 3 === 0 ? -0.31 : 0)) * Math.cos(a),
+    (0.58 + (i % 3 === 0 ? -0.31 : 0)) * Math.sin(a),
+  ];
+});
+
+// Both ends are artificial crops through a Z disc. Embed the sampled thin-
+// filament profiles in its plane, using the same positions as the exposed sarcomere.
+function fibrilCropFace(r, radial, filamentSides) {
+  const polygon = (radius, n, cx = 0, cy = 0) =>
+    Array.from({ length: n }, (_, i) => {
+      const a = (TAU * i) / n;
+      return new T.Vector2(
+        cx + radius * Math.cos(a),
+        cy + radius * Math.sin(a),
+      );
+    });
+  const contour = polygon(r, radial);
+  const profiles = actinCentres.map(([y, z]) =>
+    polygon(0.058 * r, filamentSides, (-z * r) / 0.75, (y * r) / 0.75),
+  );
+  const position = [],
+    color = [],
+    normal = [];
+  const baseColor = new T.Color("#d9b3a4"),
+    anchorColor = new T.Color(C.z);
+  function vertex(p, tint) {
+    position.push(0, p.y, -p.x);
+    normal.push(1, 0, 0);
+    color.push(tint.r, tint.g, tint.b);
+  }
+  const indices = T.ShapeUtils.triangulateShape(contour, profiles).flat();
+  for (const p of [...contour, ...profiles.flat()]) vertex(p, baseColor);
+  for (const profile of profiles) {
+    const base = position.length / 3;
+    for (const p of profile) vertex(p, anchorColor);
+    for (let i = 1; i < profile.length - 1; i++)
+      indices.push(base, base + i, base + i + 1);
+  }
+  const geo = new T.BufferGeometry();
+  geo.setAttribute("position", new T.Float32BufferAttribute(position, 3));
+  geo.setAttribute("normal", new T.Float32BufferAttribute(normal, 3));
+  geo.setAttribute("color", new T.Float32BufferAttribute(color, 3));
+  geo.setIndex(indices);
+  return geo;
+}
 function stripedRod(length, repeats, r, y = 0, z = 0, radial = 6) {
   const bands = [
       [0, 0.025, C.z],
@@ -367,8 +416,11 @@ function stripedRod(length, repeats, r, y = 0, z = 0, radial = 6) {
     geos = [];
   for (let i = 0; i < repeats; i++)
     for (const [a, b, c] of bands) {
-      const span = ((b - a) * length) / repeats;
-      const x = -length / 2 + ((i + (a + b) / 2) * length) / repeats;
+      // A single Z band spans the two adjoining half-bands of adjacent repeats.
+      if (i > 0 && a === 0) continue;
+      const end = b === 1 && i + 1 < repeats ? b + bands[0][1] : b;
+      const span = ((end - a) * length) / repeats;
+      const x = -length / 2 + ((i + (a + end) / 2) * length) / repeats;
       const geo = new T.CylinderGeometry(r, r, span, radial, 1, true)
         .rotateZ(Math.PI / 2)
         .translate(x, y, z);
@@ -407,14 +459,6 @@ function sarcomere(id = ids.sarcomere) {
       0.43 * Math.sin((i * TAU) / 6),
     ]),
   ];
-  // Finite lattice fragment: thin filaments interdigitate around the seven thick filaments.
-  const actinCentres = Array.from({ length: 18 }, (_, i) => {
-    const a = (i * TAU) / 18;
-    return [
-      (0.58 + (i % 3 === 0 ? -0.31 : 0)) * Math.cos(a),
-      (0.58 + (i % 3 === 0 ? -0.31 : 0)) * Math.sin(a),
-    ];
-  });
   for (const [y, z] of centres) {
     thick.push(rod([-1.6, y, z], [1.6, y, z], 0.064, 16));
     for (const sign of [-1, 1])
@@ -846,38 +890,111 @@ function triadDetail() {
 
 function srDetail() {
   const g = new T.Group(),
-    id = ids.sr,
-    tubules = [],
-    cisternae = [];
-  // Reticular sleeves are sparse fenestrated networks, not a solid external sheath.
-  for (const end of [-1, 1])
-    for (const x of [end * 1.48]) cisternae.push(ring(x, 0.62, 0.065));
-  for (let j = 0; j < 12; j++) {
-    const a = (j * TAU) / 12,
-      pts = Array.from({ length: 20 }, (_, i) => {
-        const x = -1.48 + (i * 2.96) / 19,
-          r = 0.62 + 0.018 * Math.sin(i * 1.6 + j);
-        return [x, r * Math.cos(a), r * Math.sin(a)];
-      });
-    tubules.push(tube(pts, 0.029, 32));
+    id = ids.sr;
+  const bays = 4,
+    sectors = 10,
+    perimeter = 24,
+    wallSteps = 6;
+  const halfLength = 1.335,
+    radius = 0.62,
+    thickness = 0.043;
+  // Each window has a rounded lip. The spaces between adjacent windows form
+  // branching longitudinal tubules surrounding one connected SR lumen.
+  const positions = [],
+    indices = [];
+  function quad(a, b, c, d) {
+    indices.push(a, b, d, b, c, d);
   }
-  for (const x of [-0.85, -0.28, 0.28, 0.85])
-    for (let j = 0; j < 6; j++) {
-      const a = (j * TAU) / 6;
-      tubules.push(
-        tube(
-          Array.from({ length: 10 }, (_, k) => [
-            x + 0.055 * Math.sin((k * Math.PI) / 9),
-            0.62 * Math.cos(a + (k * TAU) / 54),
-            0.62 * Math.sin(a + (k * TAU) / 54),
-          ]),
-          0.025,
-          14,
-        ),
-      );
+  function finishSurface(color) {
+    const source = new T.BufferGeometry();
+    source.setAttribute("position", new T.Float32BufferAttribute(positions, 3));
+    source.setIndex(indices);
+    const geometry = mergeVertices(source, 1e-5);
+    source.dispose();
+    geometry.computeVertexNormals();
+    add(g, geometry, color, id);
+    positions.length = indices.length = 0;
+  }
+
+  for (let i = 0; i < bays; i++) {
+    for (let j = 0; j < sectors; j++) {
+      const base = positions.length / 3;
+      const phase = 1.57 * i + 3.81 * j;
+      const openingX = 0.88 + 0.035 * Math.sin(phase);
+      const openingAngle = 0.86 + 0.045 * Math.cos(phase);
+      for (let k = 0; k <= wallSteps; k++) {
+        const crossAngle = (Math.PI * k) / wallSteps;
+        const toLip = Math.sin(crossAngle);
+        for (let q = 0; q < perimeter; q++) {
+          const angle = (TAU * q) / perimeter;
+          const dx = Math.cos(angle),
+            dv = Math.sin(angle);
+          const edge = Math.max(Math.abs(dx), Math.abs(dv));
+          // Square tile boundaries match exactly. The interior rim is rounded
+          // and slightly off-centre, so neighbouring branches split and rejoin.
+          const u = T.MathUtils.lerp(
+            dx / edge,
+            openingX * Math.sign(dx) * Math.abs(dx) ** 0.78 +
+              0.042 * Math.sin(phase),
+            toLip,
+          );
+          const v = T.MathUtils.lerp(
+            dv / edge,
+            openingAngle * Math.sign(dv) * Math.abs(dv) ** 0.78 +
+              0.042 * Math.cos(phase),
+            toLip,
+          );
+          const t = (i + 0.5 + u / 2) / bays,
+            a = (TAU * (j + 0.5 + v / 2)) / sectors;
+          const envelope = Math.sin(Math.PI * t);
+          const x =
+            halfLength * (2 * t - 1) +
+            envelope *
+              (0.13 * Math.sin(3 * a + 4 * t) + 0.075 * Math.cos(5 * a));
+          const theta = a + 0.09 * envelope * Math.sin(a + 7 * t);
+          const r =
+            radius +
+            0.012 * envelope * Math.sin(2 * theta + 6 * t) +
+            (thickness + 0.006 * envelope * Math.cos(3 * a)) *
+              Math.cos(crossAngle);
+          positions.push(x, r * Math.cos(theta), r * Math.sin(theta));
+          if (k === wallSteps) continue;
+          const a0 = base + k * perimeter + q,
+            a1 = base + k * perimeter + ((q + 1) % perimeter);
+          quad(a0, a0 + perimeter, a1 + perimeter, a1);
+        }
+      }
     }
-  batch(g, tubules, C.sr, id);
-  batch(g, cisternae, "#aac5ba", id);
+  }
+  finishSurface(C.sr);
+
+  // Close the two sleeve boundaries with widened terminal cisternae. Their
+  // openings use the same edge samples as the tubules, with no intervening cap.
+  const sideSamples = perimeter / 4,
+    around = sectors * sideSamples,
+    capSteps = 8;
+  for (const sign of [-1, 1]) {
+    const base = positions.length / 3;
+    for (let k = 0; k <= capSteps; k++) {
+      const a = (Math.PI * k) / capSteps;
+      const x = sign * (halfLength + 0.21 * Math.sin(a));
+      const r = radius + (thickness + 0.07 * Math.sin(a)) * Math.cos(a);
+      for (let j = 0; j < around; j++) {
+        const v = Math.tan(
+          -Math.PI / 4 + ((Math.PI / 2) * (j % sideSamples)) / sideSamples,
+        );
+        const theta =
+          (TAU * (Math.floor(j / sideSamples) + 0.5 + v / 2)) / sectors;
+        positions.push(x, r * Math.cos(theta), r * Math.sin(theta));
+        if (k === capSteps) continue;
+        const a0 = base + k * around + j,
+          a1 = base + k * around + ((j + 1) % around);
+        if (sign > 0) quad(a0, a1, a1 + around, a0 + around);
+        else quad(a0, a0 + around, a1 + around, a1);
+      }
+    }
+  }
+  finishSurface("#aac5ba");
   mark(g, "纵行肌浆网", "Longitudinal SR", [0, 0.62, 0]);
   mark(
     g,
@@ -909,21 +1026,23 @@ function myofibrilDetail() {
       {},
       { vertexColors: true },
     );
-  const cropFaces = [];
+  const cropFaces = [],
+    face = fibrilCropFace(0.48, 32, 10);
   for (const [y, z] of [
     [-0.62, -0.36],
     [0.62, -0.36],
   ])
     for (const x of [-2.6, 2.6])
-      cropFaces.push(
-        new T.CircleGeometry(0.48, 32).rotateY(Math.PI / 2).translate(x, y, z),
-      );
-  cropFaces.push(
-    new T.CircleGeometry(0.48, 32)
-      .rotateY(Math.PI / 2)
-      .translate(-2.6, 0, 0.53),
+      cropFaces.push(face.clone().translate(x, y, z));
+  cropFaces.push(face.translate(-2.6, 0, 0.53));
+  batch(
+    g,
+    cropFaces,
+    "#ffffff",
+    id,
+    { anatomyRole: "fibrilCrop" },
+    { vertexColors: true },
   );
-  batch(g, cropFaces, "#d9b3a4", id);
   const sample = sarcomere(id);
   sample.scale.set(0.346, 0.63, 0.63);
   sample.position.set(1.733, 0, 0.53);
@@ -1077,16 +1196,23 @@ function whole() {
   batch(g, edge, C.edge, ids.membrane, { cutOnly: true });
   const rods = [],
     endFaces = [];
-  const centres = muscleMyofibrilCentres();
+  const centres = muscleMyofibrilCentres(),
+    face = fibrilCropFace(0.064, 6, 4);
   for (const [y, z] of centres) {
     rods.push(stripedRod(length, 30, 0.064, y, z));
     for (const x of [-length / 2, length / 2])
-      endFaces.push(
-        new T.CircleGeometry(0.064, 12).rotateY(Math.PI / 2).translate(x, y, z),
-      );
+      endFaces.push(face.clone().translate(x, y, z));
   }
   batch(g, rods, "#ffffff", ids.fibril, {}, { vertexColors: true });
-  batch(g, endFaces, "#d9b3a4", ids.fibril);
+  face.dispose();
+  batch(
+    g,
+    endFaces,
+    "#ffffff",
+    ids.fibril,
+    { anatomyRole: "fibrilCrop" },
+    { vertexColors: true },
+  );
   const nuclei = [],
     nucleoli = [];
   for (let i = 0; i < 9; i++) {

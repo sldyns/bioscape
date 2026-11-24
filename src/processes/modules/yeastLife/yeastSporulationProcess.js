@@ -1,3 +1,4 @@
+import { prosporeLeadingEdge } from "./prosporeLeadingEdge.js";
 import {
   wallAnatomy,
   nuclearAnatomy,
@@ -8,6 +9,8 @@ import { placeSegment } from "./topology.js";
 import { labelAnchors } from "./labelAnchors.js";
 import { meioticEnvelope } from "./meioticEnvelope.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
+
+const innerMembraneFactor = 0.947;
 
 // An actual growing membrane cup, rather than a closed spore appearing at once.
 function prosporeMembrane(k, material) {
@@ -20,7 +23,9 @@ function prosporeMembrane(k, material) {
     for (let j = 0; j < m; j++) {
       const a = i * (m + 1) + j,
         b = a + m + 1;
-      index.push(a, b, a + 1, b, b + 1, a + 1);
+      // At the basal pole a and a + 1 coincide. Keep those repeated points
+      // as the first and last vertices so closest-point queries stay finite.
+      index.push(a + 1, b, a, b + 1, b, a + 1);
     }
   g.setAttribute("position", new THREE.BufferAttribute(v, 3));
   g.setIndex(index);
@@ -32,10 +37,20 @@ function prosporeMembrane(k, material) {
     cosines[j] = Math.cos(angle);
     sines[j] = Math.sin(angle);
   }
+  const leadingEdge = prosporeLeadingEdge(k, mesh, n, m, innerMembraneFactor);
+  const previousAnchor = new THREE.Vector3();
+  let previousAngle, previousAttached;
   return {
     mesh,
+    leadingEdge,
     shape(closure, attachment, attached, nucleation) {
       const maxAngle = 0.22 * nucleation + (Math.PI - 0.22) * closure;
+      if (
+        maxAngle === previousAngle &&
+        attached === previousAttached &&
+        attachment.equals(previousAnchor)
+      )
+        return false;
       for (let i = 0; i <= n; i++) {
         const t = (i / n) * maxAngle,
           anchorWeight = attached * Math.exp(-Math.pow(t / 0.48, 2)),
@@ -52,6 +67,10 @@ function prosporeMembrane(k, material) {
       g.computeVertexNormals();
       g.computeBoundingSphere();
       g.computeBoundingBox();
+      previousAngle = maxAngle;
+      previousAttached = attached;
+      previousAnchor.copy(attachment);
+      return true;
     },
   };
 }
@@ -145,6 +164,14 @@ function create() {
   });
   const membraneInner = membranes.map((m) => {
     const g = m.mesh.geometry.clone();
+    // The continuous cisterna turns back on itself at its leading edge.
+    // Its inner face therefore has the opposite orientation.
+    const indices = g.index.array;
+    for (let i = 0; i < indices.length; i += 3) {
+      const second = indices[i + 1];
+      indices[i + 1] = indices[i + 2];
+      indices[i + 2] = second;
+    }
     const layer = k.mesh(
       g,
       k.material("#c6d6bf", {
@@ -158,13 +185,18 @@ function create() {
   });
   membranes.forEach((m, i) => {
     m.mesh.name = `sporulation-outer-prospore-membrane-${i}`;
+    m.leadingEdge.mesh.name = `sporulation-prospore-leading-edge-${i}`;
   });
   membraneInner.forEach((m, i) => {
     m.name = `sporulation-persistent-spore-pm-${i}`;
   });
-  const closureRims = centers.map((c) => {
-    const r = k.ring(c, 0.64, 0.025, k.material("#6b998a"));
-    return r;
+  const cutRims = centers.map((c) => {
+    const angle = (14 / 24) * Math.PI;
+    const rim = k.ring(c, 0.64, 0.025, k.material("#6b998a"));
+    rim.scale.setScalar(innerMembraneFactor * Math.sin(angle));
+    rim.position.z -= 0.64 * innerMembraneFactor * Math.cos(angle);
+    rim.name = "sporulation-spore-membrane-viewing-cut";
+    return rim;
   });
   const chromatid = Array.from({ length: 4 }, (_, i) => {
     const g = new THREE.Group();
@@ -369,14 +401,22 @@ function create() {
       membranes[i].mesh.visible = q > 0.59 && q < 0.9;
       const attached = 1 - ease(q, 0.7, 0.78),
         nucleation = ease(q, 0.59, 0.61);
-      membranes[i].shape(closure, membraneAnchors[i], attached, nucleation);
-      const source = membranes[i].mesh.geometry.attributes.position.array,
-        dest = membraneInner[i].geometry.attributes.position.array;
-      for (let j = 0; j < source.length; j++) dest[j] = source[j] * 0.947;
-      membraneInner[i].geometry.attributes.position.needsUpdate = true;
-      membraneInner[i].geometry.computeVertexNormals();
-      membraneInner[i].geometry.computeBoundingBox();
-      membraneInner[i].geometry.computeBoundingSphere();
+      const shapeChanged = membranes[i].shape(
+        closure,
+        membraneAnchors[i],
+        attached,
+        nucleation,
+      );
+      if (shapeChanged) {
+        const source = membranes[i].mesh.geometry.attributes.position.array,
+          dest = membraneInner[i].geometry.attributes.position.array;
+        for (let j = 0; j < source.length; j++)
+          dest[j] = source[j] * innerMembraneFactor;
+        membraneInner[i].geometry.attributes.position.needsUpdate = true;
+        membraneInner[i].geometry.computeVertexNormals();
+        membraneInner[i].geometry.computeBoundingBox();
+        membraneInner[i].geometry.computeBoundingSphere();
+      }
       membraneInner[i].visible = q > 0.59;
       // After enclosure, expose the same front viewing section as the spore
       // wall. Keep the full closed geometry for topology/state inspection;
@@ -384,22 +424,10 @@ function create() {
       const displayedIndices = q >= 0.84 ? 14 * 36 * 6 : 24 * 36 * 6;
       membranes[i].mesh.geometry.setDrawRange(0, displayedIndices);
       membraneInner[i].geometry.setDrawRange(0, displayedIndices);
-      const cupAngle = 0.22 * nucleation + (Math.PI - 0.22) * closure,
-        rimAttachment = attached * Math.exp(-Math.pow(cupAngle / 0.48, 2));
-      const viewingCut = q >= 0.84,
-        displayedAngle = viewingCut ? (14 / 24) * cupAngle : cupAngle,
-        rimRadius = viewingCut ? 0.947 : 1;
-      closureRims[i].visible = q > 0.59;
-      closureRims[i].userData.viewingCut = viewingCut;
-      closureRims[i].scale.setScalar(
-        Math.max(0.001, rimRadius * Math.sin(displayedAngle)),
-      );
-      closureRims[i].position.set(
-        centers[i][0] + membraneAnchors[i].x * rimAttachment,
-        centers[i][1] + membraneAnchors[i].y * rimAttachment,
-        -0.64 * rimRadius * Math.cos(displayedAngle) +
-          (membraneAnchors[i].z + 0.64) * rimAttachment,
-      );
+      const open = q > 0.59 && q < 0.83;
+      if (shapeChanged || open !== membranes[i].leadingEdge.mesh.visible)
+        membranes[i].leadingEdge.update(open);
+      cutRims[i].visible = q >= 0.84;
       walls[i][0].visible = q > 0.84;
       walls[i][1].visible = q > 0.86;
       walls[i][2].visible = q >= 0.91;

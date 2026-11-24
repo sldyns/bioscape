@@ -81,19 +81,42 @@ const process = {
     },
     {
       at: 0.66,
-      title: b("选择外液条件", "Bath condition determines recovery"),
+      title: b("换入稀外液", "The dilute bath is restored"),
       description: b(
-        "换成稀外液后水净流入；若维持高渗外液，细胞继续保持质壁分离。",
-        "A dilute replacement bath drives net water uptake. Continued hypertonic exposure preserves the plasmolysed state.",
+        "换入稀外液后，水重新进入细胞和液泡，原生质体开始膨大。",
+        "After the bath is diluted, water enters the cell and vacuole again and the protoplast begins to expand.",
       ),
+      conditionCopy: [
+        {
+          when: { bath: "hold" },
+          title: b("持续高渗", "The bath remains hypertonic"),
+          description: b(
+            "细胞仍处在高渗外液中。回缩的原生质体与细胞壁之间留有外液。",
+            "The cell remains in the hypertonic bath. External solution fills the space between the retracted protoplast and the wall.",
+          ),
+        },
+      ],
     },
     {
       at: 0.9,
-      title: b("可逆恢复", "Reversible recovery"),
-      description: b(
-        "在细胞仍存活且膜完整的前提下，稀外液可使液泡扩大、原生质体重新贴壁。高渗条件下不发生此复原。",
-        "With viable cells and intact membranes, dilution expands the vacuole and restores wall contact. Recovery does not occur in the maintained hypertonic bath.",
+      title: b(
+        "液泡膨大，原生质体重新贴壁",
+        "The vacuole expands and wall contact returns",
       ),
+      description: b(
+        "细胞存活且质膜完整时，吸水使液泡膨大，原生质体重新贴近原有的细胞壁。",
+        "In a viable cell with an intact membrane, water uptake expands the vacuole and brings the protoplast back against the original wall.",
+      ),
+      conditionCopy: [
+        {
+          when: { bath: "hold" },
+          title: b("质壁分离持续", "Plasmolysis persists"),
+          description: b(
+            "液泡保持收缩，完整的质膜仍与细胞壁分开。",
+            "The vacuole remains contracted and the intact plasma membrane stays separated from the cell wall.",
+          ),
+        },
+      ],
     },
   ],
   sources: [
@@ -234,6 +257,11 @@ const process = {
       );
     }
     gapSolutes.forEach((m) => (m.name = "impermeant bath-gap solute"));
+    // These raised cut-face tracers follow separate transverse sections.
+    // On the nuclear side the sections pass above or below the nucleus.
+    const nuclearSideRows = [
+      -1.96, -1.7, -1.43, -0.08, 0.25, 0.6, 0.95, 1.3, 1.65,
+    ];
     const water = [];
     for (let i = 0; i < 18; i++)
       water.push(
@@ -279,11 +307,15 @@ const process = {
         inward = recover && p > 0.68 && p < 0.93;
       water.forEach((m, i) => {
         m.visible = outward || inward;
-        const t = (p * 6 + i / 9) % 1;
+        const lane = i >> 1;
         const side = i % 2 ? -1 : 1;
-        const a = 1.6 * sx,
-          dist = outward ? a + (3.28 - a) * t : 3.28 - (3.28 - a) * t;
-        m.position.set(side * dist, -1.5 + (i % 9) * 0.375, 0.61);
+        const t = outward ? clamp((p - 0.18) / 0.31) : clamp((p - 0.68) / 0.25);
+        const offset = (((lane * 5) % 9) - 4) / 6;
+        const transit = t + offset * t * (1 - t);
+        const lumen = 1.23 * sx;
+        const dist = lumen + (3.28 - lumen) * (outward ? transit : 1 - transit);
+        const row = side < 0 ? nuclearSideRows[lane] : -1.5 + lane * 0.375;
+        m.position.set(side * dist, row * sy, 0.61);
       });
       labels[1].position = [1.4 * sx, 1.75 * sy, 0.65];
       labels[2].position = [-2.32 * sx, -1.7 * sy, 0.65];

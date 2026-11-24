@@ -43,7 +43,22 @@ for (const process of [plasmolysis, stomata, xylem, chloroplast]) {
   for (const option of process.controls[0].options) {
     const params = { [process.controls[0].id]: option.value };
     const samples = [];
-    for (const p of [0, 0.15, 0.35, 0.5, 0.7, 0.95, 1, NaN, -1, 2]) {
+    // Include the actual chapters. A sustained-light guard cell correctly
+    // holds its open pose once its active transport interval has finished.
+    const samplesAt = new Set([
+      ...process.stages.map((stage) => stage.at),
+      0,
+      0.15,
+      0.35,
+      0.5,
+      0.7,
+      0.95,
+      1,
+      NaN,
+      -1,
+      2,
+    ]);
+    for (const p of samplesAt) {
       model.update(p, params);
       const bounds = new THREE.Box3().setFromObject(model.group);
       const size = bounds.getSize(new THREE.Vector3());

@@ -33,8 +33,8 @@ export const muscleMetadata = {
       "肌原纤维",
       "Myofibrils",
       "#bd8b98",
-      "平行的收缩结构由相接肌节组成，邻接肌原纤维的 Z 盘对齐。放大视图揭开一个末端肌节的肌丝排列；条带色彩用于区分区域。",
-      "Parallel contractile structures contain serial sarcomeres, with Z discs aligned across neighbours. A local filament-level exposure reveals one terminal repeat; band colours identify regions.",
+      "平行的收缩结构由相接肌节组成，邻接肌原纤维的 Z 盘对齐。放大视图揭开一个末端肌节的肌丝排列。相邻截面上的深色小点标记细肌丝在 Z 盘处的取样位置。",
+      "Parallel contractile structures contain serial sarcomeres, with Z discs aligned across neighbours. One exposed terminal repeat shows the filaments. Dark profiles on the neighbouring cut faces mark sampled thin-filament positions at the Z disc.",
     ),
     part(
       "muscleFibreSarcomere",

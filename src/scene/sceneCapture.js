@@ -54,18 +54,25 @@ export function captureCamera(
   turn,
   fitDistance,
   copy = camera.clone(),
+  referenceView = null,
 ) {
   copy.copy(camera, false);
-  const offset = camera.position.clone().sub(target);
-  const zoom = offset.length() / Math.max(fittedDistance, 0.001);
+  const fixed = normalizeSceneView(referenceView);
+  const pivot = fixed ? new THREE.Vector3().fromArray(fixed.target) : target;
+  const offset = fixed
+    ? new THREE.Vector3().fromArray(fixed.direction)
+    : camera.position.clone().sub(target);
+  const zoom = fixed
+    ? fixed.zoom
+    : offset.length() / Math.max(fittedDistance, 0.001);
   if (Number.isFinite(turn))
     offset.applyAxisAngle(camera.up, turn % (Math.PI * 2));
   copy.aspect = width / height;
-  copy.position.copy(target).add(offset);
-  copy.lookAt(target);
+  copy.position.copy(pivot).add(offset);
+  copy.lookAt(pivot);
   copy.updateMatrixWorld();
-  const distance = fitDistance(copy);
-  copy.position.copy(target).add(offset.setLength(distance * zoom));
+  const distance = fitDistance(copy, pivot);
+  copy.position.copy(pivot).add(offset.setLength(distance * zoom));
   copy.far = Math.max(camera.far, distance * zoom + 100);
   copy.updateProjectionMatrix();
   copy.updateMatrixWorld();
@@ -537,6 +544,7 @@ function createCaptureSlot(
     background = "transparent",
     labels = false,
     turn = 0,
+    view = null,
     reuseFrame = false,
     labelScale = 1,
     signal,
@@ -674,6 +682,7 @@ function createCaptureSlot(
         turn,
         fitDistance,
         exportCamera,
+        view,
       );
       const shadowLights = [];
       if (renderer.shadowMap.enabled)

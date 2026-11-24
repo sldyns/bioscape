@@ -627,6 +627,46 @@ canvas:focus-visible ~ .scene-keyboard-hint {
 .feature-list {
   margin-top: 31px;
 }
+.structure-study {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 17px;
+  padding: 11px 0;
+  border-block: 1px solid var(--line);
+}
+.study-action {
+  justify-self: start;
+  border: 1px solid #b3c8b7;
+  border-radius: 6px;
+  padding: 7px 12px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  background: #eef3e9;
+}
+.study-action:hover {
+  background: #e1ecd9;
+}
+.structure-study label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.structure-study select {
+  width: 100%;
+  min-width: 0;
+  padding: 7px;
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--ink);
+}
+.structure-study select:focus-visible {
+  outline: 2px solid var(--accent);
+}
 .feature-list section + section {
   margin-top: 25px;
 }
@@ -1112,9 +1152,9 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   z-index: 2;
 }
 .label-leaders line {
-  stroke: #989fae;
+  stroke: #62796e;
   stroke-width: 1;
-  stroke-opacity: 0.48;
+  stroke-opacity: 0.76;
 }
 .model-label:focus-visible {
   outline: 2px solid var(--blue);
@@ -1230,7 +1270,7 @@ canvas:focus-visible ~ .scene-keyboard-hint {
   position: relative;
   transform: none;
   max-width: 100%;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.45;
   padding: 5px 8px;
   border-color: #e2e5e9;

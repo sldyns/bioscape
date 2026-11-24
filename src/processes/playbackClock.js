@@ -4,6 +4,7 @@ export function startPlaybackClock({
   progress,
   duration,
   speed,
+  end = 1,
   onFrame,
   onPublish,
   onFinish,
@@ -19,19 +20,19 @@ export function startPlaybackClock({
     if (!active) return;
     if (last !== undefined)
       progress.current = Math.min(
-        1,
+        end,
         progress.current +
           (Math.max(0, Math.min(now - last, 100)) * speed) / (duration * 1000),
       );
     last = now;
     onFrame?.(progress.current);
     if (!active) return;
-    if (now - published >= 30 || progress.current >= 1) {
+    if (now - published >= 30 || progress.current >= end) {
       onPublish(progress.current);
       published = now;
     }
     if (!active) return;
-    if (progress.current >= 1) {
+    if (progress.current >= end) {
       active = false;
       onFinish();
     } else frame = requestFrame(tick);

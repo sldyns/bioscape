@@ -4,6 +4,7 @@ import plasmolysis from "./plasmolysisProcess.js";
 import stomata from "./stomataProcess.js";
 import xylem from "./plantLongDistanceTransportProcess.js";
 import { ease } from "../../kit.js";
+import { resolveStageCopy } from "../../stageCopy.js";
 
 export function runWaterFluxRegression() {
   const plasma = plasmolysis.create({ rootId: "plant" });
@@ -304,6 +305,40 @@ export function runWaterFluxRegression() {
     for (const offset of [-1e-7, 1e-7]) {
       tree.update(p + offset, { stomata: "open" });
       assert(weights()[i] < 1e-7);
+    }
+  }
+  // Late chapter copy describes the branch that is actually rendered.
+  const light = { signal: "light" };
+  const open = { stomata: "open" };
+  guard.update(0.71, light);
+  assert.equal(guard.labels[6].active, false);
+  assert.equal(guard.labels[5].active, true);
+  assert.deepEqual(resolveStageCopy(stomata.stages[4], light).title, {
+    zh: "持续蓝光",
+    en: "Blue light continues",
+  });
+  guard.update(0.93, light);
+  assert.equal(guard.group.userData.waterFlux, "balanced");
+  assert.deepEqual(resolveStageCopy(stomata.stages[5], light).title, {
+    zh: "气孔保持开放",
+    en: "The pore stays open",
+  });
+  tree.update(0.94, open);
+  assert.equal(tree.group.userData.relativeFlow, 1);
+  assert.equal(tree.group.userData.continuousWaterColumn, true);
+  assert.deepEqual(resolveStageCopy(xylem.stages[5], open).description, {
+    zh: "导管内水柱保持连续，示踪颗粒继续向叶运动。",
+    en: "The water column remains continuous, and the tracers continue moving toward the leaf.",
+  });
+  for (const [model, alternate, defaultBranch] of [
+    [stomata, light, { signal: "aba" }],
+    [xylem, open, { stomata: "close" }],
+  ]) {
+    for (const [index, stage] of model.stages.entries()) {
+      const resolved = resolveStageCopy(stage, alternate);
+      assert.equal(resolved.at, stage.at);
+      assert.equal(resolveStageCopy(stage, defaultBranch), stage);
+      assert.equal(resolved === stage, index < 4);
     }
   }
   console.log(

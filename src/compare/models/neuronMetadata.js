@@ -30,8 +30,8 @@ export const neuronRefinementMetadata = {
       "A short exposed axonal domain between adjacent sheaths. Flanking paranodal loops are distinct from nodal channel clusters, while the axon remains continuous. The nodal gap, channels and loops are enlarged and do not imply molecular counts.",
     ),
     neuronTerminals: bi(
-      "轴突末端分支形成突触前膨大。局部剖面放大一个终扣，显示突触小泡、线粒体及突触前活性区；省略突触后靶细胞，不将游离终扣视为完整突触。",
-      "Terminal axonal branches form presynaptic boutons. A single enlarged section shows synaptic vesicles, a mitochondrion and the presynaptic active zone. The postsynaptic target is omitted; an isolated bouton is not a complete synapse.",
+      "轴突末端分支形成突触前膨大。剖面从末端轴突一直延伸到终扣，显示线粒体和突触小泡。被切到的小泡可见囊腔，部分小泡贴近膜内侧的突触前活性区。省略突触后靶细胞。",
+      "Terminal axonal branches form presynaptic boutons. A continuous cut through the terminal axon and bouton reveals a mitochondrion and synaptic vesicles. Intersected vesicles expose their lumina. Several vesicles contact the active zone on the inner membrane surface. The postsynaptic target is omitted.",
     ),
   },
   sources: [

@@ -5,7 +5,7 @@ import {
   materialInventory,
   surfacePores,
 } from "./anatomy.js";
-import { longitudinalEnvelope, placeSegment } from "./topology.js";
+import { axialRadius, longitudinalEnvelope, placeSegment } from "./topology.js";
 import { labelAnchors } from "./labelAnchors.js";
 import { THREE, sceneKit, clamp, ease, bilingual as B } from "../../kit.js";
 
@@ -177,12 +177,21 @@ function create() {
   pheromones.forEach((mesh, i) => {
     mesh.name = `mating-pheromone-${i}`;
   });
-  const contacts = [
-    k.ring([0, 0, 0], 0.84, 0.025, teal),
-    k.ring([0, 0, 0], 0.84, 0.025, rose),
-  ];
-  contacts.forEach((c) => {
-    c.rotation.y = Math.PI / 2;
+  // Continue the same open-front cut through the contact and lipid annuli.
+  const rimStart = (19 / 48) * Math.PI * 2;
+  const rimArc = (34 / 48) * Math.PI * 2;
+  const contactGeometry = new THREE.TorusGeometry(1, 0.032, 10, 56, rimArc);
+  contactGeometry.rotateZ(rimStart + Math.PI / 2);
+  contactGeometry.rotateY(Math.PI / 2);
+  const contacts = [teal, rose].map((material, i) => {
+    const contact = k.mesh(contactGeometry, material);
+    contact.name = `mating-contact-annulus-${i}`;
+    return contact;
+  });
+  fusionLipids.name = "mating-plasma-membrane-fusion-lipids";
+  const lipidSegments = Array.from({ length: 32 }, (_, i) => {
+    const sample = 19 + ((i + 0.5) / 32) * 34;
+    return [49 + (Math.floor(sample) % 48), sample % 1];
   });
   const vesicles = Array.from({ length: 8 }, (_, i) =>
     k.ball([0, 0, 0], 0.06, i < 4 ? teal : rose),
@@ -237,6 +246,7 @@ function create() {
     microtubuleTip = new THREE.Vector3(),
     fusionRimPoint = new THREE.Vector3(),
     fusionRimMatrix = new THREE.Matrix4();
+  let previousProjection, previousOpening;
   function update(raw, parameters = {}) {
     const p = clamp(raw),
       compatible = parameters.partner !== "same",
@@ -245,8 +255,15 @@ function create() {
       opening = ease(q, 0.49, 0.62),
       congression = ease(q, 0.63, 0.77),
       fusion = ease(q, 0.77, 0.9);
-    left.update(projection, opening);
-    right.update(projection, opening);
+    const wallChanged =
+      projection !== previousProjection || opening !== previousOpening;
+    if (wallChanged) {
+      left.update(projection, opening);
+      right.update(projection, opening);
+      wallLayers.forEach((layer) => layer.update());
+      previousProjection = projection;
+      previousOpening = opening;
+    }
     rightMat.color.set(compatible ? "#bd9fa8" : "#83aaa0");
     for (let side = 0; side < 2; side++) {
       const sign = side === 0 ? -1 : 1,
@@ -271,8 +288,12 @@ function create() {
       poles[side].visible = microtubules[side].visible;
       poles[side].position.copy(pole);
       contacts[side].visible = compatible && q > 0.43 && q < 0.66;
-      contacts[side].position.x = sign * (0.52 - 0.52 * projection);
-      contacts[side].scale.setScalar(0.3 + 0.7 * opening);
+      const surface = side === 0 ? left.mesh : right.mesh;
+      // The first noncollapsed ring follows the projection even before the
+      // polar vertex opens. Wall and plasma-membrane radii are distinct.
+      const rim = surface.geometry.attributes.position;
+      contacts[side].position.x = rim.getX(49);
+      contacts[side].scale.setScalar(rim.getY(49));
       for (let j = 0; j < 4; j++) {
         const i = side * 4 + j,
           gx = nx;
@@ -285,18 +306,35 @@ function create() {
         const v = vesicles[i],
           t = (q * 2 + j / 4) % 1;
         v.visible = compatible && q > 0.17 && q < 0.57;
-        v.scale.setScalar(
+        const radius =
           0.06 *
-            ease(t, 0.02, 0.12) *
-            (1 - ease(t, 0.88, 0.98)) *
-            ease(q, 0.17, 0.2) *
-            (1 - ease(q, 0.54, 0.57)),
+          ease(t, 0.02, 0.12) *
+          (1 - ease(t, 0.88, 0.98)) *
+          ease(q, 0.17, 0.2) *
+          (1 - ease(q, 0.54, 0.57));
+        const tipX = rim.getX(0);
+        const x = THREE.MathUtils.lerp(sign * 2.05, tipX + sign * 0.035, t);
+        const size = Math.min(radius, 0.45 * Math.abs(x - tipX));
+        v.scale.setScalar(size);
+        // A whole vesicle travels around the parental nucleus. Near the
+        // narrowing tip both ends of its diameter must fit inside the cortex.
+        const lumen =
+          0.909 *
+          Math.min(
+            axialRadius(surface, x - size),
+            axialRadius(surface, x),
+            axialRadius(surface, x + size),
+          );
+        const nuclearClearance = Math.sqrt(
+          Math.max(0, (0.5 + size + 0.006) ** 2 - (x - nx) ** 2),
         );
-        v.position.set(
-          sign * (2.05 - (1.5 + 0.52 * projection) * t),
-          0.3 * Math.sin(t * Math.PI),
-          0.4,
+        const radial = Math.max(
+          nuclearClearance,
+          0.67 * Math.max(0, lumen - size),
         );
+        const angle =
+          Math.PI / 2 + (j - 1.5) * 0.19 + 0.12 * Math.sin(t * Math.PI);
+        v.position.set(x, radial * Math.cos(angle), radial * Math.sin(angle));
       }
       for (let j = 0; j < 3; j++) {
         const r = receptors[side * 3 + j];
@@ -332,7 +370,6 @@ function create() {
         0.2 + Math.sin(t * Math.PI) * 0.35,
       );
     }
-    wallLayers.forEach((l) => l.update());
     junctionFragments.forEach((f, i) => {
       const a = (i / 20) * Math.PI * 2;
       f.visible = compatible && q > 0.43 && q < 0.64;
@@ -347,22 +384,25 @@ function create() {
         0.034 * (1 - opening),
       );
     });
-    for (let i = 0; i < 64; i++) {
-      const a = (i / 32) * Math.PI * 2,
-        r = 0.84 * opening * 0.93;
-      lipidTemp.position.set(
-        i < 32 ? -0.045 : 0.045,
-        r * Math.cos(a),
-        r * Math.sin(a),
-      );
-      lipidTemp.scale.setScalar(0.023);
-      lipidTemp.updateMatrix();
-      fusionLipids.setMatrixAt(i, lipidTemp.matrix);
+    if (wallChanged) {
+      // Interpolate on the displayed polygon edge, including near the cut.
+      for (let i = 0; i < 64; i++) {
+        const rim = (i < 32 ? left : right).mesh.geometry.attributes.position;
+        const [v, fraction] = lipidSegments[i % 32];
+        lipidTemp.position.set(
+          rim.getX(v),
+          0.931 * THREE.MathUtils.lerp(rim.getY(v), rim.getY(v + 1), fraction),
+          0.931 * THREE.MathUtils.lerp(rim.getZ(v), rim.getZ(v + 1), fraction),
+        );
+        lipidTemp.scale.setScalar(0.023);
+        lipidTemp.updateMatrix();
+        fusionLipids.setMatrixAt(i, lipidTemp.matrix);
+      }
+      fusionLipids.instanceMatrix.needsUpdate = true;
+      fusionLipids.computeBoundingBox();
+      fusionLipids.computeBoundingSphere();
     }
     fusionLipids.visible = compatible && q > 0.52;
-    fusionLipids.instanceMatrix.needsUpdate = true;
-    fusionLipids.computeBoundingBox();
-    fusionLipids.computeBoundingSphere();
     labels[0].active = labels[1].active = q < 0.77;
     labels[1].text = compatible
       ? B("α 型 · 单倍体 n", "Type α · haploid n")

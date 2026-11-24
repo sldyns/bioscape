@@ -129,6 +129,27 @@ export function germCellMembrane(k) {
     yVertical = new Float64Array(ny + 1);
   const rowMin = new Float32Array(nx / 2),
     rowMax = new Float32Array(nx / 2);
+  // The fixed 64-cell grid has 32 left cells per row. Pad the y/z borders
+  // with empty rows so a node can read its four adjacent cell rows directly.
+  const maskStride = ny + 2;
+  const activeRows = new Int32Array(maskStride * (nz + 2));
+  function writeGradient(rowStart, i, j, l) {
+    const p = rowStart + i,
+      n = p * 3;
+    gradients[n] =
+      (field[p + 1] - field[p - (i > 0 ? 1 : 0)]) / ((i === 0 ? 1 : 2) * dx);
+    gradients[n + 1] =
+      (field[p + (j < ny ? row : 0)] - field[p - (j > 0 ? row : 0)]) /
+      ((j === 0 || j === ny ? 1 : 2) * dy);
+    gradients[n + 2] =
+      (field[p + (l < nz ? plane : 0)] - field[p - (l > 0 ? plane : 0)]) /
+      ((l === 0 || l === nz ? 1 : 2) * dz);
+    const mirrored = (rowStart + nx - i) * 3;
+    // Copy the rounded Float32 terms, preserving +0 at a flat x difference.
+    gradients[mirrored] = gradients[n] === 0 ? 0 : -gradients[n];
+    gradients[mirrored + 1] = gradients[n + 1];
+    gradients[mirrored + 2] = gradients[n + 2];
+  }
   function extractLayer(layer, activeCount) {
     const { level, geometry } = layer;
     const positions = geometry.attributes.position.array,
@@ -298,31 +319,12 @@ export function germCellMembrane(k) {
         }
       }
     }
-    for (let l = 0; l <= nz; l++)
-      for (let j = 0; j <= ny; j++)
-        for (let i = 0; i <= nx / 2; i++) {
-          const p = i + j * row + l * plane,
-            n = p * 3;
-          gradients[n] =
-            (field[p + (i < nx ? 1 : 0)] - field[p - (i > 0 ? 1 : 0)]) /
-            ((i === 0 || i === nx ? 1 : 2) * dx);
-          gradients[n + 1] =
-            (field[p + (j < ny ? row : 0)] - field[p - (j > 0 ? row : 0)]) /
-            ((j === 0 || j === ny ? 1 : 2) * dy);
-          gradients[n + 2] =
-            (field[p + (l < nz ? plane : 0)] - field[p - (l > 0 ? plane : 0)]) /
-            ((l === 0 || l === nz ? 1 : 2) * dz);
-          const mirrored = (nx - i + j * row + l * plane) * 3;
-          // Exact mirrored finite differences; equal samples subtract to +0.
-          gradients[mirrored] = gradients[n] === 0 ? 0 : -gradients[n];
-          gradients[mirrored + 1] = gradients[n + 1];
-          gradients[mirrored + 2] = gradients[n + 2];
-        }
     // Screen each cell once for both leaflets. Only cells that can intersect an
     // isosurface enter the six-tetrahedron extraction loop.
     let activeCount = 0;
     for (let l = 0; l < nz; l++)
-      for (let j = 0; j < ny; j++)
+      for (let j = 0; j < ny; j++) {
+        let leftCells = 0;
         for (let i = 0; i < nx; i++) {
           const n = i + j * row + l * plane;
           let min = Infinity,
@@ -342,10 +344,31 @@ export function germCellMembrane(k) {
             max = rowMax[nx - 1 - i];
           }
           if (min > 0 || max < -0.035) continue;
+          if (i < nx / 2) leftCells |= 1 << i;
           activeCells[activeCount] = n;
           activeMin[activeCount] = min;
           activeMax[activeCount++] = max;
         }
+        activeRows[(l + 1) * maskStride + j + 1] = leftCells;
+      }
+    // A crossing edge reads only corners of screened cells. Each bit marks
+    // the lower x corner and its shift marks the upper one. The upper corner
+    // of cell 31 is on the mirror plane, outside the 32-bit mask.
+    for (let l = 0; l <= nz; l++)
+      for (let j = 0; j <= ny; j++) {
+        const mask = (l + 1) * maskStride + j + 1;
+        const cells =
+          activeRows[mask] |
+          activeRows[mask - 1] |
+          activeRows[mask - maskStride] |
+          activeRows[mask - maskStride - 1];
+        const rowStart = l * plane + j * row;
+        for (let nodes = cells | (cells << 1); nodes; nodes &= nodes - 1) {
+          const i = 31 - Math.clz32(nodes & -nodes);
+          writeGradient(rowStart, i, j, l);
+        }
+        if (cells < 0) writeGradient(rowStart, nx / 2, j, l);
+      }
     for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
       const layer = layers[layerIndex];
       extractLayer(layer, activeCount);

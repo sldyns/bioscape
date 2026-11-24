@@ -139,10 +139,14 @@ function membrane() {
   const band = [-0.48, 0.12];
   for (let row = -5; row <= 5; row++)
     for (let col = -10; col <= 10; col++) {
-      const x = col * 0.18 + (row % 2) * 0.09,
-        z = row * 0.19;
-      if ((x - band[0]) ** 2 + (z - band[1]) ** 2 < 0.27 ** 2) continue;
+      const baseX = col * 0.18 + (row % 2) * 0.09,
+        baseZ = row * 0.19;
+      if ((baseX - band[0]) ** 2 + (baseZ - band[1]) ** 2 < 0.27 ** 2) continue;
       for (const [i, sign] of [-1, 1].entries()) {
+        // The two fluid leaflets have separate lateral packing.
+        const phase = row * 1.73 + col * 2.31 + sign * 1.17,
+          x = baseX + 0.018 * Math.sin(phase),
+          z = baseZ + 0.02 * Math.cos(phase + 0.37 * row);
         heads[i].push(sphere([x, sign * 0.255, z], [0.073, 0.06, 0.073]));
         for (const side of [-1, 1])
           tails.push(
@@ -195,36 +199,27 @@ function membrane() {
     [7, 8],
     [8, 9],
   ];
+  let ankyrinFoot;
   for (const [a, b] of edges) {
     const p = V(nodes[a]),
       q = V(nodes[b]),
-      mid = p.clone().lerp(q, 0.5);
-    // Twin strands schematize alpha/beta spectrin pairing, not molecular helices.
-    for (const offset of [-0.018, 0.018])
-      spectrin.push(
-        tube(
-          [
-            p.toArray(),
-            p
-              .clone()
-              .lerp(q, 0.25)
-              .add(new T.Vector3(0, -0.04, offset))
-              .toArray(),
-            mid
-              .clone()
-              .add(new T.Vector3(0, -0.07, offset))
-              .toArray(),
-            p
-              .clone()
-              .lerp(q, 0.75)
-              .add(new T.Vector3(0, -0.03, offset))
-              .toArray(),
-            q.toArray(),
-          ],
-          0.018,
-          18,
-        ),
-      );
+      lateral = new T.Vector3(q.z - p.z, 0, p.x - q.x).normalize();
+    // Bow paired strands across each connection, including near-vertical edges.
+    // The same point on the skeleton anchors the band 3–ankyrin linkage.
+    for (const sign of [-1, 1]) {
+      const path = Array.from({ length: 9 }, (_, i) => {
+        const t = i / 8,
+          bow = Math.sin(Math.PI * t);
+        const point = p
+          .clone()
+          .lerp(q, t)
+          .addScaledVector(lateral, sign * 0.033 * bow);
+        point.y -= (0.06 + 0.018 * Math.sin(a + b)) * bow;
+        return point.toArray();
+      });
+      if (a === 4 && b === 5 && sign === 1) ankyrinFoot = path[6];
+      spectrin.push(tube(path, 0.018, 18));
+    }
   }
   for (const p of nodes) {
     for (let i = 0; i < 5; i++)
@@ -244,11 +239,7 @@ function membrane() {
   batch(g, protein, "#77949f", MEMBRANE);
   anchors.push(
     tube(
-      [
-        [band[0], -0.48, band[1]],
-        [-0.39, -0.61, 0.15],
-        [-0.26, -0.81, 0.18],
-      ],
+      [[band[0], -0.48, band[1]], [-0.39, -0.61, 0.15], ankyrinFoot],
       0.062,
       16,
     ),
@@ -293,6 +284,100 @@ function membrane() {
   return g;
 }
 
+// HELIX residue ranges from the same 2HHB deposition as the Cα coordinates.
+const alphaHelices = [
+  [3, 18],
+  [20, 35],
+  [36, 42],
+  [50, 51],
+  [52, 71],
+  [80, 88],
+  [94, 112],
+  [118, 138],
+];
+const betaHelices = [
+  [4, 18],
+  [19, 34],
+  [35, 41],
+  [50, 56],
+  [57, 76],
+  [85, 93],
+  [99, 117],
+  [123, 143],
+];
+
+function globinTrace(points, firstResidue, helices) {
+  const curve = new T.CatmullRomCurve3(points),
+    steps = 4 * (points.length - 1);
+  const geometry = new T.TubeGeometry(curve, steps, 0.047, 8, false);
+  const { position, normal } = geometry.attributes;
+  const centre = new T.Vector3(),
+    target = new T.Vector3(),
+    previous = new T.Vector3();
+  const widthAxis = geometry.normals[0].clone(),
+    across = new T.Vector3(),
+    vertex = new T.Vector3();
+  const span = 2 / (points.length - 1);
+  for (let i = 0; i <= steps; i++) {
+    const t = curve.getUtoTmapping(i / steps),
+      residue = firstResidue + t * (points.length - 1);
+    const helix = helices.find(([a, b]) => a < residue && residue < b);
+    const blend = helix
+      ? Math.min(1, residue - helix[0], helix[1] - residue)
+      : 0;
+    const tangent = geometry.tangents[i];
+    widthAxis.addScaledVector(tangent, -widthAxis.dot(tangent)).normalize();
+    if (blend) {
+      // A four-residue span follows the helix axis. Transport the ribbon frame
+      // through bends so its two edges stay on their respective sides.
+      curve.getPoint(Math.min(1, t + span), target);
+      target.sub(curve.getPoint(Math.max(0, t - span), previous));
+      target.addScaledVector(tangent, -target.dot(tangent)).normalize();
+      if (target.dot(widthAxis) < 0) target.negate();
+      widthAxis.lerp(target, 0.3 * blend).normalize();
+    }
+    across.crossVectors(widthAxis, tangent).normalize();
+    let width = 0.047 + 0.063 * blend,
+      thickness = 0.047 - 0.024 * blend;
+    // Limit the width at tight bends so consecutive ribbon cross sections
+    // remain on their own sides of their centre-line midpoint.
+    curve.getPoint(t, centre);
+    for (const neighbour of [i - 1, i + 1]) {
+      if (neighbour < 0 || neighbour > steps) continue;
+      curve.getPointAt(neighbour / steps, target).sub(centre);
+      const distance = target.length();
+      target.divideScalar(distance);
+      const reach = Math.hypot(
+        width * target.dot(widthAxis),
+        thickness * target.dot(across),
+      );
+      const limit = 0.21 * distance;
+      if (reach > limit) {
+        width *= limit / reach;
+        thickness *= limit / reach;
+      }
+    }
+    for (let j = 0; j <= 8; j++) {
+      const a = (j * TAU) / 8,
+        x = Math.cos(a),
+        y = Math.sin(a),
+        k = i * 9 + j;
+      vertex
+        .copy(centre)
+        .addScaledVector(widthAxis, width * x)
+        .addScaledVector(across, thickness * y);
+      position.setXYZ(k, vertex.x, vertex.y, vertex.z);
+      vertex
+        .copy(widthAxis)
+        .multiplyScalar(x / width)
+        .addScaledVector(across, y / thickness)
+        .normalize();
+      normal.setXYZ(k, vertex.x, vertex.y, vertex.z);
+    }
+  }
+  return geometry;
+}
+
 function haemoglobin() {
   const g = new T.Group(),
     all = Object.values(HB.chains).flat(),
@@ -319,18 +404,22 @@ function haemoglobin() {
         (row[0] !== previous[0] + 1 ||
           V(row.slice(1)).distanceTo(V(previous.slice(1))) > 6)
       ) {
-        segments.push(segment);
+        segments.push({
+          points: segment,
+          first: previous[0] - segment.length + 1,
+        });
         segment = [];
       }
-      segment.push(p.toArray());
+      segment.push(p);
       previous = row;
     }
-    segments.push(segment);
+    segments.push({ points: segment, first: previous[0] - segment.length + 1 });
+    const helices = "AC".includes(chain) ? alphaHelices : betaHelices;
     batch(
       g,
       segments
-        .filter((p) => p.length > 1)
-        .map((p) => tube(p, 0.047, 4 * (p.length - 1))),
+        .filter((segment) => segment.points.length > 1)
+        .map(({ points, first }) => globinTrace(points, first, helices)),
       chainColors[chain],
       CYTOSOL,
     );
@@ -347,6 +436,7 @@ function haemoglobin() {
     atoms = [],
     irons = [];
   for (const heme of Object.values(HB.hemes)) {
+    const iron = point(heme.find(([name]) => name === "FE").slice(1));
     for (let i = 0; i < heme.length; i++) {
       const [name, ...raw] = heme[i],
         p = point(raw);
@@ -355,6 +445,8 @@ function haemoglobin() {
         continue;
       }
       atoms.push(sphere(p.toArray(), [0.026, 0.026, 0.026]));
+      if (["NA", "NB", "NC", "ND"].includes(name))
+        bonds.push(rod(p.toArray(), iron.toArray(), 0.016));
       for (let j = i + 1; j < heme.length; j++) {
         if (heme[j][0] === "FE") continue;
         const distance = V(raw).distanceTo(V(heme[j].slice(1)));
@@ -382,7 +474,7 @@ function haemoglobin() {
     hemes: 4,
     caResidues: 574,
     coordinateRepresentation:
-      "C-alpha trace plus heme heavy-atom bonds; side chains omitted",
+      "C-alpha trace with deposited helices, heme bonds and porphyrin N–Fe coordination; side chains omitted",
     soluble: true,
   };
   return g;

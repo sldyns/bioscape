@@ -65,6 +65,46 @@ for (const id of ids) {
     assert.equal(g.userData.biology.nuclei, 9);
     assert.equal(g.userData.biology.myofibrils, 91);
   }
+  if (id === "muscleFibre" || id === "muscleFibreMyofibrils") {
+    const full = id === "muscleFibre",
+      count = full ? 182 : 5;
+    const radius = full ? 0.064 : 0.48,
+      sides = full ? 6 : 32;
+    const crop = g.children.find(
+      (o) => o.userData.anatomyRole === "fibrilCrop",
+    );
+    const { position: p, color } = crop.geometry.attributes,
+      idx = crop.geometry.index;
+    const base = new T.Color("#d9b3a4");
+    let profiles = 0,
+      area = 0;
+    for (let i = 0; i < p.count; i++) {
+      assert(Math.abs(Math.abs(p.getX(i)) - (full ? 2.64 : 2.6)) < 1e-5);
+      if (Math.abs(color.getX(i) - base.r) > 1e-4) profiles++;
+    }
+    assert.equal(
+      profiles,
+      count * 18 * (full ? 4 : 10),
+      "eighteen thin-filament profiles at every cropped Z disc",
+    );
+    for (let i = 0; i < idx.count; i += 3) {
+      const a = idx.getX(i),
+        b = idx.getX(i + 1),
+        c = idx.getX(i + 2);
+      area +=
+        Math.abs(
+          (p.getY(b) - p.getY(a)) * (p.getZ(c) - p.getZ(a)) -
+            (p.getZ(b) - p.getZ(a)) * (p.getY(c) - p.getY(a)),
+        ) / 2;
+    }
+    assert(
+      Math.abs(
+        area -
+          ((count * sides) / 2) * radius ** 2 * Math.sin((2 * Math.PI) / sides),
+      ) < 1e-5,
+      "section profiles tile the actual end face without extra caps",
+    );
+  }
   if (id === "muscleFibreSarcomere") {
     const parts = new Map(g.children.map((o) => [o.userData.anatomyRole, o]));
     for (const role of [

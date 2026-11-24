@@ -9,6 +9,36 @@ import {
   wander,
 } from "./membraneGeometry.js";
 
+// Separate intersecting water paths within each compartment. These offsets
+// taper to zero at the reservoir and at the straight pore entrance.
+const waterBendOffsets = {
+  inside: {
+    0: [0, 0.8],
+    1: [0.8, 1.2],
+    9: [0, 0.8],
+    11: [0, 0.4],
+    17: [0, 1.2],
+    19: [1.2, -1.2],
+    22: [-1.2, 0.8],
+    23: [0, 0.8],
+    26: [-0.4, 0.8],
+  },
+  outside: {
+    0: [0, 0.8],
+    1: [0, -0.4],
+    2: [-0.8, -0.4],
+    4: [-0.4, -1.2],
+    5: [0, -1.2],
+    6: [0, 0.8],
+    17: [0, -0.8],
+    18: [0, -0.4],
+    19: [0.4, -0.8],
+    21: [0, 1.2],
+    25: [0.4, -0.8],
+    26: [0.4, -0.4],
+  },
+};
+
 const definition = {
   id: "diffusion",
   title: b("跨膜扩散", "Diffusion across a membrane"),
@@ -49,6 +79,24 @@ const definition = {
         "氧浓度或水活度存在差异时，双向穿膜仍持续，但净流动指向氧浓度或水活度较低的一侧。水活度不等同于溶质浓度。",
         "With an oxygen-concentration or water-activity difference, crossings remain bidirectional, but net movement is toward lower oxygen concentration or water activity. Water activity is not solute concentration.",
       ),
+      conditionCopy: [
+        {
+          when: { gradient: "equal", route: "water" },
+          title: b("水经通道双向交换", "Water crosses in both directions"),
+          description: b(
+            "两侧水活度相等。水分子仍经水通道双向通过。",
+            "Water activity is equal on both sides. Water molecules continue to pass through the channels in both directions.",
+          ),
+        },
+        {
+          when: { gradient: "equal", route: "oxygen" },
+          title: b("氧经脂双层双向交换", "Oxygen crosses in both directions"),
+          description: b(
+            "两侧氧浓度相等。氧分子仍可从任一侧穿过脂双层。",
+            "Oxygen concentrations are equal. Oxygen molecules continue crossing the lipid bilayer from either side.",
+          ),
+        },
+      ],
     },
     {
       at: 0.86,
@@ -57,6 +105,16 @@ const definition = {
         "若初始存在氧浓度差或水活度差，净流动使差异趋于减小。起初相等或达到平衡时，双向交换仍持续，但没有由该差异驱动的净通量。此有限示意不模拟体积、压力或真实动力学。",
         "If an oxygen-concentration or water-activity difference is present initially, net movement tends to reduce it. With initially equal sides or at equilibrium, bidirectional exchange persists without gradient-driven net flux. This finite illustration does not simulate volume, pressure, or real kinetics.",
       ),
+      conditionCopy: [
+        {
+          when: { gradient: "equal" },
+          title: b("动态平衡", "Dynamic equilibrium"),
+          description: b(
+            "分子继续双向穿膜。图示两个方向的通过数相抵，净通量为零。",
+            "Molecules keep crossing the membrane in both directions. The counts balance, giving zero net flux in this illustration.",
+          ),
+        },
+      ],
     },
   ],
   sources: [
@@ -144,15 +202,24 @@ const definition = {
           18,
         );
       }
-      for (const sign of [-1, 1]) {
+      // The lining pairs leave room for all three rendered atoms.
+      for (const [x, z] of [
+        [-0.26, -0.165],
+        [0.265, -0.095],
+      ]) {
+        const sign = Math.sign(x);
         const half = alphaHelix(
           k,
-          [cx + sign * 0.19, sign * 0.3, cz - 0.055],
+          [cx + x, sign * 0.3, cz + z],
           0.55,
           poreLining,
         );
         half.rotation.z = sign * 0.19;
-        k.ball([cx + sign * 0.15, sign * 0.05, cz - 0.025], 0.047, poreLining);
+        k.ball(
+          [cx + x - sign * 0.04, sign * 0.05, cz + z + 0.03],
+          0.047,
+          poreLining,
+        );
       }
     }
     const waterMaterial = k.material("#699aaf");
@@ -167,6 +234,24 @@ const definition = {
       const partner = k.ball([1.1, 0, 0], 0.85, oxygenMaterial, part);
       moleculeParts.push({ h1, h2, partner });
       return part;
+    });
+    const oxygenReservoir = particles.map((_, i) => [
+      (seeded(i, 4) - 0.5) * 7.6,
+      1.45 + seeded(i, 5) * 1.08,
+      0.25,
+    ]);
+    // Give each water molecule a distinct reservoir slot in three dimensions.
+    const waterReservoir = [];
+    const slotOrder = particles.map((_, i) => i);
+    slotOrder.sort((a, b) => seeded(a, 66) - seeded(b, 66));
+    slotOrder.forEach((i, slot) => {
+      const column = Math.floor(slot / 4);
+      const depth = slot % 4 < 2 ? -0.43 : 0.43;
+      waterReservoir[i] = [
+        -3.54 + column * 1.01 + 0.21 * (seeded(i, 101) - 0.5),
+        1.65 + (slot % 2) * 0.73 + 0.12 * (seeded(i, 103) - 0.5),
+        depth + 0.11 * (seeded(i, 107) - 0.5),
+      ];
     });
     const outsideLabel =
       rootId === "bacterium"
@@ -198,6 +283,9 @@ const definition = {
     function update(progress, parameters = {}) {
       const p = clamp(progress);
       const water = parameters.route !== "oxygen";
+      // Start the straight water passage beyond the terminal loops.
+      const mouth = water ? 1.26 : 1.14;
+      const reservoir = water ? waterReservoir : oxygenReservoir;
       const equal = parameters.gradient === "equal";
       let inward = 0,
         outward = 0;
@@ -211,7 +299,10 @@ const definition = {
         // The final teaching interval includes four balanced return pairs.
         // A paused endpoint is a snapshot, not a claim that equilibrium stops motion.
         const returns = crosses && local < 4 && p >= 0.85;
-        const t = returns ? ease(p, 0.85, 0.995) : firstTransit;
+        const returnStart = water && local >= 2 ? 0.9 : 0.85;
+        const t = returns
+          ? ease(p, returnStart, water ? returnStart + 0.095 : 0.995)
+          : firstTransit;
         const travelSide = returns ? -initialSide : initialSide;
         if (crosses && firstTransit > 0.5) {
           if (initialSide === 1) inward++;
@@ -221,10 +312,13 @@ const definition = {
           if (travelSide === 1) inward++;
           else outward++;
         }
-        let initialX = (seeded(i, 4) - 0.5) * 7.6;
-        const y = 1.45 + seeded(i, 5) * 1.08;
+        const [initialX, y, initialZ] = reservoir[i];
+        // Opposing streams use different pores. Staggered return trips
+        // reverse each passage without sending two molecules through together.
+        const pore =
+          poreCenters[initialSide === 1 ? (local % 2) * 3 : 1 + (local % 2)];
         const routeX = water
-          ? poreCenters[i % 4][0]
+          ? pore[0]
           : (initialX < 0 ? -1 : 1) * (1.15 + seeded(i, 8) * 2.6);
         let x = initialX,
           yy = travelSide * y;
@@ -234,26 +328,36 @@ const definition = {
           if (t < 0.3) {
             const f = t / 0.3;
             x = mix(initialX, routeX, f);
-            yy = travelSide * mix(y, 1.14, f);
+            yy = travelSide * mix(y, mouth, f);
             jitter = 1 - f;
           } else if (t < 0.7) {
             x = routeX;
-            yy = travelSide * mix(1.14, -1.14, (t - 0.3) / 0.4);
+            yy = travelSide * mix(mouth, -mouth, (t - 0.3) / 0.4);
             jitter = 0;
           } else {
             const f = (t - 0.7) / 0.3;
             x = mix(routeX, initialX, f);
-            yy = -travelSide * mix(1.14, y, f);
+            yy = -travelSide * mix(mouth, y, f);
             jitter = f;
           }
         }
         part.position.set(
           x + wander(i, p, 3) * 0.32 * jitter,
           yy + wander(i, p, 9) * 0.3 * jitter,
-          (water ? poreCenters[i % 4][1] : 0.05) * (1 - jitter) +
-            0.25 * jitter +
+          (water ? pore[1] : 0.05) * (1 - jitter) +
+            initialZ * jitter +
             wander(i, p, 7) * 0.12 * jitter,
         );
+        const bend = water
+          ? waterBendOffsets[yy > 0 ? "outside" : "inside"][i]
+          : null;
+        if (bend && jitter > 0 && jitter < 1) {
+          const weight = jitter * (1 - jitter);
+          part.position.x += bend[0] * weight;
+          part.position.z += bend[1] * weight;
+        }
+        // Turn with the approach and hold that orientation inside the pore.
+        part.rotation.y = water ? ((jitter - 1) * Math.PI) / 6 : 0;
         part.material = water ? waterMaterial : oxygenMaterial;
         moleculeParts[i].h1.visible = water;
         moleculeParts[i].h2.visible = water;

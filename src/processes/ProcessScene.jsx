@@ -188,6 +188,20 @@ export default function ProcessScene({
     // Keep this array stable for annotationDom's WeakMap numbering cache.
     const physicalSources = [];
     const contextItems = [];
+    let pinned = null;
+    let anchorRing;
+    let ringX, ringY;
+    const pin = (next) => {
+      for (const item of [pinned, next]) {
+        if (!item) continue;
+        const selected = item === next;
+        item.key.setAttribute("aria-pressed", String(selected));
+        item.element.classList.toggle("pinned", selected);
+        item.line.classList.toggle("pinned", selected);
+      }
+      pinned = next;
+      requestRender();
+    };
     const projected = new THREE.Vector3();
     setError(null);
     setBusy(true);
@@ -315,6 +329,7 @@ export default function ProcessScene({
         `${width}|${height}`,
         placeOnCanvas,
       );
+      if (pinned && (!pinned.active || !pinned.numbered)) pin(null);
       if (focusedKey?.hidden) {
         // Playback can remove the focused annotation at a stage boundary.
         // Preserve keyboard position among the remaining keys in DOM order.
@@ -415,6 +430,20 @@ export default function ProcessScene({
           item.anchorY = anchor.y;
         }
       }
+      if (anchorRing) {
+        const anchor = pinned?.projectedAnchor;
+        const display = anchor ? "" : "none";
+        if (anchorRing.style.display !== display)
+          anchorRing.style.display = display;
+        if (anchor && anchor.x !== ringX) {
+          anchorRing.setAttribute("cx", anchor.x);
+          ringX = anchor.x;
+        }
+        if (anchor && anchor.y !== ringY) {
+          anchorRing.setAttribute("cy", anchor.y);
+          ringY = anchor.y;
+        }
+      }
     };
     const invalidateAnnotations = () => {
       for (const item of labelItems) item.measuredKey = null;
@@ -512,6 +541,10 @@ export default function ProcessScene({
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setClearColor(0xeaf0ea, 0);
         renderer.domElement.style.display = "block";
+        // The structure renderer sets pixel dimensions inline. This host fits
+        // its canvas via CSS and owns the drawing buffer size independently.
+        renderer.domElement.style.width = "";
+        renderer.domElement.style.height = "";
         renderer.domElement.addEventListener("webglcontextlost", onContextLost);
         renderer.domElement.addEventListener(
           "webglcontextrestored",
@@ -797,7 +830,7 @@ export default function ProcessScene({
             highlight(true);
           });
           key.addEventListener("blur", () => highlight(false));
-          labelItems.push({
+          const item = {
             element: span,
             key,
             wording,
@@ -806,8 +839,24 @@ export default function ProcessScene({
             sourceIndex,
             source: label,
             text: label.text,
-          });
+          };
+          key.setAttribute("aria-pressed", "false");
+          key.addEventListener("click", () =>
+            pin(pinned === item ? null : item),
+          );
+          labelItems.push(item);
         }
+        anchorRing = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "circle",
+        );
+        anchorRing.setAttribute("r", "6");
+        anchorRing.setAttribute("aria-hidden", "true");
+        anchorRing.classList.add("pinned-anchor");
+        anchorRing.style.display = "none";
+        leaders.append(anchorRing);
+        keyHost.current.dataset.density =
+          physicalSources.length + contextItems.length > 4 ? "many" : "few";
         labelItems.sort(
           (a, b) => (b.source.priority ?? 0) - (a.source.priority ?? 0),
         );

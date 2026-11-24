@@ -362,3 +362,5 @@ await import("./label-anchors.test.mjs");
 await import("./geometry-equivalence.test.mjs");
 await import("./kinetochorePaths.test.mjs");
 await import("./centrosomeCompartments.test.mjs");
+
+await import("./astralCortex.test.mjs");

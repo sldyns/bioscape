@@ -79,7 +79,7 @@ for (const row of fixture.rows) {
         // exact checks without importing another platform's transcendental bits.
         const context = `${row.id} p=${pose.progress} ${JSON.stringify(parameters)} repeat=${repeat}`;
         if (scientificComparison) {
-          scientificComparison.assert(context);
+          scientificComparison.assert(context, pose.progress);
           const key = JSON.stringify([pose.progress, parameters]);
           const snapshot = processCacheSnapshot(model);
           if (scientificStates.has(key))
@@ -110,7 +110,7 @@ for (const row of fixture.rows) {
 assert.deepEqual([...covered].sort(), ["osmoticBalance", "stomata"]);
 assert.equal(poses, 756, "retain every original B-group comparison");
 console.log(
-  `PASS: ${poses} B-group comparisons retain immutable ae697be source and every pose. Unchanged models remain fully exact; stomata retains its narrow compartment repair adapter and osmoticBalance retains every old subtree plus an asserted cut face. All current poses pass whole-scene repeated/reverse seeks and exact resource identities.`,
+  `PASS: ${poses} B-group comparisons retain immutable ae697be source and every pose. Unchanged models remain fully exact; stomata checks the nuclear compartment and membrane-anchored tracer paths and osmoticBalance retains every old subtree plus an asserted cut face. All current poses pass whole-scene repeated/reverse seeks and exact resource identities.`,
 );
 
 console.log(JSON.stringify({ adapterCounts }));

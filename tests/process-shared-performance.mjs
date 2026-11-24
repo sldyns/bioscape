@@ -710,7 +710,11 @@ export function createProcessFramingPreparation(options) {
               return { path: args.path, namespace: "mock" };
             if (
               args.importer === playerPath &&
-              args.path !== "./playbackClock.js"
+              ![
+                "./playbackClock.js",
+                "./studyFrames.js",
+                "./stageCopy.js",
+              ].includes(args.path)
             )
               return { path: args.path, namespace: "mock" };
           });
@@ -1386,6 +1390,33 @@ export function createSceneCapture({getLabels}) {
       );
       f.dispose();
     });
+
+  await test("pinned labels track the original physical source until it disappears", async () => {
+    const f = sceneFixture(ProcessScene);
+    await f.render();
+    f.flush();
+    const key = f.elements.find(
+      (e) => e.className === "process-annotation-item",
+    );
+    const ring = f.elements.find((e) => e.classes.has("pinned-anchor"));
+    assert.equal(key.attributes["aria-pressed"], "false");
+    key.dispatchEvent({ type: "click" });
+    f.flush();
+    assert.equal(key.attributes["aria-pressed"], "true");
+    assert.equal(ring.style.display, "");
+    const previous = ring.attributes.cx;
+    f.writes = 0;
+    f.redraw();
+    assert.equal(f.writes, 0);
+    f.labels[0].position[0] += 0.15;
+    f.redraw();
+    assert.notEqual(ring.attributes.cx, previous);
+    f.labels[0].active = false;
+    f.redraw();
+    assert.equal(key.attributes["aria-pressed"], "false");
+    assert.equal(ring.style.display, "none");
+    f.dispose();
+  });
 
   await test("annotation updates retain external and still-visible key focus", async () => {
     const f = sceneFixture(ProcessScene);

@@ -165,17 +165,37 @@ const process = {
       at: 0.62,
       title: b("ABA 改变离子通量", "ABA changes ion transport"),
       description: b(
-        "若加入 ABA，信号促使阴离子外流和膜去极化，进而促进 K⁺外流；若继续光照，本示意保持张开。",
-        "If ABA is added, signaling promotes anion efflux and depolarization followed by K⁺ efflux. With sustained light, this schematic remains open.",
+        "ABA 促使阴离子外流和膜去极化，继而促进 K⁺ 外流。",
+        "ABA promotes anion efflux and membrane depolarization, followed by K⁺ efflux.",
       ),
+      conditionCopy: [
+        {
+          when: { signal: "light" },
+          title: b("持续蓝光", "Blue light continues"),
+          description: b(
+            "蓝光继续照射，保卫细胞保持较高膨压。",
+            "With continued blue light, the guard cells maintain higher turgor.",
+          ),
+        },
+      ],
     },
     {
       at: 0.86,
-      title: b("失水闭孔或保持开放", "Closure or sustained opening"),
+      title: b("失水使孔隙收窄", "Water loss narrows the pore"),
       description: b(
-        "ABA 条件下溶质减少、水外流、膨压降低，孔隙收窄。保卫细胞保持完整，过程并非质壁分离。",
-        "Under ABA, solute loss and water efflux reduce turgor and narrow the pore. Guard cells remain intact; this is not plasmolysis.",
+        "溶质减少后水外流，膨压降低，孔隙随之收窄。保卫细胞的质膜仍贴着细胞壁。",
+        "As solutes leave, water flows out, turgor drops, and the pore narrows. The guard-cell membranes remain against the cell walls.",
       ),
+      conditionCopy: [
+        {
+          when: { signal: "light" },
+          title: b("气孔保持开放", "The pore stays open"),
+          description: b(
+            "保卫细胞维持膨压，气体和水蒸气继续通过孔隙交换。",
+            "Guard cells maintain turgor, and gases and water vapor continue to pass through the pore.",
+          ),
+        },
+      ],
     },
   ],
   sources: [
@@ -313,6 +333,54 @@ const process = {
       bindPointLabel(labels[5], light, [0, 0, 0]),
       bindPointLabel(labels[6], aba, [0, 0, 0]),
     ];
+    // Each tracer uses its own lateral cross-section. Its inner endpoint follows
+    // the deformed membranes and the outer endpoint lies in the apoplast.
+    const transportRoutes = [];
+    const rowGroups = {
+      ion: [13, 19, 23, 29, 33, 39, 43, 49],
+      water: [15, 21, 25, 31, 35, 41, 45, 51],
+      proton: [17, 27, 37, 47],
+    };
+    function addRoute(mesh, cell, kind, lane) {
+      const near = rowGroups[kind][lane] * 25 + (kind === "water" ? 1 : 2);
+      transportRoutes.push({
+        mesh,
+        cell,
+        kind,
+        near,
+        far: near + 12,
+        phaseOffset: (((lane * 5) % 8) - 3.5) / 6,
+        inner: new THREE.Vector3(),
+        outer: new THREE.Vector3(),
+      });
+    }
+    ions.forEach((m, i) => addRoute(m, cells[i < 8 ? 0 : 1], "ion", i % 8));
+    water.forEach((m, i) => addRoute(m, cells[i % 2 ? 0 : 1], "water", i >> 1));
+    protons.forEach((m, i) =>
+      addRoute(m, cells[i % 2 ? 0 : 1], "proton", i >> 1),
+    );
+    const endpoint = new THREE.Vector3();
+    function updateEndpoints() {
+      for (const { cell, kind, near, far, inner, outer } of transportRoutes) {
+        const vacuole = cell.vac.geometry.attributes.position;
+        inner.fromBufferAttribute(vacuole, near);
+        if (kind === "water") {
+          // Finish inside the vacuole, behind the near tonoplast.
+          inner.lerp(endpoint.fromBufferAttribute(vacuole, far), 0.2);
+        } else {
+          // Ions and pumped protons approach the plasma membrane from cytoplasm.
+          inner.lerp(
+            endpoint.fromBufferAttribute(
+              cell.body.geometry.attributes.position,
+              near,
+            ),
+            0.5,
+          );
+        }
+        outer.copy(inner);
+        outer.x = cell.side * (kind === "water" ? 3.05 : 2.85);
+      }
+    }
     let lastOpening = NaN;
     function update(value, parameters = {}) {
       const p = clamp(value),
@@ -377,42 +445,43 @@ const process = {
             0.17,
           );
         }
+        updateEndpoints();
         lastOpening = o;
       }
       const influx = p > 0.21 && p < 0.48,
         efflux = hasABA && p > 0.66 && p < 0.93;
-      ions.forEach((m, i) => {
-        m.visible = influx || efflux;
-        // Both ion classes occur on each side of the guard-cell pair.
-        const s = i < 8 ? -1 : 1,
-          t = (p * 5 + (i % 8) / 8) % 1,
-          inner = 0.6 + 0.68 * o;
-        m.position.set(
-          s * (efflux ? inner + (2.85 - inner) * t : 2.85 - (2.85 - inner) * t),
-          -1.4 + (i % 8) * 0.39,
-          0.48,
+      const waterIn = p > 0.28 && p < 0.5,
+        waterOut = hasABA && p > 0.73 && p < 0.94,
+        protonOut = p > 0.12 && p < 0.29;
+      // A cohort crosses once in each active interval. Stagger its transit
+      // without recycling a visible tracer across the membrane.
+      for (const route of transportRoutes) {
+        const { mesh, kind, inner, outer, phaseOffset } = route;
+        let outward, start, end;
+        if (kind === "water") {
+          mesh.visible = waterIn || waterOut;
+          outward = waterOut;
+          start = outward ? 0.73 : 0.28;
+          end = outward ? 0.94 : 0.5;
+        } else if (kind === "proton") {
+          mesh.visible = protonOut;
+          outward = true;
+          start = 0.12;
+          end = 0.29;
+        } else {
+          mesh.visible = influx || efflux;
+          outward = efflux;
+          start = outward ? 0.66 : 0.21;
+          end = outward ? 0.93 : 0.48;
+        }
+        const t = clamp((p - start) / (end - start));
+        const arrival = t + phaseOffset * t * (1 - t);
+        mesh.position.lerpVectors(
+          outer,
+          inner,
+          outward ? 1 - arrival : arrival,
         );
-      });
-      water.forEach((m, i) => {
-        m.visible = (p > 0.28 && p < 0.5) || (hasABA && p > 0.73 && p < 0.94);
-        const s = i % 2 ? -1 : 1,
-          t = (p * 4 + i / 8) % 1,
-          inner = 0.59 + 0.68 * o;
-        m.position.set(
-          s * (efflux ? inner + (3.05 - inner) * t : 3.05 - (3.05 - inner) * t),
-          -1.3 + (i % 8) * 0.37,
-          0.7,
-        );
-      });
-      protons.forEach((m, i) => {
-        m.visible = p > 0.12 && p < 0.29;
-        const t = (p * 5 + i / 4) % 1;
-        m.position.set(
-          (i % 2 ? -1 : 1) * (0.75 + 1.9 * t),
-          -0.85 + (i % 4) * 0.55,
-          0.8,
-        );
-      });
+      }
       light.visible = p > 0.08 && (!hasABA || p < 0.63);
       aba.visible = hasABA && p >= 0.61;
       labels[5].active = light.visible;
@@ -428,12 +497,7 @@ const process = {
         guardCellVolumeRelative: Math.pow((0.477 + 0.045 * o) / 0.477, 2),
         turgorRelative: o,
         ionFlux: influx ? "in" : efflux ? "out" : "balanced",
-        waterFlux:
-          p > 0.28 && p < 0.5
-            ? "in"
-            : hasABA && p > 0.73 && p < 0.94
-              ? "out"
-              : "balanced",
+        waterFlux: waterIn ? "in" : waterOut ? "out" : "balanced",
         protonPump: p > 0.12 && p < 0.6,
         membraneIntact: true,
         structuralDetail:

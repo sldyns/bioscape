@@ -1,4 +1,5 @@
 import { readSceneState, sceneHash } from "../exploration/state.js";
+import { initialStructureMode } from "../scene/specimenViews.js";
 
 // Only these empty routes are home. Legacy hashes (including query-only shared
 // scene links) continue through the existing scene parser unchanged.
@@ -20,7 +21,10 @@ export function safeSceneHash(value) {
 export function exploreSceneHash(hash, lang) {
   const safe = safeSceneHash(hash);
   if (!safe) return null;
-  return readSceneState(safe) ? safe : sceneHash(safe, { lang });
+  const node = safe.slice(1).split("?")[0].split("/").at(-1);
+  return readSceneState(safe)
+    ? safe
+    : sceneHash(safe, { lang, mode: initialStructureMode(node) });
 }
 
 // Only an explicit homepage Resume applies its selected language. Original

@@ -34,6 +34,8 @@ import {
   setHiddenIfChanged,
 } from "./scene/structureDomUpdates.js";
 import { getNode } from "./hierarchy";
+import { rootIds } from "./catalog/cellTypes.js";
+import { specimenDirection } from "./scene/specimenViews.js";
 import {
   isStructureLabelVisible,
   structureCaptureMode,
@@ -620,19 +622,46 @@ export default function CellScene({
         function fit(immediate = false, preserveOrientation = false) {
           invalidate();
           settleControls();
-          const fitDistance = distance(preserveOrientation);
+          const p = live.current;
+          const direction = preserveOrientation
+            ? camera.position.clone().sub(controls.target).normalize()
+            : new THREE.Vector3()
+                .fromArray(specimenDirection(p.nodeId))
+                .normalize();
+          const orientation = new THREE.Matrix4().lookAt(
+            direction,
+            new THREE.Vector3(),
+            camera.up,
+          );
+          framingAxes.forEach((axis, i) =>
+            axis.setFromMatrixColumn(orientation, i),
+          );
+          // Fit the posed specimen itself. Saved/shared zoom still uses the
+          // original distance reference, so older camera snapshots round-trip.
+          const boundsDistance = current?.parts.length
+            ? Math.max(
+                controls.minDistance,
+                explodedFitDistance(
+                  current.parts,
+                  p.mode === "explode" ? p.explode / 100 : 0,
+                  camera.aspect,
+                  camera.fov,
+                  framingAxes,
+                ),
+              )
+            : distance(preserveOrientation);
+          // An enclosing box includes empty near corners on rounded cells.
+          // Keep their calibrated overview scale on first entry, while a
+          // rotated or separated specimen still fits its actual posed bounds.
+          const fitDistance =
+            !preserveOrientation &&
+            p.mode !== "explode" &&
+            rootIds.includes(p.nodeId)
+              ? Math.min(boundsDistance, distance() * 1.055)
+              : boundsDistance;
           controls.maxDistance = Math.max(24, fitDistance * 2);
-          if (preserveOrientation)
-            desiredCamera
-              .copy(camera.position)
-              .sub(controls.target)
-              .normalize()
-              .multiplyScalar(fitDistance)
-              .add(controls.target);
-          else {
-            desiredCamera.set(0.5, 0.65, fitDistance);
-            controls.target.set(0, 0, 0);
-          }
+          controls.target.set(0, 0, 0);
+          desiredCamera.copy(direction).multiplyScalar(fitDistance);
           if (immediate || reduceMotion) {
             camera.position.copy(desiredCamera);
             fitting = false;
@@ -1488,6 +1517,70 @@ export default function CellScene({
           },
           getView: readView,
           setView,
+          getObservationTargets(mode, lang) {
+            if (!api.ready) return [];
+            const targets = [];
+            for (const part of current.parts) {
+              const { hitId } = part.userData;
+              if (
+                labelElements.has(hitId) &&
+                isStructureLabelVisible(part.userData, mode)
+              )
+                targets.push({
+                  key: "part-" + hitId,
+                  label: getNode(hitId, lang).name,
+                });
+            }
+            if (mode !== "explode")
+              current.landmarks.forEach((landmark, i) => {
+                if (isStructureLabelVisible(landmark, mode))
+                  targets.push({ key: "landmark-" + i, label: landmark[lang] });
+              });
+            return targets;
+          },
+          focusObservation(key) {
+            if (!api.ready) return false;
+            const p = live.current;
+            const part = current.parts.find(
+              (item) => "part-" + item.userData.hitId === key,
+            );
+            const landmark = current.landmarks.find(
+              (_, i) => "landmark-" + i === key,
+            );
+            let anchor;
+            let focusedDistance;
+            if (part && isStructureLabelVisible(part.userData, p.mode)) {
+              anchor = part.userData.labelAnchor
+                .clone()
+                .applyMatrix4(part.matrixWorld);
+              const size = part.userData.frameBounds.getSize(
+                new THREE.Vector3(),
+              );
+              focusedDistance =
+                Math.max(size.y, size.x / camera.aspect) /
+                  (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)) +
+                size.z * 0.35;
+            } else if (
+              landmark &&
+              p.mode !== "explode" &&
+              isStructureLabelVisible(landmark, p.mode)
+            ) {
+              anchor = landmark.position
+                .clone()
+                .applyMatrix4(current.root.matrixWorld);
+              focusedDistance = distance() * 0.53;
+            } else return false;
+            const reference = distance();
+            const view = readView();
+            view.target = anchor.toArray();
+            view.zoom =
+              THREE.MathUtils.clamp(
+                focusedDistance,
+                controls.minDistance,
+                Math.max(controls.minDistance, reference * 0.82),
+              ) / reference;
+            return setView(view);
+          },
           releaseCapture: () => capture.dispose(),
           prepareCaptureFrame(options = {}) {
             return api.captureFrame(options, true);

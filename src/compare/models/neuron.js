@@ -618,8 +618,209 @@ function nodes(b, c, end, next, r, id) {
     }
   }
 }
-function bouton(b, p, s, id) {
-  shell(b, p, [s * 0.69, s * 0.49, s * 0.42], id, C.membrane);
+function terminalEnvelope(b, s, id) {
+  const join = -0.55,
+    joinRadius = Math.sqrt(1 - (join / 0.69) ** 2);
+  const profile = [];
+  for (let i = 0; i <= 30; i++) {
+    const u = i / 30,
+      x = T.MathUtils.lerp(-2.5 / s, join, u);
+    const flare = Math.max(0, (x + 0.95) / (join + 0.95)) ** 1.75;
+    const neck = 0.065 + 0.018 * u;
+    profile.push([
+      x,
+      0.247 * (1 - u) ** 1.7,
+      -0.03 * (1 - u) ** 2,
+      T.MathUtils.lerp(neck, 0.49 * joinRadius, flare),
+      T.MathUtils.lerp(neck, 0.42 * joinRadius, flare),
+    ]);
+  }
+  const start = Math.acos(join / 0.69);
+  for (let i = 1; i < 42; i++) {
+    const a = start * (1 - i / 42);
+    profile.push([
+      0.69 * Math.cos(a),
+      0,
+      0,
+      0.49 * Math.sin(a),
+      0.42 * Math.sin(a),
+    ]);
+  }
+  // One membrane from the cropped stalk to the distal pole. Both halves
+  // share their cut meridians, including through the flared bouton neck.
+  for (const cap of [false, true]) {
+    const position = [],
+      normals = [],
+      uv = [],
+      index = [],
+      sides = 24;
+    for (const [i, [x, cy, cz, ry, rz]] of profile.entries()) {
+      const before = profile[Math.max(0, i - 1)],
+        after = profile[i + 1] || [0.69, 0, 0, 0, 0];
+      for (let j = 0; j <= sides; j++) {
+        const a = (cap ? 0 : Math.PI) + (Math.PI * j) / sides;
+        position.push(
+          s * x,
+          s * (cy + ry * Math.cos(a)),
+          s * (cz + rz * Math.sin(a)),
+        );
+        const ty = -ry * Math.sin(a),
+          tz = rz * Math.cos(a);
+        const dx = after[0] - before[0],
+          dy = after[1] - before[1] + (after[3] - before[3]) * Math.cos(a),
+          dz = after[2] - before[2] + (after[4] - before[4]) * Math.sin(a);
+        normals.push(
+          ...new T.Vector3(ty * dz - tz * dy, tz * dx, -ty * dx)
+            .normalize()
+            .toArray(),
+        );
+        uv.push(i / profile.length, j / sides);
+        if (i === profile.length - 1 || j === sides) continue;
+        const k = i * (sides + 1) + j;
+        index.push(
+          k,
+          k + 1,
+          k + sides + 1,
+          k + 1,
+          k + sides + 2,
+          k + sides + 1,
+        );
+      }
+    }
+    const pole = position.length / 3;
+    position.push(s * 0.69, 0, 0);
+    normals.push(1, 0, 0);
+    uv.push(1, 0.5);
+    for (let j = 0; j < sides; j++) {
+      const k = (profile.length - 1) * (sides + 1) + j;
+      index.push(k, k + 1, pole);
+    }
+    const geometry = new T.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new T.Float32BufferAttribute(position, 3),
+    );
+    geometry.setAttribute("uv", new T.Float32BufferAttribute(uv, 2));
+    geometry.setIndex(index);
+    geometry.setAttribute("normal", new T.Float32BufferAttribute(normals, 3));
+    b.add(geometry, C.membrane, id, cap ? { cap } : {});
+  }
+}
+
+// Inner face of the lower bouton membrane, in units of the bouton scale.
+function releaseSite(x, z, inset) {
+  const y = -0.49 * Math.sqrt(1 - (x / 0.69) ** 2 - (z / 0.42) ** 2);
+  const inward = new T.Vector3(
+    -x / 0.69 ** 2,
+    -y / 0.49 ** 2,
+    -z / 0.42 ** 2,
+  ).normalize();
+  return new T.Vector3(x, y, z).addScaledVector(inward, inset);
+}
+
+function activeZone(p, s, detailed) {
+  const position = [],
+    uv = [],
+    index = [];
+  const columns = detailed ? 18 : 8,
+    rows = detailed ? 4 : 2,
+    stride = rows + 1,
+    layerSize = (columns + 1) * stride;
+  function quad(a, b, c, d) {
+    index.push(a, b, d, b, c, d);
+  }
+  for (const [side, inset] of [0.004, 0.029].entries()) {
+    for (let i = 0; i <= columns; i++) {
+      const x = 0.34 * ((2 * i) / columns - 1);
+      const breadth = 0.042 + 0.105 * (1 - (x / 0.34) ** 2);
+      for (let j = 0; j <= rows; j++) {
+        const site = releaseSite(x, (-breadth * j) / rows, inset);
+        position.push(p[0] + s * site.x, p[1] + s * site.y, p[2] + s * site.z);
+        uv.push(i / columns, j / rows);
+        if (i === columns || j === rows) continue;
+        const a = side * layerSize + i * stride + j;
+        if (side) quad(a, a + stride, a + stride + 1, a + 1);
+        else quad(a, a + 1, a + stride + 1, a + stride);
+      }
+    }
+  }
+  // Close the exposed cut edge and the three edges against the membrane.
+  const boundary = [
+    ...Array.from({ length: columns }, (_, i) => i * stride),
+    ...Array.from({ length: rows }, (_, j) => columns * stride + j),
+    ...Array.from({ length: columns }, (_, i) => (columns - i) * stride + rows),
+    ...Array.from({ length: rows }, (_, j) => rows - j),
+  ];
+  for (let i = 0; i < boundary.length; i++) {
+    const a = boundary[i],
+      b = boundary[(i + 1) % boundary.length];
+    quad(a, b, b + layerSize, a + layerSize);
+  }
+  const geo = new T.BufferGeometry();
+  geo.setAttribute("position", new T.Float32BufferAttribute(position, 3));
+  geo.setAttribute("uv", new T.Float32BufferAttribute(uv, 2));
+  geo.setIndex(index);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function vesicle(b, centre, radius, cutZ, id, detailed) {
+  const radial = detailed ? 16 : 10,
+    stacks = detailed ? 8 : 5;
+  const flags = { cutOnly: true },
+    height = cutZ - centre.z;
+  if (height >= radius) {
+    b.add(
+      new T.SphereGeometry(radius, Math.min(radial, 12), stacks).translate(
+        ...centre.toArray(),
+      ),
+      C.vesicle,
+      id,
+      flags,
+    );
+    return;
+  }
+  if (height <= -radius) return;
+  const inner = radius * 0.78,
+    outerRim = Math.sqrt(radius ** 2 - height ** 2);
+  const wall = (r) => {
+    const angle = Math.acos(height / r);
+    return new T.SphereGeometry(
+      r,
+      radial,
+      stacks,
+      0,
+      TAU,
+      angle,
+      Math.PI - angle,
+    )
+      .rotateX(Math.PI / 2)
+      .translate(...centre.toArray());
+  };
+  b.add(wall(radius), C.vesicle, id, flags);
+  const innerRim = Math.sqrt(Math.max(0, inner ** 2 - height ** 2));
+  if (innerRim > 0) {
+    const inside = wall(inner),
+      triangles = inside.index.array;
+    for (let i = 0; i < triangles.length; i += 3)
+      [triangles[i + 1], triangles[i + 2]] = [
+        triangles[i + 2],
+        triangles[i + 1],
+      ];
+    inside.attributes.normal.array.forEach((n, i, a) => {
+      a[i] = -n;
+    });
+    b.add(inside, C.vesicle, id, flags);
+  }
+  const rim = innerRim
+    ? new T.RingGeometry(innerRim, outerRim, radial)
+    : new T.CircleGeometry(outerRim, radial);
+  b.add(rim.translate(centre.x, centre.y, cutZ), C.vesicle, id, flags);
+}
+
+function bouton(b, p, s, id, isolated = false) {
+  if (isolated) terminalEnvelope(b, s, id);
+  else shell(b, p, [s * 0.69, s * 0.49, s * 0.42], id, C.membrane);
   // Vesicle cluster is localized above the presynaptic active-zone membrane patch.
   for (let row = 0; row < 3; row++)
     for (let i = 0; i < 5 - row; i++) {
@@ -632,28 +833,18 @@ function bouton(b, p, s, id) {
           0.22 * s +
           row * 0.14 * s +
           s * 0.024 * Math.sin(i * 1.7 + row),
-        z = p[2] + 0.09 * s * Math.sin(i * 1.9 + row);
-      b.add(
-        ellipse([x, y, z], [s * 0.046, s * 0.046, s * 0.046]),
-        C.vesicle,
-        id,
-        { cutOnly: true },
-      );
+        z = p[2] + s * (-0.046 + 0.055 * Math.sin(i * 1.9 + row));
+      vesicle(b, new T.Vector3(x, y, z), 0.046 * s, p[2], id, isolated);
     }
-  for (const x of [-0.21, 0, 0.21]) {
-    b.add(
-      ellipse(
-        [
-          p[0] + x * s,
-          p[1] - (0.335 - Math.abs(x) * 0.05) * s,
-          p[2] + 0.05 * s,
-        ],
-        [s * 0.045, s * 0.045, s * 0.045],
-      ),
-      C.vesicle,
-      id,
-      { cutOnly: true },
-    );
+  for (const [x, z] of [
+    [-0.21, -0.064],
+    [0, -0.022],
+    [0.21, -0.074],
+  ]) {
+    const centre = releaseSite(x, z, 0.029 + 0.045)
+      .multiplyScalar(s)
+      .add(v(p));
+    vesicle(b, centre, 0.045 * s, p[2], id, isolated);
   }
   mitochondrion(
     b,
@@ -662,35 +853,12 @@ function bouton(b, p, s, id) {
     id,
     { cutOnly: true },
   );
-  const active = curve([
-    [p[0] - 0.32 * s, p[1] - 0.38 * s, p[2]],
-    [p[0], p[1] - 0.405 * s, p[2] + 0.075 * s],
-    [p[0] + 0.32 * s, p[1] - 0.38 * s, p[2]],
-  ]);
-  b.add(
-    tube(active, 0.023 * s, 0.023 * s, { steps: 26, radial: 8 }),
-    "#aa807a",
-    id,
-    { cutOnly: true },
-  );
+  b.add(activeZone(p, s, isolated), "#aa807a", id, { cutOnly: true });
 }
 function terminals(b, isolated = false) {
   const id = "neuronTerminals";
   if (isolated) {
-    b.add(
-      tube(
-        curve([
-          [-2.5, 0.42, -0.05],
-          [-1.65, 0.28, 0],
-          [-0.83, 0.04, 0],
-        ]),
-        0.11,
-        0.18,
-      ),
-      C.dendrite,
-      id,
-    );
-    bouton(b, [0, 0, 0], 1.7, id);
+    bouton(b, [0, 0, 0], 1.7, id, true);
     return;
   }
   const origin = v(AXON.at(-1));
@@ -888,7 +1056,7 @@ export function buildNeuron(id = "neuron") {
         "active",
         "突触前活性区",
         "Presynaptic active zone",
-        [0, -0.68, 0.1],
+        releaseSite(0, 0, 0.029).multiplyScalar(1.7).toArray(),
       ),
       landmark("mito", "线粒体", "Mitochondrion", [0.25, 0.35, 0]),
     ];

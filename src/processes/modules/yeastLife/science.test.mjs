@@ -4,7 +4,7 @@ import budding from "./yeastBuddingProcess.js";
 import fermentation from "./yeastFermentationProcess.js";
 import mating from "./yeastMatingProcess.js";
 import sporulation from "./yeastSporulationProcess.js";
-import { backSurfaceAt } from "./topology.js";
+import { axialRadius, backSurfaceAt } from "./topology.js";
 
 const vec = (x, y, z) => new THREE.Vector3(x, y, z);
 const get = (scene, name) => {
@@ -44,6 +44,41 @@ function containsRevolved(mesh, p, columns = 48, tolerance = 0.004) {
     if (Math.hypot(local.y, local.z) <= r + tolerance) return true;
   }
   return false;
+}
+
+// Collapsed rings share endpoints. A rewritten, folded profile must fall back
+// to the original span order after invalidating the cached monotone profile.
+{
+  const columns = 4,
+    stride = columns + 1,
+    geometry = new THREE.BufferGeometry(),
+    position = new THREE.BufferAttribute(new Float32Array(4 * stride * 3), 3);
+  geometry.setAttribute("position", position);
+  const mesh = new THREE.Mesh(geometry);
+  const setRings = (rings) => {
+    rings.forEach(([x, radius], row) =>
+      position.setXYZ(row * stride, x, radius, 0),
+    );
+    position.needsUpdate = true;
+  };
+  const polygon = Math.cos(Math.PI / columns);
+  setRings([
+    [-1, 2],
+    [0, 3],
+    [0, 5],
+    [1, 4],
+  ]);
+  assert.equal(axialRadius(mesh, 0, columns), 5 * polygon);
+  setRings([
+    [-1, 2],
+    [1, 3],
+    [-1, 8],
+    [1, 4],
+  ]);
+  assert.equal(axialRadius(mesh, 0, columns), 6 * polygon);
+  assert(Number.isNaN(axialRadius(mesh, NaN, columns)));
+  geometry.dispose();
+  mesh.material.dispose();
 }
 
 // yeastLife-01: septum vertices are annular, its aperture matches the actual
@@ -86,6 +121,35 @@ function containsRevolved(mesh, p, columns = 48, tolerance = 0.004) {
       assert(Math.min(...ends.map((e) => e.distanceTo(pole))) < 1e-5);
     }
   }
+
+  const wallAttributes = [
+    "budding-mother-envelope",
+    "budding-daughter-envelope",
+    "budding-mother-envelope:envelope-layer-2",
+    "budding-daughter-envelope:envelope-layer-2",
+    "budding-centripetal-septum-mother",
+  ].map((name) => get(s, name).geometry.attributes.position);
+  const cable = get(s, "budding-actin-cable-0").geometry.attributes.position;
+  const attributes = [...wallAttributes, cable];
+  const versions = () => attributes.map((attribute) => attribute.version);
+  update(s, 0.42);
+  const plateau = versions();
+  const positions = attributes.map((attribute) => attribute.array.slice());
+  update(s, 0.49);
+  assert.deepEqual(versions(), plateau, "unchanged surfaces stay uploaded");
+  update(s, 0.64);
+  assert.deepEqual(versions().slice(0, 5), plateau.slice(0, 5));
+  assert(cable.version > plateau[5], "cable taper refreshes its geometry");
+  update(s, 0.93);
+  const separating = versions();
+  update(s, 0.96);
+  assert.equal(wallAttributes[0].version, separating[0]);
+  assert.equal(wallAttributes[4].version, separating[4]);
+  assert(wallAttributes[1].version > separating[1], "separating bud moves");
+  update(s, 0.42);
+  attributes.forEach((attribute, i) =>
+    assert.deepEqual(attribute.array, positions[i], "rewind restores geometry"),
+  );
 }
 
 // yeastLife-03: infer bonds from actual cylinder endpoints and carbon centers.
@@ -766,4 +830,205 @@ function membraneSamples(mesh, count = 128) {
 }
 console.log(
   "yeastLife nuclear partition: PASS (R05 actual bidirectional surfaces, disappearing-neck area, and boundary trajectories)",
+);
+
+// The hourglass is axial before cytokinesis. Its two cortical rings separate
+// around the septum, and this division's scar is supported by the mother.
+{
+  const scene = budding.create();
+  const filaments = get(scene, "budding-axial-septin-double-filaments");
+  const mother = get(scene, "budding-maternal-septin-ring");
+  const daughter = get(scene, "budding-daughter-septin-ring");
+  const scar = get(scene, "budding-current-maternal-bud-scar");
+  const septum = get(scene, "budding-centripetal-septum-mother");
+  const wall = ["mother", "daughter"].map((s) =>
+    get(scene, `budding-${s}-envelope:envelope-layer-2`),
+  );
+  const matrix = new THREE.Matrix4();
+  for (const p of [0, 0.055, 0.2, 0.42, 0.76, 0.85, 0.94, 1, 0.42]) {
+    update(scene, p);
+    assert.equal(scar.visible, p > 0.88);
+    if (p === 0.055)
+      assert(mother.visible && !daughter.visible && !filaments.visible);
+    if (p === 0.42) {
+      assert(filaments.visible && !mother.visible && !daughter.visible);
+      for (let i = 0; i < filaments.count; i++) {
+        filaments.getMatrixAt(i, matrix);
+        const ends = [-0.5, 0.5].map((y) => vec(0, y, 0).applyMatrix4(matrix));
+        assert(ends[1].x - ends[0].x > 0.04);
+        for (const point of ends)
+          assert(containsRevolved(wall[point.x > 0.150001 ? 1 : 0], point));
+      }
+    }
+    if (p === 0.85) {
+      assert(mother.visible && daughter.visible && !filaments.visible);
+      assert(
+        mother.position.x < septum.position.x &&
+          daughter.position.x > septum.position.x,
+      );
+    }
+    if (scar.visible) {
+      const points = vertices(scar);
+      const bottom = points.filter(
+        (pt) => Math.abs(pt.x - septum.position.x) < 1e-6,
+      );
+      assert(
+        bottom.length >= 2 * 72,
+        "both bases of raised annulus lie on the septum",
+      );
+      for (const pt of points)
+        assert(
+          Math.hypot(pt.y, pt.z) <= 0.43 && pt.x >= septum.position.x - 1e-6,
+        );
+      assert(Math.max(...points.map((v) => v.x)) > septum.position.x + 0.001);
+    }
+  }
+}
+
+// Independent against the displayed membrane rows and the full parental
+// nuclear ellipsoid. Sampling the carrier surface catches a protruding rim
+// that would pass a center-only check.
+{
+  const scene = mating.create(),
+    lipids = get(scene, "mating-plasma-membrane-fusion-lipids");
+  const matrix = new THREE.Matrix4(),
+    point = vec(),
+    projected = vec(),
+    segment = new THREE.Line3();
+  for (const p of [
+    0.19, 0.224, 0.26, 0.31, 0.375, 0.422, 0.48, 0.537, 0.552, 0.6, 1, 0.48,
+  ]) {
+    update(scene, p, { partner: "compatible" });
+    for (let side = 0; side < 2; side++) {
+      const name = side ? "right" : "left";
+      const pm = get(scene, `mating-${name}-cell-envelope:envelope-layer-2`),
+        nucleus = get(scene, `mating-parent-nuclear-envelope-${side}`);
+      for (let i = side * 4; i < side * 4 + 4; i++) {
+        const carrier = get(scene, `mating-secretory-vesicle-${i}`);
+        if (!carrier.visible || !carrier.scale.x) continue;
+        for (const pt of vertices(carrier)) {
+          assert(
+            containsRevolved(pm, pt, 48, 0),
+            "secretory vesicle penetrates plasma membrane",
+          );
+          assert(
+            pt.sub(nucleus.position).divide(nucleus.scale).length() > 1,
+            "secretory vesicle enters its parental nucleus",
+          );
+        }
+      }
+      if (!lipids.visible) continue;
+      const ring = get(scene, `mating-${name}-cell-envelope:envelope-layer-1`)
+        .geometry.attributes.position;
+      for (let i = 0; i < 32; i++) {
+        lipids.getMatrixAt(side * 32 + i, matrix);
+        point.setFromMatrixPosition(matrix);
+        let closest = Infinity;
+        for (let j = 0; j < 48; j++) {
+          if (j >= 5 && j < 19) continue;
+          segment.start.fromBufferAttribute(ring, 49 + j);
+          segment.end.fromBufferAttribute(ring, 50 + j);
+          closest = Math.min(
+            closest,
+            segment
+              .closestPointToPoint(point, true, projected)
+              .distanceTo(point),
+          );
+        }
+        assert(
+          closest < 1e-6,
+          "fusion lipid detached from displayed plasma-membrane edges",
+        );
+      }
+    }
+  }
+  update(scene, 1, { partner: "same" });
+  assert(!lipids.visible && !get(scene, "mating-contact-annulus-0").visible);
+}
+
+// Verify both welds of all four growth folds, their open mouth, and the
+// distinction between a closed prospore and its later viewing cut.
+{
+  const scene = sporulation.create(),
+    a = vec(),
+    b = vec(),
+    ray = new THREE.Raycaster();
+  for (const nutrients of ["starved", "rich", "starved"])
+    for (const p of [
+      0.58, 0.6001, 0.64, 0.72, 0.805, 0.818, 0.822, 0.829, 0.83, 0.85, 1, 0.64,
+    ]) {
+      update(scene, p, { nutrients });
+      for (let i = 0; i < 4; i++) {
+        const outer = get(scene, `sporulation-outer-prospore-membrane-${i}`),
+          inner = get(scene, `sporulation-persistent-spore-pm-${i}`);
+        const lip = get(scene, `sporulation-prospore-leading-edge-${i}`);
+        assert.equal(lip.visible, nutrients !== "rich" && p > 0.59 && p < 0.83);
+        const verts = lip.geometry.attributes.position;
+        if (nutrients === "starved" && p >= 0.805) {
+          for (const [mesh, direction] of [
+            [outer, 1],
+            [inner, -1],
+          ]) {
+            const { position, normal } = mesh.geometry.attributes,
+              v = 12 * 37 + 5;
+            const radial = a.fromBufferAttribute(position, v).normalize();
+            assert(
+              direction * radial.dot(b.fromBufferAttribute(normal, v)) > 0.99,
+              "opposing cisternal faces have consistent winding around the fold",
+            );
+          }
+        }
+        if (!lip.visible) {
+          assert.equal(lip.geometry.drawRange.count, 0);
+          continue;
+        }
+        const rim = outer.geometry.attributes.position,
+          innerRim = inner.geometry.attributes.position;
+        const last = verts.count - 37;
+        for (let j = 0; j <= 36; j++) {
+          assert(
+            a
+              .fromBufferAttribute(verts, j)
+              .distanceTo(b.fromBufferAttribute(rim, 24 * 37 + j)) < 1e-7,
+          );
+          assert(
+            a
+              .fromBufferAttribute(verts, last + j)
+              .distanceTo(b.fromBufferAttribute(innerRim, 24 * 37 + j)) < 1e-7,
+          );
+        }
+        a.fromBufferAttribute(rim, 24 * 37);
+        b.fromBufferAttribute(rim, 24 * 37 + 18);
+        a.add(b).multiplyScalar(0.5);
+        ray.set(
+          outer.localToWorld(a).addScaledVector(vec(0, 0, 1), 0.2),
+          vec(0, 0, -1),
+        );
+        assert.equal(
+          ray.intersectObject(lip, false).length,
+          0,
+          "curved fold caps the open mouth",
+        );
+      }
+    }
+  const pm = get(scene, "sporulation-persistent-spore-pm-0").geometry.attributes
+    .position;
+  const outer = get(scene, "sporulation-outer-prospore-membrane-0").geometry
+    .attributes.position;
+  update(scene, 0.84);
+  const closed = [pm.version, outer.version];
+  update(scene, 1);
+  assert.deepEqual(
+    [pm.version, outer.version],
+    closed,
+    "closed cups stay uploaded during wall maturation",
+  );
+  update(scene, 0.72);
+  assert(
+    pm.version > closed[0] && outer.version > closed[1],
+    "rewinding restores the open cups",
+  );
+}
+console.log(
+  "Yeast neck morphogenesis, shmoo cargo/rim, and open prospore growth folds passed",
 );
