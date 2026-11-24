@@ -6,7 +6,6 @@ import {
   tube,
   place,
   shell,
-  aqueousMixture,
   surfacePoint,
 } from "./specimenGeometry";
 import {
@@ -183,6 +182,5 @@ export function plantDetail(id) {
   if (id === "rubisco") return rubiscoAssembly();
   const organelle = plantOrganelleDetail(id);
   if (organelle) return organelle;
-  if (id === "plantCytoplasm") return aqueousMixture(id);
   return null;
 }

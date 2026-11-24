@@ -67,6 +67,10 @@ export async function loadDetailModel(id) {
     ]);
     return detailModel(id, bacterialRibosomeReference(large, small));
   }
+  if (id === "plantCytoplasm") {
+    const { plantCytosol } = await import("./plantCytosol");
+    return detailModel(id, plantCytosol());
+  }
   if (plantIds.has(id)) {
     const { plantDetail } = await import("./plantDetails");
     return detailModel(id, plantDetail(id));

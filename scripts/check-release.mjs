@@ -146,7 +146,7 @@ const files = fs
 for (const name of files) {
   assert(!/^scripts[/\\]/.test(name), `Development studio in build: ${name}`);
   assert(
-    !/(?:^|[/\\])(?:\.env(?:\..*)?|.*\.(?:test|smoke)\.[cm]?js|process-preview\.html)$/.test(
+    !/(?:^|[/\\])(?:\.DS_Store|\.env(?:\..*)?|.*\.(?:test|smoke)\.[cm]?js|process-preview\.html)$/.test(
       name,
     ),
     `Development file in build: ${name}`,

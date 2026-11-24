@@ -111,8 +111,8 @@ const contexts = {
     "A molecular sample from bacterial cytoplasm",
   ],
   plantCytoplasm: [
-    "植物细胞质水相中的分子样本",
-    "A molecular sample from plant cytosol",
+    "拟南芥叶肉 · 周边细胞质与跨液泡细胞质索",
+    "Arabidopsis leaf mesophyll · cortical cytoplasm and transvacuolar strands",
   ],
   cellSap: [
     "液泡中的水与溶质 · 分子样本",

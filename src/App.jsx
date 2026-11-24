@@ -322,6 +322,7 @@ export default function App({ historySession, onHome, onSceneLeave }) {
         : [],
     [path, experience, comparison],
   );
+  const relatedPreviewCount = path.length > 1 ? 6 : 3;
   function receiveCapabilities(next) {
     if (next.nodeId !== id) return;
     setCapabilities(next);
@@ -463,6 +464,14 @@ export default function App({ historySession, onHome, onSceneLeave }) {
       prepareRelatedProcessEntry(processStates.current.get(key), item),
     );
     navigate(path, true, "process", item.id);
+  }
+  function relatedProcessButton(item) {
+    return (
+      <button key={item.id} onClick={() => openRelatedProcess(item)}>
+        <span>{processCatalog[item.id].title[lang]}</span>
+        <ChevronRight size={14} aria-hidden="true" />
+      </button>
+    );
   }
   function openComparison() {
     saveCurrent();
@@ -1305,16 +1314,22 @@ export default function App({ historySession, onHome, onSceneLeave }) {
                   <section className="structure-processes">
                     <h3>{t("相关生物学过程", "Explore related processes")}</h3>
                     {relatedProcesses
-                      .slice(0, path.length > 1 ? 6 : 3)
-                      .map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => openRelatedProcess(item)}
-                        >
-                          <span>{processCatalog[item.id].title[lang]}</span>
-                          <ChevronRight size={14} />
-                        </button>
-                      ))}
+                      .slice(0, relatedPreviewCount)
+                      .map(relatedProcessButton)}
+                    {path.length > 1 &&
+                      relatedProcesses.length > relatedPreviewCount && (
+                        <details key={path.join("/")} className="more-related">
+                          <summary>
+                            {t("更多相关过程", "More related processes")}{" "}
+                            <span>
+                              {relatedProcesses.length - relatedPreviewCount}
+                            </span>
+                          </summary>
+                          {relatedProcesses
+                            .slice(relatedPreviewCount)
+                            .map(relatedProcessButton)}
+                        </details>
+                      )}
                     <button
                       className="all-processes"
                       onClick={() => navigate(path, true, "process", null)}

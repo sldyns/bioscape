@@ -107,6 +107,17 @@
 .structure-processes button:hover {
   color: var(--blue);
 }
+.more-related > summary {
+  padding: 9px 0;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+}
+.more-related > summary span {
+  margin-inline-start: 4px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
 .structure-processes .all-processes {
   justify-content: flex-start;
   font-size: 10px;

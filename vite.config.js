@@ -1,6 +1,7 @@
 import { bufferPreparationHook } from "./scripts/rendererBufferPreparation.mjs";
 import { defineConfig } from "vite";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync, unlinkSync } from "node:fs";
+import { basename, join } from "node:path";
 const releaseNotices = {
   "LICENSE.txt": "LICENSE",
   "NOTICE.txt": "docs/legal/NOTICE",
@@ -16,7 +17,7 @@ export default defineConfig({
   plugins: [
     bufferPreparationHook(),
     {
-      name: "release-notices",
+      name: "release-files",
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           const name = (req.url ?? "").split("?")[0].slice(1);
@@ -29,6 +30,12 @@ export default defineConfig({
       generateBundle() {
         for (const [fileName, file] of Object.entries(releaseNotices)) {
           this.emitFile({ type: "asset", fileName, source: noticeText(file) });
+        }
+      },
+      writeBundle({ dir }) {
+        // Vite also copies Finder metadata when publishing public/ from a Mac.
+        for (const file of readdirSync(dir, { recursive: true })) {
+          if (basename(file) === ".DS_Store") unlinkSync(join(dir, file));
         }
       },
     },

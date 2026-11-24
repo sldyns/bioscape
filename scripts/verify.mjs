@@ -55,6 +55,7 @@ try {
     "tests/muscle-refinement.mjs",
     "tests/animal-organelle-topology-review.mjs",
     "tests/plant-stroma-compartment-review.mjs",
+    "tests/plant-cytosol-compartment.mjs",
     "tests/plant-structure-label-review.mjs",
     "tests/plant-matrix-anchor-review.mjs",
     "tests/ribosome-modified-residues-review.mjs",

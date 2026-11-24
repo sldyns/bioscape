@@ -318,9 +318,9 @@ export const plantDefinitions = [
     "plantCytoplasm",
     "细胞质基质",
     "Cytosol",
-    "液泡与其他细胞器之间的水相，含多种蛋白和小分子；沿细胞周边分布，也可形成穿过液泡区域的细胞质索。",
-    "The aqueous phase between the vacuole and other organelles contains proteins and small molecules. It occupies the periphery and may form transvacuolar cytoplasmic strands.",
-    "#b8c6a9",
+    "大液泡将大部分细胞质挤向细胞周边。跨液泡的细胞质索仍与周边细胞质相通，索内的细胞质基质和索外的液泡液由液泡膜隔开。",
+    "A large vacuole confines much of the cytoplasm to the cell periphery. Transvacuolar strands remain continuous with this cortical cytoplasm. The tonoplast separates cytosol inside each strand from the surrounding vacuolar sap.",
+    "#abb6c2",
     [],
   ],
 ];
@@ -733,6 +733,10 @@ export const extraNotes = {
   plantRibosome: {
     zh: "总览取自烟草叶胞质中翻译时的 80S 核糖体（PDB 8B2L）。60S、40S、mRNA 和两条 tRNA 共用实验坐标。剖切打开亚基之间的结合区。单独查看 60S 或 40S 时，显示小麦胚的独立实验结构（8JIV、8JIW）。",
     en: "The overview uses a translating cytosolic 80S ribosome from tobacco leaves (PDB 8B2L). Both subunits, the mRNA and two tRNAs share the deposited coordinates. The cutaway exposes the binding sites between the subunits. The separate 60S and 40S views show wheat-germ structures 8JIV and 8JIW.",
+  },
+  plantCytoplasm: {
+    zh: "剖面取拟南芥叶肉的一段，叶绿体标出液泡外围的细胞质层。沿一条细胞质索可以从一侧的周边细胞质追到另一侧。叶肉的空间布局参考三维电镜，索口的膜连续性参考叶表皮活体成像。两条索的数目、走向和宽度为教学示意。",
+    en: "The cutaway shows a region of Arabidopsis leaf mesophyll. Chloroplasts mark the layer of cytoplasm surrounding the vacuole. A strand connects the cortical cytoplasm on opposite sides. The mesophyll layout draws on three-dimensional electron microscopy, and membrane continuity at strand mouths draws on live imaging of leaf epidermis. The number, paths and widths of the two strands are illustrative.",
   },
 };
 

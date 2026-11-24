@@ -80,8 +80,8 @@ export default function AboutModel({ t, aboutRef, onClose }) {
         <h3>{t("模型说明", "About the models")}</h3>
         <p>
           {t(
-            "这里展示动物细胞、植物细胞、革兰阴性杆菌、酿酒酵母、尾草履虫和 T₂ 噬菌体，以及成熟人红细胞、有髓多极神经元和人骨骼肌纤维。噬菌体属于病毒，没有细胞结构。各模型选取主要结构；专门化细胞及放大的局部结构会注明各自范围，不代表所有亚型，也不是某个个体的精确重建。",
-            "The teaching models include an animal cell, a plant cell, a Gram-negative rod, Saccharomyces cerevisiae (budding yeast), Paramecium caudatum and a T2 bacteriophage, plus a mature human erythrocyte, a myelinated multipolar neuron and a human skeletal muscle fibre. The phage is a virus without cellular structure. Each model selects major structures; specialized cells and enlarged details state their own scope and do not represent every subtype or an exact individual reconstruction.",
+            "标本包括动物细胞、植物细胞、革兰阴性杆菌、酿酒酵母、尾草履虫和 T₂ 噬菌体。专门化细胞包括成熟人红细胞、有髓多极神经元、人骨骼肌纤维和成年小鼠视杆细胞。噬菌体属于病毒。每个标本选取一组典型结构，细胞与放大部位的说明标明物种和取材范围。",
+            "The specimens include an animal cell, a plant cell, a Gram-negative rod, Saccharomyces cerevisiae (budding yeast), Paramecium caudatum and a T2 bacteriophage. Specialized cells include a mature human erythrocyte, a myelinated multipolar neuron, a human skeletal muscle fibre and an adult mouse rod photoreceptor. The phage is a virus. Each specimen illustrates selected structures. The notes identify the species and the region represented where applicable.",
           )}
         </p>
         <p>
@@ -116,6 +116,28 @@ export default function AboutModel({ t, aboutRef, onClose }) {
             {t(
               "烟草叶胞质 80S 核糖体 · PDB 8B2L",
               "Tobacco leaf cytosolic 80S ribosome · PDB 8B2L",
+            )}{" "}
+            ↗
+          </a>
+          <a
+            href="https://pubmed.ncbi.nlm.nih.gov/36712360/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t(
+              "拟南芥叶肉的三维电镜结构",
+              "Three-dimensional electron microscopy of Arabidopsis leaf mesophyll",
+            )}{" "}
+            ↗
+          </a>
+          <a
+            href="https://pubmed.ncbi.nlm.nih.gov/17666025/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t(
+              "叶表皮细胞中的液泡膜与跨液泡索",
+              "Tonoplast and transvacuolar strands in leaf epidermal cells",
             )}{" "}
             ↗
           </a>

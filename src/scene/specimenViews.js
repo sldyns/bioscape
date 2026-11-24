@@ -6,6 +6,7 @@ const directions = {
   cristae: [-0.99, 0.136, -0.003],
   cristaJunction: [-0.28, 0.2, 1],
   cristaRim: [-0.78, 0.35, 0.61],
+  plantCytoplasm: [0.28, 0.19, 1],
   rodOuterSegment: [0.36, 0.21, 1],
   rodDiscs: [0.23, 0.26, 1],
   rodConnectingCilium: [0.34, 0.16, 1],
