@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import ObservationPlate from "../components/ObservationPlate.jsx";
+import ObservationPlate, {
+  plateAspect,
+} from "../components/ObservationPlate.jsx";
 import { turnedView } from "../scene/specimenViews.js";
 import specimenAngles from "../scene/specimenAngles.json" with { type: "json" };
 
@@ -43,6 +45,7 @@ export default function StructureStudy({
           (yaw * Math.PI) / 180,
           (pitch * Math.PI) / 180,
         );
+        const framed = api.getObservationFrame(view, frameView, plateAspect);
         const detail = pitch
           ? en
             ? `${yaw}° · tilt ${pitch}°`
@@ -52,8 +55,8 @@ export default function StructureStudy({
           key: i,
           label: labels[i],
           detail,
-          options: { view: frameView },
-          view: frameView,
+          options: { view: framed.captureView },
+          view: framed.view,
         };
       }),
     });

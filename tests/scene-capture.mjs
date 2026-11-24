@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as THREE from "three";
+import { structurePlateCamera } from "../src/scene/structurePlateCamera.js";
+import { explodedFitDistance } from "../src/scene/viewFraming.js";
 import {
   normalizeSceneView,
   readSceneView,
@@ -111,6 +113,81 @@ test("a study plate retains its selected pivot, angle and zoom while the live ca
   assert.deepEqual(target.toArray(), [-3, 4, 2]);
   assert.equal(saved.zoom, 0.8);
   assert.deepEqual(saved.direction, [0, 0, 1]);
+});
+
+test("a long end-on specimen stays inside both its rotated plate and the selected live view", () => {
+  const box = new THREE.Box3(
+    new THREE.Vector3(-0.15, -0.2, -2.7),
+    new THREE.Vector3(0.15, 0.2, 2.7),
+  );
+  const parts = [
+    { userData: { frameBounds: box, offset: new THREE.Vector3() } },
+  ];
+  for (const aspect of [0.68, 1.82]) {
+    const camera = new THREE.PerspectiveCamera(36, aspect, 0.05, 100);
+    const target = new THREE.Vector3();
+    const referenceDistance = (c = camera) => (c.aspect < 1 ? 15 : 9.8);
+    const posedDistance = (direction, ratio) => {
+      const rotation = new THREE.Matrix4().lookAt(direction, target, camera.up);
+      const axes = [0, 1, 2].map((i) =>
+        new THREE.Vector3().setFromMatrixColumn(rotation, i),
+      );
+      return explodedFitDistance(parts, 0, ratio, camera.fov, axes);
+    };
+    const original = {
+      direction: [0, 0, 1],
+      target: [0, 0, 0],
+      zoom:
+        posedDistance(new THREE.Vector3(0, 0, 1), aspect) / referenceDistance(),
+    };
+    const rotated = { ...original, direction: [1, 0, 0] };
+    const options = {
+      camera,
+      original,
+      rotated,
+      tileAspect: 1.6,
+      posedDistance,
+      referenceDistance,
+    };
+    const { view, captureView } = structurePlateCamera(options);
+    const live = camera.clone();
+    applySceneView(live, target, referenceDistance(), view);
+    const image = captureCamera(
+      camera,
+      target,
+      referenceDistance(),
+      576,
+      360,
+      0,
+      referenceDistance,
+      undefined,
+      captureView,
+    );
+    for (const c of [live, image]) {
+      c.updateProjectionMatrix();
+      c.updateMatrixWorld();
+      for (const x of [box.min.x, box.max.x])
+        for (const y of [box.min.y, box.max.y])
+          for (const z of [box.min.z, box.max.z]) {
+            const point = new THREE.Vector3(x, y, z).project(c);
+            assert.ok(Math.abs(point.x) < 0.91 && Math.abs(point.y) < 0.91);
+          }
+    }
+    const closeup = structurePlateCamera({
+      ...options,
+      original: {
+        ...original,
+        zoom: original.zoom * 0.65,
+        target: [0.1, 0, 0],
+      },
+      rotated: { ...rotated, target: [0.1, 0, 0] },
+    });
+    assert.ok(Math.abs(closeup.view.zoom / view.zoom - 0.65) < 1e-9);
+    assert.ok(
+      Math.abs(closeup.captureView.zoom / captureView.zoom - 0.65) < 1e-9,
+    );
+    assert.deepEqual(closeup.captureView.target, [0.1, 0, 0]);
+  }
 });
 
 test("capture labels remain within canvas with legible spacing and omit excess annotations", () => {

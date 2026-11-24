@@ -36,6 +36,7 @@ import {
 import { getNode } from "./hierarchy";
 import { rootIds } from "./catalog/cellTypes.js";
 import { specimenDirection } from "./scene/specimenViews.js";
+import { structurePlateCamera } from "./scene/structurePlateCamera.js";
 import {
   isStructureLabelVisible,
   structureCaptureMode,
@@ -619,6 +620,29 @@ export default function CellScene({
             });
         }
 
+        function posedDistance(direction, aspect) {
+          const p = live.current;
+          if (!current?.parts.length) return distance();
+          const orientation = new THREE.Matrix4().lookAt(
+            direction,
+            new THREE.Vector3(),
+            camera.up,
+          );
+          framingAxes.forEach((axis, i) =>
+            axis.setFromMatrixColumn(orientation, i),
+          );
+          return Math.max(
+            controls.minDistance,
+            explodedFitDistance(
+              current.parts,
+              p.mode === "explode" ? p.explode / 100 : 0,
+              aspect,
+              camera.fov,
+              framingAxes,
+            ),
+          );
+        }
+
         function fit(immediate = false, preserveOrientation = false) {
           invalidate();
           settleControls();
@@ -628,28 +652,7 @@ export default function CellScene({
             : new THREE.Vector3()
                 .fromArray(specimenDirection(p.nodeId))
                 .normalize();
-          const orientation = new THREE.Matrix4().lookAt(
-            direction,
-            new THREE.Vector3(),
-            camera.up,
-          );
-          framingAxes.forEach((axis, i) =>
-            axis.setFromMatrixColumn(orientation, i),
-          );
-          // Fit the posed specimen itself. Saved/shared zoom still uses the
-          // original distance reference, so older camera snapshots round-trip.
-          const boundsDistance = current?.parts.length
-            ? Math.max(
-                controls.minDistance,
-                explodedFitDistance(
-                  current.parts,
-                  p.mode === "explode" ? p.explode / 100 : 0,
-                  camera.aspect,
-                  camera.fov,
-                  framingAxes,
-                ),
-              )
-            : distance(preserveOrientation);
+          const boundsDistance = posedDistance(direction, camera.aspect);
           // An enclosing box includes empty near corners on rounded cells.
           // Keep their calibrated overview scale on first entry, while a
           // rotated or separated specimen still fits its actual posed bounds.
@@ -1517,6 +1520,17 @@ export default function CellScene({
           },
           getView: readView,
           setView,
+          getObservationFrame(original, rotated, tileAspect) {
+            return structurePlateCamera({
+              camera,
+              original,
+              rotated,
+              tileAspect,
+              posedDistance,
+              referenceDistance: (captureCamera) =>
+                captureCamera ? distance(true, captureCamera) : distance(),
+            });
+          },
           getObservationTargets(mode, lang) {
             if (!api.ready) return [];
             const targets = [];

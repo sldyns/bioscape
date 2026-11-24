@@ -2,6 +2,10 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { lockPageScroll } from "../scrollLock.js";
 import "./observationPlate.css";
 
+const tileWidth = 576,
+  tileHeight = 360;
+export const plateAspect = tileWidth / tileHeight;
+
 // Each tile owns its 2D copy. The capture slot can then serve the next pose,
 // and closing the dialog can cancel readback without disturbing the live model.
 export default function ObservationPlate({ plate, lang, onClose, onChoose }) {
@@ -36,8 +40,8 @@ export default function ObservationPlate({ plate, lang, onClose, onChoose }) {
         if (signal.aborted) return;
         const capture = scene.prepareCaptureFrame({
           ...frame.options,
-          width: 576,
-          height: 360,
+          width: tileWidth,
+          height: tileHeight,
           labels: false,
           background: "transparent",
           signal,
@@ -47,7 +51,7 @@ export default function ObservationPlate({ plate, lang, onClose, onChoose }) {
           if (signal.aborted) return;
           const context = tiles.current[index]?.getContext("2d");
           if (!context) throw new Error("Frame canvas unavailable");
-          context.clearRect(0, 0, 576, 360);
+          context.clearRect(0, 0, tileWidth, tileHeight);
           context.drawImage(image, 0, 0);
           setFinished(index + 1);
         } finally {
@@ -117,8 +121,8 @@ export default function ObservationPlate({ plate, lang, onClose, onChoose }) {
                 ref={(node) => {
                   tiles.current[index] = node;
                 }}
-                width="576"
-                height="360"
+                width={tileWidth}
+                height={tileHeight}
                 aria-hidden="true"
               />
               {index >= finished && (
